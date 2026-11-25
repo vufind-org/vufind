@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HoldingsILS Test Class
+ * HoldingsILS Test Class.
  *
  * PHP version 8
  *
@@ -29,11 +29,10 @@
 
 namespace VuFindTest\RecordTab;
 
-use VuFind\RecordDriver\EDS;
 use VuFind\RecordTab\HoldingsILS;
 
 /**
- * HoldingsILS Test Class
+ * HoldingsILS Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +45,7 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Default test configuration Patron Empowerment Framework (PEF)
+     * Default test configuration Patron Empowerment Framework (PEF).
      *
      * @var array
      */
@@ -68,27 +67,6 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
             ],
         ],
     ];
-
-    /**
-     * Generate a new Eds driver to return responses set in a json fixture
-     *
-     * Overwrites $this->driver
-     * Uses session cache
-     *
-     * @param ?string $test   Name of test fixture to load
-     * @param ?array  $config Driver configuration (null to use default)
-     *
-     * @return EDS
-     */
-    protected function getDriver(?string $test = null, ?array $config = null): EDS
-    {
-        $record = new EDS(null, new \VuFind\Config\Config($this->defaultDriverConfigPEF));
-        if (null !== $test) {
-            $json = $this->getJsonFixture('eds/' . $test . '.json');
-            $record->setRawData($json);
-        }
-        return $record;
-    }
 
     /**
      * Test getUniqueCallNumbers.
@@ -137,7 +115,7 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test isVisible true, when driver supports holdings tab
+     * Test isVisible true, when driver supports holdings tab.
      *
      * @return void
      */
@@ -158,7 +136,7 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test isVisible false, when driver doesn't support holdings tab
+     * Test isVisible false, when driver doesn't support holdings tab.
      *
      * @return void
      */

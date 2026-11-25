@@ -50,7 +50,7 @@ interface SessionEntityInterface extends EntityInterface
     public function getId(): ?int;
 
     /**
-     * Session Id setter
+     * Session Id setter.
      *
      * @param ?string $sid Session Id.
      *

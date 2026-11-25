@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Login Required Exception
+ * Login Required Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Login Required Exception
+ * Login Required Exception.
  *
  * @category VuFind
  * @package  Exceptions

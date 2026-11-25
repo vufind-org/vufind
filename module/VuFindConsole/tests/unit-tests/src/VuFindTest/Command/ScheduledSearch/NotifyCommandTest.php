@@ -35,9 +35,12 @@ use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Http\RouteHelper;
+use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindConsole\Command\ScheduledSearch\NotifyCommand;
 use VuFindTest\Container\MockContainer;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
+use VuFindTest\Feature\TranslatorTrait;
 
 use function array_key_exists;
 
@@ -53,6 +56,7 @@ use function array_key_exists;
 class NotifyCommandTest extends \PHPUnit\Framework\TestCase
 {
     use ConfigRelatedServicesTrait;
+    use TranslatorTrait;
 
     /**
      * Container for building mocks.
@@ -62,7 +66,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     protected $container;
 
     /**
-     * Setup method
+     * Setup method.
      *
      * @return void
      */
@@ -89,8 +93,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $expected = "Processing 0 searches\nDone processing searches\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -115,8 +119,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute([]);
         $expected = "Processing 1 searches\n"
             . "ERROR: Search 1: unknown schedule: 7\nDone processing searches\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -142,8 +146,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $expected = "Processing 1 searches\n"
             . "  Bypassing search 1: previous execution too recent (Weekly, $lastDate)\n"
             . "Done processing searches\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -155,8 +159,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     public function testNotificationsWithUnsupportedBackend(): void
     {
         $resultsCallback = function ($results): void {
-            $results->expects($this->any())->method('getBackendId')->willReturn('unsupported');
-            $results->expects($this->any())->method('getSearchId')->willReturn(1);
+            $results->method('getBackendId')->willReturn('unsupported');
+            $results->method('getSearchId')->willReturn(1);
         };
         $command = $this->getCommand(
             [
@@ -173,8 +177,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $expected = "Processing 1 searches\n"
             . "ERROR: Unsupported search backend unsupported for search 1\n"
             . "Done processing searches\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -186,10 +190,10 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     public function testNotificationsWithNoSearchResults(): void
     {
         $optionsCallback = function ($options): void {
-            $options->expects($this->any())->method('supportsScheduledSearch')->willReturn(true);
+            $options->method('supportsScheduledSearch')->willReturn(true);
         };
         $resultsCallback = function ($results): void {
-            $results->expects($this->any())->method('getSearchId')->willReturn(1);
+            $results->method('getSearchId')->willReturn(1);
         };
         $command = $this->getCommand(
             [
@@ -206,8 +210,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $expected = "Processing 1 searches\n"
             . "  No results found for search 1\n"
             . "Done processing searches\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -219,11 +223,11 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     public function testNotificationsWithNoNewSearchResults(): void
     {
         $optionsCallback = function ($options): void {
-            $options->expects($this->any())->method('supportsScheduledSearch')->willReturn(true);
+            $options->method('supportsScheduledSearch')->willReturn(true);
         };
         $resultsCallback = function ($results): void {
-            $results->expects($this->any())->method('getSearchId')->willReturn(1);
-            $results->expects($this->any())->method('getResults')->willReturn($this->getMockSearchResultsSet());
+            $results->method('getSearchId')->willReturn(1);
+            $results->method('getResults')->willReturn($this->getMockSearchResultsSet());
         };
         $command = $this->getCommand(
             [
@@ -241,8 +245,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $expected = "Processing 1 searches\n"
             . "  No new results for search (1): $zeroDate < 2000-01-01T00:00:00Z\n"
             . "Done processing searches\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -254,10 +258,10 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     public function testNotificationsWithNewSearchResults(): void
     {
         $optionsCallback = function ($options): void {
-            $options->expects($this->any())->method('supportsScheduledSearch')->willReturn(true);
+            $options->method('supportsScheduledSearch')->willReturn(true);
         };
         $paramsCallback = function ($params): void {
-            $params->expects($this->any())->method('getCheckboxFacets')->willReturn([]);
+            $params->method('getCheckboxFacets')->willReturn([]);
         };
         $date = date('Y-m-d H:i:s');
         $expectedDate = str_replace(' ', 'T', $date) . 'Z';
@@ -268,8 +272,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $resultsCallback = function ($results) use ($record): void {
-            $results->expects($this->any())->method('getSearchId')->willReturn(1);
-            $results->expects($this->any())->method('getResults')->willReturn($this->getMockSearchResultsSet($record));
+            $results->method('getSearchId')->willReturn(1);
+            $results->method('getResults')->willReturn($this->getMockSearchResultsSet($record));
         };
         $message = 'sample message';
         $expectedViewParams = [
@@ -277,34 +281,33 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             'records' => [$record],
             'info' => [
                 'baseUrl' => 'http://foo',
-                'description' => null,
+                'description' => '',
                 'recordCount' => 1,
-                'url' => 'http://foo',
-                'unsubscribeUrl' => 'http://foo?id=1&key=',
+                'url' => 'http://foo/',
+                'unsubscribeUrl' => 'http://foo/searchhistory-unsubscribesearch?id=1&key=topsecret',
                 'checkboxFilters' => [],
-                'filters' => null,
-                'userInstitution' => 'My Institution',
+                'filters' => [],
             ],
         ];
-        $renderer = $this->container->createMock(
-            \Laminas\View\Renderer\PhpRenderer::class,
-            ['render']
-        );
-        $renderer->expects($this->once())->method('render')
-            ->with('Email/scheduled-alert.phtml', $expectedViewParams)
+        $renderer = $this->container->createMock(TemplateRendererInterface::class);
+        $renderer->expects($this->once())->method('renderTemplateAsString')
+            ->with(null, 'Email/scheduled-alert.phtml', $expectedViewParams)
             ->willReturn($message);
         $mailer = $this->container->createMock(\VuFind\Mailer\Mailer::class);
         $mailer->expects($this->once())->method('send')
             ->with(
-                $this->equalTo('fake@myuniversity.edu'),
-                $this->equalTo('admin@myuniversity.edu'),
-                $this->equalTo('My Site: translated text'),
-                $this->equalTo($message)
+                'fake@myuniversity.edu',
+                'admin@myuniversity.edu',
+                'My Site: translated text',
+                $message
             );
-        $translator = $this->container->createMock(\Laminas\Mvc\I18n\Translator::class);
-        $translator->expects($this->once())->method('translate')
-            ->with($this->equalTo('Scheduled Alert Results'))
-            ->willReturn('translated text');
+        $translator = $this->getMockTranslator(
+            [
+                'default' => [
+                    'Scheduled Alert Results' => 'translated text',
+                ],
+            ]
+        );
         $command = $this->getCommand(
             [
                 'mailer' => $mailer,
@@ -323,8 +326,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $expected = "Processing 1 searches\n"
             . "  New results for search (1): $expectedDate >= 2000-01-01T00:00:00Z\n"
             . "Done processing searches\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -337,7 +340,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     protected function getMockSearchResultsSet(?\VuFind\RecordDriver\AbstractBase $record = null): array
     {
         return [
-            $record ?? $this->container->createMock(\VuFind\RecordDriver\SolrDefault::class),
+            $record ?? $this->createStub(\VuFind\RecordDriver\SolrDefault::class),
         ];
     }
 
@@ -421,9 +424,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             $paramsCallback($params);
         }
         $results = $this->container->createMock(\VuFind\Search\Solr\Results::class);
-        $results->expects($this->any())->method('getOptions')->willReturn($options);
-        $results->expects($this->any())->method('getUrlQuery')->willReturn($urlQuery);
-        $results->expects($this->any())->method('getParams')->willReturn($params);
+        $results->method('getOptions')->willReturn($options);
+        $results->method('getUrlQuery')->willReturn($urlQuery);
+        $results->method('getParams')->willReturn($params);
         if ($resultsCallback) {
             $resultsCallback($results);
         }
@@ -431,7 +434,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a minified search object
+     * Get a minified search object.
      *
      * @param ?callable $optionsCallback Callback to set expectations on options object
      * @param ?callable $paramsCallback  Callback to set expectations on params object
@@ -445,8 +448,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         ?callable $resultsCallback = null
     ): MockObject&\VuFind\Search\Minified {
         $search = $this->container->createMock(\VuFind\Search\Minified::class);
-        $search->expects($this->any())->method('deminify')
-            ->with($this->equalTo($this->getMockResultsManager()))
+        $search->method('deminify')
+            ->with($this->getMockResultsManager())
             ->willReturn(
                 $this->getMockSearchResults(
                     $optionsCallback,
@@ -485,30 +488,33 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     protected function getCommand(array $options = []): NotifyCommand
     {
         $renderer = $options['renderer']
-            ?? $this->container->createMock(\Laminas\View\Renderer\PhpRenderer::class);
-        $container = new \VuFindTest\Container\MockViewHelperContainer($this);
-        $container->set('url', $this->container->createMock(\Laminas\View\Helper\Url::class));
-        $renderer->setHelperPluginManager($container);
+            ?? $this->container->createMock(TemplateRendererInterface::class);
+        $secretCalculator = $this->container->createMock(\VuFind\Crypt\SecretCalculator::class);
+        $secretCalculator->method('getSearchUnsubscribeSecret')
+            ->willReturn('topsecret');
+        $routeHelper = $this->createMock(RouteHelper::class);
+        $routeHelper->method('getUrlFromRoute')
+            ->willReturnCallback(function (string $name, array $params, array $queryParams): string {
+                return "/$name" . ($queryParams ? '?' . http_build_query($queryParams) : '');
+            });
         $command = new NotifyCommand(
-            $this->container->createMock(\VuFind\Crypt\SecretCalculator::class),
+            $secretCalculator,
             $renderer,
             $this->getMockResultsManager(),
             $options['scheduleOptions'] ?? [1 => 'Daily', 7 => 'Weekly'],
-            new \VuFind\Config\Config(
-                $options['configArray'] ?? [
-                    'Site' => [
-                        'institution' => 'My Institution',
-                        'title' => 'My Site',
-                        'email' => 'admin@myuniversity.edu',
-                    ],
-                ]
-            ),
-            $options['mailer'] ?? $this->container->createMock(\VuFind\Mailer\Mailer::class),
-            $options['searchService'] ?? $this->container->createMock(SearchServiceInterface::class),
-            $options['localeSettings'] ?? $this->container->createMock(\VuFind\I18n\Locale\LocaleSettings::class)
+            $options['configArray'] ?? [
+                'Site' => [
+                    'title' => 'My Site',
+                    'email' => 'admin@myuniversity.edu',
+                ],
+            ],
+            $options['mailer'] ?? $this->createStub(\VuFind\Mailer\Mailer::class),
+            $options['searchService'] ?? $this->createStub(SearchServiceInterface::class),
+            $options['localeSettings'] ?? $this->createStub(\VuFind\I18n\Locale\LocaleSettings::class),
+            $routeHelper
         );
         $command->setTranslator(
-            $options['translator'] ?? $this->container->createMock(\Laminas\Mvc\I18n\Translator::class)
+            $options['translator'] ?? $this->createStub(\Laminas\Translator\TranslatorInterface::class)
         );
         $command->setPathResolver($this->getPathResolver());
         return $command;

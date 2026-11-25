@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS Pagination Helper
+ * ILS Pagination Helper.
  *
  * This class helps build paginators for ILS-provided data.
  *
@@ -32,10 +32,12 @@
 
 namespace VuFind\ILS;
 
+use Laminas\Paginator\Paginator;
+
 use function in_array;
 
 /**
- * ILS Pagination Helper
+ * ILS Pagination Helper.
  *
  * This class helps build paginators for ILS-provided data.
  *
@@ -52,19 +54,19 @@ class PaginationHelper
      * Support method for getPagingSetup() -- validate the active sort option,
      * returning either a valid sort method or false.
      *
-     * @param array  $functionConfig Function config returned from the ILS
-     * @param string $sort           The unvalidated user sort parameter
+     * @param array   $functionConfig Function config returned from the ILS
+     * @param ?string $sort           The unvalidated user sort parameter (or null for none)
      *
      * @return string|bool
      */
-    protected function validateSort($functionConfig, $sort)
+    protected function validateSort(array $functionConfig, ?string $sort): string|bool
     {
         // If sort is disabled, all settings are invalid...
         if (empty($functionConfig['sort'])) {
             return false;
         }
         // If provided setting is valid, use it...
-        if (isset($functionConfig['sort'][$sort])) {
+        if ($sort && isset($functionConfig['sort'][$sort])) {
             return $sort;
         }
         // At this point, we need to find a reasonable value, either the configured
@@ -83,7 +85,7 @@ class PaginationHelper
      *
      * @return array
      */
-    protected function getSortList($functionConfig, $sort)
+    protected function getSortList(array $functionConfig, string $sort): array
     {
         $sortList = [];
         if (!empty($functionConfig['sort'])) {
@@ -101,28 +103,27 @@ class PaginationHelper
     /**
      * Get paging settings and request data for paged ILS requests.
      *
-     * @param int    $page            Current page (1-based)
-     * @param string $sort            Current sort setting (null for none)
-     * @param int    $defaultPageSize Default page size
-     * @param array  $functionConfig  Function config returned from the ILS
+     * @param int     $page            Current page (1-based)
+     * @param ?string $sort            Current sort setting (null for none)
+     * @param int     $defaultPageSize Default page size
+     * @param array   $functionConfig  Function config returned from the ILS
      *
      * @return array
      */
     public function getOptions(
-        $page,
-        $sort,
-        $defaultPageSize,
-        $functionConfig
+        int $page,
+        ?string $sort,
+        int $defaultPageSize,
+        array $functionConfig
     ) {
         // Get page and page size:
         $limit = $defaultPageSize;
         $ilsPaging = true;
         if (isset($functionConfig['max_results'])) {
-            $limit = min([$functionConfig['max_results'], $limit]);
+            $limit = min((int)$functionConfig['max_results'], $limit);
         } elseif (isset($functionConfig['page_size'])) {
             if (!in_array($limit, $functionConfig['page_size'])) {
-                $limit = $functionConfig['default_page_size']
-                    ?? $functionConfig['page_size'][0];
+                $limit = (int)($functionConfig['default_page_size'] ?? $functionConfig['page_size'][0]);
             }
         } else {
             $ilsPaging = false;
@@ -141,28 +142,27 @@ class PaginationHelper
     }
 
     /**
-     * Build a paginator with the paging options and ILS results if necessary
+     * Build a paginator with the paging options and ILS results if necessary.
      *
-     * @param array $pageOptions Paging options and parameters (returned by the
-     * getOptions method)
+     * @param array $pageOptions Paging options and parameters (returned by the getOptions method)
      * @param int   $count       Result count
      * @param array $records     Result records
      *
-     * @return false|\Laminas\Paginator\Paginator
+     * @return ?Paginator
      */
-    public function getPaginator($pageOptions, $count, $records)
+    public function getPaginator(array $pageOptions, int $count, array $records): ?Paginator
     {
-        $limit = $pageOptions['limit'];
-        $page = $pageOptions['page'];
+        $limit = (int)$pageOptions['limit'];
+        $page = (int)$pageOptions['page'];
         if (($page - 1) * $limit >= $count && $page > 1) {
-            throw new \VuFind\Exception\BadRequest('Page number out of range.');
+            $page = 1;
         }
         if ($pageOptions['ilsPaging'] && $limit < $count) {
             $adapter = new \Laminas\Paginator\Adapter\NullFill($count);
         } elseif ($limit > 0 && $limit < $count) {
             $adapter = new \Laminas\Paginator\Adapter\ArrayAdapter($records);
         } else {
-            return false;
+            return null;
         }
         $paginator = new \Laminas\Paginator\Paginator($adapter);
         $paginator->setItemCountPerPage($limit);

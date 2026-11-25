@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for search table
+ * Entity model for search table.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function is_object;
 use function is_resource;
 
 /**
- * Entity model for search table
+ * Entity model for search table.
  *
  * @category VuFind
  * @package  Database
@@ -129,7 +129,7 @@ class Search implements SearchEntityInterface
     protected ?Minified $deserializedSearchObject = null;
 
     /**
-     * Checksum
+     * Checksum.
      *
      * @var ?int
      */
@@ -244,7 +244,7 @@ class Search implements SearchEntityInterface
      */
     public function getCreated(): DateTime
     {
-        // Return to a clone to avoid indirect modification of the entity:
+        // Return a clone to avoid indirect modification of the entity:
         return $this->getDateTimeClone($this->created);
     }
 
@@ -409,7 +409,7 @@ class Search implements SearchEntityInterface
      */
     public function getLastNotificationSent(): DateTime
     {
-        // Return to a clone to avoid indirect modification of the entity:
+        // Return a clone to avoid indirect modification of the entity:
         return $this->getDateTimeClone($this->lastNotificationSent);
     }
 

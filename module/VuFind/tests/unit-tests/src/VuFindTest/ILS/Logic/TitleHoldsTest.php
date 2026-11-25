@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Title holds logic test
+ * Title holds logic test.
  *
  * PHP version 8
  *
@@ -30,14 +30,13 @@
 namespace VuFindTest\ILS\Driver;
 
 use VuFind\Auth\ILSAuthenticator;
-use VuFind\Config\Config;
 use VuFind\Crypt\HMAC;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\TitleHolds;
 use VuFindTest\Feature\ReflectionTrait;
 
 /**
- * Title holds logic test
+ * Title holds logic test.
  *
  * @category VuFind
  * @package  Tests
@@ -66,24 +65,22 @@ class TitleHoldsTest extends \PHPUnit\Framework\TestCase
         array $config = []
     ): TitleHolds {
         return new TitleHolds(
-            $ilsAuth ?? $this->createMock(ILSAuthenticator::class),
-            $catalog ?? $this->createMock(Connection::class),
-            $hmac ?? $this->createMock(HMAC::class),
-            new Config($config)
+            $ilsAuth ?? $this->createStub(ILSAuthenticator::class),
+            $catalog ?? $this->createStub(Connection::class),
+            $hmac ?? $this->createStub(HMAC::class),
+            $config
         );
     }
 
     /**
      * Data provider for testGetSuppressedLocations().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function suppressedLocationsProvider(): array
+    public static function suppressedLocationsProvider(): \Iterator
     {
-        return [
-            'default' => [[], []],
-            'non-empty list' => [['Record' => ['hide_holdings' => ['a', 'b', 'c']]], ['a', 'b', 'c']],
-        ];
+        yield 'default' => [[], []];
+        yield 'non-empty list' => [['Record' => ['hide_holdings' => ['a', 'b', 'c']]], ['a', 'b', 'c']];
     }
 
     /**
@@ -115,7 +112,7 @@ class TitleHoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test a failed catalog login
+     * Test a failed catalog login.
      *
      * @return void
      */

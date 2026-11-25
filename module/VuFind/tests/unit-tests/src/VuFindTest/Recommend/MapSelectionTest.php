@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MapSelection recommendation module Test Class
+ * MapSelection recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Recommend\MapSelection;
 use VuFindSearch\Service;
 
 /**
- * MapSelection recommendation module Test Class
+ * MapSelection recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -50,8 +50,7 @@ class MapSelectionTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockSearchService(): Service
     {
-        return $this->getMockBuilder(Service::class)
-            ->disableOriginalConstructor()->getMock();
+        return $this->createMock(Service::class);
     }
 
     /**
@@ -81,7 +80,7 @@ class MapSelectionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getter for geofield
+     * Test getter for geofield.
      *
      * @return void
      */
@@ -91,7 +90,7 @@ class MapSelectionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getter for height
+     * Test getter for height.
      *
      * @return void
      */
@@ -114,7 +113,7 @@ class MapSelectionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getter for basemap
+     * Test getter for basemap.
      *
      * @return void
      */

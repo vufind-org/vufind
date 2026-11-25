@@ -29,8 +29,8 @@
 
 namespace VuFind\ChannelProvider;
 
-use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
+use VuFind\Http\RouteHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params;
@@ -38,7 +38,6 @@ use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 use function count;
-use function intval;
 
 /**
  * Facet-driven channel provider.
@@ -76,33 +75,18 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
     protected $maxValuesToSuggestPerField;
 
     /**
-     * Page of results to retrieve
-     *
-     * @var int
-     */
-    protected $page = 1;
-
-    /**
-     * Page size for retrieved results
-     *
-     * @var int
-     */
-    protected $limit;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param ResultsManager $resultsManager Results manager
-     * @param Url            $url            URL helper
+     * @param RouteHelper    $routeHelper    Route helper
      * @param array          $options        Settings (optional)
      */
     public function __construct(
         protected ResultsManager $resultsManager,
-        protected Url $url,
+        protected RouteHelper $routeHelper,
         array $options = []
     ) {
         $this->setOptions($options);
-        $this->limit = $this->batchSize;
     }
 
     /**
@@ -130,30 +114,32 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      */
     public function configureSearchParams(Params $params, HttpRequest $request): void
     {
+        $this->applyPaginationFromRequest($request);
         foreach ($this->fields as $field => $desc) {
             $params->addFacet($field, $desc);
         }
 
-        // Add pagination params
-        $this->page = intval($request->getQuery('page', 1));
-        $this->limit = intval($request->getQuery('limit', $this->batchSize));
         $params->setPage($this->page);
-        if ($this->limit) {
-            $params->setLimit(min($this->limit, $this->maxBatchSize));
-        }
+        $params->setLimit($this->limit ?? $this->batchSize);
     }
 
     /**
      * Return channel information derived from a record driver object.
      *
      * @param RecordDriver $driver       Record driver
-     * @param string       $channelToken Token identifying a single specific channel
-     * to load (if omitted, all channels will be loaded)
+     * @param ?string      $channelToken Token identifying a single specific channel
+     * to load (if omitted, all channels will be loaded) -- not used in this provider
+     * @param string       $context      Context of channel load ('default' for normal
+     * Channels page, 'tab' for record tab)
      *
      * @return array
      */
-    public function getFromRecord(RecordDriver $driver, $channelToken = null)
-    {
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function getFromRecord(
+        RecordDriver $driver,
+        ?string $channelToken = null,
+        string $context = 'default'
+    ): array {
         $results = $this->resultsManager->get($driver->getSourceIdentifier());
         if (null !== $channelToken) {
             return [$this->buildChannelFromToken($results, $channelToken)];
@@ -190,12 +176,12 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      * Return channel information derived from a search results object.
      *
      * @param Results $results      Search results
-     * @param string  $channelToken Token identifying a single specific channel
+     * @param ?string $channelToken Token identifying a single specific channel
      * to load (if omitted, all channels will be loaded)
      *
      * @return array
      */
-    public function getFromSearch(Results $results, $channelToken = null)
+    public function getFromSearch(Results $results, ?string $channelToken = null): array
     {
         if (null !== $channelToken) {
             return [$this->buildChannelFromToken($results, $channelToken)];
@@ -280,26 +266,23 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         // Determine the filter for the current channel, and add it:
         $params->addFilter($filter);
 
-        $query = $newResults->getUrlQuery()->getParams(false);
+        $query = $newResults->getUrlQuery()->getParamArray();
         $retVal['links'][] = [
             'label' => 'channel_search',
             'icon' => 'search',
-            'url' => $this->url->fromRoute($params->getOptions()->getSearchAction())
-                . $query,
+            'url' => $this->routeHelper->getUrlFromRoute($params->getOptions()->getSearchAction(), queryParams: $query),
         ];
+        $query['source'] = $params->getSearchClassId();
         $retVal['links'][] = [
             'label' => 'channel_expand',
             'icon' => 'ui-add',
-            'url' => $this->url->fromRoute('channels-search')
-                . $query . '&source=' . urlencode($params->getSearchClassId()),
+            'url' => $this->routeHelper->getUrlFromRoute('channels-search', queryParams: $query),
         ];
 
         // Add pagination
         $pagedParams = $newResults->getParams();
         $pagedParams->setPage($this->page);
-        if ($this->limit) {
-            $pagedParams->setLimit(min($this->limit, $this->maxBatchSize));
-        }
+        $pagedParams->setLimit($this->limit ?? $this->batchSize);
         $newResults->setParams($pagedParams);
 
         // Run the search and convert the results into a channel:

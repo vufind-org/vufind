@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class AuthToken
+ * Class AuthToken.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ declare(strict_types=1);
 namespace VuFind\Auth;
 
 /**
- * Class AuthToken
+ * Class AuthToken.
  *
  * @category VuFind
  * @package  VuFind\Auth
@@ -43,28 +43,28 @@ namespace VuFind\Auth;
 class AuthToken
 {
     /**
-     * Access token
+     * Access token.
      *
      * @var string
      */
     protected $token;
 
     /**
-     * Token type (usually 'Bearer')
+     * Token type (usually 'Bearer').
      *
      * @var string
      */
     protected $tokenType;
 
     /**
-     * Number of seconds in token expires
+     * Number of seconds in token expires.
      *
      * @var ?int
      */
     protected $expiresIn;
 
     /**
-     * Timestamp of token creation
+     * Timestamp of token creation.
      *
      * @var int
      */
@@ -89,7 +89,7 @@ class AuthToken
     }
 
     /**
-     * String to be used as Authorization header value
+     * String to be used as Authorization header value.
      *
      * @return string
      */
@@ -99,7 +99,7 @@ class AuthToken
     }
 
     /**
-     * To string casting method
+     * To string casting method.
      *
      * @return string
      */
@@ -119,7 +119,7 @@ class AuthToken
     }
 
     /**
-     * Return expires in value in seconds
+     * Return expires in value in seconds.
      *
      * @return ?int
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search2 Autocomplete Module
+ * Search2 Autocomplete Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Autocomplete;
 
 /**
- * Search2 Autocomplete Module
+ * Search2 Autocomplete Module.
  *
  * This class provides suggestions by using the secondary Solr index.
  *
@@ -44,7 +44,7 @@ namespace VuFind\Autocomplete;
 class Search2 extends Solr
 {
     /**
-     * Search object family to use
+     * Search object family to use.
      *
      * @var string
      */

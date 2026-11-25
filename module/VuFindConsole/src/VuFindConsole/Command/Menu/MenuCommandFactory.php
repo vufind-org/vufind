@@ -34,7 +34,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\YamlReader;
 
 /**
  * Factory for Menu/Menu command.
@@ -48,7 +47,7 @@ use VuFind\Config\YamlReader;
 class MenuCommandFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -66,7 +65,7 @@ class MenuCommandFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        $config = $container->get(YamlReader::class)->get('ConsoleMenu.yaml');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('ConsoleMenu');
         $commandManager = $container->get(\VuFindConsole\Command\PluginManager::class);
         return new $requestedName($config, $commandManager, ...($options ?? []));
     }

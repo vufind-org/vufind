@@ -46,7 +46,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\DemoDriverTestTrait;
 
     /**
-     * Data provider for test methods
+     * Data provider for test methods.
      *
      * @return array[]
      */
@@ -95,15 +95,15 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Supplemental data provider for testItemStatusFull().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function itemStatusAndHoldingsCustomTemplateProvider(): array
+    public static function itemStatusAndHoldingsCustomTemplateProvider(): \Iterator
     {
-        return ['custom template test' => [true, 'On Shelf', 'On Shelf', 'success', 'msg', true, true, true]];
+        yield 'custom template test' => [true, 'On Shelf', 'On Shelf', 'success', 'msg', true, true, true];
     }
 
     /**
-     * Test basic item status display in search results
+     * Test basic item status display in search results.
      *
      * @param mixed  $availability       Item availability status
      * @param string $status             Status display string
@@ -115,6 +115,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     #[\PHPUnit\Framework\Attributes\DataProvider('itemStatusAndHoldingsProvider')]
     public function testItemStatus(
         $availability,
@@ -163,11 +164,11 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
             if ('group' === $multipleLocations) {
                 if (AvailabilityStatusInterface::STATUS_AVAILABLE === $availability) {
                     // For this case we have available items in both locations:
-                    $this->assertEquals(
+                    $this->assertSame(
                         'Test Location',
                         $this->findCssAndGetText($page, '.result-body .callnumAndLocation .groupLocation .text-success')
                     );
-                    $this->assertEquals(
+                    $this->assertSame(
                         'Main Library',
                         $this->findCssAndGetText(
                             $page,
@@ -177,11 +178,11 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
                         )
                     );
                 } else {
-                    $this->assertEquals(
+                    $this->assertSame(
                         'Test Location',
                         $this->findCssAndGetText($page, '.result-body .callnumAndLocation .groupLocation .text-danger')
                     );
-                    $this->assertEquals(
+                    $this->assertSame(
                         'Main Library',
                         $this->findCssAndGetText(
                             $page,
@@ -204,12 +205,12 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
             } else {
                 $selector = '.result-body .callnumAndLocation .location';
             }
-            $this->assertEquals('Main Library', $this->findCssAndGetText($page, $selector));
+            $this->assertSame('Main Library', $this->findCssAndGetText($page, $selector));
         }
     }
 
     /**
-     * Test full item status display in search results
+     * Test full item status display in search results.
      *
      * @param mixed  $availability       Item availability status
      * @param string $status             Status display string
@@ -253,18 +254,18 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
 
         $page = $this->goToSearchResults();
 
-        $this->assertEquals(
+        $this->assertSame(
             $expected,
             $this->findCssAndGetText($page, ".result-body .fullAvailability .text-$expectedType")
         );
 
         if ($availability) {
             // Extra items, check both:
-            $this->assertEquals('Test Location', $this->findCssAndGetText($page, '.result-body .fullLocation'));
-            $this->assertEquals('Main Library', $this->findCssAndGetText($page, '.result-body .fullLocation', null, 1));
+            $this->assertSame('Test Location', $this->findCssAndGetText($page, '.result-body .fullLocation'));
+            $this->assertSame('Main Library', $this->findCssAndGetText($page, '.result-body .fullLocation', null, 1));
         } else {
             // No extra items to care for:
-            $this->assertEquals('Main Library', $this->findCssAndGetText($page, '.result-body .fullLocation'));
+            $this->assertSame('Main Library', $this->findCssAndGetText($page, '.result-body .fullLocation'));
         }
         // If testing with the custom template, be sure its custom script executed as expected:
         if ($customTemplate) {
@@ -274,7 +275,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test item status failure display in search results
+     * Test item status failure display in search results.
      *
      * @return void
      */
@@ -288,14 +289,14 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         $page = $this->goToSearchResults();
-        $this->assertEquals(
+        $this->assertSame(
             'Simulated failure',
             $this->findCssAndGetText($page, '.result-body .callnumAndLocation.text-danger')
         );
     }
 
     /**
-     * Test holdings tab
+     * Test holdings tab.
      *
      * @param mixed  $availability      Item availability status
      * @param string $status            Status display string
@@ -321,25 +322,23 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         $page = $this->goToRecord();
-        $this->assertEquals($expected, $this->findCssAndGetText($page, ".holdings-tab span.text-$expectedType"));
+        $this->assertSame($expected, $this->findCssAndGetText($page, ".holdings-tab span.text-$expectedType"));
     }
 
     /**
      * Data provider for testCallNoDisplay().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function callNoDisplayProvider(): array
+    public static function callNoDisplayProvider(): \Iterator
     {
-        return [
-            'first' => ['first', 'Test1 A1234'],
-            'all' => ['all', 'Test1 A1234, Test2 B1234'],
-            'msg' => ['msg', 'Multiple Call Numbers'],
-        ];
+        yield 'first' => ['first', 'Test1 A1234'];
+        yield 'all' => ['all', 'Test1 A1234, Test2 B1234'];
+        yield 'msg' => ['msg', 'Multiple Call Numbers'];
     }
 
     /**
-     * Test call number display
+     * Test call number display.
      *
      * @param string $mode           Call number mode to configure
      * @param string $expectedCallNo Expected call number output
@@ -371,7 +370,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         $page = $this->goToSearchResults();
-        $this->assertEquals($expectedCallNo, $this->findCssAndGetText($page, '.callnumAndLocation .callnumber'));
+        $this->assertSame($expectedCallNo, $this->findCssAndGetText($page, '.callnumAndLocation .callnumber'));
     }
 
     /**
@@ -489,7 +488,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get search results page
+     * Get search results page.
      *
      * @return DocumentElement
      */
@@ -508,7 +507,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get record page
+     * Get record page.
      *
      * @return DocumentElement
      */

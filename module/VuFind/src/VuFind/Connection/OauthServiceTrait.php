@@ -51,7 +51,7 @@ use function func_get_args;
 trait OauthServiceTrait
 {
     /**
-     * Current OAuth token
+     * Current OAuth token.
      *
      * @var stdClass
      */

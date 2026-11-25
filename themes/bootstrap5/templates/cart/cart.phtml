@@ -38,8 +38,20 @@
             )
           ?>
         <?php endif; ?>
-        <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
-        <?php if (count($exportOptions) > 0): ?>
+        <?php $citationConfig = $this->config()->getArray('config')['Citation'] ?? []; ?>
+        <?php if (($citationConfig['book_bag'] ?? false) && ($citationConfig['formats'] ?? true)): ?>
+          <?=
+            $this->bulkAction()->button(
+                'cite',
+                'cite',
+                'Cite this',
+                [
+                  'title' => $this->translate('bulk_cite_cart'),
+                ]
+            )
+          ?>
+        <?php endif; ?>
+        <?php if (count($this->export()->getActiveFormats('bulk')) > 0): ?>
           <?=
             $this->bulkAction()->button(
                 'export',
@@ -71,6 +83,7 @@
                     'buttonClass' => 'toolbar-btn',
                     'buttonIcon' => 'cart-remove',
                     'buttonLabel' => 'Delete',
+                    'buttonTitle' => $this->translate('delete_selected'),
                     'confirmId' => 'cart-confirm-delete',
                     'confirmTitle' => 'bookbag_confirm_delete',
                     'header' => 'bookbag_confirm_delete',
@@ -105,19 +118,19 @@
       </label>
     </div>
   <?php endif; ?>
-  <?=$this->render('cart/contents.phtml')?>
+  <?=$this->context($this)->renderInContext('cart/contents.phtml')?>
 </form>
 
 <?php
   $script = <<<'JS'
         function submitFormWithButton(link, name) {
           $('#dropdown_value').attr('name', name).val(1);
-          $(link).closest('form').submit();
+          $(link).closest('form').trigger('submit');
         }
-        $("#cart-confirm-delete").click(function($e) {
+        $("#cart-confirm-delete").on('click', function($e) {
             submitFormWithButton(this, 'delete');
         });
-        $("#cart-confirm-empty").click(function($e) {
+        $("#cart-confirm-empty").on('click', function($e) {
             submitFormWithButton(this, 'empty');
         });
       JS;

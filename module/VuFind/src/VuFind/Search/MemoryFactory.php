@@ -49,7 +49,7 @@ use VuFind\Db\Service\SearchServiceInterface;
 class MemoryFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -70,7 +70,7 @@ class MemoryFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
+        $sessionManager = $container->get(\Laminas\Session\ManagerInterface::class);
         $session = new Container(
             'Search',
             $sessionManager

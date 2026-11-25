@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for EDS query builder
+ * Unit tests for EDS query builder.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\EDS\QueryBuilder;
 
 /**
- * Unit tests for EDS query builder
+ * Unit tests for EDS query builder.
  *
  * @category VuFind
  * @package  Search

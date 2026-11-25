@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Zotero Export Exception
+ * Zotero Export Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Zotero Export Exception
+ * Zotero Export Exception.
  *
  * @category VuFind
  * @package  Exceptions

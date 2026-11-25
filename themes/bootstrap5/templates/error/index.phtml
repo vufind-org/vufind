@@ -6,8 +6,8 @@
 ?>
 <div class="alert alert-danger">
   <p><?=$this->transEsc('An error has occurred')?></p>
-  <p><?=$this->transEsc($this->message)?></p>
-  <?=$this->render('error/contact.phtml')?>
+  <?php if ($this->message): ?><p><?=$this->transEsc($this->message)?></p><?php endif; ?>
+  <?=$this->context($this)->renderInContext('error/contact.phtml')?>
 </div>
 
 <?php if ($this->showInstallLink): ?>

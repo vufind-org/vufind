@@ -1,7 +1,7 @@
 <?php
 
 /**
- * A minimal record class for wrapping an array of fields
+ * A minimal record class for wrapping an array of fields.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindSearch\Response;
 
 /**
- * A minimal record class for wrapping an array of fields
+ * A minimal record class for wrapping an array of fields.
  *
  * @category VuFind
  * @package  Sitemap
@@ -43,14 +43,14 @@ class SimpleRecord implements RecordInterface
     use \VuFindSearch\Response\RecordTrait;
 
     /**
-     * Field data
+     * Field data.
      *
      * @var array
      */
     protected $fields = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $fields Raw data
      */

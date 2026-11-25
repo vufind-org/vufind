@@ -31,7 +31,8 @@ declare(strict_types=1);
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\HttpStatus;
 
 /**
  * AJAX handler for registering an online payment with the ILS.
@@ -47,19 +48,19 @@ class OnlinePaymentRegister extends AbstractOnlinePaymentAction
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
-        $localIdentifier = $params->fromPost('localIdentifier') ?? $params->fromQuery('localIdentifier');
+        $localIdentifier = $this->getPostOrQueryParam($request, 'localIdentifier');
         if (!$localIdentifier) {
-            return $this->formatResponse('', self::STATUS_HTTP_BAD_REQUEST);
+            return $this->formatResponse('', HttpStatus::BAD_REQUEST);
         }
         $payment = $this->paymentService->getPaymentByLocalIdentifier($localIdentifier);
         if (!$payment) {
-            return $this->formatResponse('', self::STATUS_HTTP_BAD_REQUEST);
+            return $this->formatResponse('', HttpStatus::BAD_REQUEST);
         }
         if ($payment->isRegistered()) {
             // Already registered, return success:
@@ -67,14 +68,14 @@ class OnlinePaymentRegister extends AbstractOnlinePaymentAction
         }
         if (!$payment->isRegistrationNeeded()) {
             // Bad status, return error:
-            return $this->formatResponse('', self::STATUS_HTTP_ERROR);
+            return $this->formatResponse('', HttpStatus::ERROR);
         }
         if ($payment->isRegistrationInProgress()) {
             // Registration already in progress, return error:
-            return $this->formatResponse('', self::STATUS_HTTP_ERROR);
+            return $this->formatResponse('', HttpStatus::ERROR);
         }
 
         $result = $this->onlinePaymentManager->registerPaymentWithILS($payment);
-        return $this->formatResponse('', $result ? null : self::STATUS_HTTP_ERROR);
+        return $this->formatResponse('', $result ? null : HttpStatus::ERROR);
     }
 }

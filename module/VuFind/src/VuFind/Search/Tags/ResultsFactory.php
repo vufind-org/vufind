@@ -47,7 +47,7 @@ use VuFind\Tags\TagsService;
 class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

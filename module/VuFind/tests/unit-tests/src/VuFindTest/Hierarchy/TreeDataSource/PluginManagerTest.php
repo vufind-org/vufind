@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy Tree Data Source Plugin Manager Test Class
+ * Hierarchy Tree Data Source Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Hierarchy\TreeDataSource;
 use VuFind\Hierarchy\TreeDataSource\PluginManager;
 
 /**
- * Hierarchy Tree Data Source Plugin Manager Test Class
+ * Hierarchy Tree Data Source Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

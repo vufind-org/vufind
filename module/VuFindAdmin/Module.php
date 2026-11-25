@@ -41,7 +41,7 @@ namespace VuFindAdmin;
 class Module
 {
     /**
-     * Get module configuration
+     * Get module configuration.
      *
      * @return array
      */

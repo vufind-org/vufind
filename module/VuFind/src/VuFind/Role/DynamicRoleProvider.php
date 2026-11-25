@@ -52,7 +52,7 @@ class DynamicRoleProvider implements RoleProviderInterface
     protected $roles = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PermissionProvider\PluginManager $manager Permission provider manager
      * @param array                            $config  Configuration for determining
@@ -65,7 +65,7 @@ class DynamicRoleProvider implements RoleProviderInterface
     }
 
     /**
-     * Get the roles from the provider
+     * Get the roles from the provider.
      *
      * @param string[] $roleNames Role(s) to look up.
      *
@@ -173,7 +173,7 @@ class DynamicRoleProvider implements RoleProviderInterface
             $currentRoles = $providerObj->getPermissions($options);
             if ($roles === null) {
                 $roles = $currentRoles;
-            } elseif ($mode == 'ANY') {
+            } elseif ($mode === 'ANY') {
                 $roles = array_merge($roles, $currentRoles);
             } else {
                 $roles = array_intersect($roles, $currentRoles);

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract base for deferred-load Summon recommendations modules
+ * Abstract base for deferred-load Summon recommendations modules.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Recommend;
 use function is_object;
 
 /**
- * Abstract base for deferred-load Summon recommendations modules
+ * Abstract base for deferred-load Summon recommendations modules.
  *
  * @category VuFind
  * @package  Recommendations
@@ -44,7 +44,7 @@ use function is_object;
 abstract class AbstractSummonRecommendDeferred extends AbstractSearchObjectDeferred
 {
     /**
-     * Number of expected module parameters (from .ini config)
+     * Number of expected module parameters (from .ini config).
      *
      * @var int
      */
@@ -54,7 +54,7 @@ abstract class AbstractSummonRecommendDeferred extends AbstractSearchObjectDefer
      * Initialize the lookFor query parameter. Called from init().
      *
      * @param \VuFind\Search\Base\Params $params   Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request  Parameter object representing user
+     * @param array                      $request  Parameter array representing user
      * request.
      * @param array                      $settings Parameter array (passed by reference)
      *
@@ -64,7 +64,7 @@ abstract class AbstractSummonRecommendDeferred extends AbstractSearchObjectDefer
     {
         // Collect the best possible search term(s):
         $lookforParam = empty($settings[0]) ? 'lookfor' : $settings[0];
-        $this->lookfor = $request->get($lookforParam, '');
+        $this->lookfor = $request[$lookforParam] ?? '';
         if (empty($this->lookfor) && is_object($params)) {
             $this->lookfor = $params->getQuery()->getAllTerms();
         }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AlphaBrowseLink Recommendations Module
+ * AlphaBrowseLink Recommendations Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * AlphaBrowseLink Recommendations Module
+ * AlphaBrowseLink Recommendations Module.
  *
  * This class recommends a look at the alphabrowse index.
  *
@@ -44,14 +44,14 @@ namespace VuFind\Recommend;
 class AlphaBrowseLink implements RecommendInterface
 {
     /**
-     * Search query submitted
+     * Search query submitted.
      *
      * @var string
      */
     protected $query;
 
     /**
-     * Alphabrowse index to link to
+     * Alphabrowse index to link to.
      *
      * @var string
      */
@@ -78,12 +78,12 @@ class AlphaBrowseLink implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
     }
 
@@ -112,7 +112,7 @@ class AlphaBrowseLink implements RecommendInterface
     }
 
     /**
-     * Get the alphabrowse index to link to
+     * Get the alphabrowse index to link to.
      *
      * @return string
      */

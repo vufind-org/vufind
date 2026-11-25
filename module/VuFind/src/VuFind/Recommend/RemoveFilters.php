@@ -2,7 +2,7 @@
 
 /**
  * RemoveFilters Recommendations Module
- * Recommends to remove filters
+ * Recommends to remove filters.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use function count;
 
 /**
  * RemoveFilters Recommendations Module
- * Recommends to remove filters
+ * Recommends to remove filters.
  *
  * This class recommends to remove filters from a query to extend the result.
  *
@@ -47,7 +47,7 @@ use function count;
 class RemoveFilters implements RecommendInterface
 {
     /**
-     * Search handler to try
+     * Search handler to try.
      *
      * @var string
      */
@@ -79,12 +79,12 @@ class RemoveFilters implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
     }
 

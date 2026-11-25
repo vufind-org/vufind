@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class LibGuidesProfileFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -58,9 +58,8 @@ class LibGuidesProfileFactory implements \Laminas\ServiceManager\Factory\Factory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
@@ -71,7 +70,7 @@ class LibGuidesProfileFactory implements \Laminas\ServiceManager\Factory\Factory
         }
         return new $requestedName(
             $container->get(\VuFind\Connection\LibGuides::class),
-            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('LibGuidesAPI'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('LibGuidesAPI'),
             $container->get(\VuFind\Cache\Manager::class)
                 ->getCache('object'),
         );

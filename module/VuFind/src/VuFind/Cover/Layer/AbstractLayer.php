@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract cover layer
+ * Abstract cover layer.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Cover\Layer;
 use function strlen;
 
 /**
- * Abstract cover layer
+ * Abstract cover layer.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -67,7 +67,7 @@ abstract class AbstractLayer implements LayerInterface
     ];
 
     /**
-     * Check and allocates color
+     * Check and allocates color.
      *
      * @param resource $im    Image resource being updated
      * @param string   $color Legal color name from HTML4
@@ -82,7 +82,7 @@ abstract class AbstractLayer implements LayerInterface
             return imagecolorallocate($im, ...$this->colorMap[$key]);
         }
         // Case two: hex color
-        if (str_starts_with($color, '#') && strlen($color) == 7) {
+        if (str_starts_with($color, '#') && strlen($color) === 7) {
             $r = hexdec(substr($color, 1, 2));
             $g = hexdec(substr($color, 3, 2));
             $b = hexdec(substr($color, 5, 2));
@@ -93,7 +93,7 @@ abstract class AbstractLayer implements LayerInterface
     }
 
     /**
-     * Using HSB allows us to control the contrast while allowing randomness
+     * Using HSB allows us to control the contrast while allowing randomness.
      *
      * @param resource $im Active image resource
      * @param int      $h  Hue (0-255)
@@ -105,7 +105,7 @@ abstract class AbstractLayer implements LayerInterface
     protected function getHSBColor($im, $h, $s, $v)
     {
         $s /= 256.0;
-        if ($s == 0.0) {
+        if ($s === 0.0) {
             return imagecolorallocate($im, $v, $v, $v);
         }
         $h /= (256.0 / 6.0);

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mobile Test Class
+ * Mobile Test Class.
  *
  * PHP version 8
  *
@@ -29,10 +29,11 @@
 
 namespace VuFindTest;
 
+use Detection\MobileDetect;
 use VuFindTheme\Mobile;
 
 /**
- * Mobile Test Class
+ * Mobile Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,14 +46,12 @@ class ThemeMobileTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testDetection.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function detectionProvider(): array
+    public static function detectionProvider(): \Iterator
     {
-        return [
-            'mobile detected' => [true],
-            'mobile not detected' => [false],
-        ];
+        yield 'mobile detected' => [true];
+        yield 'mobile not detected' => [false];
     }
 
     /**
@@ -65,9 +64,9 @@ class ThemeMobileTest extends \PHPUnit\Framework\TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('detectionProvider')]
     public function testDetection(bool $active): void
     {
-        $detector = $this->createMock(\uagent_info::class);
-        $detector->expects($this->once())->method('DetectMobileLong')->willReturn($active);
+        $detector = $this->createMock(MobileDetect::class);
+        $detector->expects($this->once())->method('isMobile')->willReturn($active);
         $mobile = new Mobile($detector);
-        $this->assertEquals($active, $mobile->detect());
+        $this->assertSame($active, $mobile->detect());
     }
 }

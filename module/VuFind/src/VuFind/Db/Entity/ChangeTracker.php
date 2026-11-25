@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for change_tracker table
+ * Entity model for change_tracker table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for change_tracker table
+ * Entity model for change_tracker table.
  *
  * @category VuFind
  * @package  Database
@@ -68,7 +68,7 @@ class ChangeTracker implements ChangeTrackerEntityInterface
     protected string $id;
 
     /**
-     * First time added to index
+     * First time added to index.
      *
      * @var ?DateTime
      */
@@ -165,7 +165,7 @@ class ChangeTracker implements ChangeTrackerEntityInterface
      */
     public function getFirstIndexed(): ?DateTime
     {
-        // Return to a clone to avoid indirect modification of the entity:
+        // Return a clone to avoid indirect modification of the entity:
         return $this->getDateTimeClone($this->firstIndexed);
     }
 
@@ -189,7 +189,7 @@ class ChangeTracker implements ChangeTrackerEntityInterface
      */
     public function getLastIndexed(): ?DateTime
     {
-        // Return to a clone to avoid indirect modification of the entity:
+        // Return a clone to avoid indirect modification of the entity:
         return $this->getDateTimeClone($this->lastIndexed);
     }
 

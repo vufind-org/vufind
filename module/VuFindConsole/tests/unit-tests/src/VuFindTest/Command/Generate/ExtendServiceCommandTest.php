@@ -77,8 +77,8 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
         $tools->expects($this->once())->method('setOutputInterface');
         $tools->expects($this->once())->method('extendService')
             ->with(
-                $this->equalTo('Foo'),
-                $this->equalTo('Bar')
+                'Foo',
+                'Bar'
             );
         $command = new ExtendServiceCommand($tools);
         $commandTester = new CommandTester($command);
@@ -88,7 +88,7 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
                 'target_module' => 'Bar',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -112,12 +112,12 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
                 'target_module' => 'Bar',
             ]
         );
-        $this->assertEquals("Foo!\n", $commandTester->getDisplay());
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame("Foo!\n", $commandTester->getDisplay());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**
-     * Get a mock generator tools object
+     * Get a mock generator tools object.
      *
      * @param array $methods Methods to mock
      *

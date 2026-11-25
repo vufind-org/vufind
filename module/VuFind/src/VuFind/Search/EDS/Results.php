@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS API Results
+ * EDS API Results.
  *
  * PHP version 8
  *
@@ -31,10 +31,13 @@
 
 namespace VuFind\Search\EDS;
 
+use VuFind\Record\Loader;
 use VuFindSearch\Command\SearchCommand;
+use VuFindSearch\ParamBag;
+use VuFindSearch\Service as SearchService;
 
 /**
- * EDS API Results
+ * EDS API Results.
  *
  * @category VuFind
  * @package  EBSCO
@@ -47,16 +50,34 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected $backendId = 'EDS';
+    protected ?string $backendId = 'EDS';
 
     /**
-     * Facet list
+     * Facet list.
      *
      * @var array
      */
-    protected $responseFacets;
+    protected array $responseFacets;
+
+    /**
+     * Constructor.
+     *
+     * @param \VuFind\Search\Base\Params $params        Object representing user
+     * search parameters.
+     * @param SearchService              $searchService Search service
+     * @param Loader                     $recordLoader  Record loader
+     * @param array                      $config        Backend config
+     */
+    public function __construct(
+        Params $params,
+        SearchService $searchService,
+        Loader $recordLoader,
+        protected array $config
+    ) {
+        parent::__construct($params, $searchService, $recordLoader);
+    }
 
     /**
      * Store an empty response with an error message instead of performing a search.
@@ -77,23 +98,30 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $query  = $this->getParams()->getQuery();
-        $allTerms = $query->getAllTerms();
-        if ($allTerms === '') {
-            $this->storeErrorResponse('empty_search_disallowed');
-            return;
-        }
+        $allTerms = trim($query->getAllTerms());
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
-        $params = $this->getParams()->getBackendParameters();
+        $params = $this->getParams();
+        $backendParams = $params->getBackendParameters();
+        if ($allTerms === '') {
+            if (!($this->config['General']['limiter_only'] ?? false)) {
+                $this->storeErrorResponse('empty_search_disallowed');
+                return;
+            } elseif (!$this->paramsIncludeLimiter($backendParams)) {
+                $this->storeErrorResponse('empty_search_no_filters_disallowed');
+                return;
+            }
+            // Limiter-only is allowed, and there is a limiter, so continue.
+        }
         $command = new SearchCommand(
             $this->backendId,
             $query,
             $offset,
             $limit,
-            $params
+            $backendParams
         );
         $collection = $this->getSearchService()->invoke($command)
             ->getResult();
@@ -113,18 +141,40 @@ class Results extends \VuFind\Search\Base\Results
             // Construct record drivers for all the items in the response:
             $this->results = $collection->getRecords();
             $this->restrictedView = $collection->isRestrictedView();
+
+            // For a page parameter being out of the results list, we do not want
+            // to return any results from another page.
+            if ($this->getResultTotal() > 0 && $params->getPage() > $this->getLastAvailablePage()) {
+                $this->results = [];
+            }
         }
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Return true if the given $params include any filters that limit the number
+     * of results.  EDS "filters" can also include expanders.
      *
-     * @param array $filter Array of field => on-screen description listing
+     * @param ParamBag $params The params
+     *
+     * @return bool
+     */
+    public function paramsIncludeLimiter(ParamBag $params): bool
+    {
+        return (bool)array_filter(
+            $params->get('filters') ?? [],
+            fn ($filter) => !str_starts_with($filter, 'EXPAND')
+        );
+    }
+
+    /**
+     * Returns the stored list of facets for the last search.
+     *
+     * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    public function getFacetList($filter = null)
+    public function getFacetList(?array $filter = null): array
     {
         if (null === $this->responseFacets) {
             $this->performAndProcessSearch();
@@ -137,21 +187,21 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return array
      */
-    public function getScores()
+    public function getScores(): array
     {
         $scoreMap = [];
         foreach ($this->results as $record) {
-            $scoreMap[$record->getUniqueId()] = $record->getScore();
+            $scoreMap[$record->getUniqueID()] = $record->getScore();
         }
         return $scoreMap;
     }
 
     /**
-     * Getting the highest relevance of all the results
+     * Getting the highest relevance of all the results.
      *
      * @return ?float
      */
-    public function getMaxScore()
+    public function getMaxScore(): ?float
     {
         if (
             empty($this->results) ||

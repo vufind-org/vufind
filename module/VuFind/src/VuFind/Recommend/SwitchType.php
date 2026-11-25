@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SwitchType Recommendations Module
+ * SwitchType Recommendations Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Recommend;
 
 /**
- * SwitchType Recommendations Module
+ * SwitchType Recommendations Module.
  *
  * This class recommends switching to a different search type.
  *
@@ -45,14 +45,14 @@ namespace VuFind\Recommend;
 class SwitchType implements RecommendInterface
 {
     /**
-     * Search handler to try
+     * Search handler to try.
      *
      * @var string
      */
     protected $newHandler;
 
     /**
-     * On-screen description of handler
+     * On-screen description of handler.
      *
      * @var string
      */
@@ -66,7 +66,7 @@ class SwitchType implements RecommendInterface
     protected $active;
 
     /**
-     * Results object
+     * Results object.
      *
      * @var \VuFind\Search\Base\Results
      */
@@ -94,12 +94,12 @@ class SwitchType implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
     }
 

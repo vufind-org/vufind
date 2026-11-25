@@ -44,7 +44,7 @@ use Symfony\Component\VarDumper\Dumper\CliDumper;
 trait VarDumperTrait
 {
     /**
-     * Dump variable into string
+     * Dump variable into string.
      *
      * @param mixed $var Variable to export
      *

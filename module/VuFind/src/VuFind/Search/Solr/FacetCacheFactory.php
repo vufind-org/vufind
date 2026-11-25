@@ -51,7 +51,7 @@ class FacetCacheFactory extends \VuFind\Search\Base\FacetCacheFactory
      *
      * @return \VuFind\Search\Base\Results
      */
-    protected function getResults(ContainerInterface $container, $name)
+    protected function getResults(ContainerInterface $container, string $name): \VuFind\Search\Base\Results
     {
         $filters = $container->get(\VuFind\Search\SearchTabsHelper::class)
             ->getHiddenFilters($name);

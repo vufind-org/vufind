@@ -35,6 +35,7 @@ use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 
@@ -50,19 +51,20 @@ use function count;
 class SearchNormalizer
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ResultsManager         $resultsManager Search results manager
      * @param SearchServiceInterface $searchService  Search database service
      */
     public function __construct(
         protected ResultsManager $resultsManager,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected SearchServiceInterface $searchService
     ) {
     }
 
     /**
-     * Normalize a search
+     * Normalize a search.
      *
      * @param Results $results Search results object
      *
@@ -74,7 +76,7 @@ class SearchNormalizer
     }
 
     /**
-     * Normalize a minified search
+     * Normalize a minified search.
      *
      * @param Minified $minified Minified search results object
      *
@@ -120,7 +122,7 @@ class SearchNormalizer
     }
 
     /**
-     * Add a search into the search table (history)
+     * Add a search into the search table (history).
      *
      * @param \VuFind\Search\Base\Results $results   Search to save
      * @param string                      $sessionId Current session ID

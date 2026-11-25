@@ -41,14 +41,14 @@ namespace VuFindSearch\Backend\Solr\Record;
 class SerializableRecord implements SerializableRecordInterface
 {
     /**
-     * Record fields
+     * Record fields.
      *
      * @var array
      */
     protected $fields;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $fields Fields of record
      */

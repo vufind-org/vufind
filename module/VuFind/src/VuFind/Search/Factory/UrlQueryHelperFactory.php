@@ -48,7 +48,7 @@ class UrlQueryHelperFactory
      *
      * @var string
      */
-    protected $helperClass = UrlQueryHelper::class;
+    protected string $helperClass = UrlQueryHelper::class;
 
     /**
      * Extract default settings from the search parameters.
@@ -57,7 +57,7 @@ class UrlQueryHelperFactory
      *
      * @return array
      */
-    protected function getDefaults(Params $params)
+    protected function getDefaults(Params $params): array
     {
         $options = $params->getOptions();
         return [
@@ -77,7 +77,7 @@ class UrlQueryHelperFactory
      *
      * @return array
      */
-    protected function addDefaultsToConfig(Params $params, array $config)
+    protected function addDefaultsToConfig(Params $params, array $config): array
     {
         // Load defaults unless they have been overridden in existing config
         // array.
@@ -106,7 +106,7 @@ class UrlQueryHelperFactory
      *
      * @return array
      */
-    protected function getUrlParams(Params $params, array $config)
+    protected function getUrlParams(Params $params, array $config): array
     {
         $urlParams = [];
         $sort = $params->getSort();
@@ -121,7 +121,7 @@ class UrlQueryHelperFactory
         if (null !== $view && $view != $config['defaults']['view']) {
             $urlParams['view'] = $view;
         }
-        if ($params->getPage() != 1) {
+        if ($params->getPage() !== 1) {
             $urlParams['page'] = $params->getPage();
         }
         if ($filters = $params->getFiltersAsQueryParams()) {
@@ -135,7 +135,7 @@ class UrlQueryHelperFactory
             sort($shards);
             $defaultShards = $config['defaults']['selectedShards'];
             sort($defaultShards);
-            if (implode(':::', $shards) != implode(':::', $defaultShards)) {
+            if (implode(':::', $shards) !== implode(':::', $defaultShards)) {
                 $urlParams['shard'] = $shards;
             }
         }
@@ -146,14 +146,14 @@ class UrlQueryHelperFactory
     }
 
     /**
-     * Construct the UrlQueryHelper
+     * Construct the UrlQueryHelper.
      *
      * @param Params $params VuFind search parameters
      * @param array  $config Config options
      *
      * @return UrlQueryHelper
      */
-    public function fromParams(Params $params, array $config = [])
+    public function fromParams(Params $params, array $config = []): UrlQueryHelper
     {
         $finalConfig = $this->addDefaultsToConfig($params, $config);
         return new $this->helperClass(

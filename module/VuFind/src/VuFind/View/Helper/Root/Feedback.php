@@ -2,7 +2,7 @@
 
 /**
  * This is a helper that lets the layout know whether or not to include the feedback
- * tab
+ * tab.
  *
  * PHP version 8
  *
@@ -30,9 +30,11 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * This is a helper that lets the layout know whether or not to include the feedback
- * tab
+ * tab.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,23 +42,17 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Feedback extends \Laminas\View\Helper\AbstractHelper
+class Feedback
 {
     /**
-     * Is the tab enabled?
-     *
-     * @var bool
-     */
-    protected $tab;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param bool $enabled Is the tab enabled?
      */
-    public function __construct($enabled = true)
-    {
-        $this->tab = $enabled;
+    public function __construct(
+        #[Autowire(config: 'config', configType: 'array', path: 'Feedback/tab_enabled', default: false)]
+        protected bool $enabled = true
+    ) {
     }
 
     /**
@@ -66,6 +62,16 @@ class Feedback extends \Laminas\View\Helper\AbstractHelper
      */
     public function tabEnabled()
     {
-        return $this->tab;
+        return $this->enabled;
+    }
+
+    /**
+     * Make the helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

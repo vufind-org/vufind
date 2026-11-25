@@ -45,7 +45,7 @@ use function defined;
 class IpAddressUtils
 {
     /**
-     * Normalize an IP address or a beginning of it to an IPv6 address
+     * Normalize an IP address or a beginning of it to an IPv6 address.
      *
      * @param string $ip  IP Address
      * @param bool   $end Whether to make a partial address  an "end of range"
@@ -77,11 +77,12 @@ class IpAddressUtils
             // IPv6 address
 
             // Expand :: with '0:' as many times as necessary for a complete address
-            $count = substr_count($ip, ':');
+            $ipEndsWithDoubleColon = str_ends_with($ip, '::');
+            $count = substr_count($ip, ':') - ($ipEndsWithDoubleColon ? 1 : 0);
             if ($count < 8) {
                 $ip = str_replace(
                     '::',
-                    ':' . str_repeat('0:', 8 - $count),
+                    str_repeat(':0', 8 - $count) . ($ipEndsWithDoubleColon ? '' : ':'),
                     $ip
                 );
             }

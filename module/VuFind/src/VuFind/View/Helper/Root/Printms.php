@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Prints a human readable format from a number of milliseconds
+ * Prints a human readable format from a number of milliseconds.
  *
  * PHP version 8
  *
@@ -29,12 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 use function sprintf;
 
 /**
- * Prints a human readable format from a number of milliseconds
+ * Prints a human readable format from a number of milliseconds.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,10 +40,10 @@ use function sprintf;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Printms extends AbstractHelper
+class Printms
 {
     /**
-     * Prints a human readable format from a number of milliseconds
+     * Prints a human readable format from a number of milliseconds.
      *
      * @param float $ms Number of milliseconds
      *

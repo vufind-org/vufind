@@ -34,9 +34,10 @@ use Doctrine\ORM\EntityManager;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
-use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\PersistenceManager;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
 
 /**
  * Database service for user.
@@ -52,7 +53,7 @@ class UserService extends AbstractDbService implements
     UserSessionPersistenceInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param EntityManager       $entityManager        Doctrine ORM entity manager
      * @param EntityPluginManager $entityPluginManager  VuFind entity plugin manager
@@ -63,6 +64,7 @@ class UserService extends AbstractDbService implements
         EntityManager $entityManager,
         EntityPluginManager $entityPluginManager,
         PersistenceManager $persistenceManager,
+        #[Autowire(container: SessionContainerRegistry::class, service: 'Account')]
         protected SessionContainer $userSessionContainer
     ) {
         parent::__construct($entityManager, $entityPluginManager, $persistenceManager);
@@ -154,6 +156,7 @@ class UserService extends AbstractDbService implements
             $parameters = compact('fieldValue');
             $query = $this->entityManager->createQuery($dql);
             $query->setParameters($parameters);
+            $query->setMaxResults(1); // Not every field is guaranteed unique, so be sure to get just one!
             return $query->getOneOrNullResult();
         }
         throw new \InvalidArgumentException('Field name must be id, username, email or cat_id');
@@ -267,6 +270,9 @@ class UserService extends AbstractDbService implements
     {
         unset($this->userSessionContainer->userId);
         unset($this->userSessionContainer->userDetails);
+        unset($this->userSessionContainer->preAuthData);
+        unset($this->userSessionContainer->cardAuthData);
+        unset($this->userSessionContainer->emailVerificationData);
     }
 
     /**
@@ -298,6 +304,98 @@ class UserService extends AbstractDbService implements
     {
         return isset($this->userSessionContainer->userId)
             || isset($this->userSessionContainer->userDetails);
+    }
+
+    /**
+     * Store pre-authentication data in session.
+     *
+     * @param ?array $data Pre-authentication data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setPreAuthenticationData(?array $data): void
+    {
+        $this->userSessionContainer->preAuthData = $data;
+    }
+
+    /**
+     * Get pre-authentication data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getPreAuthenticationData(): ?array
+    {
+        return $this->userSessionContainer->preAuthData ?? null;
+    }
+
+    /**
+     * Store library card authentication data in session.
+     *
+     * @param ?array $data Library card authentication data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setLibraryCardAuthenticationData(?array $data): void
+    {
+        $this->userSessionContainer->libraryCardAuthData = $data;
+    }
+
+    /**
+     * Get library card authentication data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getLibraryCardAuthenticationData(): ?array
+    {
+        return $this->userSessionContainer->libraryCardAuthData ?? null;
+    }
+
+    /**
+     * Store account recovery data in session.
+     *
+     * @param ?array $data Account recovery data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setAccountRecoveryData(?array $data): void
+    {
+        $this->userSessionContainer->accountRecoveryData = $data;
+    }
+
+    /**
+     * Get account recovery data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getAccountRecoveryData(): ?array
+    {
+        return $this->userSessionContainer->accountRecoveryData ?? null;
+    }
+
+    /**
+     * Store email verification data in session.
+     *
+     * @param ?array $data Email verification data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setEmailVerificationData(?array $data): void
+    {
+        $this->userSessionContainer->emailVerificationData = $data;
+    }
+
+    /**
+     * Get email verification data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getEmailVerificationData(): ?array
+    {
+        return $this->userSessionContainer->emailVerificationData ?? null;
     }
 
     /**

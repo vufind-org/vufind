@@ -36,6 +36,8 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Http\RouteHelper;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Factory for ScheduledSearch/Notify command.
@@ -49,7 +51,7 @@ use VuFind\Db\Service\SearchServiceInterface;
 class NotifyCommandFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -70,22 +72,23 @@ class NotifyCommandFactory implements FactoryInterface
         $scheduleOptions = $container
             ->get(\VuFind\Search\History::class)
             ->getScheduleOptions();
-        $mainConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $mainConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
 
         // We need to initialize the theme so that the view renderer works:
-        $theme = new \VuFindTheme\Initializer($mainConfig->Site, $container);
+        $theme = new \VuFindTheme\Initializer($mainConfig['Site'], $container);
         $theme->init();
 
         // Now build the object:
         $command = new $requestedName(
             $container->get(\VuFind\Crypt\SecretCalculator::class),
-            $container->get('ViewRenderer'),
+            $container->get(TemplateRendererInterface::class),
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $scheduleOptions,
             $mainConfig,
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get(\VuFind\Db\Service\PluginManager::class)->get(SearchServiceInterface::class),
             $container->get(\VuFind\I18n\Locale\LocaleSettings::class),
+            $container->get(RouteHelper::class),
             ...($options ?? [])
         );
         $command->setPathResolver($container->get(PathResolver::class));

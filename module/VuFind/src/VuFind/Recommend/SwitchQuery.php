@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SwitchQuery Recommendations Module
+ * SwitchQuery Recommendations Module.
  *
  * PHP version 8
  *
@@ -30,6 +30,7 @@
 
 namespace VuFind\Recommend;
 
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Command\GetLuceneHelperCommand;
 use VuFindSearch\Service;
 
@@ -37,7 +38,7 @@ use function in_array;
 use function strlen;
 
 /**
- * SwitchQuery Recommendations Module
+ * SwitchQuery Recommendations Module.
  *
  * This class recommends adjusting your search query to yield better results.
  *
@@ -56,13 +57,6 @@ class SwitchQuery implements RecommendInterface
      * @var string
      */
     protected $backend;
-
-    /**
-     * Search service.
-     *
-     * @var Service
-     */
-    protected $searchService;
 
     /**
      * Improved query suggestions.
@@ -95,13 +89,13 @@ class SwitchQuery implements RecommendInterface
     protected $results;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Service $searchService Search backend plugin manager
      */
-    public function __construct(Service $searchService)
+    #[Autowire]
+    public function __construct(protected Service $searchService)
     {
-        $this->searchService = $searchService;
     }
 
     /**
@@ -137,12 +131,12 @@ class SwitchQuery implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
     }
 
@@ -294,7 +288,7 @@ class SwitchQuery implements RecommendInterface
     }
 
     /**
-     * Broaden search by truncating one character (e.g. call number)
+     * Broaden search by truncating one character (e.g. call number).
      *
      * @param string $query Query to transform
      *

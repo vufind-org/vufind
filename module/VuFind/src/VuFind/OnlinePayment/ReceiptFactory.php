@@ -36,6 +36,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Receipt factory.
@@ -49,7 +50,7 @@ use Psr\Container\ContainerInterface;
 class ReceiptFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -72,15 +73,14 @@ class ReceiptFactory implements FactoryInterface
         }
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
-            $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config'),
             $container->get(\VuFind\Date\Converter::class),
             $container->get(\VuFind\I18n\Locale\LocaleSettings::class),
             $container->get(\VuFind\Service\CurrencyFormatter::class),
-            $container->get('HttpRouter'),
             $container->get(\VuFind\Mailer\Mailer::class),
-            $container->get('ViewRenderer'),
+            $container->get(TemplateRendererInterface::class),
             $dbServiceManager->get(\VuFind\Db\Service\PaymentFeeServiceInterface::class),
-            $container->get(\VuFind\Cache\Manager::class)->getCache('object')->getOptions()->getCacheDir()
+            $container->get(\VuFind\Cache\Manager::class)->getNamedCacheDir('object')
         );
     }
 }

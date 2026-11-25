@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Bootstrap logic for PHPUnit
+ * Bootstrap logic for PHPUnit.
  *
  * PHP version 8
  *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database session handler
+ * Database session handler.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Exception\SessionExpired as SessionExpiredException;
 
 /**
- * Database session handler
+ * Database session handler.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -108,7 +108,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Get a session service object
+     * Get a session service object.
      *
      * @return SessionServiceInterface
      */

@@ -60,7 +60,7 @@ class DefaultRecord extends AbstractBase
     protected array $authorOrder = ['primary' => 1, 'corporate' => 2, 'secondary' => 3];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array      $config          Config
      * @param ?SchemaOrg $schemaOrgHelper schema.org helper
@@ -109,7 +109,7 @@ class DefaultRecord extends AbstractBase
             $final = [];
             foreach ($data as $type => $values) {
                 $final[] = [
-                    'label' => $labels[$type][count($values) == 1 ? 0 : 1],
+                    'label' => $labels[$type][count($values) === 1 ? 0 : 1],
                     'values' => [$type => $values],
                     'options' => [
                         'pos' => $options['pos'] + $this->authorOrder[$type],

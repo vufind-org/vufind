@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class for accessing ProQuestFSG search API
+ * Class for accessing ProQuestFSG search API.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function intval;
 use function strval;
 
 /**
- * ProQuestFSG SRU Search Interface
+ * ProQuestFSG SRU Search Interface.
  *
  * @category VuFind
  * @package  ProQuestFSG
@@ -47,7 +47,7 @@ use function strval;
 class Connector extends \VuFindSearch\Backend\SRU\Connector
 {
     /**
-     * The version to specify in the URL
+     * The version to specify in the URL.
      *
      * @var string
      */
@@ -61,7 +61,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
     protected $defaultPath = '/all_subscribed';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Http\Client $client An HTTP client object
      * @param array                $config ProQuestFSG config
@@ -119,7 +119,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         $path = $this->defaultPath;
         foreach (($options['filters'] ?? []) as $filter) {
             [$filterKey, $filterValue] = explode(':', $filter, 2);
-            if ('Databases' == $filterKey) {
+            if ('Databases' === $filterKey) {
                 if (!$this->validateDatabaseValue($filterValue)) {
                     // This may happen in the context of a blended search,
                     // when the database is valid for another backend.
@@ -184,7 +184,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         }
 
         // ProQuestFSG database product codes are all-lowercase (and underscore) strings
-        if ($value != strtolower($value)) {
+        if ($value !== strtolower($value)) {
             $this->debug("Invalid database code '$value'; should skip ProQuestFSG query.");
             return false;
         }

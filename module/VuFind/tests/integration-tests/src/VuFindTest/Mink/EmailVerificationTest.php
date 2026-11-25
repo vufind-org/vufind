@@ -74,6 +74,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
                         'testOnly' => true,
                         'message_log' => $this->getEmailLogPath(),
                         'message_log_format' => $this->getEmailLogFormat(),
+                        'default_from' => 'noreply@vufind.org',
                     ],
                 ],
             ]
@@ -89,23 +90,26 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .createAccountLink');
         $this->fillInAccountForm($page);
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->assertEquals(
+        $this->assertSame(
             'Email address verification instructions have been sent to the email address registered with this account.',
             $this->findCssAndGetText($page, '.alert-info')
         );
 
-        // Extract the link from the provided message:
-        $email = $this->getLoggedEmail();
-        preg_match(
-            '/You can verify your email address with this link: <(http.*)>/',
-            $email->getBody()->getBody(),
-            $matches
+        // Try wrong code first:
+        $this->findCssAndSetValue($page, '#verification_code', '123');
+        $this->clickCss($page, '.form-email-verification .btn-primary');
+        $this->assertSame(
+            'Invalid login -- please try again.',
+            $this->findCssAndGetText($page, '.modal .alert-danger')
         );
-        $verifyLink = $matches[1];
 
-        // Follow the verification link:
-        $session->visit($verifyLink);
-        $this->assertEquals(
+        // Enter the one-time code:
+        $code = $this->extractVerificationCodeFromEmail('username1@ignore.com');
+        $this->findCssAndSetValue($page, '#verification_code', $code);
+        $this->clickCss($page, '.form-email-verification .btn-primary');
+
+        // Check result:
+        $this->assertSame(
             'Your email address has been verified successfully.',
             $this->findCssAndGetText($page, '.alert-info')
         );
@@ -141,6 +145,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
                         'testOnly' => true,
                         'message_log' => $this->getEmailLogPath(),
                         'message_log_format' => $this->getEmailLogFormat(),
+                        'default_from' => 'noreply@vufind.org',
                     ],
                 ],
             ]
@@ -148,7 +153,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
 
         $this->resetEmailLog();
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $page = $session->getPage();
 
         // Log back in
@@ -159,47 +164,54 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
 
         // Request the email change:
         $this->clickCss($page, '.fa-envelope');
-        $this->assertEquals(
+        $this->assertSame(
             'Submitting this form will send an email to the new address; '
-            . 'you will have to click on a link in the email before the change will take effect.',
+            . 'you will have to enter a verification code from the email before the change will take effect.',
             $this->findCssAndGetText($page, '.alert-info')
         );
         $this->findCssAndSetValue($page, 'input[name="email"]', 'changed@example.com');
         $this->clickCss($page, '#newemail .btn-primary');
 
         // Confirm that the email hasn't changed yet (not yet verified):
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $this->assertStringContainsString(
             'username1@ignore.com',
             $this->findCssAndGetText($page, 'table.table-striped')
         );
 
-        // Confirm that messages went to both new and old email addresses, and extract the verify link:
-        $email = $this->getLoggedEmail(0);
-        $this->assertEquals('To: changed@example.com', $email->getHeaders()->get('to')->toString());
-        preg_match(
-            '/You can verify your email address with this link: <(http.*)>/',
-            $email->getBody()->getBody(),
-            $matches
-        );
-        $verifyLink = $matches[1];
+        // Go back to verification page:
+        $session->back();
+
+        // Confirm that messages went to both new and old email addresses, and extract the verification code:
+        $code = $this->extractVerificationCodeFromEmail('changed@example.com');
 
         $notifyEmail = $this->getLoggedEmail(1);
-        $this->assertEquals('To: username1@ignore.com', $notifyEmail->getHeaders()->get('to')->toString());
+        $this->assertSame('To: username1@ignore.com', $notifyEmail->getHeaders()->get('to')->toString());
         $this->assertStringContainsString(
             'A request was just made to change your email address at Library Catalog.',
-            $notifyEmail->getBody()->getBody()
+            (string)$notifyEmail->getBody()->getBody()
         );
 
-        // Follow the verification link:
-        $session->visit($verifyLink);
-        $this->assertEquals(
+        // Try wrong code first:
+        $this->findCssAndSetValue($page, '#verification_code', '123');
+        $this->clickCss($page, '.form-email-verification .btn-primary');
+        $this->assertSame(
+            'Invalid login -- please try again.',
+            $this->findCssAndGetText($page, '.alert-danger')
+        );
+
+        // Enter the one-time code:
+        $this->findCssAndSetValue($page, '#verification_code', $code);
+        $this->clickCss($page, '.form-email-verification .btn-primary');
+
+        // Check result:
+        $this->assertSame(
             'Your email address has been verified successfully.',
             $this->findCssAndGetText($page, '.alert-info')
         );
 
         // Confirm that the email has now changed:
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $this->assertStringContainsString(
             'changed@example.com',
             $this->findCssAndGetText($page, 'table.table-striped')

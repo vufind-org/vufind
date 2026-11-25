@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for instantiating SMS objects
+ * Factory for instantiating SMS objects.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for instantiating SMS objects
+ * Factory for instantiating SMS objects.
  *
  * @category VuFind
  * @package  SMS
@@ -46,16 +46,15 @@ use Psr\Container\ContainerInterface;
 class Factory implements FactoryInterface
 {
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $container Service manager
      * @param string             $name      Requested service name (unused)
      * @param array              $options   Extra options (unused)
      *
      * @return SMSInterface
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $name,
@@ -64,10 +63,10 @@ class Factory implements FactoryInterface
         // Load configurations:
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $mainConfig = $configManager->getConfigArray('config');
-        $smsConfig = $configManager->getConfigObject('sms');
+        $smsConfig = $configManager->getConfigArray('sms');
 
         // Determine SMS type:
-        $type = $smsConfig->General->smsType ?? 'Mailer';
+        $type = $smsConfig['General']['smsType'] ?? 'Mailer';
 
         // Initialize object based on requested type:
         switch (strtolower($type)) {
@@ -78,10 +77,11 @@ class Factory implements FactoryInterface
             case 'mailer':
                 $options = [
                     'mailer' => $container->get(\VuFind\Mailer\Mailer::class),
+                    'defaultFrom' => $smsConfig['General']['default_from']
+                        ?? $mainConfig['Mail']['default_from']
+                        ?? $mainConfig['Site']['email']
+                        ?? null,
                 ];
-                if (isset($mainConfig['Site']['email'])) {
-                    $options['defaultFrom'] = $mainConfig['Site']['email'];
-                }
                 return new Mailer($smsConfig, $options);
             default:
                 throw new \Exception('Unrecognized SMS type: ' . $type);

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender aspect of the Search Multi-class (Results)
+ * Blender aspect of the Search Multi-class (Results).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\Blender;
 
 /**
- * Blender aspect of the Search Multi-class (Results)
+ * Blender aspect of the Search Multi-class (Results).
  *
  * @category VuFind
  * @package  Search_Blender
@@ -43,9 +43,9 @@ class Results extends \VuFind\Search\Solr\Results
     /**
      * Search backend identifiers.
      *
-     * @var string
+     * @var ?string
      */
-    protected $backendId = 'Blender';
+    protected ?string $backendId = 'Blender';
 
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
@@ -53,7 +53,7 @@ class Results extends \VuFind\Search\Solr\Results
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         if (null !== $this->getCursorMark()) {
             throw new \Exception('Blender does not support cursorMark');

@@ -31,7 +31,6 @@ namespace VuFindTest\Auth;
 
 use Laminas\Http\Request;
 use VuFind\Auth\LDAP;
-use VuFind\Config\Config;
 
 /**
  * LDAP authentication test class.
@@ -56,12 +55,12 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
     public function getAuthObject(?array $config = null): LDAP
     {
         $obj = new LDAP($this->createMock(\VuFind\Auth\ILSAuthenticator::class));
-        $obj->setConfig(new Config($config ?? $this->getAuthConfig()));
+        $obj->setConfig($config ?? $this->getAuthConfig());
         return $obj;
     }
 
     /**
-     * Get a working configuration for the LDAP object
+     * Get a working configuration for the LDAP object.
      *
      * @return array
      */
@@ -78,15 +77,13 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testWithMissingConfiguration.
      *
-     * @return void
+     * @return \Iterator
      */
-    public static function configKeyProvider(): array
+    public static function configKeyProvider(): \Iterator
     {
-        return [
-            'missing uri' => ['uri'],
-            'missing basedn' => ['basedn'],
-            'missing username' => ['username'],
-        ];
+        yield 'missing uri' => ['uri'];
+        yield 'missing basedn' => ['basedn'];
+        yield 'missing username' => ['username'];
     }
 
     /**
@@ -104,20 +101,6 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
         $config = $this->getAuthConfig();
         unset($config['LDAP'][$key]);
         $this->getAuthObject($config)->getConfig();
-    }
-
-    /**
-     * Test legacy host/port configuration.
-     *
-     * @return void
-     */
-    public function testLegacyHostAndPortConfiguration(): void
-    {
-        $config = $this->getAuthConfig();
-        unset($config['LDAP']['uri']);
-        $config['LDAP']['host'] = 'localhost';
-        $config['LDAP']['port'] = '636';
-        $this->assertIsObject($this->getAuthObject($config)->getConfig());
     }
 
     /**

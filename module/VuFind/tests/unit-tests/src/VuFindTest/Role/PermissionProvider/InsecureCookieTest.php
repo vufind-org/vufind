@@ -1,7 +1,7 @@
 <?php
 
 /**
- * InsecureCookie PermissionProvider Test Class
+ * InsecureCookie PermissionProvider Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Cookie\CookieManager;
 use VuFind\Role\PermissionProvider\InsecureCookie;
 
 /**
- * InsecureCookie PermissionProvider Test Class
+ * InsecureCookie PermissionProvider Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -68,21 +68,19 @@ class InsecureCookieTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testGetPermissions()
+     * Data provider for testGetPermissions().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getPermissionsProvider(): array
+    public static function getPermissionsProvider(): \Iterator
     {
         $granted = ['guest', 'loggedin'];
         $notGranted = [];
-        return [
-            'single string with value' => ['foo', $granted],
-            'single string, unset' => ['baz', $notGranted],
-            'single string with value in array' => [['foo'], $granted],
-            'multiple strings with values' => [['foo', 'bar'], $granted],
-            'mixed set/unset cookies' => [['foo', 'baz'], $notGranted],
-            'multiple unset cookies' => [['xyzzy', 'baz'], $notGranted],
-        ];
+        yield 'single string with value' => ['foo', $granted];
+        yield 'single string, unset' => ['baz', $notGranted];
+        yield 'single string with value in array' => [['foo'], $granted];
+        yield 'multiple strings with values' => [['foo', 'bar'], $granted];
+        yield 'mixed set/unset cookies' => [['foo', 'baz'], $notGranted];
+        yield 'multiple unset cookies' => [['xyzzy', 'baz'], $notGranted];
     }
 }

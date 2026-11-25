@@ -41,21 +41,21 @@ namespace VuFindSearch\Query;
 class WorkKeysQuery extends AbstractQuery
 {
     /**
-     * Record ID
+     * Record ID.
      *
      * @var ?string
      */
     protected $id;
 
     /**
-     * Whether to include the record to compare with in the results
+     * Whether to include the record to compare with in the results.
      *
      * @var bool
      */
     protected $includeSelf;
 
     /**
-     * Work keys
+     * Work keys.
      *
      * @var array
      */
@@ -76,7 +76,7 @@ class WorkKeysQuery extends AbstractQuery
     }
 
     /**
-     * Return record id
+     * Return record id.
      *
      * @return ?string
      */
@@ -86,7 +86,7 @@ class WorkKeysQuery extends AbstractQuery
     }
 
     /**
-     * Set record id
+     * Set record id.
      *
      * @param ?string $id Record id
      *
@@ -98,7 +98,7 @@ class WorkKeysQuery extends AbstractQuery
     }
 
     /**
-     * Return "include self" setting
+     * Return "include self" setting.
      *
      * @return bool
      */
@@ -108,7 +108,7 @@ class WorkKeysQuery extends AbstractQuery
     }
 
     /**
-     * Set "include self" setting
+     * Set "include self" setting.
      *
      * @param bool $includeSelf New value
      *
@@ -120,7 +120,7 @@ class WorkKeysQuery extends AbstractQuery
     }
 
     /**
-     * Return work keys
+     * Return work keys.
      *
      * @return array
      */
@@ -130,7 +130,7 @@ class WorkKeysQuery extends AbstractQuery
     }
 
     /**
-     * Set work keys
+     * Set work keys.
      *
      * @param array $workKeys Work keys
      *

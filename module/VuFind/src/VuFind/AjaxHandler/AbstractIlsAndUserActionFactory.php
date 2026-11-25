@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class AbstractIlsAndUserActionFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -58,8 +58,6 @@ class AbstractIlsAndUserActionFactory implements \Laminas\ServiceManager\Factory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,

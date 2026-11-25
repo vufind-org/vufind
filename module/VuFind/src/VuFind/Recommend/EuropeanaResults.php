@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EuropeanaResults Recommendations Module
+ * EuropeanaResults Recommendations Module.
  *
  * PHP version 8
  *
@@ -33,11 +33,10 @@ namespace VuFind\Recommend;
 use Laminas\Feed\Reader\Reader as FeedReader;
 
 use function count;
-use function intval;
 use function is_object;
 
 /**
- * EuropeanaResults Recommendations Module
+ * EuropeanaResults Recommendations Module.
  *
  * This class provides recommendations by using the Europeana API.
  *
@@ -57,83 +56,75 @@ class EuropeanaResults implements
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Request parameter for searching
+     * Request parameter for searching.
      *
      * @var string
      */
     protected $requestParam;
 
     /**
-     * Result limit
+     * Result limit.
      *
      * @var int
      */
     protected $limit;
 
     /**
-     * Europeana base URL
+     * Europeana base URL.
      *
      * @var string
      */
     protected $baseUrl;
 
     /**
-     * Fully constructed API URL
+     * Fully constructed API URL.
      *
      * @var string
      */
     protected $targetUrl;
 
     /**
-     * Providers to exclude
+     * Providers to exclude.
      *
      * @var array
      */
     protected $excludeProviders;
 
     /**
-     * Site to search
+     * Site to search.
      *
      * @var string
      */
     protected $searchSite;
 
     /**
-     * Link for more results
+     * Link for more results.
      *
      * @var string
      */
     protected $sitePath;
 
     /**
-     * API key
-     *
-     * @var string
-     */
-    protected $key;
-
-    /**
-     * Search string
+     * Search string.
      *
      * @var string
      */
     protected $lookfor;
 
     /**
-     * Search results
+     * Search results.
      *
      * @var array
      */
     protected $results;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $key API key
      */
-    public function __construct($key)
+    public function __construct(protected string $key)
     {
-        $this->key = $key;
     }
 
     /**
@@ -152,7 +143,7 @@ class EuropeanaResults implements
         $this->requestParam = (isset($params[1]) && !empty($params[1]))
             ? $params[1] : 'searchTerms';
         $this->limit = isset($params[2]) && is_numeric($params[2])
-                        && $params[2] > 0 ? intval($params[2]) : 5;
+                        && $params[2] > 0 ? (int)($params[2]) : 5;
         $this->excludeProviders = (isset($params[3]) && !empty($params[3]))
             ? $params[3] : [];
         //make array
@@ -163,7 +154,7 @@ class EuropeanaResults implements
     }
 
     /**
-     * Build the url which will be send to retrieve the RSS results
+     * Build the url which will be send to retrieve the RSS results.
      *
      * @param string $targetUrl        Base URL
      * @param string $requestParam     Parameter name to add
@@ -197,15 +188,15 @@ class EuropeanaResults implements
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // Collect the best possible search term(s):
-        $this->lookfor = $request->get('lookfor', '');
+        $this->lookfor = $request['lookfor'] ?? '';
         if (empty($this->lookfor) && is_object($params)) {
             $this->lookfor = $params->getQuery()->getAllTerms();
         }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Account status level enum
+ * Account status level enum.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Account;
 
 /**
- * Account status level enum
+ * Account status level enum.
  *
  * @category VuFind
  * @package  Account

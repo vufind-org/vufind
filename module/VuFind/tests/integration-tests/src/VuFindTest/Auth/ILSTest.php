@@ -117,7 +117,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         $mockConfigReader = $this->getMockConfigManager();
         $auth = new \VuFind\Auth\ILS(
             new \VuFind\ILS\Connection(
-                new \VuFind\Config\Config(['driver' => 'Sample']),
+                ['driver' => 'Sample'],
                 $driverManager,
                 $mockConfigReader
             ),
@@ -196,7 +196,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         $response = [];
         $driver = $this->getMockDriver();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('testuser'), $this->equalTo('testpass'))
+            ->with('testuser', 'testpass')
             ->willReturn($response);
         $this->getAuth($driver)->authenticate($this->getLoginRequest());
     }
@@ -214,7 +214,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         ];
         $driver = $this->getMockDriver();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('testuser'), $this->equalTo('testpass'))
+            ->with('testuser', 'testpass')
             ->willReturn($response);
         $user = $this->getAuth($driver)->authenticate($this->getLoginRequest());
         $this->assertEquals('testuser', $user->getUsername());
@@ -237,13 +237,13 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         ];
         $driver = $this->getMockDriver();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('testuser'), $this->equalTo('testpass'))
+            ->with('testuser', 'testpass')
             ->willReturn($response);
         $auth = $this->getAuth($driver);
         // Configure the authenticator to look for a cat_id; since there is no
         // cat_id in the response above, this will throw an exception.
         $config = ['Authentication' => ['ILS_username_field' => 'cat_id']];
-        $auth->setConfig(new \VuFind\Config\Config($config));
+        $auth->setConfig($config);
         $auth->authenticate($this->getLoginRequest());
     }
 
@@ -352,7 +352,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         $patron = ['cat_username' => 'testuser', 'cat_id' => '1234'];
         $auth = $this->getAuth($driver, $patron);
         $config = ['Authentication' => ['ILS_username_field' => 'cat_id']];
-        $auth->setConfig(new \VuFind\Config\Config($config));
+        $auth->setConfig($config);
         $user = $auth->updatePassword($request);
         $this->assertEquals('1234', $user->getUsername());
         $this->assertEquals('newpass', $user->getRawCatPassword());
@@ -369,7 +369,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock ILS authenticator
+     * Get mock ILS authenticator.
      *
      * @param array $patron Logged in patron to simulate (null for none).
      *
@@ -381,7 +381,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['storedCatalogLogin'])
             ->getMock();
-        $mock->expects($this->any())->method('storedCatalogLogin')->willReturn($patron);
+        $mock->method('storedCatalogLogin')->willReturn($patron);
         $mock->setDbServiceManager($this->getLiveDbServiceManager());
         return $mock;
     }

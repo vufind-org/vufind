@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Channel Provider Router Initializer
+ * Channel Provider Router Initializer.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\Initializer\InitializerInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * Channel Provider Router Initializer
+ * Channel Provider Router Initializer.
  *
  * @category VuFind
  * @package  Channels

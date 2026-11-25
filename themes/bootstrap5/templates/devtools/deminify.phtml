@@ -15,29 +15,28 @@
     <input class="btn btn-primary" type="submit">
   </form>
 <?php else: ?>
-  <h3>Minified Object</h3>
-  <pre><?php print_r($min) ?></pre>
+  <h2>Minified Object</h2>
+  <pre><?=$this->escapeHtml(print_r($min, true))?></pre>
 <?php endif; ?>
 
 <?php if (isset($results)): ?>
-  <h3>Results Object</h3>
-  <p>Class: <?=$results::class?></p>
+  <h2>Results Object</h2>
+  <p>Class: <?=$this->escapeHtml($results::class)?></p>
 <?php endif; ?>
 
 <?php if (isset($query)): ?>
-  <h3>Query Object</h3>
-  <pre><?php print_r($query) ?></pre>
+  <h2>Query Object</h2>
+  <pre><?=$this->escapeHtml(print_r($query, true))?></pre>
 <?php endif; ?>
 
 <?php if (isset($backendParams) || isset($queryParams)): ?>
-  <h3>Backend Parameters</h3>
+  <h2>Backend Parameters</h2>
   <?php if (isset($queryParams)): ?>
-    <h4>Query Parameters</h4>
-    <pre><?php print_r($queryParams) ?></pre>
+    <h3>Query Parameters</h3>
+    <pre><?=$this->escapeHtml(print_r($queryParams, true))?></pre>
   <?php endif; ?>
   <?php if (isset($backendParams)): ?>
-    <h4>Non-query Parameters</h4>
-    <pre><?php print_r($backendParams) ?></pre>
+    <h3>Non-query Parameters</h3>
+    <pre><?=$this->escapeHtml(print_r($backendParams, true))?></pre>
   <?php endif; ?>
 <?php endif; ?>
-

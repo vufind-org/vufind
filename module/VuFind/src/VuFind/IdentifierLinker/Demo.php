@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Demo (fake data) identifier linker
+ * Demo (fake data) identifier linker.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\IdentifierLinker;
 use function count;
 
 /**
- * Demo (fake data) identifier linker
+ * Demo (fake data) identifier linker.
  *
  * @category VuFind
  * @package  IdentifierLinker
@@ -43,7 +43,7 @@ use function count;
 class Demo implements IdentifierLinkerInterface
 {
     /**
-     * Possible icon values
+     * Possible icon values.
      *
      * @var array
      */

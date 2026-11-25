@@ -41,19 +41,17 @@ namespace VuFindTest\Mink;
 class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Data provider for testTitleSearchNormalization
+     * Data provider for testTitleSearchNormalization.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function titleSearchNormalizationProvider(): array
+    public static function titleSearchNormalizationProvider(): \Iterator
     {
-        return [
-            'bracket stripping' => ['[arithmetic facts]', 'Arithmetic Facts'],
-            'multi-bracket stripping' => ['[[[[[arithmetic facts]]]]]', 'Arithmetic Facts'],
-            'accent stripping' => ['arithmétic facts', 'Arithmetic Facts'],
-            'punctuation collapsing' => ['arithmetic facts /:/:', 'Arithmetic Facts'],
-            'whitespace collapsing' => ['arithmetic      facts', 'Arithmetic Facts'],
-        ];
+        yield 'bracket stripping' => ['[arithmetic facts]', 'Arithmetic Facts'];
+        yield 'multi-bracket stripping' => ['[[[[[arithmetic facts]]]]]', 'Arithmetic Facts'];
+        yield 'accent stripping' => ['arithmétic facts', 'Arithmetic Facts'];
+        yield 'punctuation collapsing' => ['arithmetic facts /:/:', 'Arithmetic Facts'];
+        yield 'whitespace collapsing' => ['arithmetic      facts', 'Arithmetic Facts'];
     }
 
     /**
@@ -81,7 +79,7 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that we can jump to a record with an ID containing slashes
+     * Test that we can jump to a record with an ID containing slashes.
      *
      * @return void
      */
@@ -97,6 +95,28 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'td.author a');
         $this->waitForPageLoad($page);
         $this->assertStringContainsString('Record/dollar$ign%2Fslashcombo', $session->getCurrentUrl());
+    }
+
+    /**
+     * This test relies on the records in browse-test.xml -- it is designed to catch regressions of a past bug where
+     * browsing to a title could link to an incorrect record if the chosen title was a sub-part of an alphabetically-
+     * earlier title.
+     *
+     * @return void
+     */
+    public function testJumpToCorrectRecordDespitePartialMatch(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home');
+        $page = $session->getPage();
+        $title = 'Record that the browse test should lead to.';
+        $this->findCssAndSetValue($page, '#alphaBrowseForm_source', 'title');
+        $this->findCssAndSetValue($page, '#alphaBrowseForm_from', $title);
+        $this->clickCss($page, '#alphaBrowseForm .btn-primary');
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, 'td.title a');
+        $this->waitForPageLoad($page);
+        $this->assertSame($title, $this->findCssAndGetText($page, 'h1'));
     }
 
     /**

@@ -1,0 +1,42 @@
+<?php
+  /**
+   * Radio form element inside a fieldset for accessibility standards.
+   *
+   * @property string  $groupName    Name of the radio group
+   * @property ?string $displayName  Name to be displayed (default = $groupName)
+   * @property array   $values       Array of values (use associative array for setting display names)
+   * @property ?string $checkedValue Checked value (default is first value)
+   */
+  $escGroupNameAttr = $this->escapeHtmlAttr($this->groupName);
+  $values = $this->values;
+  if (array_is_list($values)) {
+    $values = array_combine($values, $values);
+  }
+  $checkedValue = $this->checkedValue;
+  if (!in_array($checkedValue, array_keys($values))) {
+    $checkedValue = array_key_first($values);
+  }
+?>
+<fieldset name="<?=$escGroupNameAttr?>_fieldset">
+  <legend><?=$this->transEsc($this->displayName ?? $this->groupName)?></legend>
+  <div class="form-group">
+    <?php foreach ($values as $value => $valueDisplayName): ?>
+      <?php
+      $escValueAttr = $this->escapeHtmlAttr($value);
+      ?>
+      <div class="form-check">
+        <input
+            type="radio"
+            name="<?=$escGroupNameAttr?>_fieldset[<?=$escGroupNameAttr?>]"
+            id="<?=$escGroupNameAttr?>_fieldset[<?=$escValueAttr?>]"
+            class="form-check-input"
+            value="<?=$escValueAttr?>"
+            <?=($checkedValue === $value) ? 'checked' : ''?>
+        >
+        <label for="<?=$escGroupNameAttr?>_fieldset[<?=$escValueAttr?>]">
+          <?=$this->transEsc($valueDisplayName, default: $value)?>
+        </label>
+      </div>
+    <?php endforeach; ?>
+  </div>
+</fieldset>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Metadata vocabulary plugin manager
+ * Metadata vocabulary plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\MetadataVocabulary;
 
 /**
- * Metadata vocabulary plugin manager
+ * Metadata vocabulary plugin manager.
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -41,7 +41,7 @@ namespace VuFind\MetadataVocabulary;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *
@@ -54,8 +54,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->addAbstractFactory(PluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
+        $this->addAbstractFactory(PluginFactory::class);
     }
 
     /**

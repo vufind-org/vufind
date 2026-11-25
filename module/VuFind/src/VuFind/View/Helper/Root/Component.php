@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Component view helper
+ * Component view helper.
  *
  * PHP version 8
  *
@@ -30,10 +30,12 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\GlobalsContainer;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
- * Component view helper
+ * Component view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,7 +44,7 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Component extends AbstractHelper
+class Component
 {
     /**
      * Local cache of CSS class names for components (component name => class name).
@@ -52,7 +54,20 @@ class Component extends AbstractHelper
     protected array $cssClassCache = [];
 
     /**
-     * Expand path and render template
+     * Constructor.
+     *
+     * @param TemplateRendererInterface $templateRenderer Template renderer
+     * @param GlobalsContainer          $globalsContainer Global data container
+     */
+    #[Autowire]
+    public function __construct(
+        protected TemplateRendererInterface $templateRenderer,
+        protected GlobalsContainer $globalsContainer,
+    ) {
+    }
+
+    /**
+     * Expand path and render template.
      *
      * @param string $name   Component name that matches a template
      * @param array  $params Data for the component template
@@ -81,8 +96,8 @@ class Component extends AbstractHelper
         $params['_componentClass'] = $this->cssClassCache[$name];
 
         // Pass information from view to the component
-        $params['inLightbox'] ??= $this->view->inLightbox ?? false;
+        $params['inLightbox'] ??= $this->globalsContainer['inLightbox'] ?? false;
 
-        return $this->view->render("_ui/$path/" . $name, $params);
+        return $this->templateRenderer->renderTemplateAsString(template: "_ui/$path/" . $name, params: $params);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Helper to get path to a template from another theme (for including)
+ * Helper to get path to a template from another theme (for including).
  *
  * PHP version 8
  *
@@ -30,9 +30,10 @@
 namespace VuFindTheme\View\Helper;
 
 use Laminas\View\Resolver\TemplatePathStack;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Helper to get path to a template from another theme (for including)
+ * Helper to get path to a template from another theme (for including).
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,37 +41,30 @@ use Laminas\View\Resolver\TemplatePathStack;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TemplatePath extends \Laminas\View\Helper\AbstractHelper
+class TemplatePath
 {
     /**
-     * Absolute path up to the theme name
+     * Absolute path up to the theme name.
      *
      * @var string
      */
     protected $pathPre;
 
     /**
-     * Absolute path after the theme name
+     * Absolute path after the theme name.
      *
      * @var string
      */
     protected $pathPost;
 
     /**
-     * Template path stack
+     * Constructor.
      *
-     * @var TemplatePathStack
+     * @param TemplatePathStack $templatePathStack Inheritance stack of template paths
      */
-    protected $templatePathStack;
-
-    /**
-     * Constructor
-     *
-     * @param TemplatePathStack $templateStack Inheritance stack of template paths
-     */
-    public function __construct($templateStack)
+    #[Autowire]
+    public function __construct(protected TemplatePathStack $templatePathStack)
     {
-        $this->templatePathStack = $templateStack;
         // get current theme path
         $paths = $this->templatePathStack->getPaths();
         // split for easy replacement later
@@ -80,7 +74,7 @@ class TemplatePath extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Returns an template path according the configured theme
+     * Returns an template path according the configured theme.
      *
      * @param string $template    template name like 'footer.phtml'
      * @param string $targetTheme template to pull the template from

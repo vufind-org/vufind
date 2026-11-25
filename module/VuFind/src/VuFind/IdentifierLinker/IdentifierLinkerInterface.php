@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Identifier linker interface
+ * Identifier linker interface.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\IdentifierLinker;
 
 /**
- * Identifier linker interface
+ * Identifier linker interface.
  *
  * @category VuFind
  * @package  IdentifierLinker

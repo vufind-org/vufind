@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait to import secret from file rather than a hardcoded config
+ * Trait to import secret from file rather than a hardcoded config.
  *
  * PHP version 8
  *
@@ -29,10 +29,8 @@
 
 namespace VuFind\Config\Feature;
 
-use VuFind\Config\Config;
-
 /**
- * Trait to import secret from file rather than a hardcoded config
+ * Trait to import secret from file rather than a hardcoded config.
  *
  * @category VuFind
  * @package  Config
@@ -47,18 +45,15 @@ trait SecretTrait
      * Will look for a _file-suffixed version of the key first,
      * and load the data from a separate file if configured to do so.
      *
-     * @param Config|array|null $config The config to read from
-     * @param string            $key    The key to retrieve
+     * @param array|null $config The config to read from
+     * @param string     $key    The key to retrieve
      *
      * @return string|null
      */
-    protected function getSecretFromConfig(Config|array|null $config, string $key): ?string
+    protected function getSecretFromConfig(array|null $config, string $key): ?string
     {
         if ($config === null) {
             return null;
-        }
-        if ($config instanceof Config) {
-            $config = $config->toArray();
         }
         if ($secretFile = $config[$key . '_file'] ?? null) {
             if (is_readable($secretFile)) {

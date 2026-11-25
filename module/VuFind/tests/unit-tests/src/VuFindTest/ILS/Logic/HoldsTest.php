@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Holds logic test
+ * Holds logic test.
  *
  * PHP version 8
  *
@@ -30,14 +30,13 @@
 namespace VuFindTest\ILS\Driver;
 
 use VuFind\Auth\ILSAuthenticator;
-use VuFind\Config\Config;
 use VuFind\Crypt\HMAC;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\Holds;
 
 /**
- * Holds logic test
+ * Holds logic test.
  *
  * @category VuFind
  * @package  Tests
@@ -67,24 +66,22 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         array $config = []
     ): Holds {
         return new Holds(
-            $ilsAuth ?? $this->createMock(ILSAuthenticator::class),
-            $catalog ?? $this->createMock(Connection::class),
-            $hmac ?? $this->createMock(HMAC::class),
-            new Config($config)
+            $ilsAuth ?? $this->createStub(ILSAuthenticator::class),
+            $catalog ?? $this->createStub(Connection::class),
+            $hmac ?? $this->createStub(HMAC::class),
+            $config
         );
     }
 
     /**
      * Data provider for testGetSuppressedLocations().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function suppressedLocationsProvider(): array
+    public static function suppressedLocationsProvider(): \Iterator
     {
-        return [
-            'default' => [[], []],
-            'non-empty list' => [['Record' => ['hide_holdings' => ['a', 'b', 'c']]], ['a', 'b', 'c']],
-        ];
+        yield 'default' => [[], []];
+        yield 'non-empty list' => [['Record' => ['hide_holdings' => ['a', 'b', 'c']]], ['a', 'b', 'c']];
     }
 
     /**
@@ -103,7 +100,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test formatHoldings method
+     * Test formatHoldings method.
      *
      * @return void
      */
@@ -143,7 +140,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create an availability status for testing
+     * Create an availability status for testing.
      *
      * @param bool   $available   Whether the item is available
      * @param string $description Status description
@@ -161,7 +158,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generateHoldings method with different hold types
+     * Test generateHoldings method with different hold types.
      *
      * @return void
      */
@@ -210,7 +207,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getRequestDetails method
+     * Test getRequestDetails method.
      *
      * @return void
      */
@@ -235,7 +232,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('Hold', $result['action']);
         $this->assertEquals('test123', $result['record']);
         $this->assertEquals('Solr', $result['source']);
-        $this->assertStringContainsString('hashKey=test-hash-key', $result['query']);
+        $this->assertStringContainsString('hashKey=test-hash-key', (string)$result['query']);
         $this->assertEquals('#tabnav', $result['anchor']);
 
         // Test with link overrides
@@ -247,7 +244,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHoldingsGroupKey method
+     * Test getHoldingsGroupKey method.
      *
      * @return void
      */
@@ -281,7 +278,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHoldings with ILS exception
+     * Test getHoldings with ILS exception.
      *
      * @return void
      */
@@ -308,7 +305,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHoldings with other mode
+     * Test getHoldings with other mode.
      *
      * @return void
      */

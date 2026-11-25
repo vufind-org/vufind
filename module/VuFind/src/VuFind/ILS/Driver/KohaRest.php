@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Driver for Koha, using REST API
+ * VuFind Driver for Koha, using REST API.
  *
  * PHP version 8
  *
@@ -32,6 +32,7 @@
 
 namespace VuFind\ILS\Driver;
 
+use Composer\Semver\Comparator;
 use VuFind\Date\DateException;
 use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
@@ -48,7 +49,7 @@ use function is_callable;
 use function is_string;
 
 /**
- * VuFind Driver for Koha, using REST API
+ * VuFind Driver for Koha, using REST API.
  *
  * Minimum Koha Version: 20.05 + koha-plugin-rest-di REST API plugin from
  * https://github.com/natlibfi/koha-plugin-rest-di
@@ -78,14 +79,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Library prefix
+     * Library prefix.
      *
      * @var string
      */
     protected $source = '';
 
     /**
-     * Date converter object
+     * Date converter object.
      *
      * @var \VuFind\Date\Converter
      */
@@ -99,28 +100,28 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $sessionFactory;
 
     /**
-     * Currency formatter
+     * Currency formatter.
      *
      * @var CurrencyFormatter
      */
     protected $currencyFormatter;
 
     /**
-     * Session cache
+     * Session cache.
      *
      * @var \Laminas\Session\Container
      */
     protected $sessionCache;
 
     /**
-     * Validate passwords
+     * Validate passwords.
      *
      * @var bool
      */
     protected $dontValidatePasswords = false;
 
     /**
-     * Default pickup location
+     * Default pickup location.
      *
      * @var string
      */
@@ -146,7 +147,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     ];
 
     /**
-     * Mappings from fee (account line) types
+     * Mappings from fee (account line) types.
      *
      * @var array
      */
@@ -166,14 +167,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     ];
 
     /**
-     * Mappings from fee types to tax percents (1/100ths of a percent)
+     * Mappings from fee types to tax percents (1/100ths of a percent).
      *
      * @var array
      */
     protected $feeTypeToTaxRateMappings = [];
 
     /**
-     * Mappings from renewal block reasons
+     * Mappings from renewal block reasons.
      *
      * @var array
      */
@@ -193,7 +194,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     ];
 
     /**
-     * Permanent renewal blocks
+     * Permanent renewal blocks.
      *
      * @var array
      */
@@ -204,7 +205,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     ];
 
     /**
-     * Patron status mappings
+     * Patron status mappings.
      *
      * @var array
      */
@@ -218,7 +219,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     ];
 
     /**
-     * Item status mappings
+     * Item status mappings.
      *
      * @var array
      */
@@ -244,7 +245,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     ];
 
     /**
-     * Whether to display home library instead of holding library
+     * Whether to display home library instead of holding library.
      *
      * @var bool
      */
@@ -276,7 +277,16 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $includeSuspendedHoldsInQueueLength = false;
 
     /**
-     * Constructor
+     * Koha version.
+     *
+     * 20.05 is the oldest we support and is used as default.
+     *
+     * @var string
+     */
+    protected string $kohaVersion = '20.05';
+
+    /**
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter     Date converter object
      * @param callable               $sessionFactory    Factory function returning
@@ -364,6 +374,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $this->includeSuspendedHoldsInQueueLength
             = $this->config['Holdings']['includeSuspendedHoldsInQueueLength'] ?? false;
 
+        if ($kohaVersion = $this->config['Catalog']['kohaVersion'] ?? null) {
+            $this->kohaVersion = $kohaVersion;
+        }
+
         // Init session cache for session-specific data
         $namespace = md5($this->config['Catalog']['host']);
         $factory = $this->sessionFactory;
@@ -384,7 +398,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -401,7 +415,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -421,7 +435,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -434,16 +448,15 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getItemStatusesForBiblio($id, $patron, $options);
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -451,40 +464,15 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param string $id The record id to retrieve the info for
      *
      * @return mixed     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         return [];
     }
 
     /**
-     * Get New Items
-     *
-     * Retrieve the IDs of items recently added to the catalog.
-     *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @return array       Associative array with 'count' and 'results' keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        return ['count' => 0, 'results' => []];
-    }
-
-    /**
-     * Get Departments
+     * Get Departments.
      *
      * @throws ILSException
      * @return array An associative array with key = ID, value = dept. name.
@@ -507,7 +495,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * @throws ILSException
      * @return array An associative array with key = ID, value = name.
@@ -530,7 +518,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * @throws ILSException
      * @return array An associative array with key = ID, value = name.
@@ -549,7 +537,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -596,18 +584,17 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
      * @param string $username The patron username
      * @param string $password The patron password
      *
-     * @return mixed           Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function patronLogin($username, $password)
     {
         if (empty($username)) {
@@ -699,7 +686,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -737,7 +724,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -755,7 +742,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
      * @param array $checkOutDetails An array of item data
      *
@@ -767,7 +754,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -808,7 +795,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Patron Transaction History
+     * Get Patron Transaction History.
      *
      * This is responsible for retrieving all historical transactions
      * (i.e. checked out items)
@@ -827,7 +814,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Purge Patron Transaction History
+     * Purge Patron Transaction History.
      *
      * @param array  $patron The patron array from patronLogin
      * @param ?array $ids    IDs to purge, or null for all
@@ -866,7 +853,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -878,6 +865,20 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getMyHolds($patron)
     {
+        $embedBiblios = Comparator::greaterThanOrEqualTo($this->kohaVersion, '23.11');
+        $embedItems = Comparator::greaterThanOrEqualTo($this->kohaVersion, '25.11');
+
+        $embed = [];
+        if ($embedBiblios) {
+            $embed[] = 'biblio';
+        }
+        if ($embedItems) {
+            $embed[] = 'item';
+        }
+        $headers = $embed ? [
+            'x-koha-embed' => implode(',', $embed),
+        ] : [];
+
         $result = $this->makeRequest(
             [
                 'path' => 'v1/holds',
@@ -886,16 +887,17 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     '_match' => 'exact',
                     '_per_page' => -1,
                 ],
+                'headers' => $headers,
             ]
         );
 
         $holds = [];
         foreach ($result['data'] as $entry) {
-            $biblio = $this->getBiblio($entry['biblio_id']);
+            $biblio = $embedBiblios ? $entry['biblio'] : $this->getBiblio($entry['biblio_id']);
             $frozen = !empty($entry['suspended']);
             $volume = '';
             if ($entry['item_id'] ?? null) {
-                $item = $this->getItem($entry['item_id']);
+                $item = $embedItems ? $entry['item'] : $this->getItem($entry['item_id']);
                 $volume = $item['serial_issue_number'];
             }
             $available = !empty($entry['waiting_date']);
@@ -1000,7 +1002,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold. The data in $cancelDetails['details'] is taken from
      * holds' cancel_details field.
@@ -1043,7 +1045,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
@@ -1061,9 +1063,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         $bibId = $holdDetails['id'] ?? null;
@@ -1168,7 +1169,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location
      *
@@ -1181,16 +1182,15 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return false|string      The default pickup location for the patron or false
      * if the user has to choose.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         return $this->defaultPickUpLocation;
     }
 
     /**
-     * Check if request is valid
+     * Check if request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -1257,7 +1257,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details or throws an exception on failure of support
@@ -1286,7 +1286,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         // Make sure pickup location is valid
         if (!$this->pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)) {
-            return $this->holdError('hold_invalid_pickup');
+            return $this->holdError('hold_invalid_pickup', false);
         }
 
         $request = [
@@ -1312,7 +1312,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         );
 
         if ($result['code'] >= 300) {
-            return $this->holdError($result['data']['error'] ?? 'hold_error_fail');
+            return empty($result['data']['error'])
+                ? $this->holdError('hold_error_fail', false)
+                : $this->holdError($result['data']['error']);
         }
 
         if ($holdDetails['startDateTS']) {
@@ -1346,7 +1348,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Update holds
+     * Update holds.
      *
      * This is responsible for changing the status of hold requests
      *
@@ -1355,9 +1357,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array $patron       Patron array
      *
      * @return array Associative array of the results
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function updateHolds(
         array $holdsDetails,
         array $fields,
@@ -1403,8 +1404,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     );
                 }
                 if ($result && $result['code'] >= 300) {
-                    $results[$requestId]['status']
-                        = $result['data']['error'] ?? 'hold_error_update_failed';
+                    $results[$requestId]['status'] = empty($result['data']['error'])
+                        ? 'hold_error_update_failed'
+                        : $this->getPrefixedMessage($result['data']['error']);
                 }
             }
             if (empty($results[$requestId]['errors'])) {
@@ -1434,7 +1436,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Patron Storage Retrieval Requests
+     * Get Patron Storage Retrieval Requests.
      *
      * This is responsible for retrieving all article requests by a specific patron.
      *
@@ -1485,22 +1487,21 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Cancel Storage Retrieval Request (article request) Details
+     * Get Cancel Storage Retrieval Request (article request) Details.
      *
      * @param array $details An array of item data
      * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelStorageRetrievalRequestDetails($details, $patron)
     {
         return $details['item_id'];
     }
 
     /**
-     * Cancel Storage Retrieval Requests (article requests)
+     * Cancel Storage Retrieval Requests (article requests).
      *
      * Attempts to Cancel an article request on a particular item. The
      * data in $cancelDetails['details'] is determined by
@@ -1548,7 +1549,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Check if storage retrieval request is valid
+     * Check if storage retrieval request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -1594,7 +1595,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Place Storage Retrieval Request (Call Slip)
+     * Place Storage Retrieval Request (Call Slip).
      *
      * Attempts to place a call slip request on a particular item and returns
      * an array with result details
@@ -1653,8 +1654,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         );
 
         if ($result['code'] >= 300) {
-            $message = $result['data']['error']
-                ?? 'storage_retrieval_request_error_fail';
+            $message = empty($result['data']['error'])
+                ? 'storage_retrieval_request_error_fail'
+                : $this->getPrefixedMessage($result['data']['error']);
             return [
                 'success' => false,
                 'sysMessage' => $message,
@@ -1667,7 +1669,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1729,9 +1731,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @throws ILSException
      * @return array Associative array with keys success (bool, always) and reason (string, on error)
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function registerPayment(
         array $patron,
         int $amount,
@@ -1779,7 +1780,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Change Password
+     * Change Password.
      *
      * Attempts to change patron password (PIN code)
      *
@@ -1819,7 +1820,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get a password recovery data for a user
+     * Get a password recovery data for a user.
      *
      * @param array $params Required params such as cat_username and email
      *
@@ -1915,7 +1916,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if ($result['code'] >= 300) {
             return [
                 'success' => false,
-                'error' => $result['data']['error'] ?? $result['code'],
+                'error' => $this->getPrefixedMessage($result['data']['error'] ?? $result['code']),
             ];
         }
         return [
@@ -1953,14 +1954,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function getConfig(string $function, array $params = []): array
     {
         if ('getMyTransactionHistory' === $function) {
             if (empty($this->config['TransactionHistory']['enabled'])) {
-                return false;
+                return [];
             }
             $limit = $this->config['TransactionHistory']['max_page_size'] ?? 100;
             return [
@@ -2005,10 +2005,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
         if ('getPasswordRecoveryData' === $function || 'resetPassword' === $function) {
             $config = $this->config['PasswordRecovery'] ?? [];
-            return ($config['enabled'] ?? false) ? $config : false;
+            return ($config['enabled'] ?? false) ? $config : [];
         }
 
-        return $this->config[$function] ?? false;
+        return $this->config[$function] ?? [];
     }
 
     /**
@@ -2020,9 +2020,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsMethod($method, $params)
     {
         // Special case: change password is only available if properly configured.
@@ -2033,7 +2032,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Create a HTTP client
+     * Create a HTTP client.
      *
      * @param string $url Request URL
      *
@@ -2081,7 +2080,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Make Request
+     * Make Request.
      *
      * Makes a request to the Koha REST API
      *
@@ -2213,7 +2212,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get a new or cached OAuth2 token (type + token)
+     * Get a new or cached OAuth2 token (type + token).
      *
      * @param bool $renew Force renewal of token
      *
@@ -2255,7 +2254,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Item Statuses
+     * Get Item Statuses.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -2377,7 +2376,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get statuses for an item
+     * Get statuses for an item.
      *
      * @param array $item Item from Koha
      *
@@ -2406,7 +2405,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     } else {
                         $parts = explode('::', $code, 2);
                         if (isset($parts[1])) {
-                            $statuses[] = $parts[1];
+                            $statuses[] = $this->getPrefixedMessage($parts[1]);
                         }
                     }
                 }
@@ -2427,16 +2426,15 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get item status code for CheckedOut status
+     * Get item status code for CheckedOut status.
      *
      * @param string $code Status code
      * @param array  $data Status data
      * @param array  $item Item
      *
      * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getStatusCodeItemCheckedOut($code, $data, $item)
     {
         $overdue = false;
@@ -2452,40 +2450,37 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get item status code for NotForLoan or Lost status
+     * Get item status code for NotForLoan or Lost status.
      *
      * @param string $code Status code
      * @param array  $data Status data
      * @param array  $item Item
      *
      * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getStatusCodeItemNotForLoanOrLost($code, $data, $item)
     {
-        // NotForLoan and Lost are special: status has a library-specific
-        // status number. Allow mapping of different status numbers
-        // separately (e.g. Item::NotForLoan with status number 4
-        // is mapped with key Item::NotForLoan4):
+        // NotForLoan and Lost are special: status has a library-specific status number. Allow mapping of different
+        // status numbers separately (e.g. Item::NotForLoan with status number 4 is mapped with key Item::NotForLoan4):
         $statusKey = $code . ($data['status'] ?? '-');
-        // Replace ':' in status key if used as status since ':' is
-        // the namespace separator in translatable strings:
-        return $this->itemStatusMappings[$statusKey]
-            ?? $data['code'] ?? str_replace(':', '_', $statusKey);
+        if (null !== ($status = $this->itemStatusMappings[$statusKey] ?? null)) {
+            return $status;
+        }
+        // Replace ':' in status key if used as status since ':' is the namespace separator in translatable strings:
+        return $this->getPrefixedMessage($data['code'] ?? str_replace(':', '_', $statusKey));
     }
 
     /**
-     * Get item status code for Transfer status
+     * Get item status code for Transfer status.
      *
      * @param string $code Status code
      * @param array  $data Status data
      * @param array  $item Item
      *
      * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getStatusCodeItemTransfer($code, $data, $item)
     {
         if (isset($data['to_library'])) {
@@ -2500,7 +2495,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Status item sort function
+     * Status item sort function.
      *
      * @param array $a First status record to compare
      * @param array $b Second status record to compare
@@ -2522,7 +2517,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Check if an item is holdable
+     * Check if an item is holdable.
      *
      * @param array $item Item from Koha
      *
@@ -2535,7 +2530,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Check if an article request can be placed on the item
+     * Check if an article request can be placed on the item.
      *
      * @param array $item Item from Koha
      *
@@ -2547,8 +2542,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if (isset($unavail['ArticleRequest::NotAllowed'])) {
             return false;
         }
-        return !(empty($this->config['StorageRetrievalRequests']['allow_checked_out'])
-            && isset($unavail['Item::CheckedOut']));
+        return !empty($this->config['StorageRetrievalRequests']['allow_checked_out'])
+            || !isset($unavail['Item::CheckedOut']);
     }
 
     /**
@@ -2588,7 +2583,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get libraries from cache or from the API
+     * Get libraries from cache or from the API.
      *
      * @return array
      */
@@ -2608,7 +2603,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get shelving locations from cache or from the API
+     * Get shelving locations from cache or from the API.
      *
      * @return array
      */
@@ -2629,7 +2624,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get library name
+     * Get library name.
      *
      * @param string $library Library ID
      *
@@ -2642,7 +2637,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get patron's blocks, if any
+     * Get patron's blocks, if any.
      *
      * @param array $patron Patron
      *
@@ -2690,7 +2685,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Fetch an item record from Koha
+     * Fetch an item record from Koha.
      *
      * @param int $id Item id
      *
@@ -2709,7 +2704,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Fetch a biblio record from Koha
+     * Fetch a biblio record from Koha.
      *
      * @param int $id Bib record id
      *
@@ -2747,31 +2742,38 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Return a hold error message
+     * Return a hold error message.
      *
-     * @param string $error Error message
+     * @param string $error  Error message
+     * @param bool   $ilsMsg Whether the error is an ILS error message (needs translation prefix)
      *
      * @return array
      */
-    protected function holdError($error)
+    protected function holdError($error, $ilsMsg = true)
     {
         switch ($error) {
             case 'Hold cannot be placed. Reason: tooManyReserves':
             case 'Hold cannot be placed. Reason: tooManyHoldsForThisRecord':
                 $error = 'hold_error_too_many_holds';
+                $ilsMsg = false;
                 break;
             case 'Hold cannot be placed. Reason: ageRestricted':
                 $error = 'hold_error_age_restricted';
+                $ilsMsg = false;
                 break;
         }
+
+        $message = $ilsMsg
+            ? $this->getPrefixedMessage($error)
+            : $error;
         return [
             'success' => false,
-            'sysMessage' => $error,
+            'sysMessage' => $message,
         ];
     }
 
     /**
-     * Map a Koha renewal block reason code to a VuFind translation string
+     * Map a Koha renewal block reason code to a VuFind translation string.
      *
      * @param string $reason Koha block code
      * @param string $itype  Koha item type
@@ -2786,7 +2788,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Return a location (branch or shelving) for a Koha item
+     * Return a location (branch or shelving) for a Koha item.
      *
      * @param array $item Item
      *
@@ -2817,7 +2819,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Translate location name
+     * Translate location name.
      *
      * @param string $location Location code
      * @param string $default  Default value if translation is not available
@@ -2838,7 +2840,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Return a call number for a Koha item
+     * Return a call number for a Koha item.
      *
      * @param array $item Item
      *
@@ -2850,7 +2852,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get a reason for why a hold cannot be placed
+     * Get a reason for why a hold cannot be placed.
      *
      * @param array $result Hold check result
      *
@@ -2887,7 +2889,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Converts given key to corresponding parameter
+     * Converts given key to corresponding parameter.
      *
      * @param string $key     to convert
      * @param string $default value to return
@@ -2907,7 +2909,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get a complete title from all the title-related fields
+     * Get a complete title from all the title-related fields.
      *
      * @param array $biblio Biblio record (or something with the correct fields)
      *
@@ -2926,7 +2928,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Convert a date to display format
+     * Convert a date to display format.
      *
      * @param string $date     Date
      * @param bool   $withTime Whether the date includes time
@@ -2943,7 +2945,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked-out items
      * or checked-in items) by a specific patron.
@@ -3063,7 +3065,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get a description for a block
+     * Get a description for a block.
      *
      * @param string $reason  Koha block reason
      * @param array  $details Any details related to the reason
@@ -3096,7 +3098,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Helper function for formatting currency
+     * Helper function for formatting currency.
      *
      * @param float $amount Number to format
      *
@@ -3146,12 +3148,23 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array $kohaFine Koha fine entry
      *
      * @return int 1/100ths of a percent
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getFineTaxRate(array $fine, array $kohaFine): int
     {
         $code = trim($kohaFine['debit_type']) ?? '';
         return $this->feeTypeToTaxRateMappings[$code] ?? 0;
+    }
+
+    /**
+     * Add translation prefix to a given message.
+     *
+     * @param string $msg Message
+     *
+     * @return string
+     */
+    protected function getPrefixedMessage(string $msg): string
+    {
+        return ($this->config['Catalog']['translationPrefix'] ?? '') . $msg;
     }
 }

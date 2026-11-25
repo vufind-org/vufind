@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract base AJAX handler
+ * Abstract base AJAX handler.
  *
  * PHP version 8
  *
@@ -29,10 +29,11 @@
 
 namespace VuFind\AjaxHandler;
 
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
- * Abstract base AJAX handler
+ * Abstract base AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -43,11 +44,19 @@ use VuFind\Session\Settings as SessionSettings;
 abstract class AbstractBase implements AjaxHandlerInterface
 {
     /**
-     * Session settings
+     * Constructor.
      *
-     * @var SessionSettings
+     * @param ?SessionSettings $sessionSettings Session settings
      */
-    protected $sessionSettings = null;
+    public function __construct(
+        protected ?SessionSettings $sessionSettings
+    ) {
+        // Prevent errors, notices etc. from being displayed so that they don't mess
+        // with the output (only in production mode):
+        if ('production' === APPLICATION_ENV) {
+            ini_set('display_errors', '0');
+        }
+    }
 
     /**
      * Prevent session writes -- this is designed to be called prior to time-
@@ -63,6 +72,59 @@ abstract class AbstractBase implements AjaxHandlerInterface
             throw new \Exception('Session settings object missing.');
         }
         $this->sessionSettings->disableWrite();
+    }
+
+    /**
+     * Get a parameter from POST fields or query string.
+     *
+     * @param ServerRequestInterface $request Request
+     * @param string                 $param   Param name
+     * @param array|string|null      $default Default value
+     *
+     * @return array|string|null
+     */
+    protected function getPostOrQueryParam(
+        ServerRequestInterface $request,
+        string $param,
+        array|string|null $default = null
+    ): array|string|null {
+        return $this->getPostParam($request, $param)
+            ?? $this->getQueryParam($request, $param)
+            ?? $default;
+    }
+
+    /**
+     * Get a parameter from POST fields.
+     *
+     * @param ServerRequestInterface $request Request
+     * @param string                 $param   Param name
+     * @param array|string|null      $default Default value
+     *
+     * @return array|string|null
+     */
+    protected function getPostParam(
+        ServerRequestInterface $request,
+        string $param,
+        array|string|null $default = null
+    ): array|string|null {
+        return $request->getParsedBody()[$param] ?? $default;
+    }
+
+    /**
+     * Get a parameter from query string.
+     *
+     * @param ServerRequestInterface $request Request
+     * @param string                 $param   Param name
+     * @param array|string|null      $default Default value
+     *
+     * @return array|string|null
+     */
+    protected function getQueryParam(
+        ServerRequestInterface $request,
+        string $param,
+        array|string|null $default = null
+    ): array|string|null {
+        return $request->getQueryParams()[$param] ?? $default;
     }
 
     /**

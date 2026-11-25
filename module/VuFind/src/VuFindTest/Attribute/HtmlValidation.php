@@ -51,7 +51,7 @@ class HtmlValidation
     public $useValidation;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param bool $useValidation Should HTML validation be applied to this test?
      */

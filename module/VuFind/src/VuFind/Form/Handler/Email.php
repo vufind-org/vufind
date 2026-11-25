@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Email
+ * Class Email.
  *
  * PHP version 8
  *
@@ -31,18 +31,19 @@ declare(strict_types=1);
 
 namespace VuFind\Form\Handler;
 
-use Laminas\View\Renderer\RendererInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use Symfony\Component\Mime\Address;
-use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Form\Form;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Mailer\Mailer;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
- * Class Email
+ * Class Email.
  *
  * @category VuFind
  * @package  Form
@@ -55,71 +56,45 @@ class Email implements HandlerInterface, LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * View renderer
+     * Constructor.
      *
-     * @var RendererInterface
-     */
-    protected $viewRenderer;
-
-    /**
-     * Main config
-     *
-     * @var Config
-     */
-    protected $mainConfig;
-
-    /**
-     * Mailer
-     *
-     * @var Mailer
-     */
-    protected $mailer;
-
-    /**
-     * Constructor
-     *
-     * @param RendererInterface $viewRenderer View renderer
-     * @param Config            $config       Main config
-     * @param Mailer            $mailer       Mailer
+     * @param TemplateRendererInterface $templateRenderer Template renderer
+     * @param array                     $mainConfig       Main config
+     * @param Mailer                    $mailer           Mailer
      */
     public function __construct(
-        RendererInterface $viewRenderer,
-        Config $config,
-        Mailer $mailer
+        protected TemplateRendererInterface $templateRenderer,
+        #[Autowire(config: 'config')]
+        protected array $mainConfig,
+        protected Mailer $mailer
     ) {
-        $this->viewRenderer = $viewRenderer;
-        $this->mainConfig = $config;
-        $this->mailer = $mailer;
     }
 
     /**
      * Get data from submitted form and process them.
      *
-     * @param \VuFind\Form\Form                     $form   Submitted form
-     * @param \Laminas\Mvc\Controller\Plugin\Params $params Request params
-     * @param ?UserEntityInterface                  $user   Authenticated user
+     * @param \VuFind\Form\Form      $form    Submitted form
+     * @param ServerRequestInterface $request Request
+     * @param ?UserEntityInterface   $user    Authenticated user
      *
      * @return bool
      */
     public function handle(
         \VuFind\Form\Form $form,
-        \Laminas\Mvc\Controller\Plugin\Params $params,
+        ServerRequestInterface $request,
         ?UserEntityInterface $user = null
     ): bool {
-        $postParams = $params->fromPost();
+        $postParams = $request->getParsedBody();
         $fields = $form->mapRequestParamsToFieldValues($postParams);
-        $emailMessage = $this->viewRenderer->render(
-            'Email/form.phtml',
-            compact('fields')
+        $emailMessage = $this->templateRenderer->renderTemplateAsString(
+            template: 'Email/form.phtml',
+            params: compact('fields')
         );
 
         [$senderName, $senderEmail] = $this->getSender($form);
 
-        $replyToName = $params->fromPost(
-            'name',
-            $user ? trim($user->getFirstname() . ' ' . $user->getLastname()) : ''
-        );
-        $replyToEmail = $params->fromPost('email', $user?->getEmail());
+        $replyToName = $postParams['name'] ?? ($user ? trim($user->getFirstname() . ' ' . $user->getLastname()) : '');
+        $replyToEmail = $postParams['email'] ?? $user?->getEmail();
         $recipients = $form->getRecipient($postParams);
         $emailSubject = $form->getEmailSubject($postParams);
 
@@ -157,9 +132,9 @@ class Email implements HandlerInterface, LoggerAwareInterface
     {
         $config = $this->mainConfig;
         $email = $form->getEmailFromAddress()
-            ?: $config->Feedback->sender_email ?? 'noreply@vufind.org';
+            ?: $config['Feedback']['sender_email'] ?? 'noreply@vufind.org';
         $name = $form->getEmailFromName()
-            ?: $config->Feedback->sender_name ?? 'VuFind Feedback';
+            ?: $config['Feedback']['sender_name'] ?? 'VuFind Feedback';
 
         return [$name, $email];
     }

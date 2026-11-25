@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related Records: Solr-based similarity
+ * Related Records: Solr-based similarity.
  *
  * PHP version 8
  *
@@ -29,10 +29,11 @@
 
 namespace VuFind\Related;
 
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Command\SimilarCommand;
 
 /**
- * Related Records: Solr-based similarity
+ * Related Records: Solr-based similarity.
  *
  * @category VuFind
  * @package  Related_Records
@@ -43,27 +44,20 @@ use VuFindSearch\Command\SimilarCommand;
 class Similar implements RelatedInterface
 {
     /**
-     * Similar records
+     * Similar records.
      *
      * @var array
      */
     protected $results;
 
     /**
-     * Search service
+     * Constructor.
      *
-     * @var \VuFindSearch\Service
+     * @param \VuFindSearch\Service $searchService Search service
      */
-    protected $searchService;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFindSearch\Service $search Search service
-     */
-    public function __construct(\VuFindSearch\Service $search)
+    #[Autowire]
+    public function __construct(protected \VuFindSearch\Service $searchService)
     {
-        $this->searchService = $search;
     }
 
     /**
@@ -78,7 +72,7 @@ class Similar implements RelatedInterface
     {
         $command = new SimilarCommand(
             $driver->getSourceIdentifier(),
-            $driver->getUniqueId()
+            $driver->getUniqueID()
         );
         $this->results = $this->searchService->invoke($command)->getResult();
     }

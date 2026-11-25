@@ -53,7 +53,7 @@ use function count;
 class QueryBuilder
 {
     /**
-     * Lucene syntax helper
+     * Lucene syntax helper.
      *
      * @var LuceneSyntaxHelper
      */
@@ -68,9 +68,8 @@ class QueryBuilder
      * @param ?ParamBag     $params Search backend parameters
      *
      * @return ParamBag
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function build(AbstractQuery $query, ?ParamBag $params = null)
     {
         // Build base query
@@ -171,7 +170,7 @@ class QueryBuilder
     }
 
     /**
-     * Get Lucene syntax helper
+     * Get Lucene syntax helper.
      *
      * @return LuceneSyntaxHelper
      */
@@ -184,7 +183,7 @@ class QueryBuilder
     }
 
     /**
-     * Set Lucene syntax helper
+     * Set Lucene syntax helper.
      *
      * @param LuceneSyntaxHelper $helper Lucene syntax helper
      *

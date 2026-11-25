@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Feature Trait - Secure database detection trait
+ * VuFind Action Feature Trait - Secure database detection trait.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Db\Service\UserServiceInterface;
 use function count;
 
 /**
- * VuFind Action Feature Trait - Configuration file path methods
+ * VuFind Action Feature Trait - Configuration file path methods.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -76,7 +76,7 @@ trait SecureDatabaseTrait
             try {
                 $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
                 $cardRows = $this->getDbService(UserCardServiceInterface::class)->getInsecureRows();
-                $status = (count($userRows) + count($cardRows) == 0);
+                $status = (count($userRows) + count($cardRows) === 0);
             } catch (\Exception $e) {
                 // Any exception means we have a problem!
                 $status = false;

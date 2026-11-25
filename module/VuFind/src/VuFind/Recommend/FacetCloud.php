@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FacetCloud Recommendations Module
+ * FacetCloud Recommendations Module.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Recommend;
 use function is_callable;
 
 /**
- * FacetCloud Recommendations Module
+ * FacetCloud Recommendations Module.
  *
  * @category VuFind
  * @package  Recommendations

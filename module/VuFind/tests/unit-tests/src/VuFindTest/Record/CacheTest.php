@@ -32,7 +32,6 @@
 namespace VuFindTest\Record;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Config\Config;
 use VuFind\Db\Entity\RecordEntityInterface;
 use VuFind\Db\Service\RecordServiceInterface;
 use VuFind\Record\Cache;
@@ -83,7 +82,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Set up everything for testing
+     * Set up everything for testing.
      *
      * @return void
      */
@@ -97,7 +96,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test lookup
+     * Test lookup.
      *
      * @return void
      */
@@ -119,7 +118,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test lookupBatch
+     * Test lookupBatch.
      *
      * @return void
      */
@@ -141,7 +140,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test isFallback
+     * Test isFallback.
      *
      * @return void
      */
@@ -156,7 +155,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test isPrimary
+     * Test isPrimary.
      *
      * @return void
      */
@@ -171,7 +170,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test IsCachable
+     * Test IsCachable.
      *
      * @return void
      */
@@ -185,7 +184,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test setContext
+     * Test setContext.
      *
      * @return void
      */
@@ -207,7 +206,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test createOrUpdate
+     * Test createOrUpdate.
      *
      * @return void
      */
@@ -221,11 +220,11 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create configuration
+     * Create configuration.
      *
-     * @return Config
+     * @return array
      */
-    protected function getConfig(): Config
+    protected function getConfig(): array
     {
         $configArr = [
             'Default' => [
@@ -240,11 +239,11 @@ class CacheTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        return new Config($configArr);
+        return $configArr;
     }
 
     /**
-     * Create Record Table
+     * Create Record Table.
      *
      * @return MockObject&RecordServiceInterface
      */
@@ -284,7 +283,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create a Record Factory Manager
+     * Create a Record Factory Manager.
      *
      * @return MockObject&\VuFind\RecordDriver\PluginManager
      */
@@ -297,7 +296,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create a Cache object
+     * Create a Cache object.
      *
      * @return Cache
      */
@@ -313,7 +312,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create a record driver
+     * Create a record driver.
      *
      * @param string $id     id
      * @param string $source source

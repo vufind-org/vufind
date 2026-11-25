@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for Login token authentication
+ * Factory for Login token authentication.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Db\Service\LoginTokenServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 
 /**
- * Factory for login token authentication
+ * Factory for login token authentication.
  *
  * @category VuFind
  * @package  Authentication
@@ -50,14 +50,14 @@ use VuFind\Db\Service\UserServiceInterface;
 class LoginTokenManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Service manager
+     * Service manager.
      *
      * @var ContainerInterface
      */
     protected $container;
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -82,11 +82,11 @@ class LoginTokenManagerFactory implements \Laminas\ServiceManager\Factory\Factor
 
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
-            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config'),
             $dbServiceManager->get(UserServiceInterface::class),
             $dbServiceManager->get(LoginTokenServiceInterface::class),
             $container->get(\VuFind\Cookie\CookieManager::class),
-            $container->get(\Laminas\Session\SessionManager::class),
+            $container->get(\Laminas\Session\ManagerInterface::class),
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get('ViewRenderer'),
             [$this, 'getBrowscap']
@@ -94,7 +94,7 @@ class LoginTokenManagerFactory implements \Laminas\ServiceManager\Factory\Factor
     }
 
     /**
-     * Create a Browscap instance
+     * Create a Browscap instance.
      *
      * @return Browscap
      */

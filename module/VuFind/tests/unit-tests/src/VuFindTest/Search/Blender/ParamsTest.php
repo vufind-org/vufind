@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender Params Test
+ * Blender Params Test.
  *
  * PHP version 8
  *
@@ -29,8 +29,6 @@
 
 namespace VuFindTest\Search\Blender;
 
-use Laminas\Stdlib\Parameters;
-use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Blender\Options;
 use VuFind\Search\Blender\Params;
@@ -40,7 +38,7 @@ use VuFindSearch\Query\Query;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Blender Params Test
+ * Blender Params Test.
  *
  * @category VuFind
  * @package  Tests
@@ -53,7 +51,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Blender config
+     * Blender config.
      *
      * @var array
      */
@@ -76,7 +74,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Mappings
+     * Mappings.
      *
      * @var array
      */
@@ -190,7 +188,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * EDS API configuration
+     * EDS API configuration.
      *
      * @var array
      */
@@ -206,7 +204,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * EDS configuration
+     * EDS configuration.
      *
      * @var array
      */
@@ -218,7 +216,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Primo configuration
+     * Primo configuration.
      *
      * @var array
      */
@@ -230,7 +228,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Blender configuration
+     * Blender configuration.
      *
      * @var array
      */
@@ -243,7 +241,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Mock config manager
+     * Mock config manager.
      *
      * @var object
      */
@@ -256,7 +254,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchClassId(): void
     {
-        $this->assertEquals('Blender', $this->getParams()->getSearchClassId());
+        $this->assertSame('Blender', $this->getParams()->getSearchClassId());
     }
 
     /**
@@ -268,7 +266,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     {
         // None by default:
         $params = $this->getParams();
-        $this->assertEquals([], $params->getCheckboxFacets());
+        $this->assertSame([], $params->getCheckboxFacets());
 
         // Adding one works:
         $params->addCheckboxFacet('format:bar', 'checkbox_label');
@@ -741,7 +739,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $mappings['Facets']['Fields']['format']['Mappings']['EDS'] = [
             'Ignore' => true,
         ];
-        $params = $this->getParams(null, $mappings);
+        $params = $this->getParams($mappings);
         $params->addHiddenFilter('format:bar');
         $backendParams = $params->getBackendParameters();
         // Make sure EDS is NOT disabled:
@@ -762,7 +760,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'bar',
             ],
         ];
-        $params = $this->getParams(null, $mappings);
+        $params = $this->getParams($mappings);
         $params->addHiddenFilter('format:bar');
         $backendParams = $params->getBackendParameters();
         // Make sure EDS is NOT disabled but doesn't have filters either:
@@ -802,22 +800,22 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     {
         $params = $this->getParams();
         // If we haven't set up any facets yet, labels will be unrecognized:
-        $this->assertEquals('unrecognized_facet_label', $params->getFacetLabel('foo'));
+        $this->assertSame('unrecognized_facet_label', $params->getFacetLabel('foo'));
 
         // Now if we add a facet, we should get the label back:
         $params->addFacet('foo', 'foo_label');
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo'));
 
         // Make sure that a checkbox facet with correct value gets the label for the
         // checkbox:
         $params->addCheckboxFacet('foo:bar', 'checkbox_label');
-        $this->assertEquals('checkbox_label', $params->getFacetLabel('foo', 'bar'));
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo', 'baz'));
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
+        $this->assertSame('checkbox_label', $params->getFacetLabel('foo', 'bar'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo', 'baz'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo'));
 
         // Check that reset works:
         $params->resetFacetConfig();
-        $this->assertEquals([], $params->getFacetConfig());
+        $this->assertSame([], $params->getFacetConfig());
     }
 
     /**
@@ -883,6 +881,9 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 ],
                 'filters' => [
                     'building:OR:main',
+                ],
+                'searchMode' => [
+                    'all',
                 ],
             ],
             $edsParams->getArrayCopy()
@@ -984,7 +985,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             'hiddenFilters' => ['foo:"baz"'],
         ];
         $params = $this->getParams();
-        $params->initFromRequest(new Parameters($query));
+        $params->initFromRequest($query);
         $backendParams = $params->getBackendParameters();
 
         $solrParams = $backendParams->get('params_Solr')[0];
@@ -1011,7 +1012,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
 
         // Test empty request:
         $params = $this->getParams();
-        $params->initFromRequest(new Parameters([]));
+        $params->initFromRequest([]);
         $backendParams = $params->getBackendParameters();
 
         $solrParams = $backendParams->get('params_Solr')[0];
@@ -1048,7 +1049,6 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'Base' => $baseParams,
             ],
-            new Config($this->config),
             $this->mappings
         );
 
@@ -1059,7 +1059,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get params classes for an array of backends
+     * Get params classes for an array of backends.
      *
      * @return array
      */
@@ -1089,14 +1089,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Params class
+     * Get Params class.
      *
-     * @param array $config   Blender configuration, overrides defaults
      * @param array $mappings Blender mappings, overrides defaults
      *
      * @return Params
      */
-    protected function getParams($config = null, $mappings = null): Params
+    protected function getParams($mappings = null): Params
     {
         $mockConfigManager = $this->createMock(ConfigManagerInterface::class);
         return new Params(
@@ -1104,7 +1103,6 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             $mockConfigManager,
             new HierarchicalFacetHelper(),
             $this->getParamsClassesArray(),
-            new Config($config ?? $this->config),
             $mappings ?? $this->mappings
         );
     }

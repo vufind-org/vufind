@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract cover text layer
+ * Abstract cover text layer.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Cover\Layer;
 
 /**
- * Abstract cover text layer
+ * Abstract cover text layer.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -41,7 +41,7 @@ namespace VuFind\Cover\Layer;
 abstract class AbstractTextLayer extends AbstractLayer
 {
     /**
-     * Returns the width a string would render to
+     * Returns the width a string would render to.
      *
      * @param string $text Text to test
      * @param string $font Full font path
@@ -56,7 +56,7 @@ abstract class AbstractTextLayer extends AbstractLayer
     }
 
     /**
-     * Returns the height a string would render to
+     * Returns the height a string would render to.
      *
      * @param string $text Text to test
      * @param string $font Full font path
@@ -71,7 +71,7 @@ abstract class AbstractTextLayer extends AbstractLayer
     }
 
     /**
-     * Simulate outlined text
+     * Simulate outlined text.
      *
      * @param resource $im       Active image resource
      * @param object   $settings Generator settings object

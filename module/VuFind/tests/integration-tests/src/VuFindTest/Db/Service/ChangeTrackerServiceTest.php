@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ChangeTrackerService Test Class
+ * ChangeTrackerService Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Db\Service;
 use VuFind\Db\Service\ChangeTrackerService;
 
 /**
- * ChangeTrackerService Test Class
+ * ChangeTrackerService Test Class.
  *
  * Class must be final due to use of "new static()" by LiveDatabaseTrait.
  *
@@ -72,11 +72,30 @@ final class ChangeTrackerServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test change tracking
+     * Test that appropriate values were created by the standard test environment setup.
      *
      * @return void
      */
-    public function testChangeTracker()
+    public function testMarcIndexingSucceeded(): void
+    {
+        // We index author_relators.mrc and author_relators_updated_record.mrc as part of the startup process.
+        // The second file contains the same records as the first, but with some of the 005 fields changed to
+        // newer dates to trigger change tracker updates. We want to test that a record with matching dates in
+        // both files is treated as unchanged (first indexed = last indexed) and a record with non-matching
+        // dates is treated as updated (first indexed != last indexed).
+        $tracker = $this->getDbService(ChangeTrackerService::class);
+        $unchanged = $tracker->getChangeTrackerEntity('biblio', '0000652212-0');
+        $this->assertEquals($unchanged->getFirstIndexed(), $unchanged->getLastIndexed());
+        $changed = $tracker->getChangeTrackerEntity('biblio', '0000183626-0');
+        $this->assertGreaterThan($changed->getFirstIndexed(), $changed->getLastIndexed());
+    }
+
+    /**
+     * Test change tracking.
+     *
+     * @return void
+     */
+    public function testChangeTracker(): void
     {
         $core = 'testCore';
         $tracker = $this->getDbService(ChangeTrackerService::class);
@@ -134,7 +153,7 @@ final class ChangeTrackerServiceTest extends \PHPUnit\Framework\TestCase
         $tracker->markDeleted($core, 'test2');
         $row = $tracker->getChangeTrackerEntity($core, 'test2');
         $this->assertIsObject($row);
-        $this->assertTrue(!empty($row->getDeleted()));
+        $this->assertNotEmpty($row->getDeleted());
 
         // Index the previously-deleted record and make sure it undeletes properly:
         $tracker->index($core, 'test2', 1326833170);

@@ -40,17 +40,17 @@ use VuFindConsole\Command\Util\ExpireAuthHashesCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExpireAuthHashesCommandTest extends AbstractExpireCommandTest
+class ExpireAuthHashesCommandTest extends AbstractExpireCommandTestCase
 {
     /**
-     * Name of class being tested
+     * Name of class being tested.
      *
      * @var string
      */
     protected $targetClass = ExpireAuthHashesCommand::class;
 
     /**
-     * Name of a valid service class (or interface) to test with
+     * Name of a valid service class (or interface) to test with.
      *
      * @var string
      */

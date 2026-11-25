@@ -41,26 +41,26 @@ namespace VuFindTest\Unit;
 abstract class RecommendDeferredTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Get a fully configured module
+     * Get a fully configured module.
      *
-     * @param string                      $class    class to construct
-     * @param string                      $settings settings
-     * @param \Laminas\Stdlib\Parameters  $request  request
-     * @param \VuFind\Search\Solr\Results $results  results object
+     * @param string                       $class    class to construct
+     * @param string                       $settings settings
+     * @param ?array                       $request  request
+     * @param ?\VuFind\Search\Solr\Results $results  results object
      *
-     * @return SideFacets
+     * @return \VuFind\Recommend\RecommendInterface
      */
     protected function getRecommend(
-        $class,
-        $settings = '',
-        $request = null,
-        $results = null
+        string $class,
+        string $settings = '',
+        ?array $request = null,
+        ?\VuFind\Search\Solr\Results $results = null
     ) {
         if (null === $results) {
             $results = $this->getMockResults();
         }
         if (null === $request) {
-            $request = new \Laminas\Stdlib\Parameters([]);
+            $request = [];
         }
         $mod = new $class();
         $mod->setConfig($settings);
@@ -81,10 +81,8 @@ abstract class RecommendDeferredTestCase extends \PHPUnit\Framework\TestCase
         if (null === $params) {
             $params = $this->getMockParams();
         }
-        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
-            ->disableOriginalConstructor()->getMock();
-        $results->expects($this->any())->method('getParams')
-            ->willReturn($params);
+        $results = $this->createMock(\VuFind\Search\Solr\Results::class);
+        $results->method('getParams')->willReturn($params);
         return $results;
     }
 
@@ -100,10 +98,8 @@ abstract class RecommendDeferredTestCase extends \PHPUnit\Framework\TestCase
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
         }
-        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
-            ->disableOriginalConstructor()->getMock();
-        $params->expects($this->any())->method('getQuery')
-            ->willReturn($query);
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
+        $params->method('getQuery')->willReturn($query);
         return $params;
     }
 }

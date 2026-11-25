@@ -46,23 +46,25 @@ final class PermissionsTest extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**
-     * Test that a default permission can be applied to all controllers and
-     * configured to display a custom error message.
+     * Test that a default permission can be applied to all actions and configured to display a custom error message.
      *
      * @return void
      */
-    public function testDefaultControllerPermissionWithCustomErrorMessage(): void
+    public function testDefaultActionPermissionWithCustomErrorMessage(): void
     {
         $this->changeConfigs(
             [
                 'permissionBehavior' => [
                     'global' => [
+                        'actionAccess' => [
+                            '*' => 'access.VuFindInterface',
+                        ],
                         'controllerAccess' => [
                             '*' => 'access.VuFindInterface',
                         ],
                     ],
                     'access.VuFindInterface' => [
-                        'deniedControllerBehavior' => 'showMessage:test-error-message',
+                        'deniedActionBehavior' => 'showMessage:test-error-message',
                     ],
                 ],
                 'permissions' => [
@@ -80,11 +82,11 @@ final class PermissionsTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/Search/Results');
         $page = $session->getPage();
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'test-error-message',
             $this->findCssAndGetText($page, '.alert-danger')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'An error has occurred',
             $this->findCssAndGetText($page, '.breadcrumb .active')
         );
@@ -99,7 +101,7 @@ final class PermissionsTest extends \VuFindTest\Integration\MinkTestCase
         // Now that we're logged in, we should see search results:
         $session->visit($this->getVuFindUrl() . '/Search/Results');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Search Results',
             $this->findCssAndGetText($page, '.breadcrumb .active')
         );

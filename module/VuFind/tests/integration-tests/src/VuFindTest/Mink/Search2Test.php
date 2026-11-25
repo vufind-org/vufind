@@ -53,6 +53,9 @@ class Search2Test extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         $this->waitForPageLoad($page);
         // We should have ended up on page 1!
-        $this->assertStringEndsWith('/Search2/Results?lookfor=id:testbug2&page=1', $session->getCurrentUrl());
+        $this->assertStringEndsWith(
+            '/Search2/Results?lookfor=' . urlencode('id:testbug2') . '&page=1',
+            $session->getCurrentUrl()
+        );
     }
 }

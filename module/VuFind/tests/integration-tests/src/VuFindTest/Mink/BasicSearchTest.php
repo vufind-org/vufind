@@ -43,28 +43,28 @@ use Behat\Mink\Element\Element;
 class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Selector for active pagination item
+     * Selector for active pagination item.
      *
      * @var string
      */
     protected $activePageSelector = '.pagination li.active';
 
     /**
-     * Selector for current pagination item
+     * Selector for current pagination item.
      *
      * @var string
      */
     protected $ariaCurrentPageSelector = '.pagination li[aria-current=page] a';
 
     /**
-     * Selector for active top pagination item
+     * Selector for active top pagination item.
      *
      * @var string
      */
     protected $topActivePageSelector = '.pagination-top li.active';
 
     /**
-     * Selector for current top pagination item
+     * Selector for current top pagination item.
      *
      * @var string
      */
@@ -78,7 +78,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     public function testOutOfBoundsPage()
     {
         $session = $this->getMinkSession();
-        $baseUrl = $this->getVuFindUrl() . '/Search/Results?lookfor=id:testbug1';
+        $baseUrl = $this->getVuFindUrl() . '/Search/Results?lookfor=' . urlencode('id:testbug1');
         $session->visit($baseUrl . '&page=1000');
         $this->assertEquals($baseUrl . '&page=1', $session->getCurrentUrl());
         $page = $session->getPage();
@@ -89,20 +89,53 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testDefaultTopPagination
+     * Test that loading an out-of-bounds page with JS results in an in-bounds page.
      *
-     * @return array
+     * @return void
      */
-    public static function topPaginationProvider(): array
+    public function testOutOfBoundsPageWithJS()
     {
-        return [
-            [false],
-            [true],
-        ];
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=Author&type=AllFields&limit=5');
+        $page = $session->getPage();
+        $this->assertStringStartsWith(
+            'Showing 1 - 5 results of 16',
+            trim($this->findCssAndGetText($page, '.search-stats'))
+        );
+        // Change searchspecs.yaml to reduce total results to 14.
+        $this->changeYamlConfigs(
+            [
+                'searchspecs' => [
+                    'AllFields' => [
+                        'DismaxFields' => [
+                            'author',
+                        ],
+                    ],
+                ],
+            ],
+            ['searchspecs']
+        );
+        $this->clickCss($page, '.pagination .page-last a');
+        $this->waitForPageLoad($page);
+        $this->assertStringContainsString(
+            'Showing 11 - 14 results of 14',
+            trim($this->findCssAndGetText($page, '.search-stats'))
+        );
     }
 
     /**
-     * Test default top pagination
+     * Data provider for testDefaultTopPagination.
+     *
+     * @return \Iterator
+     */
+    public static function topPaginationProvider(): \Iterator
+    {
+        yield [false];
+        yield [true];
+    }
+
+    /**
+     * Test default top pagination.
      *
      * @param bool $jsResults Whether to update search results with JS
      *
@@ -139,7 +172,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test simple top pagination
+     * Test simple top pagination.
      *
      * @param bool $jsResults Whether to update search results with JS
      *
@@ -177,6 +210,17 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertShowingResults($page, '21 - 40');
         $this->scrollToResults();
 
+        // Switch language to ensure that query params are not lost:
+        $dropdown = $this->findCss($page, '.nav-item.language .dropdown__item', index: 1);
+        $this->clickCss($dropdown, '.dropdown__link');
+        $this->waitForPageLoad($page);
+        $this->assertSame('Sprache', $this->findCssAndGetText($page, '.nav-item.language .dropdown-toggle'));
+        // ...and back:
+        $this->clickCss($page, '.nav-item.language .dropdown__link');
+        $this->waitForPageLoad($page);
+        $this->assertShowingResults($page, '21 - 40');
+        $this->assertSame('Language', $this->findCssAndGetText($page, '.nav-item.language .dropdown-toggle'));
+
         // Prev page now present, click it:
         $this->clickCss($page, '.search-header .pagination-simple .page-prev');
         $this->waitForPageLoad($page);
@@ -184,7 +228,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test full top pagination
+     * Test full top pagination.
      *
      * @return void
      */
@@ -227,7 +271,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test bottom pagination
+     * Test bottom pagination.
      *
      * @return void
      */
@@ -252,7 +296,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Check that correct result range is being displayed
+     * Check that correct result range is being displayed.
      *
      * @param Element $page    Page
      * @param string  $results Result range (e.g. '1 - 20')
@@ -270,7 +314,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Scroll to results immediately to avoid elements from moving around while we click them
+     * Scroll to results immediately to avoid elements from moving around while we click them.
      *
      * @return void
      */
@@ -279,5 +323,28 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->getMinkSession()->executeScript(
             'typeof VuFind.search !== "undefined" && VuFind.search.scrollToResults("instant")'
         );
+    }
+
+    /**
+     * Test that the single cite control works.
+     *
+     * @return void
+     */
+    public function testSingleCite(): void
+    {
+        $this->changeConfigs(['config' => ['Citation' => ['search_single' => true]]]);
+        $page = $this->performSearch('Dewey');
+
+        // Click cite link
+        $this->clickCss($page, '.result-links .cite');
+        $this->waitForPageLoad($page);
+
+        // Check that citations are rendered
+        foreach (['APA', 'Chicago', 'MLA'] as $format) {
+            $this->assertStringContainsString(
+                'Person, F',
+                $this->findCssAndGetText($page, '#modal #citation-' . $format)
+            );
+        }
     }
 }

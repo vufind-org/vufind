@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Sitemap
+ * VuFind Sitemap.
  *
  * PHP version 8
  *
@@ -29,15 +29,13 @@
 
 namespace VuFind\Sitemap;
 
-use VuFind\Config\Config;
-
 use function call_user_func;
 use function in_array;
 use function is_callable;
 use function is_string;
 
 /**
- * Class for generating sitemaps
+ * Class for generating sitemaps.
  *
  * @category VuFind
  * @package  Sitemap
@@ -48,98 +46,98 @@ use function is_string;
 class Generator
 {
     /**
-     * Base URL for sitemap
+     * Base URL for sitemap.
      *
      * @var string
      */
     protected $baseSitemapUrl;
 
     /**
-     * Languages enabled for sitemaps
+     * Languages enabled for sitemaps.
      *
      * @var array
      */
     protected $languages;
 
     /**
-     * Frequency of URL updates (always, daily, weekly, monthly, yearly, never)
+     * Frequency of URL updates (always, daily, weekly, monthly, yearly, never).
      *
      * @var string
      */
     protected $frequency;
 
     /**
-     * URL entries per sitemap
+     * URL entries per sitemap.
      *
      * @var int
      */
     protected $countPerPage;
 
     /**
-     * Output file path
+     * Output file path.
      *
      * @var string
      */
     protected $fileLocation;
 
     /**
-     * Base path to sitemap files, including base filename
+     * Base path to sitemap files, including base filename.
      *
      * @var string
      */
     protected $fileStart;
 
     /**
-     * Filename of sitemap index
+     * Filename of sitemap index.
      *
      * @var string
      */
     protected $indexFile = false;
 
     /**
-     * Warnings thrown during sitemap generation
+     * Warnings thrown during sitemap generation.
      *
      * @var array
      */
     protected $warnings = [];
 
     /**
-     * Verbose callback
+     * Verbose callback.
      *
      * @var callable
      */
     protected $verbose = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string        $baseUrl       VuFind base URL
-     * @param Config        $config        Sitemap configuration settings
+     * @param array         $config        Sitemap configuration settings
      * @param array         $locales       Enabled locales
      * @param PluginManager $pluginManager Generator plugin manager
      */
     public function __construct(
         protected $baseUrl,
-        protected Config $config,
+        protected array $config,
         array $locales,
         protected PluginManager $pluginManager
     ) {
         $this->languages = $this->getSitemapLanguages($locales);
 
-        $this->baseSitemapUrl = empty($this->config->SitemapIndex->baseSitemapUrl)
-            ? $this->baseUrl : $this->config->SitemapIndex->baseSitemapUrl;
+        $this->baseSitemapUrl = empty($this->config['SitemapIndex']['baseSitemapUrl'])
+            ? $this->baseUrl : $this->config['SitemapIndex']['baseSitemapUrl'];
 
-        $this->frequency = $this->config->Sitemap->frequency ?? 'weekly';
-        $this->countPerPage = $this->config->Sitemap->countPerPage ?? 10000;
-        $this->fileLocation = $this->config->Sitemap->fileLocation ?? '/tmp';
-        $this->fileStart = $this->config->Sitemap->fileName ?? 'sitemap';
-        if (isset($this->config->SitemapIndex->indexFileName)) {
-            $this->indexFile = $this->config->SitemapIndex->indexFileName . '.xml';
+        $this->frequency = $this->config['Sitemap']['frequency'] ?? 'weekly';
+        $this->countPerPage = $this->config['Sitemap']['countPerPage'] ?? 10000;
+        $this->fileLocation = $this->config['Sitemap']['fileLocation'] ?? '/tmp';
+        $this->fileStart = $this->config['Sitemap']['fileName'] ?? 'sitemap';
+        if (isset($this->config['SitemapIndex']['indexFileName'])) {
+            $this->indexFile = $this->config['SitemapIndex']['indexFileName'] . '.xml';
         }
     }
 
     /**
-     * Get/set verbose callback
+     * Get/set verbose callback.
      *
      * @param callable|null $newMode Callback for writing verbose messages (or null
      * to disable them)
@@ -155,7 +153,7 @@ class Generator
     }
 
     /**
-     * Write a verbose message (if configured to do so)
+     * Write a verbose message (if configured to do so).
      *
      * @param string $msg Message to display
      *
@@ -169,7 +167,7 @@ class Generator
     }
 
     /**
-     * Get/set base url
+     * Get/set base url.
      *
      * @param string $newUrl New base url
      *
@@ -184,7 +182,7 @@ class Generator
     }
 
     /**
-     * Get/set base sitemap url
+     * Get/set base sitemap url.
      *
      * @param string $newUrl New base sitemap url
      *
@@ -199,7 +197,7 @@ class Generator
     }
 
     /**
-     * Get/set output file path
+     * Get/set output file path.
      *
      * @param string $newLocation New path
      *
@@ -244,7 +242,7 @@ class Generator
     }
 
     /**
-     * Generate sitemaps from all mandatory and configured plugins
+     * Generate sitemaps from all mandatory and configured plugins.
      *
      * @return array
      */
@@ -270,8 +268,7 @@ class Generator
         };
 
         // If no plugins are defined, use the Index plugin by default:
-        $plugins = isset($this->config->Sitemap->plugins)
-            ? $this->config->Sitemap->plugins->toArray() : ['Index'];
+        $plugins = $this->config['Sitemap']['plugins'] ?? ['Index'];
         $pluginSitemaps = [];
         foreach ($plugins as $pluginName) {
             $plugin = $this->getPlugin($pluginName);
@@ -339,7 +336,7 @@ class Generator
 
             // Add a <sitemap /> group for a static sitemap file.
             // See sitemap.ini for more information on this option.
-            $indexSettings = $this->config->SitemapIndex->toArray();
+            $indexSettings = $this->config['SitemapIndex'] ?? [];
             $baseSitemapFileNames = (array)($indexSettings['baseSitemapFileName'] ?? []);
             foreach ($baseSitemapFileNames as $baseSitemapFileName) {
                 // Is the value already a fully-formed URL? If so, use it as-is; otherwise,
@@ -411,7 +408,7 @@ class Generator
     }
 
     /**
-     * Get the base URL for sitemap index files
+     * Get the base URL for sitemap index files.
      *
      * @return string
      */
@@ -422,7 +419,7 @@ class Generator
     }
 
     /**
-     * Create and setup a plugin
+     * Create and setup a plugin.
      *
      * @param string $pluginName Plugin name
      *
@@ -445,7 +442,7 @@ class Generator
     }
 
     /**
-     * Get languages for a sitemap
+     * Get languages for a sitemap.
      *
      * Returns an array with sitemap languages as keys and VuFind languages as
      * values.
@@ -456,15 +453,15 @@ class Generator
      */
     protected function getSitemapLanguages(array $locales): array
     {
-        if (empty($this->config->Sitemap->indexLanguageVersions)) {
+        if (empty($this->config['Sitemap']['indexLanguageVersions'])) {
             return [];
         }
-        if (trim($this->config->Sitemap->indexLanguageVersions) === '*') {
+        if (trim($this->config['Sitemap']['indexLanguageVersions']) === '*') {
             $filter = [];
         } else {
             $filter = array_map(
                 'trim',
-                explode(',', $this->config->Sitemap->indexLanguageVersions)
+                explode(',', $this->config['Sitemap']['indexLanguageVersions'])
             );
         }
         $result = [];

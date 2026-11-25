@@ -29,11 +29,11 @@
 
 namespace VuFind\ChannelProvider;
 
-use VuFind\Controller\Plugin\NewItems;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
+use VuFind\Search\NewItemsHelper;
 use VuFindSearch\Command\SearchCommand;
 
 use function count;
@@ -67,17 +67,17 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
     protected $sort;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFindSearch\Service               $searchService Search service
      * @param \VuFind\Search\Params\PluginManager $paramManager  Params manager
-     * @param NewItems                            $newItems      New items helper
+     * @param NewItemsHelper                      $newItems      New items helper
      * @param array                               $options       Settings (optional)
      */
     public function __construct(
         protected \VuFindSearch\Service $searchService,
         protected \VuFind\Search\Params\PluginManager $paramManager,
-        protected NewItems $newItems,
+        protected NewItemsHelper $newItems,
         array $options = []
     ) {
         $this->setOptions($options);
@@ -101,15 +101,19 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
      * Return channel information derived from a record driver object.
      *
      * @param RecordDriver $driver       Record driver
-     * @param string       $channelToken Token identifying a single specific channel
+     * @param ?string      $channelToken Token identifying a single specific channel
      * to load (if omitted, all channels will be loaded) -- not used in this provider
+     * @param string       $context      Context of channel load ('default' for normal
+     * Channels page, 'tab' for record tab)
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getFromRecord(RecordDriver $driver, $channelToken = null)
-    {
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function getFromRecord(
+        RecordDriver $driver,
+        ?string $channelToken = null,
+        string $context = 'default'
+    ): array {
         $params = $this->paramManager->get($driver->getSourceIdentifier());
         $channel = $this->buildChannelFromParams($params);
         return (count($channel['contents']) > 0) ? [$channel] : [];
@@ -119,14 +123,13 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
      * Return channel information derived from a search results object.
      *
      * @param Results $results      Search results
-     * @param string  $channelToken Token identifying a single specific channel
+     * @param ?string $channelToken Token identifying a single specific channel
      * to load (if omitted, all channels will be loaded) -- not used in this provider
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getFromSearch(Results $results, $channelToken = null)
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function getFromSearch(Results $results, ?string $channelToken = null): array
     {
         $params = $this->paramManager->get($results->getParams()->getSearchClassId());
         $channel = $this->buildChannelFromParams($params);
@@ -151,11 +154,16 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
         $params->addHiddenFilter($this->newItems->getSolrFilter($this->maxAge));
         $params->setSort($this->sort, true);
         $query = $params->getQuery();
+        if (!method_exists($params, 'getBackendParameters')) {
+            throw new \Exception($params::class . ' does not support getBackendParameters()!');
+        }
         $paramBag = $params->getBackendParameters();
+        $limit = $this->limit ?? $this->batchSize;
         $command = new SearchCommand(
             $params->getSearchClassId(),
             $query,
-            limit: $this->batchSize,
+            offset: ($this->page - 1) * $limit,
+            limit: $limit,
             params: $paramBag
         );
         $result = $this->searchService->invoke($command)->getResult()->getRecords();

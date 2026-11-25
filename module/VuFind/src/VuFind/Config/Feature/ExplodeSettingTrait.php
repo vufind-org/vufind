@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait providing support for converting delimited settings to arrays
+ * Trait providing support for converting delimited settings to arrays.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Config\Feature;
 
 /**
- * Trait providing support for converting delimited settings to arrays
+ * Trait providing support for converting delimited settings to arrays.
  *
  * @category VuFind
  * @package  Config
@@ -41,40 +41,46 @@ namespace VuFind\Config\Feature;
 trait ExplodeSettingTrait
 {
     /**
-     * Explode a delimited setting to an array
+     * Explode a delimited setting to an array.
      *
-     * @param string $value     Setting value
-     * @param bool   $trim      Whether to trim the values (disabled by default to
-     * ensure any valid blank entry does not get trimmed, and to avoid doing extra
-     * work on each execution)
-     * @param string $separator Separator
+     * @param string    $value               Setting value
+     * @param ?callable $formatValueCallback Optional callback to format values
+     * @param string    $separator           Separator
      *
      * @return array
      */
     protected function explodeSetting(
         string $value,
-        $trim = false,
-        string $separator = ':'
+        ?callable $formatValueCallback = null,
+        string $separator = ':',
     ): array {
         if ('' === $value) {
             return [];
         }
         $result = explode($separator, $value);
-        if ($trim) {
-            $result = array_map('trim', $result);
+        if ($formatValueCallback) {
+            $result = array_map($formatValueCallback, $result);
         }
         return $result;
     }
 
     /**
-     * Explode a comma-delimited setting to an array of trimmed values
+     * Explode a comma-delimited setting to an array of trimmed values.
      *
-     * @param string $value Setting value
+     * @param string    $value               Setting value
+     * @param ?callable $formatValueCallback Optional callback to format values
      *
      * @return array
      */
-    protected function explodeListSetting(string $value): array
+    protected function explodeListSetting(string $value, ?callable $formatValueCallback = null): array
     {
-        return $this->explodeSetting($value, true, ',');
+        $formatValueCallback = function ($value) use ($formatValueCallback) {
+            $value = trim($value);
+            if ($formatValueCallback !== null) {
+                $value = $formatValueCallback($value);
+            }
+            return $value;
+        };
+        return $this->explodeSetting($value, $formatValueCallback, ',');
     }
 }

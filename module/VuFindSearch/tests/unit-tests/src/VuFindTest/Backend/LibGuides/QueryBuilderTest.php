@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for LibGuides query builder
+ * Unit tests for LibGuides query builder.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
 /**
- * Unit tests for LibGuides query builder
+ * Unit tests for LibGuides query builder.
  *
  * @category VuFind
  * @package  Search
@@ -46,7 +46,7 @@ use VuFindSearch\Query\QueryGroup;
 class QueryBuilderTest extends TestCase
 {
     /**
-     * Test basic query parsing
+     * Test basic query parsing.
      *
      * @return void
      */
@@ -60,7 +60,7 @@ class QueryBuilderTest extends TestCase
     }
 
     /**
-     * Test advanced query parsing (not currently supported)
+     * Test advanced query parsing (not currently supported).
      *
      * @return void
      */

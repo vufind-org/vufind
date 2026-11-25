@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related record plugin manager
+ * Related record plugin manager.
  *
  * PHP version 8
  *
@@ -29,10 +29,8 @@
 
 namespace VuFind\Related;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
- * Related record plugin manager
+ * Related record plugin manager.
  *
  * @category VuFind
  * @package  Related_Records
@@ -58,21 +56,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        Channels::class => InvokableFactory::class,
-        Bookplate::class => BookplateFactory::class,
-        Deprecated::class => InvokableFactory::class,
-        MoreByAuthorSolr::class => SimilarFactory::class,
-        Similar::class => SimilarFactory::class,
-        WorldCat2Similar::class => WorldCat2SimilarFactory::class,
-    ];
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *
@@ -87,8 +71,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         // These objects are not meant to be shared -- every time we retrieve one,
         // we are building a brand new object.
         $this->sharedByDefault = false;
-        $this->addAbstractFactory(PluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
+        $this->addAbstractFactory(PluginFactory::class);
     }
 
     /**

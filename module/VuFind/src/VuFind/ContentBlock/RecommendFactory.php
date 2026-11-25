@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class RecommendFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -70,7 +70,7 @@ class RecommendFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
         return new $requestedName(
             $container->get(\VuFind\Search\Params\PluginManager::class),
             $container->get(\VuFind\Recommend\PluginManager::class),
-            $container->get('Request')->getQuery()
+            $container->get('Request')->getQuery()->toArray()
         );
     }
 }

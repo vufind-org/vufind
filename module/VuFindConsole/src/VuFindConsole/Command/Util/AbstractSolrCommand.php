@@ -44,14 +44,14 @@ use VuFind\Solr\Writer;
 abstract class AbstractSolrCommand extends Command
 {
     /**
-     * Solr writer
+     * Solr writer.
      *
      * @var Writer
      */
     protected $solr;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Writer      $solr Solr writer
      * @param string|null $name The name of the command; passing null means it

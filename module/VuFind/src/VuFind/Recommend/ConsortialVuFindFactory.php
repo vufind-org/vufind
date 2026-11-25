@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class ConsortialVuFindFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -58,9 +58,8 @@ class ConsortialVuFindFactory implements \Laminas\ServiceManager\Factory\Factory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
@@ -71,7 +70,7 @@ class ConsortialVuFindFactory implements \Laminas\ServiceManager\Factory\Factory
         }
 
         return new $requestedName(
-            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('ExternalVuFind'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('ExternalVuFind'),
             $container->get(\VuFind\Connection\ExternalVuFind::class)
         );
     }

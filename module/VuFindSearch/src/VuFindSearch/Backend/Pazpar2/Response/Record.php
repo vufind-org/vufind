@@ -66,7 +66,7 @@ class Record implements RecordInterface
     }
 
     /**
-     * Get the XML document representation
+     * Get the XML document representation.
      *
      * @return SimpleXMLElement
      */

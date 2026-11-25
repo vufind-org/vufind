@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDSResults Recommendations Module
+ * EDSResults Recommendations Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * EDSResults Recommendations Module
+ * EDSResults Recommendations Module.
  *
  * This class provides recommendations by doing a search of EDS.
  *

@@ -41,17 +41,17 @@ use VuFindConsole\Command\Util\ExpireAuditEventsCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExpireAuditEventsCommandTest extends AbstractExpireCommandTest
+class ExpireAuditEventsCommandTest extends AbstractExpireCommandTestCase
 {
     /**
-     * Name of class being tested
+     * Name of class being tested.
      *
      * @var string
      */
     protected $targetClass = ExpireAuditEventsCommand::class;
 
     /**
-     * Name of a valid service class to test with
+     * Name of a valid service class to test with.
      *
      * @var string
      */

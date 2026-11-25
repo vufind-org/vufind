@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Configuration object
+ * Configuration object.
  *
  * This is a lightweight replacement for the deprecated Laminas\Config\Config class.
  * It will eventually be deprecated and removed, but it will help ease the migration
@@ -42,18 +42,19 @@ use function count;
 use function is_array;
 
 /**
- * Configuration object
+ * Configuration object.
  *
- * @category VuFind
- * @package  Config
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @category   VuFind
+ * @package    Config
+ * @author     Demian Katz <demian.katz@villanova.edu>
+ * @license    http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link       https://vufind.org Main Site
+ * @deprecated An array is now used in place of Config objects, and support will be removed in 13.0
  */
 class Config implements ArrayAccess, Countable, Iterator
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $data Configuration array
      */
@@ -62,7 +63,7 @@ class Config implements ArrayAccess, Countable, Iterator
     }
 
     /**
-     * Get a property of the configuration (which may be a nested Config object)
+     * Get a property of the configuration (which may be a nested Config object).
      *
      * @param string $key     Property name
      * @param mixed  $default Default value to use if $key is unset
@@ -78,7 +79,7 @@ class Config implements ArrayAccess, Countable, Iterator
     }
 
     /**
-     * Get a property of the configuration (which may be a nested Config object)
+     * Get a property of the configuration (which may be a nested Config object).
      *
      * @param string $key Property name
      *
@@ -259,6 +260,7 @@ class Config implements ArrayAccess, Countable, Iterator
      */
     public function valid(): bool
     {
-        return isset($this->data[$this->key()]);
+        $key = $this->key();
+        return null !== $key && isset($this->data[$key]);
     }
 }

@@ -29,12 +29,12 @@
 
 namespace VuFindTest\Command\OnlinePayment;
 
-use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Db\Service\AuditEventService;
 use VuFind\Db\Service\PaymentServiceInterface;
 use VuFind\Mailer\Mailer;
 use VuFind\OnlinePayment\OnlinePaymentManager;
+use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindConsole\Command\OnlinePayment\MonitorCommand;
 use VuFindConsole\Command\ScheduledSearch\NotifyCommand;
 use VuFindTest\Container\MockContainer;
@@ -61,7 +61,7 @@ class MonitorCommandTest extends \PHPUnit\Framework\TestCase
     protected $container;
 
     /**
-     * Setup method
+     * Setup method.
      *
      * @return void
      */
@@ -82,11 +82,6 @@ class MonitorCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getCommand(
             [
                 'paymentService' => $paymentService,
-                'onlinePaymentManager' => $this->createMock(OnlinePaymentManager::class),
-                'viewRenderer' => $this->createMock(PhpRenderer::class),
-                'mailer' => $this->createMock(Mailer::class),
-                'config' => [],
-                'auditEventService' => $this->createMock(AuditEventService::class),
             ]
         );
         $commandTester = new CommandTester($command);
@@ -95,7 +90,7 @@ class MonitorCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(2, $results);
         $this->assertStringEndsWith('Online payment monitor started', $results[0]);
         $this->assertStringEndsWith('Online payment monitor completed', $results[1]);
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -110,7 +105,7 @@ class MonitorCommandTest extends \PHPUnit\Framework\TestCase
         return new MonitorCommand(
             $options['paymentService'],
             $this->createMock(OnlinePaymentManager::class),
-            $this->createMock(PhpRenderer::class),
+            $this->createMock(TemplateRendererInterface::class),
             $this->createMock(Mailer::class),
             [
                 'Mail' => [

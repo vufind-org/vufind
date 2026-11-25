@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SMS test
+ * SMS test.
  *
  * PHP version 8
  *
@@ -29,12 +29,14 @@
 
 namespace VuFindTest\SMS;
 
+use Laminas\Http\Client;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\SMS\Clickatell;
 
 use function function_exists;
 
 /**
- * SMS test
+ * SMS test.
  *
  * @category VuFind
  * @package  Tests
@@ -49,10 +51,11 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
      *
      * @var string
      */
-    protected $expectedBaseUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password';
+    protected string $expectedBaseUri
+        = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password';
 
     /**
-     * Setup method
+     * Setup method.
      *
      * @return void
      */
@@ -65,11 +68,11 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test carrier list
+     * Test carrier list.
      *
      * @return void
      */
-    public function testCarriers()
+    public function testCarriers(): void
     {
         $expected = [
             'Clickatell' => ['name' => 'Clickatell', 'domain' => null],
@@ -79,21 +82,26 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unknown exception message error
+     * Test unknown exception message error.
      *
      * @return void
      */
-    public function testUnknownException()
+    public function testUnknownException(): void
     {
+        // Behavior of getDisplayMessage() in VuFind\Exception\Mail depends on
+        // environment
+        if (APPLICATION_ENV !== 'testing') {
+            $this->markTestSkipped('Unexpected APPLICATION_ENV: ' . APPLICATION_ENV);
+        }
         $client = $this->getMockClient();
         $expectedUri = $this->expectedBaseUri . '&to=1234567890&text=hello';
         $client->expects($this->once())
             ->method('setMethod')
-            ->with($this->equalTo('GET'))
+            ->with('GET')
             ->willReturn($client);
         $client->expects($this->once())
             ->method('setUri')
-            ->with($this->equalTo($expectedUri))
+            ->with($expectedUri)
             ->willReturn($client);
         $client->expects($this->once())
             ->method('send')
@@ -107,16 +115,16 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         try {
             $obj->text('Clickatell', '1234567890', 'test@example.com', 'hello');
         } catch (\VuFind\Exception\SMS $e) {
-            $this->assertEquals('sms_failure', $e->getDisplayMessage());
+            $this->assertSame('sms_failure', $e->getDisplayMessage());
         }
     }
 
     /**
-     * Test successful query
+     * Test successful query.
      *
      * @return void
      */
-    public function testSuccessResponse()
+    public function testSuccessResponse(): void
     {
         $client = $this->getMockClient();
         $expectedUri = $this->expectedBaseUri . '&to=1234567890&text=hello';
@@ -125,25 +133,23 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $response->setContent('ID:fake');
         $client->expects($this->once())
             ->method('setMethod')
-            ->with($this->equalTo('GET'))
+            ->with('GET')
             ->willReturn($client);
         $client->expects($this->once())
             ->method('setUri')
-            ->with($this->equalTo($expectedUri))
+            ->with($expectedUri)
             ->willReturn($client);
         $client->expects($this->once())->method('send')->willReturn($response);
         $obj = $this->getClickatell($client);
-        $this->assertTrue(
-            $obj->text('Clickatell', '1234567890', 'test@example.com', 'hello')
-        );
+        $obj->text('Clickatell', '1234567890', 'test@example.com', 'hello');
     }
 
     /**
-     * Test unexpected response
+     * Test unexpected response.
      *
      * @return void
      */
-    public function testUnexpectedResponse()
+    public function testUnexpectedResponse(): void
     {
         $this->expectException(\VuFind\Exception\SMS::class);
         $this->expectExceptionMessage('badbadbad');
@@ -155,11 +161,11 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $response->setContent('badbadbad');
         $client->expects($this->once())
             ->method('setMethod')
-            ->with($this->equalTo('GET'))
+            ->with('GET')
             ->willReturn($client);
         $client->expects($this->once())
             ->method('setUri')
-            ->with($this->equalTo($expectedUri))
+            ->with($expectedUri)
             ->willReturn($client);
         $client->expects($this->once())
             ->method('send')
@@ -169,11 +175,11 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unsuccessful query
+     * Test unsuccessful query.
      *
      * @return void
      */
-    public function testFailureResponse()
+    public function testFailureResponse(): void
     {
         $this->expectException(\VuFind\Exception\SMS::class);
         $this->expectExceptionMessage('Problem sending text.');
@@ -184,11 +190,11 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $response->setStatusCode(404);
         $client->expects($this->once())
             ->method('setMethod')
-            ->with($this->equalTo('GET'))
+            ->with('GET')
             ->willReturn($client);
         $client->expects($this->once())
             ->method('setUri')
-            ->with($this->equalTo($expectedUri))
+            ->with($expectedUri)
             ->willReturn($client);
         $client->expects($this->once())
             ->method('send')
@@ -198,11 +204,11 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test an exception in the mail client
+     * Test an exception in the mail client.
      *
      * @return void
      */
-    public function testClientException()
+    public function testClientException(): void
     {
         $this->expectException(\VuFind\Exception\SMS::class);
         $this->expectExceptionMessage('Foo');
@@ -211,11 +217,11 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $expectedUri = $this->expectedBaseUri . '&to=1234567890&text=hello';
         $client->expects($this->once())
             ->method('setMethod')
-            ->with($this->equalTo('GET'))
+            ->with('GET')
             ->willReturn($client);
         $client->expects($this->once())
             ->method('setUri')
-            ->with($this->equalTo($expectedUri))
+            ->with($expectedUri)
             ->willReturn($client);
         $client->expects($this->once())
             ->method('send')
@@ -225,14 +231,14 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build a test object
+     * Build a test object.
      *
-     * @param \Laminas\Http\Client $client HTTP client (null for default)
-     * @param array                $config Configuration (null for default)
+     * @param ?Client $client HTTP client (null for default)
+     * @param ?array  $config Configuration (null for default)
      *
      * @return Clickatell
      */
-    protected function getClickatell($client = null, $config = null)
+    protected function getClickatell(?Client $client = null, ?array $config = null): Clickatell
     {
         if (null === $config) {
             $config = $this->getDefaultConfig();
@@ -241,17 +247,17 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
             $client = $this->getMockClient();
         }
         return new Clickatell(
-            new \VuFind\Config\Config($config),
+            $config,
             ['client' => $client]
         );
     }
 
     /**
-     * Get default configuration
+     * Get default configuration.
      *
      * @return array
      */
-    protected function getDefaultConfig()
+    protected function getDefaultConfig(): array
     {
         return [
             'Clickatell' => [
@@ -263,12 +269,12 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock HTTP client
+     * Get a mock HTTP client.
      *
-     * @return \Laminas\Http\Client
+     * @return Client&MockObject
      */
-    protected function getMockClient()
+    protected function getMockClient(): Client&MockObject
     {
-        return $this->createMock(\Laminas\Http\Client::class);
+        return $this->createMock(Client::class);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Make link view helper
+ * Make link view helper.
  *
  * PHP version 8
  *
@@ -30,10 +30,12 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function is_array;
 
 /**
- * Make link view helper
+ * Make link view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,10 +44,21 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class MakeLink extends \Laminas\View\Helper\AbstractHelper
+class MakeLink
 {
     /**
-     * Combine attributes including proxy
+     * Constructor.
+     *
+     * @param MakeTag $makeTag MakeTag helper
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected MakeTag $makeTag,
+    ) {
+    }
+
+    /**
+     * Combine attributes including proxy.
      *
      * @param string       $href    Link destination (null to skip)
      * @param string|array $attrs   Link attributes (class name or associative array)
@@ -75,7 +88,7 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Render an HTML link
+     * Render an HTML link.
      *
      * $href will override $attrs['href']
      * > Feel free to use like makeLink('text', 'href', $defaults);
@@ -109,7 +122,6 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
         $tag = empty($mergedAttrs['href']) ? 'span' : 'a';
 
         // Forward to makeTag helper
-        $makeTag = $this->getView()->plugin('makeTag');
-        return $makeTag($tag, $contents, $mergedAttrs, $options);
+        return ($this->makeTag)($tag, $contents, $mergedAttrs, $options);
     }
 }

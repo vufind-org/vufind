@@ -60,7 +60,7 @@ interface FeedbackServiceInterface extends DbServiceInterface
     public function getFeedbackById(int $id): ?FeedbackEntityInterface;
 
     /**
-     * Get feedback by filter
+     * Get feedback by filter.
      *
      * @param ?string $formName Form name (optional filter)
      * @param ?string $siteUrl  Site URL (optional filter)
@@ -79,7 +79,7 @@ interface FeedbackServiceInterface extends DbServiceInterface
     ): Paginator;
 
     /**
-     * Delete feedback by ids
+     * Delete feedback by ids.
      *
      * @param array $ids IDs
      *
@@ -88,7 +88,7 @@ interface FeedbackServiceInterface extends DbServiceInterface
     public function deleteByIdArray(array $ids): int;
 
     /**
-     * Get unique values for a column of the feedback table
+     * Get unique values for a column of the feedback table.
      *
      * @param string $column Column name
      *

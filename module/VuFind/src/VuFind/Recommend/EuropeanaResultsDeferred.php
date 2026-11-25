@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EuropeanaResultsDeferred Recommendations Module
+ * EuropeanaResultsDeferred Recommendations Module.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Recommend;
 use function is_object;
 
 /**
- * EuropeanaResultsDeferred Recommendations Module
+ * EuropeanaResultsDeferred Recommendations Module.
  *
  * This class sets up an AJAX call to trigger a call to the EuropeanaResults
  * module.
@@ -47,7 +47,7 @@ use function is_object;
 class EuropeanaResultsDeferred extends AbstractSearchObjectDeferred
 {
     /**
-     * Number of expected module parameters (from .ini config)
+     * Number of expected module parameters (from .ini config).
      *
      * @var int
      */
@@ -57,7 +57,7 @@ class EuropeanaResultsDeferred extends AbstractSearchObjectDeferred
      * Initialize the lookFor query parameter. Called from init().
      *
      * @param \VuFind\Search\Base\Params $params   Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request  Parameter object representing user
+     * @param array                      $request  Parameter array representing user
      * request.
      * @param array                      $settings Parameter array (passed by reference)
      *
@@ -66,7 +66,7 @@ class EuropeanaResultsDeferred extends AbstractSearchObjectDeferred
     protected function initLookFor($params, $request, &$settings)
     {
         // Collect the best possible search term(s):
-        $this->lookfor = $request->get('lookfor', '');
+        $this->lookfor = $request['lookfor'] ?? '';
         if (empty($this->lookfor) && is_object($params)) {
             $this->lookfor = $params->getQuery()->getAllTerms();
         }

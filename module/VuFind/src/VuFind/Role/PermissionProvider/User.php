@@ -29,13 +29,14 @@
 
 namespace VuFind\Role\PermissionProvider;
 
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
+use VuFind\Service\AuthorizationServiceInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 
 /**
  * LDAP permission provider for VuFind.
- * based on permission provider Username.php
+ * based on permission provider Username.php.
  *
  * @category VuFind
  * @package  Authorization
@@ -50,20 +51,13 @@ class User implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Authorization object
+     * Constructor.
      *
-     * @var AuthorizationService
+     * @param AuthorizationServiceInterface $auth Authorization service
      */
-    protected $auth;
-
-    /**
-     * Constructor
-     *
-     * @param AuthorizationService $authorization Authorization service
-     */
-    public function __construct(AuthorizationService $authorization)
+    #[Autowire]
+    public function __construct(protected AuthorizationServiceInterface $auth)
     {
-        $this->auth = $authorization;
     }
 
     /**

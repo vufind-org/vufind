@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Ratings service
+ * Ratings service.
  *
  * PHP version 8
  *
@@ -29,12 +29,14 @@
 
 namespace VuFind\Ratings;
 
+use VuFind\Db\Entity\RatingsEntityInterface;
 use VuFind\Db\Service\RatingsServiceInterface;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Ratings service
+ * Ratings service.
  *
  * @category VuFind
  * @package  Ratings
@@ -45,19 +47,20 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
 class RatingsService
 {
     /**
-     * Cache for rating data
+     * Cache for rating data.
      *
      * @var array
      */
     protected $ratingCache = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RatingsServiceInterface $dbService         Ratings database service
      * @param ResourcePopulator       $resourcePopulator Resource populator
      */
     public function __construct(
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected RatingsServiceInterface $dbService,
         protected ResourcePopulator $resourcePopulator
     ) {
@@ -79,7 +82,7 @@ class RatingsService
     public function getRatingData(RecordDriver $driver, ?int $userId = null)
     {
         // Cache data since comments list may ask for same information repeatedly:
-        $recordId = $driver->getUniqueId();
+        $recordId = $driver->getUniqueID();
         $source = $driver->getSourceIdentifier();
         $cacheKey = $recordId . '-' . $source . '-' . ($userId ?? '');
         if (!isset($this->ratingCache[$cacheKey])) {
@@ -105,7 +108,7 @@ class RatingsService
     public function getRatingBreakdown(RecordDriver $driver, array $groups)
     {
         return $this->dbService->getCountsForRecord(
-            $driver->getUniqueId(),
+            $driver->getUniqueID(),
             $driver->getSourceIdentifier(),
             $groups
         );
@@ -119,13 +122,13 @@ class RatingsService
      * @param ?int         $rating The user-provided rating, or null to clear any existing
      * rating
      *
-     * @return void
+     * @return ?RatingsEntityInterface Entity of rating added, deleted or updated (or null if nothing was done)
      */
-    public function saveRating(RecordDriver $driver, int $userId, ?int $rating): void
+    public function saveRating(RecordDriver $driver, int $userId, ?int $rating): ?RatingsEntityInterface
     {
         // Clear rating cache:
         $this->ratingCache = [];
         $resource = $this->resourcePopulator->getOrCreateResourceForDriver($driver);
-        $this->dbService->addOrUpdateRating($resource, $userId, $rating);
+        return $this->dbService->addOrUpdateRating($resource, $userId, $rating);
     }
 }

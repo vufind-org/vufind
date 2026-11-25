@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Minified Search Object
+ * VuFind Minified Search Object.
  *
  * PHP version 8
  *

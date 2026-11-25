@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Helper to get path to a parent template (for including)
+ * Helper to get path to a parent template (for including).
  *
  * PHP version 8
  *
@@ -31,9 +31,10 @@ namespace VuFindTheme\View\Helper;
 
 use Exception;
 use Laminas\View\Resolver\TemplatePathStack;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Helper to get path to a parent template (for including)
+ * Helper to get path to a parent template (for including).
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,27 +42,20 @@ use Laminas\View\Resolver\TemplatePathStack;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ParentTemplate extends \Laminas\View\Helper\AbstractHelper
+class ParentTemplate
 {
     /**
-     * Inheritance stack of template folder paths
+     * Constructor.
      *
-     * @var TemplatePathStack
+     * @param TemplatePathStack $templatePathStack Inheritance stack of template paths
      */
-    protected $templatePathStack;
-
-    /**
-     * Constructor
-     *
-     * @param TemplatePathStack $templateStack Inheritance stack of template paths
-     */
-    public function __construct($templateStack)
+    #[Autowire]
+    public function __construct(protected TemplatePathStack $templatePathStack)
     {
-        $this->templatePathStack = $templateStack;
     }
 
     /**
-     * Returns an template path according the configured theme
+     * Returns an template path according the configured theme.
      *
      * @param string $template    template name like 'footer.phtml'
      * @param string $targetTheme specific parent to inherit from

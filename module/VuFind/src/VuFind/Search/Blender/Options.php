@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender aspect of the Search Multi-class (Options)
+ * Blender aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Search\Blender;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Blender Search Options
+ * Blender Search Options.
  *
  * @category VuFind
  * @package  Search_Blender
@@ -45,39 +45,39 @@ use VuFind\Config\ConfigManagerInterface;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Configuration file to read search settings from
+     * Configuration file to read search settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *
      * @var string
      */
-    protected $searchIni = 'Blender';
+    protected string $searchIni = 'Blender';
 
     /**
-     * Configuration file to read facet settings from
+     * Configuration file to read facet settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *
      * @var string
      */
-    protected $facetsIni = 'Blender';
+    protected string $facetsIni = 'Blender';
 
     /**
      * The route name for the search results action.
      *
      * @var string
      */
-    protected $searchAction = 'blender-results';
+    protected string $searchAction = 'blender-results';
 
     /**
      * The route name for the advanced search action.
      *
      * @var string
      */
-    protected $advancedSearchAction = 'blender-advanced';
+    protected string $advancedSearchAction = 'blender-advanced';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */
@@ -97,30 +97,30 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return $this->searchAction;
     }
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): ?string
     {
-        return $this->advancedHandlers ? $this->advancedSearchAction : false;
+        return $this->advancedHandlers ? $this->advancedSearchAction : null;
     }
 
     /**
-     * Return the route name for the facet list action. Returns false to cover
+     * Return the route name for the facet list action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): ?string
     {
-        return false;
+        return null;
     }
 }

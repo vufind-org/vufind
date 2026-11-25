@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Metadata vocabulary implementation for BEPress
+ * Metadata vocabulary implementation for BEPress.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\MetadataVocabulary;
 
 /**
- * Metadata vocabulary implementation for BEPress
+ * Metadata vocabulary implementation for BEPress.
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -42,7 +42,7 @@ class BEPress extends AbstractBase
 {
     /**
      * Mapping from BEPress to VuFind fields; see http://
-     * div.div1.com.au/div-thoughts/div-commentaries/66-div-commentary-metadata
+     * div.div1.com.au/div-thoughts/div-commentaries/66-div-commentary-metadata.
      *
      * @var array
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Preview Test Class
+ * Preview Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordTab;
 use VuFind\RecordTab\Preview;
 
 /**
- * Preview Test Class
+ * Preview Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -57,11 +57,12 @@ class PreviewTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsActive.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function isActiveProvider(): array
+    public static function isActiveProvider(): \Iterator
     {
-        return ['Active' => [false, false], 'InActive' => [true, true]];
+        yield 'Active' => [false, false];
+        yield 'InActive' => [true, true];
     }
 
     /**

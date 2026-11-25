@@ -42,6 +42,8 @@ enum AuditEventSubtype: string
 {
     // ILS
     case CancelHolds = 'cancel_holds';
+    case CancelILLRequests = 'cancel_ill_requests';
+    case CancelStorageRetrievalRequests = 'cancel_storage_retrieval_requests';
     case PlaceHold = 'place_hold';
     case PlaceILLRequest = 'place_ill_request';
     case PlaceStorageRetrievalRequest = 'place_storage_retrieval_request';
@@ -72,12 +74,15 @@ enum AuditEventSubtype: string
     case LoginFailure = 'login_fail';
     case Logout = 'logout';
     case PasswordChanged = 'password_changed';
+    case PasswordReset = 'password_reset';
+    case PreAuth = 'pre_auth';
     case RememberLogin = 'remember_login';
     case SaveSearch = 'save_search';
     case ScheduleSearch = 'schedule_search';
     case SendAddressVerificationEmail = 'send_address_verification_email';
     case SendCardAuthEmail = 'send_card_auth_email';
     case SendEmailLoginLink = 'send_email_login_link';
+    case SendEmailRecoveryCode = 'send_email_recovery_code';
     case SendEmailRecoveryLink = 'send_email_recovery_link';
     case TokenLogin = 'token_login';
     case UnSaveSearch = 'un_save_search';

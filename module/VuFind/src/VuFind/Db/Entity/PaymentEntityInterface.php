@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for payment table
+ * Entity model interface for payment table.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use DateTime;
 use VuFind\Db\Type\PaymentStatus;
 
 /**
- * Entity model interface for payment table
+ * Entity model interface for payment table.
  *
  * @category VuFind
  * @package  Database
@@ -288,7 +288,7 @@ interface PaymentEntityInterface extends EntityInterface
     public function isInProgress(): bool;
 
     /**
-     * Check if the payment is registered with the ILS
+     * Check if the payment is registered with the ILS.
      *
      * @return bool
      */

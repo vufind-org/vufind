@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record Missing Exception
+ * Record Missing Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Record Missing Exception
+ * Record Missing Exception.
  *
  * @category VuFind
  * @package  Exceptions
@@ -43,9 +43,9 @@ class RecordMissing extends NotFound implements SeverityLevelInterface
     /**
      * Get the logging severity level for this exception.
      *
-     * @return int
+     * @return string
      */
-    public function getSeverityLevel()
+    public function getSeverityLevel(): string
     {
         return \Psr\Log\LogLevel::DEBUG;
     }

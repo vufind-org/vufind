@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config handler plugin manager
+ * Config handler plugin manager.
  *
  * PHP version 8
  *
@@ -30,9 +30,10 @@
 namespace VuFind\Config\Handler;
 
 use VuFind\Config\Location\ConfigLocationInterface;
+use VuFind\ServiceManager\AbstractPluginFactory;
 
 /**
- * Config handler plugin manager
+ * Config handler plugin manager.
  *
  * @category VuFind
  * @package  Config_Handlers
@@ -48,19 +49,28 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'file' => GenericFile::class,
+        'env_var' => Env::class,
         'ini' => Ini::class,
+        'yaml' => Yaml::class,
     ];
 
     /**
-     * Default plugin factories.
+     * Constructor.
      *
-     * @var array
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
      */
-    protected $factories = [
-        Dir::class => DirFactory::class,
-        GenericFile::class => DefaultHandlerFactory::class,
-        Ini::class => DefaultHandlerFactory::class,
-    ];
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        parent::__construct($configOrContainerInstance, $v3config);
+        $this->addAbstractFactory(AbstractPluginFactory::class);
+    }
 
     /**
      * Return the name of the base class or interface that plug-ins must conform

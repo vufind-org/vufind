@@ -36,7 +36,7 @@ use VuFind\Content\ObalkyKnihService;
 use function sprintf;
 
 /**
- * Class ObalkyKnih
+ * Class ObalkyKnih.
  *
  * @category VuFind
  * @package  Content
@@ -47,7 +47,7 @@ use function sprintf;
 class ObalkyKnih extends \VuFind\Content\AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ObalkyKnihService $service Service for getting metadata from obalkyknih.cz
      */

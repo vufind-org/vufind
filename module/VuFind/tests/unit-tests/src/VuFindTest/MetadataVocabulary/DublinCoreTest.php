@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DublinCore Test Class
+ * DublinCore Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\MetadataVocabulary;
 use VuFind\MetadataVocabulary\DublinCore;
 
 /**
- * DublinCore Test Class
+ * DublinCore Test Class.
  *
  * @category VuFind
  * @package  Tests

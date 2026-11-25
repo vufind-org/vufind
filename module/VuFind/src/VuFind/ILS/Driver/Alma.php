@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Alma ILS Driver
+ * Alma ILS Driver.
  *
  * PHP version 8
  *
@@ -44,7 +44,7 @@ use function in_array;
 use function is_callable;
 
 /**
- * Alma ILS Driver
+ * Alma ILS Driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -77,7 +77,7 @@ class Alma extends AbstractBase implements
     protected $apiKey;
 
     /**
-     * Date converter
+     * Date converter.
      *
      * @var \VuFind\Date\Converter
      */
@@ -91,7 +91,7 @@ class Alma extends AbstractBase implements
     protected $locationTypeToItemStatus = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
@@ -124,7 +124,7 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Make an HTTP request against Alma
+     * Make an HTTP request against Alma.
      *
      * @param string        $path          Path to retrieve from API (excluding base
      *                                     URL/API key)
@@ -165,7 +165,7 @@ class Alma extends AbstractBase implements
             }
 
             // Create the API URL
-            $url = !str_contains($path, '://') ? $this->baseUrl . $path : $path;
+            $url = $this->baseUrl . $path;
 
             // Create client with API URL
             $client = $this->httpService->createClient($url);
@@ -337,7 +337,7 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -448,7 +448,7 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Check if request is valid
+     * Check if request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -571,9 +571,8 @@ class Alma extends AbstractBase implements
      * @param array  $fulfillmentUnits An array of fulfillment units with all its
      *                                 locations.
      *
-     * @return string|NULL              Null if the location was not found or a
-     *                                  string specifying the fulfillment unit of
-     *                                  the location that was found.
+     * @return ?string                 Null if the location was not found or a string specifying
+     *                                 the fulfillment unit of the location that was found.
      * @author Michael Birkner
      */
     protected function getFulfillmentUnitByLocation($locationCode, $fulfillmentUnits)
@@ -587,13 +586,13 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Create a user in Alma via API call
+     * Create a user in Alma via API call.
      *
      * @param array $formParams The data from the "create new account" form
      *
      * @throws \VuFind\Exception\Auth
      *
-     * @return NULL|SimpleXMLElement
+     * @return ?SimpleXMLElement
      * @author Michael Birkner
      */
     public function createAlmaUser($formParams)
@@ -699,14 +698,14 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
      * @param string $username The patrons barcode or other username.
      * @param string $password The patrons password.
      *
-     * @return string[]|NULL
+     * @return ?array
      */
     public function patronLogin($username, $password)
     {
@@ -827,7 +826,7 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -872,7 +871,7 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -902,16 +901,15 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's holds on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getMyHolds($patron)
     {
         $holdList = [];
@@ -997,7 +995,6 @@ class Alma extends AbstractBase implements
             try {
                 // Delete the request in Alma
                 $apiResult = $this->makeRequest(
-                    $this->baseUrl .
                     '/users/' . rawurlencode($patronId) .
                     '/requests/' . rawurlencode($requestId),
                     ['reason' => 'CancelledAtPatronRequest'],
@@ -1038,7 +1035,7 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Update holds
+     * Update holds.
      *
      * This is responsible for changing the status of hold requests
      *
@@ -1056,7 +1053,7 @@ class Alma extends AbstractBase implements
         $results = [];
         $patronId = $patron['id'];
         foreach ($holdsDetails as $requestId) {
-            $requestUrl = $this->baseUrl . '/users/' . rawurlencode($patronId)
+            $requestUrl = '/users/' . rawurlencode($patronId)
                 . '/requests/' . rawurlencode($requestId);
             $requestDetails = $this->makeRequest($requestUrl);
 
@@ -1091,16 +1088,15 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Get Patron Storage Retrieval Requests
+     * Get Patron Storage Retrieval Requests.
      *
      * This is responsible for retrieving all call slips by a specific patron.
      *
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's holds
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getMyStorageRetrievalRequests($patron)
     {
         $xml = $this->makeRequest(
@@ -1132,16 +1128,15 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Get Patron ILL Requests
+     * Get Patron ILL Requests.
      *
      * This is responsible for retrieving all ILL requests by a specific patron.
      *
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's ILL requests
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getMyILLRequests($patron)
     {
         $xml = $this->makeRequest(
@@ -1244,7 +1239,7 @@ class Alma extends AbstractBase implements
                 //$loan['volume'] = ;
                 $loan['publication_year'] = (string)$itemLoan->publication_year;
                 $loan['renewable']
-                    = strtolower((string)$itemLoan->renewable) == 'true';
+                    = strtolower((string)$itemLoan->renewable) === 'true';
                 //$loan['message'] = ;
                 $loan['title'] = (string)$itemLoan->title;
                 $loan['item_id'] = (string)$itemLoan->loan_id;
@@ -1348,7 +1343,7 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -1366,7 +1361,7 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -1381,7 +1376,7 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -1404,12 +1399,11 @@ class Alma extends AbstractBase implements
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function getConfig(string $function, array $params = []): array
     {
-        if ($function == 'patronLogin') {
+        if ($function === 'patronLogin') {
             return [
                 'loginMethod' => $this->config['Catalog']['loginMethod'] ?? 'vufind',
             ];
@@ -1437,7 +1431,7 @@ class Alma extends AbstractBase implements
                 'default_sort' => 'due asc',
             ];
         } else {
-            $functionConfig = false;
+            $functionConfig = [];
         }
 
         return $functionConfig;
@@ -1557,7 +1551,7 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible get a list of valid library locations for holds / recall
      * retrieval
@@ -1574,9 +1568,8 @@ class Alma extends AbstractBase implements
      *
      * @return array An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickupLocations($patron, $holdDetails = null)
     {
         $xml = $this->makeRequest('/conf/libraries');
@@ -1608,7 +1601,7 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Get reserves by course
+     * Get reserves by course.
      *
      * @param string $courseID     Value from getCourses
      * @param string $instructorID Value from getInstructors (not used yet)
@@ -1617,9 +1610,8 @@ class Alma extends AbstractBase implements
      * @return array With key BIB_ID - The record ID of the current reserve item.
      *               Not currently used:
      *               DISPLAY_CALL_NO, AUTHOR, TITLE, PUBLISHER, PUBLISHER_DATE
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function findReserves($courseID, $instructorID, $departmentID)
     {
         // https://developers.exlibrisgroup.com/alma/apis/courses
@@ -1715,9 +1707,8 @@ class Alma extends AbstractBase implements
      *
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsMethod($method, $params)
     {
         return is_callable([$this, $method]);
@@ -1754,7 +1745,7 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Get Statuses for inventory types
+     * Get Statuses for inventory types.
      *
      * This is responsible for retrieving the status information for a
      * collection of records with specified inventory types.
@@ -1872,11 +1863,11 @@ class Alma extends AbstractBase implements
 
     /**
      * Get the preferred email address for the user (or first one if no preferred one
-     * is found)
+     * is found).
      *
      * @param SimpleXMLElement $user User data
      *
-     * @return string|null
+     * @return ?string
      */
     protected function getPreferredEmail($user)
     {
@@ -1899,7 +1890,7 @@ class Alma extends AbstractBase implements
      *
      * @param SimpleXMLElement $element XML element
      *
-     * @return \VuFind\I18n\TranslatableString
+     * @return ?TranslatableString
      */
     protected function getTranslatableString($element)
     {
@@ -1917,7 +1908,7 @@ class Alma extends AbstractBase implements
      *
      * @param SimpleXMLElement $element XML element
      *
-     * @return TranslatableString
+     * @return ?TranslatableString
      */
     protected function getTranslatableStatusString($element)
     {
@@ -1930,7 +1921,7 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Get location for an item
+     * Get location for an item.
      *
      * @param SimpleXMLElement $item Item
      *
@@ -1942,7 +1933,7 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Get location type for an item
+     * Get location type for an item.
      *
      * @param SimpleXMLElement $item Item
      *
@@ -1965,7 +1956,7 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Get type of a location
+     * Get type of a location.
      *
      * @param string $library  Library
      * @param string $location Location
@@ -1979,7 +1970,7 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Get the locations for a library
+     * Get the locations for a library.
      *
      * @param string $library Library
      *
@@ -2005,30 +1996,5 @@ class Alma extends AbstractBase implements
             $this->putCachedData($cacheId, $locations, 3600);
         }
         return $locations;
-    }
-
-    /**
-     * Get list of funds
-     *
-     * @return array with key = fund ID, value = fund name
-     */
-    public function getFunds()
-    {
-        // https://developers.exlibrisgroup.com/alma/apis/acq
-        // GET /almaws/v1/acq/funds
-        try {
-            $xml = $this->makeRequest('/acq/funds');
-        } catch (ILSException $e) {
-            // API key not defined or not configured to allow this API.
-            // Required permission: Acquisition Read.
-            $xml = [];
-        }
-        $result = [];
-        foreach ($xml->fund ?? [] as $fund) {
-            $fundId = (string)$fund->id;
-            $fundName = (string)$fund->name;
-            $result[$fundId] = $fundName;
-        }
-        return $result;
     }
 }

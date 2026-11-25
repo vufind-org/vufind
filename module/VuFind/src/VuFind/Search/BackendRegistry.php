@@ -62,6 +62,7 @@ class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         'Blender' => Factory\BlenderBackendFactory::class,
+        'Blender2' => Factory\Blender2BackendFactory::class,
         'BrowZine' => Factory\BrowZineBackendFactory::class,
         'EDS' => Factory\EdsBackendFactory::class,
         'EIT' => Factory\EITBackendFactory::class,

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cover layer interface
+ * Cover layer interface.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Cover\Layer;
 
 /**
- * Cover layer interface
+ * Cover layer interface.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -41,7 +41,7 @@ namespace VuFind\Cover\Layer;
 interface LayerInterface
 {
     /**
-     * Render the layer
+     * Render the layer.
      *
      * @param resource $im       Image resource to draw on
      * @param array    $details  Cover details array (with title/author/call_number)

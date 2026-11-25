@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS Record Driver Test Class
+ * EDS Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -31,13 +31,14 @@
 
 namespace VuFindTest\RecordDriver;
 
+use Laminas\Cache\Storage\StorageInterface;
 use VuFind\RecordDriver\EDS;
 
 use function array_slice;
 use function count;
 
 /**
- * EDS Record Driver Test Class
+ * EDS Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -53,7 +54,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
-     * Default test configuration
+     * Default test configuration.
      *
      * @var array
      */
@@ -62,6 +63,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
             'default_sort' => 'relevance',
         ],
         'ItemGlobalOrder' => [],
+        'Cover' => [
+            'loadDirectly' => false,
+        ],
     ];
 
     /**
@@ -118,7 +122,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Default test configuration Patron Empowerment Framework (PEF)
+     * Default test configuration Patron Empowerment Framework (PEF).
      *
      * @var array
      */
@@ -144,19 +148,31 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Generate a new Eds driver to return responses set in a json fixture
+     * Generate a new Eds driver to return responses set in a json fixture.
      *
      * Overwrites $this->driver
      * Uses session cache
      *
-     * @param ?string $test   Name of test fixture to load
-     * @param ?array  $config Driver configuration (null to use default)
+     * @param ?string $test          Name of test fixture to load
+     * @param ?array  $config        Driver configuration (null to use default)
+     * @param ?array  $mockedMethods List of methods to mock on the EDS class
      *
-     * @return EDS
+     * @return EDS&\PHPUnit\Framework\MockObject\MockObject
      */
-    protected function getDriver(?string $test = null, ?array $config = null): EDS
+    protected function getDriver(?string $test = null, ?array $config = null, ?array $mockedMethods = []): EDS
     {
-        $record = new EDS(null, new \VuFind\Config\Config($config ?? $this->defaultDriverConfig));
+        $cache = $this->createMock(StorageInterface::class);
+        $driverConfig = $config ?? $this->defaultDriverConfig;
+
+        if (!empty($mockedMethods)) {
+            $record = $this->getMockBuilder(EDS::class)
+                ->setConstructorArgs([null, $driverConfig, $cache])
+                ->onlyMethods($mockedMethods)
+                ->getMock();
+        } else {
+            $record = new EDS(null, $driverConfig, $cache);
+        }
+
         if (null !== $test) {
             $json = $this->getJsonFixture('eds/' . $test . '.json');
             $record->setRawData($json);
@@ -239,6 +255,17 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->getDriver('valid-eds-record');
         $this->assertEquals('', $driver->getAccessLevel());
+    }
+
+    /**
+     * Test isRestrictedView for a record.
+     *
+     * @return void
+     */
+    public function testIsRestrictedView(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertFalse($driver->isRestrictedView());
     }
 
     /**
@@ -381,29 +408,27 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetItemsFilter.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function filterProvider(): array
+    public static function filterProvider(): \Iterator
     {
-        return [
-            'exclude' => [
-                ['exclude' => ['Label' => ['Title']]],
-                [self::$validAuthor, self::$validPublisher,],
-                10,
+        yield 'exclude' => [
+            ['exclude' => ['Label' => ['Title']]],
+            [self::$validAuthor, self::$validPublisher,],
+            10,
+        ];
+        yield 'include' => [
+            ['include' => ['Label' => ['Title']]],
+            [self::$validTitle],
+            1,
+        ];
+        yield 'exclude and include' => [
+            [
+                'include' => ['Label' => ['Title', 'Authors']],
+                'exclude' => ['Label' => ['Title']],
             ],
-            'include' => [
-                ['include' => ['Label' => ['Title']]],
-                [self::$validTitle],
-                1,
-            ],
-            'exclude and include' => [
-                [
-                    'include' => ['Label' => ['Title', 'Authors']],
-                    'exclude' => ['Label' => ['Title']],
-                ],
-                [self::$validAuthor],
-                1,
-            ],
+            [self::$validAuthor],
+            1,
         ];
     }
 
@@ -433,7 +458,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getItems when invalid data is returned from EDS (i.e. not in the structure
-     * VuFind expected)
+     * VuFind expected).
      *
      * @return void
      */
@@ -599,29 +624,123 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetThumbnail().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getThumbnailProvider(): array
+    public static function getThumbnailProvider(): \Iterator
     {
-        return [
-            'thumb is upscaled to small' => ['small', 'small thumbnail link'],
-            'medium is used as-is' => ['medium', 'medium thumbnail link'],
-            'medium is upscaled to large' => ['large', 'medium thumbnail link'],
+        yield 'small' => ['small'];
+        yield 'medium' => ['medium'];
+        yield 'large' => ['large'];
+    }
+
+    /**
+     * Data provider for testGetThumbnailDirect().
+     *
+     * @return \Iterator
+     */
+    public static function getThumbnailProviderDirect(): \Iterator
+    {
+        yield 'thumb is upscaled to small' => ['thumb', 'small thumbnail link'];
+        yield 'medium is used as-is' => ['medium', 'medium thumbnail link'];
+        yield 'medium is upscaled to large' => ['large', 'medium thumbnail link'];
+    }
+
+    /**
+     * Data provider for testGetThumbnailCacheBehavior.
+     *
+     * @return \Iterator
+     */
+    public static function cacheBehaviorProvider(): \Iterator
+    {
+        yield 'cache is null -> calls putCachedData' => [
+            'initialCache' => null,
+            'shouldPut' => true,
+        ];
+
+        yield 'cache value mismatched -> calls putCachedData' => [
+            'initialCache' => 'old or different link',
+            'shouldPut' => true,
+        ];
+
+        yield 'cache value matches -> skips putCachedData' => [
+            'initialCache' => 'small thumbnail link',
+            'shouldPut' => false,
         ];
     }
 
     /**
-     * Test getThumbnail for a record.
+     * Test getThumbnail proxy caching scenarios using a partial mock of cache methods.
+     *
+     * @param mixed $initialCache State returned by getCachedData
+     * @param bool  $shouldPut    Whether putCachedData should be invoked
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('cacheBehaviorProvider')]
+    public function testGetThumbnailCacheBehavior(mixed $initialCache, bool $shouldPut): void
+    {
+        $size = 'small';
+        $recordId = 'edsgob,edsgob.14707011';
+        $cacheKey = "vfcover-{$size}-{$recordId}";
+
+        // Initialize the driver mocking the cache methods
+        $driver = $this->getDriver('valid-eds-record', null, ['getCachedData', 'putCachedData']);
+
+        // Ensure the get cache is called
+        $driver->expects($this->once())
+            ->method('getCachedData')
+            ->with($cacheKey)
+            ->willReturn($initialCache);
+
+        // If the cache should be updated, ensure the put cache is called
+        if ($shouldPut) {
+            $driver->expects($this->once())
+                ->method('putCachedData');
+        } else {
+            $driver->expects($this->never())
+                ->method('putCachedData');
+        }
+
+        $expected = [
+            'recordid' => $recordId,
+            'size' => $size,
+            'source' => 'EDS',
+        ];
+
+        $this->assertEquals($expected, $driver->getThumbnail($size));
+    }
+
+    /**
+     * Test getThumbnail for a record using the proxy image URL loader.
+     *
+     * @param string $size Size to request
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getThumbnailProvider')]
+    public function testGetThumbnail(string $size): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $results = [
+            'recordid' => 'edsgob,edsgob.14707011',
+            'size' => $size,
+            'source' => 'EDS',
+        ];
+        $this->assertEquals($results, $driver->getThumbnail($size));
+    }
+
+    /**
+     * Test getThumbnail for a record when using direct URL loader.
      *
      * @param string $size     Size to request
      * @param string $expected Expected result
      *
      * @return void
      */
-    #[\PHPUnit\Framework\Attributes\DataProvider('getThumbnailProvider')]
-    public function testGetThumbnail(string $size, string $expected): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('getThumbnailProviderDirect')]
+    public function testGetThumbnailDirect(string $size, string $expected): void
     {
-        $driver = $this->getDriver('valid-eds-record');
+        $driver = $this->getDriver('valid-eds-record', ['Cover' => ['loadDirectly' => true]]);
         $this->assertEquals($expected, $driver->getThumbnail($size));
     }
 
@@ -700,21 +819,19 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetCleanDOIFromUrl().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getCleanDOIFromUrlProvider(): array
+    public static function getCleanDOIFromUrlProvider(): \Iterator
     {
         $cleanDoi = '10.1016/j.jveb.2025.02.006';
-        return [
-            'plain DOI' => [$cleanDoi, $cleanDoi],
-            'URL: http, and no subdomain' => ['http://doi.org/' . $cleanDoi, $cleanDoi],
-            'URL: https, and subdomain' => ['https://dx.doi.org/' . $cleanDoi, $cleanDoi],
-            'link wrapper' => [
-                '&lt;link linkTarget="URL" linkWindow="_blank" linkTerm="http://dx.doi.org/'
-                . $cleanDoi
-                . '"&gt;http://dx.doi.org/' . $cleanDoi . '&lt;/link&gt;',
-                $cleanDoi,
-            ],
+        yield 'plain DOI' => [$cleanDoi, $cleanDoi];
+        yield 'URL: http, and no subdomain' => ['http://doi.org/' . $cleanDoi, $cleanDoi];
+        yield 'URL: https, and subdomain' => ['https://dx.doi.org/' . $cleanDoi, $cleanDoi];
+        yield 'link wrapper' => [
+            '&lt;link linkTarget="URL" linkWindow="_blank" linkTerm="http://dx.doi.org/'
+            . $cleanDoi
+            . '"&gt;http://dx.doi.org/' . $cleanDoi . '&lt;/link&gt;',
+            $cleanDoi,
         ];
     }
 
@@ -899,6 +1016,35 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test getPageCount for a record.
+     *
+     * @return void
+     */
+    public function testGetPageCount(): void
+    {
+        // Find page count in PhysicalDescription
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('217', $driver->getPageCount());
+
+        // Fail to find it
+        $json = $this->getJsonFixture('eds/valid-eds-record.json');
+        unset($json['RecordInfo']['BibRecord']['BibEntity']['PhysicalDescription']['Pagination']);
+        $driver->setRawData($json);
+        $this->assertSame('', $driver->getPageCount());
+
+        // Find it in Items
+        $json['Items'][] =
+        [
+            'Name' => 'Pages',
+            'Label' => 'Page Count',
+            'Group' => 'Src',
+            'Data' => '42',
+        ];
+        $driver->setRawData($json);
+        $this->assertEquals('42', $driver->getPageCount());
+    }
+
+    /**
      * Test getFormats for an ebook record.
      *
      * @return void
@@ -1027,7 +1173,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test HTML FT with tables & mathML will be parsed correctly
+     * Test HTML FT with tables & mathML will be parsed correctly.
      *
      * @return void
      */
@@ -1041,7 +1187,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getUniqueIDOverrideForRequest for a "normal" record
+     * Test getUniqueIDOverrideForRequest for a "normal" record.
      *
      * @return void
      */
@@ -1052,7 +1198,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getUniqueIDOverrideForRequest for a catalog record
+     * Test getUniqueIDOverrideForRequest for a catalog record.
      *
      * @return void
      */
@@ -1063,7 +1209,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test hasCatalog true
+     * Test hasCatalog true.
      *
      * @return void
      */
@@ -1074,7 +1220,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test hasCatalog false
+     * Test hasCatalog false.
      *
      * @return void
      */
@@ -1085,7 +1231,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test pubTypeRtacEnabled for a catalog record (Book) [true]
+     * Test pubTypeRtacEnabled for a catalog record (Book) [true].
      *
      * @return void
      */
@@ -1096,7 +1242,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test pubTypeRtacEnabled for eBook record [false]
+     * Test pubTypeRtacEnabled for eBook record [false].
      *
      * @return void
      */
@@ -1107,18 +1253,18 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test relevancy score (present)
+     * Test relevancy score (present).
      *
      * @return void
      */
     public function testRelevancyScorePresent(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals(908.217102050781, $driver->getScore());
+        $this->assertEqualsWithDelta(908.217102050781, $driver->getScore(), PHP_FLOAT_EPSILON);
     }
 
     /**
-     * Test relevancy score (absent)
+     * Test relevancy score (absent).
      *
      * @return void
      */
@@ -1126,5 +1272,20 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->getDriver('valid-eds-record-2');
         $this->assertNull($driver->getScore());
+    }
+
+    /**
+     * Test getHighlightedTitle().
+     *
+     * @return void
+     */
+    public function testGetHighlightedTitle(): void
+    {
+        $driver = $this->getDriver('eds-highlighting');
+        $this->assertEquals(
+            '{{{{START_HILITE}}}}highlighted part{{{{END_HILITE}}}} of text. '
+            . 'Also {{{{START_HILITE}}}}more highlights{{{{END_HILITE}}}}',
+            $driver->getHighlightedTitle()
+        );
     }
 }

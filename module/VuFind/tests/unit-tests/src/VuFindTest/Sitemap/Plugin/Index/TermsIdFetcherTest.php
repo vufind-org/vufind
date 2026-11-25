@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GetIdsWithTermsCommand Test Class
+ * GetIdsWithTermsCommand Test Class.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFindSearch\Service;
 use function array_slice;
 
 /**
- * GetIdsWithTermsCommand Test Class
+ * GetIdsWithTermsCommand Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -51,21 +51,21 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Unique key field to use in tests
+     * Unique key field to use in tests.
      *
      * @var string
      */
     protected $uniqueKey = 'id';
 
     /**
-     * Page size to use in tests
+     * Page size to use in tests.
      *
      * @var int
      */
     protected $countPerPage = 100;
 
     /**
-     * Get a terms response
+     * Get a terms response.
      *
      * @param int[] $expectedIds IDs to return in response
      *
@@ -106,15 +106,13 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock search service
+     * Get mock search service.
      *
      * @return Service
      */
     protected function getMockService(): Service
     {
-        return $this->getMockBuilder(Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Service::class);
     }
 
     /**
@@ -126,8 +124,7 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockTermsCommand(Terms $terms): TermsCommand
     {
-        $command = $this->getMockBuilder(TermsCommand::class)
-            ->disableOriginalConstructor()->getMock();
+        $command = $this->createMock(TermsCommand::class);
         $command->expects($this->once())->method('getResult')
             ->willReturn($terms);
         return $command;
@@ -140,8 +137,7 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockKeyCommand(): GetUniqueKeyCommand
     {
-        $command = $this->getMockBuilder(GetUniqueKeyCommand::class)
-            ->disableOriginalConstructor()->getMock();
+        $command = $this->createMock(GetUniqueKeyCommand::class);
         $command->expects($this->once())->method('getResult')
             ->willReturn($this->uniqueKey);
         return $command;
@@ -158,7 +154,7 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
         $fetcher = new TermsIdFetcher($this->getMockService());
         $fetcher->getIdsFromBackend(
             'foo',
-            0,
+            '0',
             $this->countPerPage,
             ['format:Book']
         );
@@ -204,11 +200,11 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
                 []
             )
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['ids' => $expectedIds2],
             $fetcher->getIdsFromBackend(
                 'foo',
-                99,
+                '99',
                 $this->countPerPage,
                 []
             )

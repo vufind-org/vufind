@@ -30,9 +30,10 @@
 
 namespace VuFindTest\Connection;
 
+use Generator;
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Client as HttpClient;
-use VuFind\Config\Config;
+use PHPUnit\Framework\Attributes\DataProvider;
 use VuFind\Connection\LibGuides;
 
 /**
@@ -50,11 +51,39 @@ class LibGuidesTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
+     * Data provider for testMissingConfigValidation.
+     *
+     * @return Generator<string, array<string>>
+     */
+    public static function configValidationProvider(): Generator
+    {
+        foreach (['client_id', 'client_secret', 'api_base_url'] as $required) {
+            yield $required => [$required];
+        }
+    }
+
+    /**
+     * Test config validation.
+     *
+     * @param string $missingConfig Config setting to omit
+     *
+     * @return void
+     */
+    #[DataProvider('configValidationProvider')]
+    public function testMissingConfigValidation(string $missingConfig): void
+    {
+        $config = $this->getConfig();
+        unset($config['General'][$missingConfig]);
+        $this->expectExceptionMessage($missingConfig . ' key missing from configuration.');
+        new LibGuides($config, $this->createStub(HttpClient::class));
+    }
+
+    /**
      * Test loading accounts.
      *
      * @return void
      */
-    public function testGetAccounts()
+    public function testGetAccounts(): void
     {
         $config = $this->getConfig();
         $client = $this->getClient('accounts');
@@ -67,31 +96,61 @@ class LibGuidesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create a fake LibGuidesAPI.ini config.
+     * GetAZ test provider.
      *
-     * @return Config The fake config
+     * @return \Iterator
      */
-    protected function getConfig()
+    public static function getAzProvider(): \Iterator
     {
-        return new Config(
-            [
-                'General' => [
-                    'api_base_url' => 'https://foo.org/',
-                    'client_id' => 'username',
-                    'client_secret' => 'email',
-                ],
-            ]
-        );
+        yield 'exclude hidden (explicitly)' => [ true, 4 ];
+        yield 'do not exclude hidden' => [ false, 5 ];
+        yield 'exclude hidden (by default)' => [ null, 4 ];
     }
 
     /**
-     * Load HTTP client w/ fixture
+     * Test loading AZ.
+     *
+     * @param ?bool $excludeHidden Whether to exclude hidden databases
+     * @param int   $expectedCount Expected result count
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getAzProvider')]
+    public function testGetAz(?bool $excludeHidden, int $expectedCount): void
+    {
+        $config = $this->getConfig();
+        $client = $this->getClient('az');
+        $libGuides = new LibGuides($config, $client);
+
+        $params = $excludeHidden === null ? [] : [$excludeHidden];
+        $response = $libGuides->getAz(...$params);
+        $this->assertCount($expectedCount, $response);
+    }
+
+    /**
+     * Create a fake LibGuidesAPI.ini config.
+     *
+     * @return array The fake config
+     */
+    protected function getConfig(): array
+    {
+        return [
+            'General' => [
+                'api_base_url' => 'https://foo.org/',
+                'client_id' => 'username',
+                'client_secret' => 'email',
+            ],
+        ];
+    }
+
+    /**
+     * Load HTTP client w/ fixture.
      *
      * @param string $fixture Fixture name
      *
      * @return HttpClient
      */
-    protected function getClient($fixture)
+    protected function getClient($fixture): HttpClient
     {
         $adapter = new TestAdapter();
         $adapter->addResponse($this->getFixture('libguides/api/token'));

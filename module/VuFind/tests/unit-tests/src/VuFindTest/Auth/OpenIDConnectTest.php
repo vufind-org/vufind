@@ -53,52 +53,50 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Tested service
+     * Tested service.
      *
      * @var OpenIDConnect
      */
     protected OpenIDConnect $openid;
 
     /**
-     * GetAttributeMappings test data provider
+     * GetAttributeMappings test data provider.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getAttributesMappingsProvider(): array
+    public static function getAttributesMappingsProvider(): \Iterator
     {
-        return [
-            'User configured attributes' => [
-                [
-                    'Default' => [
-                        'url' => 'openidconnect.provider.url',
-                        'client_id' => 'test_cliend_id',
-                        'client_secret' => 'test_client_secret',
-                        'attributes' => [
-                            'firstname' => 'test_given_name',
-                            'lastname' => 'test_family_name',
-                            'email' => 'test_email',
-                        ],
+        yield 'User configured attributes' => [
+            [
+                'Default' => [
+                    'url' => 'openidconnect.provider.url',
+                    'client_id' => 'test_cliend_id',
+                    'client_secret' => 'test_client_secret',
+                    'attributes' => [
+                        'firstname' => 'test_given_name',
+                        'lastname' => 'test_family_name',
+                        'email' => 'test_email',
                     ],
                 ],
-                [
-                    'firstname' => 'test_given_name',
-                    'lastname' => 'test_family_name',
-                    'email' => 'test_email',
-                ],
             ],
-            'Default attributes' => [
-                [],
-                [
-                    'firstname' => 'given_name',
-                    'lastname' => 'family_name',
-                    'email' => 'email',
-                ],
+            [
+                'firstname' => 'test_given_name',
+                'lastname' => 'test_family_name',
+                'email' => 'test_email',
+            ],
+        ];
+        yield 'Default attributes' => [
+            [],
+            [
+                'firstname' => 'given_name',
+                'lastname' => 'family_name',
+                'email' => 'email',
             ],
         ];
     }
 
     /**
-     * Test GetAttributeMappings
+     * Test GetAttributeMappings.
      *
      * @param array $config  Auth module configuration
      * @param array $results Expected mappings
@@ -113,7 +111,7 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getProviderFromConfig
+     * Test getProviderFromConfig.
      *
      * @return void
      */
@@ -143,7 +141,7 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getProvider
+     * Test getProvider.
      *
      * @return void
      */
@@ -265,7 +263,7 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get auth module instance
+     * Get auth module instance.
      *
      * @param array $config Configuration
      *
@@ -288,7 +286,7 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Mock fixture as HTTP client response
+     * Mock fixture as HTTP client response.
      *
      * @param string|array|null $fixture Fixture file
      *
@@ -315,7 +313,7 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Load response from file
+     * Load response from file.
      *
      * @param string $filename File name of raw HTTP response
      *
@@ -332,7 +330,7 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock ILS authenticator
+     * Get a mock ILS authenticator.
      *
      * @return ILSAuthenticator
      * @throws Exception

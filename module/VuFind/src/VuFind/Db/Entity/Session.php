@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for session table
+ * Entity model for session table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for session table
+ * Entity model for session table.
  *
  * @category VuFind
  * @package  Database
@@ -112,7 +112,7 @@ class Session implements SessionEntityInterface
     }
 
     /**
-     * Session Id setter
+     * Session Id setter.
      *
      * @param ?string $sid Session Id.
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind SimpleXML enhancement functionality
+ * VuFind SimpleXML enhancement functionality.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind;
 use SimpleXMLElement;
 
 /**
- * VuFind SimpleXML enhancement functionality
+ * VuFind SimpleXML enhancement functionality.
  *
  * @category VuFind
  * @package  SimpleXML

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Get autocomplete results from the EDS backend
+ * Get autocomplete results from the EDS backend.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFindSearch\Command\CallMethodCommand;
 use VuFindSearch\ParamBag;
 
 /**
- * Get autocomplete results from the EDS backend
+ * Get autocomplete results from the EDS backend.
  *
  * @category VuFind
  * @package  Search

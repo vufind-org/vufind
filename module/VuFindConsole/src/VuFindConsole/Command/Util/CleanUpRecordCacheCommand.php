@@ -51,7 +51,7 @@ use VuFind\Db\Service\RecordServiceInterface;
 class CleanUpRecordCacheCommand extends Command
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RecordServiceInterface $recordService Record database service
      * @param ?string                $name          The name of the command; passing null means it
@@ -81,9 +81,8 @@ class CleanUpRecordCacheCommand extends Command
      * @param OutputInterface $output Output object
      *
      * @return int 0 for success
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $count = $this->recordService->cleanup();

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Image link view helper (extended for VuFind's theme system)
+ * Image link view helper (extended for VuFind's theme system).
  *
  * PHP version 8
  *
@@ -29,8 +29,11 @@
 
 namespace VuFindTheme\View\Helper;
 
+use VuFind\Application\UriRegistry;
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
- * Image link view helper (extended for VuFind's theme system)
+ * Image link view helper (extended for VuFind's theme system).
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,29 +41,25 @@ namespace VuFindTheme\View\Helper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ImageLink extends \Laminas\View\Helper\AbstractHelper
+class ImageLink
 {
     use RelativePathTrait;
 
     /**
-     * Theme information service
+     * Constructor.
      *
-     * @var \VuFindTheme\ThemeInfo
+     * @param \VuFindTheme\ThemeInfo $themeInfo   Theme information service
+     * @param string                 $baseUrlPath Path part of base URL
      */
-    protected $themeInfo;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFindTheme\ThemeInfo $themeInfo Theme information service
-     */
-    public function __construct(\VuFindTheme\ThemeInfo $themeInfo)
-    {
-        $this->themeInfo = $themeInfo;
+    public function __construct(
+        protected \VuFindTheme\ThemeInfo $themeInfo,
+        #[Autowire(container: UriRegistry::class, service: 'BaseUrlPath')]
+        protected string $baseUrlPath,
+    ) {
     }
 
     /**
-     * Returns an image path according the configured theme
+     * Returns an image path according the configured theme.
      *
      * @param string $image image name/path
      *
@@ -83,10 +82,9 @@ class ImageLink extends \Laminas\View\Helper\AbstractHelper
             return null;
         }
 
-        $urlHelper = $this->getView()->plugin('url');
         $parts = explode('/', $relPath);
         $encodedRelPath = implode('/', array_map('rawurlencode', $parts));
-        $url = $urlHelper('home') . "themes/{$details['theme']}/" . $encodedRelPath;
+        $url = $this->baseUrlPath . "themes/{$details['theme']}/" . $encodedRelPath;
         $url .= strstr($url, '?') ? '&_=' : '?_=';
         $url .= filemtime($details['path']);
 

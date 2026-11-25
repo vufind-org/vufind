@@ -60,7 +60,7 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test default sort
+     * Test default sort.
      *
      * @return void
      */
@@ -71,7 +71,7 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test the sort control
+     * Test the sort control.
      *
      * @return void
      */
@@ -107,7 +107,7 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test the sort control
+     * Test the sort control.
      *
      * @return void
      */
@@ -146,7 +146,7 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test sort stickiness
+     * Test sort stickiness.
      *
      * @return void
      */
@@ -175,7 +175,7 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test publication date sort order
+     * Test publication date sort order.
      *
      * @return void
      */
@@ -194,7 +194,7 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Set up a search page with sorting configured
+     * Set up a search page with sorting configured.
      *
      * @param string $sortParam Requested sort option
      * @param string $default   default_sort setting for searches.ini

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS API Querybuilder
+ * EDS API Querybuilder.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
 /**
- * EDS API Querybuilder
+ * EDS API Querybuilder.
  *
  * @category VuFind
  * @package  Search
@@ -58,7 +58,7 @@ class QueryBuilder
     protected $defaultQuery = '(FT yes) OR (FT no)';
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -71,9 +71,8 @@ class QueryBuilder
      * @param ?ParamBag     $params Search backend parameters
      *
      * @return ParamBag
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function build(AbstractQuery $query, ?ParamBag $params = null)
     {
         // Build base query
@@ -84,7 +83,7 @@ class QueryBuilder
     }
 
     /**
-     * Convert a single Query object to an eds api query array
+     * Convert a single Query object to an eds api query array.
      *
      * @param Query  $query    Query to convert
      * @param string $operator Operator to apply

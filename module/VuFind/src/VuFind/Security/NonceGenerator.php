@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class NonceGenerator
+ * Class NonceGenerator.
  *
  * PHP version 8
  *
@@ -38,13 +38,11 @@ namespace VuFind\Security;
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
- *
- * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 class NonceGenerator
 {
     /**
-     * Generated nonce (number used once)
+     * Generated nonce (number used once).
      *
      * @var string
      */

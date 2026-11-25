@@ -44,6 +44,8 @@ use UnexpectedValueException;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\PasswordSecurity as PasswordSecurityException;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
 
 use function in_array;
 use function is_int;
@@ -64,28 +66,28 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Request token
+     * Request token.
      *
-     * @var object
+     * @var array
      */
     protected array $requestTokens = [];
 
     /**
-     * OpenID Connect provider settings
+     * OpenID Connect provider settings.
      *
      * @var object
      */
     protected object $provider;
 
     /**
-     * Open Id connect JWKs
+     * Open Id connect JWKs.
      *
      * @var array
      */
     protected array $jwks = [];
 
     /**
-     * Default attributes mappings
+     * Default attributes mappings.
      *
      * @var array
      */
@@ -96,7 +98,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionContainer $session          Session container for persisting state information.
      * @param array            $oidcConfig       Configuration
@@ -105,7 +107,9 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      * @throws \Exception
      */
     public function __construct(
+        #[Autowire(container: SessionContainerRegistry::class, service: 'OpenIDConnect')]
         protected SessionContainer $session,
+        #[Autowire(config: 'OpenIDConnectClient')]
         protected array $oidcConfig,
         protected ILSAuthenticator $ilsAuthenticator
     ) {
@@ -130,7 +134,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Get provider configuration
+     * Get provider configuration.
      *
      * @return object
      * @throws AuthException
@@ -161,7 +165,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Get provider configuration from config
+     * Get provider configuration from config.
      *
      * @return object
      */
@@ -185,7 +189,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Validate provider metadata
+     * Validate provider metadata.
      *
      * @param object $provider Provider metadata
      *
@@ -280,7 +284,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Set user attributes from user info claim
+     * Set user attributes from user info claim.
      *
      * @param object $userInfo User info claim object
      *
@@ -365,13 +369,13 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Perform cleanup at logout time.
+     * Get URL users should be redirected to for logout in external services if necessary.
      *
-     * @param string $url URL to redirect user to after logging out.
+     * @param string $url Internal URL to redirect user to after logging out.
      *
-     * @return string Redirect URL (modified for OpenIDConnect logout).
+     * @return string Redirect URL (usually same as $url, but modified in some authentication modules).
      */
-    public function logout($url)
+    public function getLogoutRedirectUrl(string $url): string
     {
         $redirectUrl = $url;
         $endSessionEndpoint = false;
@@ -505,7 +509,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Decode JSON Web Token
+     * Decode JSON Web Token.
      *
      * @param string $jwt JWT string
      *
@@ -527,7 +531,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Validate issuer
+     * Validate issuer.
      *
      * @param string $iss Issuer
      *
@@ -540,7 +544,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Verify the claims are valid
+     * Verify the claims are valid.
      *
      * @param object $claims Claims from authentication response
      *
@@ -549,13 +553,16 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      */
     protected function verifyJwtClaims(object $claims): bool
     {
+        $clientId = $this->getConfig('client_id');
+        $audValid = in_array($clientId, (array)($claims->aud ?? []), true);
+
         return (!isset($claims->nonce) || $claims->nonce === $this->session->oidc_nonce)
-            && ($claims->aud === $this->getConfig('client_id'))
+            && $audValid
             && (!isset($claims->exp) || (is_int($claims->exp) && ($claims->exp > time())));
     }
 
     /**
-     * Get attributes mappings
+     * Get attributes mappings.
      *
      * @return array
      * @throws AuthException
@@ -567,7 +574,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Get attribute value from user info
+     * Get attribute value from user info.
      *
      * @param object $userInfo  User info claim from OIDC server
      * @param string $attribute Attribute to get value for
@@ -576,12 +583,12 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      */
     protected function getAttributeValue(object $userInfo, string $attribute): string
     {
-        $attributeName = $this->oidcConfig->attributes[$attribute] ?? $attribute;
-        return $userInfo->$attributeName ?? '';
+        $attributeName = $this->oidcConfig['attributes'][$attribute] ?? $attribute;
+        return (string)($userInfo->attributes->$attributeName ?? $userInfo->$attributeName ?? '');
     }
 
     /**
-     * Get signature JWKs from provider
+     * Get signature JWKs from provider.
      *
      * @return array
      * @throws AuthException
@@ -602,7 +609,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             $jwks = json_decode($response->getBody(), true);
             foreach ($jwks['keys'] as $i => $jwk) {
                 // Filter for signature keys only.
-                if (($jwk['use'] ?? '') === 'sig') {
+                if (($jwk['use'] ?? 'sig') === 'sig') {
                     $this->jwks[$jwk['kid'] ?? $i] = $jwk;
                 }
             }
@@ -611,7 +618,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Get signature JWK data
+     * Get signature JWK data.
      *
      * @param ?string $kid Key id or null for first (default)
      *
@@ -632,7 +639,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Initialize OIDC state and nonce
+     * Initialize OIDC state and nonce.
      *
      * @param bool $resetState Reset existing state?
      *

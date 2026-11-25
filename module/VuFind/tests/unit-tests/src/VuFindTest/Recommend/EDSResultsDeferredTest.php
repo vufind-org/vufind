@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDSResultsDeferred recommendation module Test Class
+ * EDSResultsDeferred recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\Recommend;
 
 /**
- * EDSResultsDeferred recommendation module Test Class
+ * EDSResultsDeferred recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +41,7 @@ namespace VuFindTest\Recommend;
 class EDSResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
 {
     /**
-     * Test standard operation
+     * Test standard operation.
      *
      * @return void
      */
@@ -50,7 +50,7 @@ class EDSResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
         $mod = $this->getRecommend(
             \VuFind\Recommend\EDSResultsDeferred::class,
             ':3',
-            new \Laminas\Stdlib\Parameters(['lookfor' => 'foo'])
+            ['lookfor' => 'foo']
         );
         $this->assertEquals(
             'mod=EDSResults&params=lookfor%3A3&lookfor=foo',
@@ -69,7 +69,7 @@ class EDSResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
         $mod = $this->getRecommend(
             \VuFind\Recommend\EDSResultsDeferred::class,
             ':3',
-            new \Laminas\Stdlib\Parameters(['lookfor' => ['foo', 'bar']])
+            ['lookfor' => ['foo', 'bar']]
         );
         $this->assertEquals(
             'mod=EDSResults&params=lookfor%3A3&lookfor=foo+bar',

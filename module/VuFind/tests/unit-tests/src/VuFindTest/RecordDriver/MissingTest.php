@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Missing Record Driver Test Class
+ * Missing Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\RecordDriver\Missing;
 
 /**
- * Missing Record Driver Test Class
+ * Missing Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -63,16 +63,14 @@ class MissingTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testDetermineMissingTitleWithoutDetails
+     * Data provider for testDetermineMissingTitleWithoutDetails.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function titleProvider(): array
+    public static function titleProvider(): \Iterator
     {
-        return [
-            'non-empty title' => ['fake title', 'fake title'],
-            'empty title' => ['', 'Title not available'],
-        ];
+        yield 'non-empty title' => ['fake title', 'fake title'];
+        yield 'empty title' => ['', 'Title not available'];
     }
 
     /**

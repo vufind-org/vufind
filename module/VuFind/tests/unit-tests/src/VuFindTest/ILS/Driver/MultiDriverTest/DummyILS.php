@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Support class (dummy ILS driver) for MultiBackend ILS driver test
+ * Support class (dummy ILS driver) for MultiBackend ILS driver test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@
 namespace VuFindTest\ILS\Driver\MultiDriverTest;
 
 /**
- * A dummy ILS driver used for testing a driver with unsupported features
+ * A dummy ILS driver used for testing a driver with unsupported features.
  *
  * @category VuFind
  * @package  Tests
@@ -55,7 +55,7 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -65,16 +65,15 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      * @throws \VuFind\Exception\ILS
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getStatus($id)
     {
         return [];
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -83,16 +82,15 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      *
      * @throws \VuFind\Exception\ILS
      * @return array     An array of getStatus() return values on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getStatuses($ids)
     {
         return [];
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -105,16 +103,15 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return [];
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -123,9 +120,8 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      *
      * @throws \VuFind\Exception\ILS
      * @return array     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         return [];

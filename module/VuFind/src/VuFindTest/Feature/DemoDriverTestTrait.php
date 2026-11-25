@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait with utility methods for configuring the demo driver in a test
+ * Trait with utility methods for configuring the demo driver in a test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Feature;
 use Behat\Mink\Element\Element;
 
 /**
- * Trait with utility methods for configuring the demo driver in a test
+ * Trait with utility methods for configuring the demo driver in a test.
  *
  * @category VuFind
  * @package  Tests

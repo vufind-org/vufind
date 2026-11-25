@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: delete from Solr
+ * Console command: delete from Solr.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use function count;
 use function strlen;
 
 /**
- * Console command: delete from Solr
+ * Console command: delete from Solr.
  *
  * @category VuFind
  * @package  Console
@@ -111,7 +111,7 @@ class DeletesCommand extends AbstractSolrCommand
     }
 
     /**
-     * Load IDs from a MARC file
+     * Load IDs from a MARC file.
      *
      * @param string          $filename MARC file
      * @param OutputInterface $output   Output object

@@ -3,7 +3,7 @@
     <h2><?=$this->transEsc('more_by_author', ['%%name%%' => $this->related->getName()])?></h2>
     <ul class="list-group">
         <?php foreach ($similarRecords as $data): ?>
-            <li class="list-group-item"><?=$this->render('Related/Similar/item.phtml', compact('data'))?></li>
+            <li class="list-group-item"><?=$this->context($this)->renderInContext('Related/Similar/item.phtml', compact('data'))?></li>
         <?php endforeach; ?>
     </ul>
 <?php endif; ?>

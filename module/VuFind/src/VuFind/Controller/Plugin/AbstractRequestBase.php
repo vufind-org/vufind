@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - Requests Support Methods
+ * VuFind Action Helper - Requests Support Methods.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@ namespace VuFind\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use VuFind\Crypt\HMAC;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\ILS\Connection;
@@ -41,7 +41,7 @@ use function get_class;
 use function in_array;
 
 /**
- * Action helper base class to perform request-related actions
+ * Action helper base class to perform request-related actions.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -52,43 +52,43 @@ use function in_array;
 abstract class AbstractRequestBase extends AbstractPlugin
 {
     /**
-     * Session data
+     * Session data.
      *
      * @var Container
      */
     protected $session;
 
     /**
-     * Session manager
+     * Session manager.
      *
-     * @var SessionManager
+     * @var ManagerInterface
      */
     protected $sessionManager;
 
     /**
-     * HMAC generator
+     * HMAC generator.
      *
      * @var HMAC
      */
     protected $hmac;
 
     /**
-     * Date converter
+     * Date converter.
      *
      * @var DateConverter
      */
     protected $dateConverter;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param HMAC           $hmac           HMAC generator
-     * @param SessionManager $sessionManager Session manager
-     * @param DateConverter  $dateConverter  Date converter
+     * @param HMAC             $hmac           HMAC generator
+     * @param ManagerInterface $sessionManager Session manager
+     * @param DateConverter    $dateConverter  Date converter
      */
     public function __construct(
         HMAC $hmac,
-        SessionManager $sessionManager,
+        ManagerInterface $sessionManager,
         DateConverter $dateConverter
     ) {
         $this->hmac = $hmac;
@@ -115,7 +115,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
 
     /**
      * Reset the array of valid IDs in the session (used for form submission
-     * validation)
+     * validation).
      *
      * @return void
      */
@@ -369,7 +369,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
     }
 
     /**
-     * Get remembered valid IDs
+     * Get remembered valid IDs.
      *
      * @return array
      */

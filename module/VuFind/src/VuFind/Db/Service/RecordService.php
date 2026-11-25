@@ -117,7 +117,7 @@ class RecordService extends AbstractDbService implements RecordServiceInterface
     }
 
     /**
-     * Clean up orphaned entries (i.e. entries that are not in favorites anymore)
+     * Clean up orphaned entries (i.e. entries that are not in favorites anymore).
      *
      * @return int Number of records deleted
      */
@@ -141,7 +141,7 @@ class RecordService extends AbstractDbService implements RecordServiceInterface
     }
 
     /**
-     * Delete a record by source and id
+     * Delete a record by source and id.
      *
      * @param string $id     Record ID
      * @param string $source Record source

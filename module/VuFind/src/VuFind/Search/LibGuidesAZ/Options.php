@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuides A-Z Databases aspect of the Search Multi-class (Options)
+ * LibGuides A-Z Databases aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Search\LibGuidesAZ;
 
 /**
- * LibGuides A-Z Databases Search Options
+ * LibGuides A-Z Databases Search Options.
  *
  * @category VuFind
  * @package  Search_LibGuides
@@ -54,7 +54,7 @@ class Options extends \VuFind\Search\LibGuides\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'libguidesaz-results';
     }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * List Item Selection
+ * List Item Selection.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Controller\Feature;
 use function in_array;
 
 /**
- * List Item Selection
+ * List Item Selection.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -43,7 +43,7 @@ use function in_array;
 trait ListItemSelectionTrait
 {
     /**
-     * Get selected ids
+     * Get selected ids.
      *
      * @return array
      */

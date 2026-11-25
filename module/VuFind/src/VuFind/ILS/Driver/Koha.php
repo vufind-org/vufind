@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Koha ILS Driver
+ * Koha ILS Driver.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFind\Exception\ILS as ILSException;
 use function count;
 
 /**
- * VuFind Driver for Koha (version: 3.02)
+ * VuFind Driver for Koha (version: 3.02).
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -50,28 +50,28 @@ use function count;
 class Koha extends AbstractBase
 {
     /**
-     * Database connection
+     * Database connection.
      *
      * @var PDO
      */
     protected $db;
 
     /**
-     * ILS base URL
+     * ILS base URL.
      *
      * @var string
      */
     protected $ilsBaseUrl;
 
     /**
-     * Location codes
+     * Location codes.
      *
      * @var array
      */
     protected $locCodes;
 
     /**
-     * Date converter object
+     * Date converter object.
      *
      * @var \VuFind\Date\Converter
      */
@@ -85,7 +85,7 @@ class Koha extends AbstractBase
     protected $validatePasswords;
 
     /**
-     * Default terms for block types, can be overridden by configuration
+     * Default terms for block types, can be overridden by configuration.
      *
      * @var array
      */
@@ -97,14 +97,14 @@ class Koha extends AbstractBase
     ];
 
     /**
-     * Display comments for patron debarments, see Koha.ini
+     * Display comments for patron debarments, see Koha.ini.
      *
      * @var array
      */
     protected $showBlockComments;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter
      */
@@ -175,7 +175,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -189,9 +189,8 @@ class Koha extends AbstractBase
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $holding = [];
@@ -285,7 +284,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -295,9 +294,8 @@ class Koha extends AbstractBase
      * @param array  $details Item details from getHoldings return array
      *
      * @return string         URL to ILS's OPAC's place hold screen.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHoldLink($id, $details)
     {
         // Web link of the ILS for placing hold on the item
@@ -305,7 +303,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -351,7 +349,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -391,7 +389,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -429,7 +427,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -512,7 +510,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Patron Loan History
+     * Get Patron Loan History.
      *
      * This is responsible for retrieving all historic loans (i.e. items previously
      * checked out and then returned), for a specific patron.
@@ -592,7 +590,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -601,9 +599,8 @@ class Koha extends AbstractBase
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         // TODO
@@ -611,7 +608,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -628,7 +625,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -663,7 +660,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -671,7 +668,7 @@ class Koha extends AbstractBase
      * @param string $password The patron's password
      *
      * @throws ILSException
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($username, $password)
@@ -793,14 +790,13 @@ class Koha extends AbstractBase
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function getConfig(string $function, array $params = []): array
     {
         if ('getMyTransactionHistory' === $function) {
             if (empty($this->config['TransactionHistory']['enabled'])) {
-                return false;
+                return [];
             }
             return [
                 'max_results' => 100,
@@ -815,6 +811,6 @@ class Koha extends AbstractBase
                 'default_sort' => 'checkout desc',
             ];
         }
-        return $this->config[$function] ?? false;
+        return $this->config[$function] ?? [];
     }
 }

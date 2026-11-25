@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SolrDefault Record Driver Test Class
+ * SolrDefault Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFindTest\RecordDriver;
 use VuFind\RecordDriver\SolrDefault;
 
 /**
- * SolrDefault Record Driver Test Class
+ * SolrDefault Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -113,7 +113,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test an OpenURL for an unknown material type with no ISBN or ISSN
+     * Test an OpenURL for an unknown material type with no ISBN or ISSN.
      *
      * @return void
      */
@@ -131,7 +131,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test an OpenURL for an unknown material type with only ISBNs
+     * Test an OpenURL for an unknown material type with only ISBNs.
      *
      * @return void
      */
@@ -148,7 +148,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test an OpenURL for an unknown material type with both ISBN and ISSN
+     * Test an OpenURL for an unknown material type with both ISBN and ISSN.
      *
      * @return void
      */
@@ -333,7 +333,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
     protected function getDriver($overrides = [], $searchConfig = [])
     {
         $fixture = $this->getJsonFixture('misc/testbug2.json');
-        $record = new SolrDefault(null, null, new \VuFind\Config\Config($searchConfig));
+        $record = new SolrDefault(null, null, $searchConfig);
         $record->setRawData($overrides + $fixture['response']['docs'][0]);
         return $record;
     }

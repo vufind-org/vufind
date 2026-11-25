@@ -2,7 +2,7 @@
 
 /**
  * WorldCat Search Parameters (legacy -- retained only for compatibility
- * with stored searches, which will be redirected to WorldCat v2)
+ * with stored searches, which will be redirected to WorldCat v2).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\WorldCat;
 
 /**
  * WorldCat Search Parameters (legacy -- retained only for compatibility
- * with stored searches, which will be redirected to WorldCat v2)
+ * with stored searches, which will be redirected to WorldCat v2).
  *
  * @category VuFind
  * @package  Search_WorldCat

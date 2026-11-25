@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Flash message view helper
+ * Flash message view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Bootstrap5;
 
 /**
- * Flash message view helper
+ * Flash message view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,7 +41,7 @@ namespace VuFind\View\Helper\Bootstrap5;
 class Flashmessages extends \VuFind\View\Helper\Root\Flashmessages
 {
     /**
-     * Get the CSS class to correspond with a messenger namespace
+     * Get the CSS class to correspond with a messenger namespace.
      *
      * @param string $ns Namespace
      *

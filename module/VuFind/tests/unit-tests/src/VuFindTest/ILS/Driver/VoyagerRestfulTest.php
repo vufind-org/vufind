@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * PHP version 8
  *
@@ -32,9 +32,10 @@ namespace VuFindTest\ILS\Driver;
 use PDOStatement;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\ILS\Driver\VoyagerRestful;
+use VuFind\Validator\EmailAddressValidator;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +46,7 @@ use VuFind\ILS\Driver\VoyagerRestful;
 class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     /**
-     * Default configuration for driver
+     * Default configuration for driver.
      *
      * @var array
      */
@@ -67,11 +68,11 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function setUp(): void
     {
-        $this->driver = new VoyagerRestful(new \VuFind\Date\Converter());
+        $this->driver = new VoyagerRestful(new \VuFind\Date\Converter(), new EmailAddressValidator());
     }
 
     /**
-     * Test encoding conversion in getPickupLocations()
+     * Test encoding conversion in getPickupLocations().
      *
      * @return void
      */
@@ -81,7 +82,7 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
 
         // Create a mock SQL response
         $mockResult = $this->createMock(PDOStatement::class);
-        $mockResult->method('fetch')->willReturnCallback(function () use ($location) {
+        $mockResult->method('fetch')->willReturnCallback(function () use ($location): mixed {
             static $called = false;
             if ($called) {
                 return null;
@@ -117,7 +118,7 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test encoding conversion in getRequestGroups()
+     * Test encoding conversion in getRequestGroups().
      *
      * @return void
      */
@@ -127,7 +128,7 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
 
         // Create a mock SQL response
         $mockResult = $this->createMock(PDOStatement::class);
-        $mockResult->method('fetch')->willReturnCallback(function () use ($name) {
+        $mockResult->method('fetch')->willReturnCallback(function () use ($name): mixed {
             static $called = false;
             if ($called) {
                 return null;
@@ -168,17 +169,17 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         return new class ($mockResult) extends VoyagerRestful {
             /**
-             * Constructor
+             * Constructor.
              *
              * @param MockObject&PDOStatement $mockResult Mock result to return from executeSQL
              */
             public function __construct(protected MockObject&PDOStatement $mockResult)
             {
-                parent::__construct(new \VuFind\Date\Converter());
+                parent::__construct(new \VuFind\Date\Converter(), new EmailAddressValidator());
             }
 
             /**
-             * Execute an SQL query
+             * Execute an SQL query.
              *
              * @param string|array $sql  SQL statement (string or array that includes
              * bind params)

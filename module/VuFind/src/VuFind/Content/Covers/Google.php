@@ -47,7 +47,7 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\Cachi
     use \VuFind\Http\CachingDownloaderAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -64,9 +64,8 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\Cachi
      * pointing to an ISBN object and 'issn' pointing to a string)
      *
      * @return string|bool URL of the image, or false if no valid image is found
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getUrl($key, $size, $ids)
     {
         // Get an array of ISBNs; note that (array) casting won't have the desired

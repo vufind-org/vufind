@@ -29,7 +29,8 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\HttpStatus;
 
 /**
  * Relais: Check if logged-in patron can order an item.
@@ -45,14 +46,14 @@ class RelaisInfo extends AbstractRelaisAction
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
-        $oclcNumber = $params->fromQuery('oclcNumber');
+        $oclcNumber = $this->getQueryParam($request, 'oclcNumber');
         $lin = $this->user?->getCatUsername();
 
         // Authenticate
@@ -61,7 +62,7 @@ class RelaisInfo extends AbstractRelaisAction
         if ($authorizationId === null) {
             return $this->formatResponse(
                 $this->translate('Failed'),
-                self::STATUS_HTTP_FORBIDDEN
+                HttpStatus::FORBIDDEN
             );
         }
 
@@ -69,7 +70,7 @@ class RelaisInfo extends AbstractRelaisAction
         if ($allowLoan == false) {
             return $this->formatResponse(
                 'AllowLoan was false',
-                self::STATUS_HTTP_ERROR
+                HttpStatus::ERROR
             );
         }
 

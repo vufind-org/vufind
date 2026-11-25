@@ -48,7 +48,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Language fixture directory
+     * Language fixture directory.
      *
      * @var string
      */
@@ -92,12 +92,12 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $target = realpath($this->languageFixtureDir);
         $normalizer = $this->getMockNormalizer();
         $normalizer->expects($this->once())->method('normalizeDirectory')
-            ->with($this->equalTo($target));
+            ->with($target);
         $command = new NormalizeCommand($normalizer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
-        $this->assertEquals('', $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -130,12 +130,12 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $target = realpath($this->languageFixtureDir) . '/foo/en.ini';
         $normalizer = $this->getMockNormalizer();
         $normalizer->expects($this->once())->method('normalizeFile')
-            ->with($this->equalTo($target));
+            ->with($target);
         $command = new NormalizeCommand($normalizer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
-        $this->assertEquals('', $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -149,11 +149,11 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $command = new NormalizeCommand($this->getMockNormalizer());
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
-        $this->assertEquals(
+        $this->assertSame(
             "{$target} does not exist.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**
@@ -175,7 +175,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock normalizer object
+     * Get a mock normalizer object.
      *
      * @param array $methods Methods to mock
      *
@@ -192,7 +192,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock reader object
+     * Get a mock reader object.
      *
      * @param array $methods Methods to mock
      *

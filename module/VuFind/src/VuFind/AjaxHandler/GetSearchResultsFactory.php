@@ -31,8 +31,13 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\View\Helper\EscapeHtml;
+use Laminas\View\Helper\PaginationControl;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Cart;
+use VuFind\View\Helper\Root\LocalizedNumber;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Factory for GetSearchResults AJAX handler.
@@ -46,7 +51,7 @@ use Psr\Container\ContainerInterface;
 class GetSearchResultsFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -58,8 +63,6 @@ class GetSearchResultsFactory implements \Laminas\ServiceManager\Factory\Factory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -69,16 +72,22 @@ class GetSearchResultsFactory implements \Laminas\ServiceManager\Factory\Factory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
+        $viewHelperManager = $container->get('ViewHelperManager');
         $result = new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Search\Results\PluginManager::class),
-            $container->get('ViewRenderer'),
+            $container->get(TemplateRendererInterface::class),
             $container->get(\VuFind\Record\Loader::class),
             $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
-            $container->get(\Laminas\Session\SessionManager::class)->getId(),
+            $container->get(\Laminas\Session\ManagerInterface::class)->getId(),
             $container->get(\VuFind\Search\SearchNormalizer::class),
             $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config'),
-            $container->get(\VuFind\Search\Memory::class)
+            $container->get(\VuFind\Search\Memory::class),
+            $container->get(\VuFind\Search\ResultScroller::class),
+            $container->get(Cart::class),
+            $viewHelperManager->get(PaginationControl::class),
+            $viewHelperManager->get(LocalizedNumber::class),
+            $viewHelperManager->get(EscapeHtml::class),
         );
         return $result;
     }

@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class AbstractRequestBaseFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -70,7 +70,7 @@ class AbstractRequestBaseFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Crypt\HMAC::class),
-            $container->get(\Laminas\Session\SessionManager::class),
+            $container->get(\Laminas\Session\ManagerInterface::class),
             $container->get(\VuFind\Date\Converter::class)
         );
     }

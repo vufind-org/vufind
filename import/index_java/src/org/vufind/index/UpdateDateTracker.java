@@ -162,14 +162,14 @@ public class UpdateDateTracker
         db.setAutoCommit(false);
         insertSql = db.prepareStatement(
             "INSERT INTO change_tracker(core, id, first_indexed, last_indexed, last_record_change) " +
-            "VALUES(?, ?, ?, ?, ?);");
+            "VALUES(?, ?, ?, ?, ?)");
         selectSql = db.prepareStatement(
             "SELECT first_indexed, last_indexed, last_record_change, deleted " +
-            "FROM change_tracker WHERE core = ? AND id = ?;",
+            "FROM change_tracker WHERE core = ? AND id = ?",
             ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         updateSql = db.prepareStatement("UPDATE change_tracker " +
             "SET first_indexed = ?, last_indexed = ?, last_record_change = ?, deleted = ? " +
-            "WHERE core = ? AND id = ?;");
+            "WHERE core = ? AND id = ?");
     }
 
     void shutdown() {

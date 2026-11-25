@@ -65,7 +65,7 @@ class SearchViewsTest extends \VuFindTest\Integration\MinkTestCase
         // Check for sample driver's available status in output (this will
         // only appear after AJAX returns):
         $this->unFindCss($page, '.ajax-availability');
-        $this->assertEquals(
+        $this->assertSame(
             'Available',
             $this->findCssAndGetText($page, '.grid-body .result-formats.status .label.label-success')
         );

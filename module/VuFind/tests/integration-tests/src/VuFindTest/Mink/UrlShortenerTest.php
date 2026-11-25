@@ -74,13 +74,13 @@ class UrlShortenerTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#email_from', 'username1@ignore.com');
         $this->findCssAndSetValue($page, '#email_to', 'username2@ignore.com');
         $this->clickCss($page, '.modal input[type="submit"]');
-        $this->assertEquals('Message Sent', $this->findCssAndGetText($page, '.modal .alert-success'));
+        $this->assertSame('Message Sent', $this->findCssAndGetText($page, '.modal .alert-success'));
 
         // Extract the link from the provided message:
         $email = $this->getLoggedEmail();
         preg_match('/Link: <(http.*)>/', $email->getBody()->getBody(), $matches);
         $shortLink = $matches[1];
-        $this->assertNotEquals($searchUrl, $shortLink);
+        $this->assertNotSame($searchUrl, $shortLink);
         $this->assertStringContainsString('/short', $shortLink);
 
         // Now confirm that this sends us back to the correct set of search results:

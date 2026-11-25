@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait for classes that need GuzzleService
+ * Trait for classes that need GuzzleService.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Http;
 
 /**
- * Trait for classes that need GuzzleService
+ * Trait for classes that need GuzzleService.
  *
  * @category VuFind
  * @package  Http
@@ -41,14 +41,14 @@ namespace VuFind\Http;
 trait GuzzleServiceAwareTrait
 {
     /**
-     * GuzzleService
+     * GuzzleService.
      *
      * @var ?GuzzleService
      */
     protected $guzzleService = null;
 
     /**
-     * Set the GuzzleService
+     * Set the GuzzleService.
      *
      * @param GuzzleService $service GuzzleService
      *
@@ -60,7 +60,7 @@ trait GuzzleServiceAwareTrait
     }
 
     /**
-     * Get the GuzzleService
+     * Get the GuzzleService.
      *
      * @return ?GuzzleService
      */

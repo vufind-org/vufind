@@ -451,11 +451,12 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider to return in lightbox / not in lightbox states.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function inLightboxProvider(): array
+    public static function inLightboxProvider(): \Iterator
     {
-        return ['in lightbox' => [true], 'not in lightbox' => [false]];
+        yield 'in lightbox' => [true];
+        yield 'not in lightbox' => [false];
     }
 
     /**
@@ -541,7 +542,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
             '#bottom_updateCart',
             '#bottom_addFormCheckboxSelectAll'
         );
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             '2',
             function () use ($page) {
                 return $this->findCssAndGetText($page, '#cartItems strong');
@@ -612,7 +613,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Check for confirmation message
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were emailed',
             $this->findCssAndGetText($page, '.modal .alert-success')
         );
@@ -645,19 +646,52 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // Save the favorites.
         $this->clickCss($page, '.modal-body input[name=submitButton]');
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were saved successfully. Go to List.',
             $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
         // Make sure the link in the success message contains a valid list ID:
         $result = $this->findCss($page, '.modal-body .alert-success a');
         $this->assertMatchesRegularExpression(
-            '|href="[^"]*/MyResearch/MyList/[0-9]+"|',
+            '|href="[^"]*/Lists/List/[0-9]+"|',
             $result->getOuterHtml()
         );
 
         // Click the close button.
         $this->closeLightbox($page, true);
+    }
+
+    /**
+     * Test that the cite control works.
+     *
+     * @return void
+     */
+    public function testCartCite(): void
+    {
+        $page = $this->setUpGenericCartTest(['config' => ['Citation' => ['book_bag' => true]]]);
+        $button = $this->findCss($page, '.cart-controls button[name=cite]');
+
+        // First try clicking without selecting anything:
+        $button->click();
+        $this->checkForNonSelectedMessage($page);
+
+        // Now do it for real -- we should get rendered citations:
+        $this->selectAllItemsInCart($page);
+        $button->click();
+
+        // Check that citations are rendered:
+        $this->waitForPageLoad($page);
+        foreach (['APA', 'Chicago', 'MLA'] as $format) {
+            $this->findCss($page, '#modal #tab-button-' . $format);
+            $this->assertStringContainsString(
+                'Institute for Rational-Emotive Therapy',
+                $this->findCssAndGetText($page, '#modal .tab-pane #citation-' . $format . '-0')
+            );
+            $this->assertStringContainsString(
+                'Institute for Rational-Emotive Therapy',
+                $this->findCssAndGetText($page, '#modal .tab-pane #citation-' . $format . '-1')
+            );
+        }
     }
 
     /**
@@ -728,11 +762,12 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // Do the export:
         $session = $this->getMinkSession();
+        $windowName = $session->getWindowName();
         $windowNames = $session->getWindowNames();
         $windowCount = count($session->getWindowNames());
         $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             $windowCount + 1,
             function () use ($session) {
                 return count($session->getWindowNames());
@@ -741,10 +776,12 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $newWindows = array_diff($session->getWindowNames(), $windowNames);
         $this->assertCount(1, $newWindows);
         $session->switchToWindow(reset($newWindows));
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             $exportUrl,
             [$session, 'getCurrentUrl']
         );
+        // Switch back to main window to ensure correct session reset:
+        $session->switchToWindow($windowName);
     }
 
     /**
@@ -755,7 +792,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     protected function getSearchHistory(): array
     {
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/History');
+        $session->visit($this->getVuFindUrl() . '/SearchHistory/List');
         $page = $session->getPage();
         $this->waitForPageLoad($page);
         $matches = $page->findAll('css', '#recent-searches td:nth-child(2) a');
@@ -781,21 +818,21 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         // Now do it for real -- we should get redirected.
         $this->selectAllItemsInCart($page);
         $this->clickCss($page, '.cart-controls button[name=print]');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             [$this, 'getCurrentQueryString']
         );
 
         // Printing should not have added anything to the search history beyond
         // the initial search that set everything up.
-        $this->assertEquals(
+        $this->assertSame(
             ['id:(testsample1 OR testsample2)'],
             $this->getSearchHistory()
         );
     }
 
     /**
-     * Assert visibility
+     * Assert visibility.
      *
      * @param array  $combo    Current Site configuration
      * @param bool[] $elements Array of element visibility states indexed by name
@@ -813,7 +850,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Run tests on a specified configuration
+     * Run tests on a specified configuration.
      *
      * @param Element $page  Page element
      * @param array   $combo Site configuration to test
@@ -857,7 +894,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test toolbar visibility configuration combinations
+     * Test toolbar visibility configuration combinations.
      *
      * @return void
      */

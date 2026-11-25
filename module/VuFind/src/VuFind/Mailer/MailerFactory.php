@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for instantiating Mailer objects
+ * Factory for instantiating Mailer objects.
  *
  * PHP version 8
  *
@@ -37,9 +37,10 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Feature\SecretTrait;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
- * Factory for instantiating Mailer objects
+ * Factory for instantiating Mailer objects.
  *
  * @category VuFind
  * @package  Mailer
@@ -55,7 +56,7 @@ class MailerFactory implements FactoryInterface
     use SecretTrait;
 
     /**
-     * Return DSN from the configuration
+     * Return DSN from the configuration.
      *
      * @param array $config Configuration
      *
@@ -101,7 +102,7 @@ class MailerFactory implements FactoryInterface
     }
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -131,6 +132,7 @@ class MailerFactory implements FactoryInterface
             new \Symfony\Component\Mailer\Mailer(
                 \Symfony\Component\Mailer\Transport::fromDsn($this->getDSN($config))
             ),
+            $container->get(TemplateRendererInterface::class),
             [
                 'message_log' => $config['Mail']['message_log'] ?? null,
                 'message_log_format' => $config['Mail']['message_log_format'] ?? null,

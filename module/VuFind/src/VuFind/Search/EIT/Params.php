@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EBSCO Search Parameters
+ * EBSCO Search Parameters.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Search\Base\Params as BaseParams;
 use VuFindSearch\ParamBag;
 
 /**
- * EBSCO Search Parameters
+ * EBSCO Search Parameters.
  *
  * @category VuFind
  * @package  Search_EIT
@@ -50,7 +50,7 @@ class Params extends BaseParams
      *
      * @return ParamBag
      */
-    public function getBackendParameters()
+    public function getBackendParameters(): ParamBag
     {
         $backendParams = new ParamBag();
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content AuthorNotes Plugin Manager Test Class
+ * Content AuthorNotes Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\AuthorNotes\Content;
 use VuFind\Content\AuthorNotes\PluginManager;
 
 /**
- * Content AuthorNotes Plugin Manager Test Class
+ * Content AuthorNotes Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Password Access authentication class
+ * Password Access authentication class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Exception\Auth as AuthException;
 use function in_array;
 
 /**
- * Password Access authentication class
+ * Password Access authentication class.
  *
  * @category VuFind
  * @package  Authentication
@@ -48,24 +48,6 @@ use function in_array;
 class PasswordAccess extends AbstractBase
 {
     /**
-     * Get configuration (load automatically if not previously set). Throw an
-     * exception if the configuration is invalid.
-     *
-     * @throws AuthException
-     * @return \VuFind\Config\Config
-     */
-    public function getConfig()
-    {
-        // Validate configuration if not already validated:
-        if (!$this->configValidated) {
-            $this->validateConfig();
-            $this->configValidated = true;
-        }
-
-        return $this->config;
-    }
-
-    /**
      * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
@@ -76,14 +58,19 @@ class PasswordAccess extends AbstractBase
      */
     public function authenticate($request)
     {
-        $config = $this->getConfig()->toArray();
-        $req_password = trim($request->getPost()->get('password', ''));
+        $config = $this->getConfig();
+        $requestPassword = trim($request->getPost()->get('password', ''));
+        foreach ($config['PasswordAccess']['access_user_hashed'] ?? [] as $username => $passwordHash) {
+            if (password_verify($requestPassword, $passwordHash)) {
+                return $this->getOrCreateUserByUsername($username);
+            }
+        }
         $accessConfig = $config['PasswordAccess']['access_user'] ?? [];
-        if (!in_array($req_password, $accessConfig)) {
+        if (!in_array($requestPassword, $accessConfig)) {
             throw new AuthException('authentication_error_invalid');
         }
 
         $userMap = array_flip($accessConfig);
-        return $this->getOrCreateUserByUsername($userMap[$req_password]);
+        return $this->getOrCreateUserByUsername($userMap[$requestPassword]);
     }
 }

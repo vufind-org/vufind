@@ -31,8 +31,9 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Renderer\RendererInterface;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Context manager (useful for using render() instead of partial() for better
@@ -45,78 +46,60 @@ use Laminas\View\Renderer\RendererInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Context extends AbstractHelper
+class Context
 {
     /**
-     * Set an array of variables in the view; return the previous values of those
-     * variables so they can be restored.
+     * Constructor.
      *
-     * @param array $vars Variables to set
+     * @param RendererInterface         $view             View renderer
+     * @param TemplateRendererInterface $templateRenderer Template renderer
+     */
+    #[Autowire]
+    public function __construct(
+        protected RendererInterface $view,
+        protected TemplateRendererInterface $templateRenderer,
+    ) {
+    }
+
+    /**
+     * Get template variables.
+     *
+     * @param array $extra Extra variables
      *
      * @return array
      */
-    public function apply($vars)
+    public function getVars(array $extra = []): array
     {
-        $view = $this->getView();
-
-        $oldVars = [];
-        foreach ($vars as $k => $v) {
-            $oldVars[$k] = $view->$k ?? null;
-            $view->$k = $v;
-        }
-        return $oldVars;
+        return $extra + (array)($this->view->vars() ?? []);
     }
 
     /**
-     * Restore an old context returned by apply().
+     * Render a template using a context that includes the variables from current template.
      *
-     * @param array $vars Variables to set
+     * @param string $templateName Template to render
+     * @param array  $context      Array of context variables to add
      *
-     * @return void
+     * @return string Rendered template output
      */
-    public function restore($vars)
+    public function renderInContext(string $templateName, array $context = [])
     {
-        $view = $this->getView();
-
-        foreach ($vars as $k => $v) {
-            if (null === $v) {
-                unset($view->$k);
-            } else {
-                $view->$k = $v;
-            }
-        }
+        return $this->templateRenderer->renderTemplateAsString(
+            template: $templateName,
+            params: $this->getVars($context)
+        );
     }
 
     /**
-     * Render a template using a temporary context; restore the view to its
-     * original state when done. This offers the template full access to the
-     * global scope, modified by $context, then puts the global scope back
-     * the way it was.
+     * Return this helper instance.
      *
-     * @param string $template Template to render
-     * @param array  $context  Array of context variables to set temporarily
-     *
-     * @return string          Rendered template output
-     */
-    public function renderInContext($template, $context)
-    {
-        $oldContext = $this->apply($context);
-        $html = $this->getView()->render($template);
-        $this->restore($oldContext);
-        return $html;
-    }
-
-    /**
-     * Grab the helper object, so we can call methods on it.
-     *
-     * @param ?RendererInterface $view View object to modify.
+     * @param RendererInterface $view View Renderer
      *
      * @return Context
      */
     public function __invoke(?RendererInterface $view = null)
     {
         if (null !== $view) {
-            $this->setView($view);
+            $this->view = $view;
         }
         return $this;
     }

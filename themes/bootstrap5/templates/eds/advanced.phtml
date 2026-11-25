@@ -1,8 +1,7 @@
 <?php
-  // Load the EDS-specific advanced search controls and inject them into the
-  // standard advanced search layout:
-  $this->extraAdvancedControls = $this->render('search/advanced/eds.phtml');
-  $this->buildPageOverride = '/search/advanced/build_page_eds.phtml';
+  // Load the EDS-specific advanced search controls that will be included by the standard advanced search layout:
+  $this->globals()['extraAdvancedControls'] = $this->context($this)->renderInContext('search/advanced/eds.phtml');
+  $this->globals()['buildPageOverride'] = '/search/advanced/build_page_eds.phtml';
 
   ob_start();
 ?>
@@ -31,7 +30,7 @@
         </select>
         <a href="#" class="adv-term-remove">
           <?=$this->icon('ui-remove') ?>
-          <span class="visually-hidden"><?=$this->transEsc('remove') ?></span>
+          <span class="visually-hidden"><?=$this->transEsc('del_search_field') ?></span>
         </a>
       </div>
       <?php if ($search === 0): ?>
@@ -39,12 +38,12 @@
       <?php endif; ?>
     <?php endfor; ?>
     <?=$this->icon('ui-add', 'search_place_holder hidden') ?>
-    <a href="#" class="add_search_link hidden"><?=$this->transEsc('add_search')?></a>
+    <a href="#" class="add_search_link hidden"><?=$this->transEsc('add_search_field')?></a>
   </div>
 </div>
 <?php
-  $this->formOverride = ob_get_contents();
+  $this->globals()['formOverride'] = ob_get_contents();
   ob_end_clean();
 
-  echo $this->render('search/advanced/layout.phtml');
+  echo $this->context($this)->renderInContext('search/advanced/layout.phtml');
 ?>

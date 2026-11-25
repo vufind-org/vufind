@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Current path view helper
+ * Current path view helper.
  *
  * PHP version 8
  *
@@ -29,12 +29,13 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\ServerUrl;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function strlen;
 
 /**
- * Current path view helper
+ * Current path view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,8 +43,19 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CurrentPath extends AbstractHelper
+class CurrentPath
 {
+    /**
+     * Constructor.
+     *
+     * @param ServerUrl $serverUrl ServerUrl helper
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected ServerUrl $serverUrl,
+    ) {
+    }
+
     /**
      * Get the path of the current URL.
      *
@@ -51,9 +63,8 @@ class CurrentPath extends AbstractHelper
      */
     public function __invoke()
     {
-        $serverUrlHelper = $this->getView()->plugin('serverurl');
-        $base = rtrim($serverUrlHelper(), '/');
-        $full = $serverUrlHelper(true);
+        $base = rtrim(($this->serverUrl)(), '/');
+        $full = ($this->serverUrl)(true);
         $parts = explode('?', $full);
         return substr($parts[0], strlen($base));
     }

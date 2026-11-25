@@ -30,6 +30,9 @@
 
 namespace VuFind\RecordDriver;
 
+use Laminas\Cache\Storage\StorageInterface;
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Model for EPF records.
  *
@@ -43,11 +46,29 @@ namespace VuFind\RecordDriver;
 class EPF extends EDS
 {
     /**
+     * Constructor.
+     *
+     * @param ?array            $mainConfig   VuFind main configuration (omit for built-in defaults)
+     * @param ?array            $recordConfig Record-specific configuration file
+     * @param ?StorageInterface $cache        Cache
+     */
+    public function __construct(
+        #[Autowire(config: 'config')]
+        ?array $mainConfig = null,
+        #[Autowire(config: 'EPF')]
+        ?array $recordConfig = null,
+        #[Autowire(container: \VuFind\Cache\Manager::class, service: 'object')]
+        ?StorageInterface $cache = null,
+    ) {
+        parent::__construct($mainConfig, $recordConfig, $cache);
+    }
+
+    /**
      * Return the unique identifier of this record within the EPF.
      *
      * @return string Unique identifier.
      */
-    public function getUniqueId()
+    public function getUniqueID()
     {
         return $this->fields['Header']['PublicationId'];
     }
@@ -68,7 +89,7 @@ class EPF extends EDS
     }
 
     /**
-     * Get ISSNs (of containing record)
+     * Get ISSNs (of containing record).
      *
      * @return array
      */
@@ -78,7 +99,7 @@ class EPF extends EDS
     }
 
     /**
-     * Get an array of ISBNs
+     * Get an array of ISBNs.
      *
      * @return array
      */
@@ -88,7 +109,7 @@ class EPF extends EDS
     }
 
     /**
-     * Get the list of full text holdings for the record
+     * Get the list of full text holdings for the record.
      *
      * @return array
      */

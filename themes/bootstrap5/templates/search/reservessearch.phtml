@@ -23,6 +23,7 @@
         'size' => '40',
         'value' => $reservesLookfor,
         'aria-label' => $this->translate('search_terms'),
+        'data-focus-on-load' => true,
       ];
       if ($placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? $this->searchClassId)) {
         $searchboxAttributes['placeholder'] = $this->translate($placeholder);
@@ -48,7 +49,6 @@
         ]
     );
   ?>
-  <?=$this->assetManager()->outputInlineScriptString("$('#reservesSearchForm_lookfor').focus()")?>
 
   <div class="resulthead">
     <div class="float-start">
@@ -71,7 +71,7 @@
 
     <?php if ($recordTotal > 0): ?>
       <div class="float-end">
-        <?=$this->render('search/controls/sort.phtml')?>
+        <?=$this->context($this)->renderInContext('search/controls/sort.phtml')?>
       </div>
     <?php endif; ?>
   </div>

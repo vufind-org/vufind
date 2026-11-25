@@ -7,6 +7,7 @@
   displayDetailsOnTestsThatTriggerWarnings="true"
   displayDetailsOnTestsThatTriggerDeprecations="true"
   displayDetailsOnPhpunitDeprecations="true"
+  failOnWarning="true"
   cacheDirectory=".phpunit.cache">
   <testsuites>
     <testsuite name="AllUnitTests">
@@ -18,13 +19,7 @@
   </testsuites>
   <source>
     <include>
-      <directory suffix=".php">../src/VuFind</directory>
-      <directory suffix=".php">../../VuFindAdmin/src</directory>
-      <directory suffix=".php">../../VuFindApi/src</directory>
-      <directory suffix=".php">../../VuFindConsole/src</directory>
-      <directory suffix=".php">../../VuFindDevTools/src</directory>
-      <directory suffix=".php">../../VuFindSearch/src</directory>
-      <directory suffix=".php">../../VuFindTheme/src</directory>
+      <directory suffix=".php">../../*/src</directory>
     </include>
   </source>
 </phpunit>

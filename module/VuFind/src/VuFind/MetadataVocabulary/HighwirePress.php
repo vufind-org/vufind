@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Metadata vocabulary implementation for Highwire Press
+ * Metadata vocabulary implementation for Highwire Press.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\MetadataVocabulary;
 
 /**
- * Metadata vocabulary implementation for Highwire Press
+ * Metadata vocabulary implementation for Highwire Press.
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -42,7 +42,7 @@ class HighwirePress extends AbstractBase
 {
     /**
      * Mapping from Highwire Press to VuFind fields; see
-     * https://jira.duraspace.org/secure/attachment/13020/Invisible_institutional.pdf
+     * https://jira.duraspace.org/secure/attachment/13020/Invisible_institutional.pdf.
      *
      * @var array
      */
@@ -63,7 +63,7 @@ class HighwirePress extends AbstractBase
     ];
 
     /**
-     * Special implementation for date formats
+     * Special implementation for date formats.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *

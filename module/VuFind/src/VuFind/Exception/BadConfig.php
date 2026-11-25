@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Bad Configuration Exception
+ * Bad Configuration Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Bad Configuration Exception
+ * Bad Configuration Exception.
  *
  * @category VuFind
  * @package  Exceptions

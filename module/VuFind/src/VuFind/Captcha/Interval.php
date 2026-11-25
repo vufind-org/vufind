@@ -29,13 +29,11 @@
 
 namespace VuFind\Captcha;
 
-use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\Container as SessionContainer;
-use VuFind\Config\Config;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
-
-use function intval;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
 
 /**
  * Interval CAPTCHA (requires an interval between actions or from start of session).
@@ -51,58 +49,54 @@ class Interval extends AbstractBase implements TranslatorAwareInterface
     use TranslatorAwareTrait;
 
     /**
-     * Session data container
-     *
-     * @var SessionContainer
-     */
-    protected $sessionData;
-
-    /**
-     * Minimum action interval in seconds
+     * Minimum action interval in seconds.
      *
      * @var int
      */
     protected $actionInterval;
 
     /**
-     * Minimum time from session start to first action
+     * Minimum time from session start to first action.
      *
      * @var int
      */
     protected $timeFromSessionStart;
 
     /**
-     * Verification error message
+     * Verification error message.
      *
      * @var string
      */
     protected $errorMessage = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param SessionContainer $sc     Session data container
-     * @param Config           $config VuFind main configuration
+     * @param SessionContainer $sessionData Session data container
+     * @param array            $config      VuFind main configuration
      */
-    public function __construct(SessionContainer $sc, Config $config)
-    {
-        $this->sessionData = $sc;
-        $this->actionInterval = intval($config->Captcha->action_interval ?? 60);
-        $this->timeFromSessionStart = intval(
-            $config->Captcha->time_from_session_start ?? $this->actionInterval
+    public function __construct(
+        #[Autowire(container: SessionContainerRegistry::class, service: 'SessionState')]
+        protected SessionContainer $sessionData,
+        #[Autowire(config: 'config')]
+        array $config
+    ) {
+        $this->actionInterval = (int)($config['Captcha']['action_interval'] ?? 60);
+        $this->timeFromSessionStart = (int)(
+            $config['Captcha']['time_from_session_start'] ?? $this->actionInterval
         );
     }
 
     /**
-     * Pull the captcha field from controller params and check them for accuracy
+     * Pull the captcha fields from request params and check them for accuracy.
      *
-     * @param Params $params Controller params
+     * @param array $postParams  POST params
+     * @param array $queryParams Query params
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function verify(Params $params): bool
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function verify(array $postParams, array $queryParams): bool
     {
         if (isset($this->sessionData->lastProtectedActionTime)) {
             $timestamp = $this->sessionData->lastProtectedActionTime;

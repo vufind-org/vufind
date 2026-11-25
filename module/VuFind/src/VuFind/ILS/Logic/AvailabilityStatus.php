@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Availability Status Logic Class
+ * Availability Status Logic Class.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\ILS\Logic;
 
 /**
- * Availability Status Logic Class
+ * Availability Status Logic Class.
  *
  * @category VuFind
  * @package  ILS_Logic
@@ -43,21 +43,21 @@ namespace VuFind\ILS\Logic;
 class AvailabilityStatus implements AvailabilityStatusInterface
 {
     /**
-     * Items availability
+     * Items availability.
      *
      * @var int
      */
     protected int $availability;
 
     /**
-     * Item visibility in holdings tab
+     * Item visibility in holdings tab.
      *
      * @var bool
      */
     protected bool $visibilityInHoldingsTab = true;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param int|bool $availability           Availability
      * @param string   $status                 Status Description
@@ -182,7 +182,7 @@ class AvailabilityStatus implements AvailabilityStatusInterface
     }
 
     /**
-     * Convert availability to a string
+     * Convert availability to a string.
      *
      * @return string
      */

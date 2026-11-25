@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Map tab
+ * Map tab.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Config\PathResolver;
 use function count;
 
 /**
- * Map tab
+ * Map tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -75,14 +75,14 @@ class Map extends AbstractBase
     protected $graticule = false;
 
     /**
-     * Basemap settings
+     * Basemap settings.
      *
      * @var array
      */
     protected $basemapOptions = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PathResolver $pathResolver   Config file path resolver
      * @param bool         $mapTabDisplay  Display Map
@@ -206,7 +206,7 @@ class Map extends AbstractBase
             $labelN = $coord[2];
             $labelS = $coord[3];
             /* Create coordinate label for map display */
-            if (($labelW == $labelE) && ($labelN == $labelS)) {
+            if (($labelW === $labelE) && ($labelN === $labelS)) {
                 $labelcoord = $labelS . ' ' . $labelE;
             } else {
                 /* Coordinate order is min to max on lat and long axes */

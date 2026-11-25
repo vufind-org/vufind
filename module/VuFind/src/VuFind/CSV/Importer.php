@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind CSV importer configuration
+ * VuFind CSV importer configuration.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 use function count;
 
 /**
- * VuFind CSV importer configuration
+ * VuFind CSV importer configuration.
  *
  * @category VuFind
  * @package  CSV
@@ -49,14 +49,14 @@ class Importer
     use GetServiceTrait;
 
     /**
-     * Base path for loading .ini files
+     * Base path for loading .ini files.
      *
      * @var string
      */
     protected $configBaseDir;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm      Service manager
      * @param array                   $options Configuration options

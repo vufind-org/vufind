@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Zotero Service Test Class
+ * Zotero Service Test Class.
  *
  * PHP version 8
  *
@@ -47,7 +47,7 @@ use VuFind\Http\GuzzleService;
 use VuFindTest\Feature\FixtureTrait;
 
 /**
- * Zotero Service Test Class
+ * Zotero Service Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -60,7 +60,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
     use FixtureTrait;
 
     /**
-     * OAuth params
+     * OAuth params.
      *
      * @var array
      */
@@ -70,21 +70,21 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Zotero export URL
+     * Zotero export URL.
      *
      * @var string
      */
     protected string $zoteroExportUrl = 'https://api.zotero.org/users/zotero_user_id/items';
 
     /**
-     * Cached access token
+     * Cached access token.
      *
      * @var ?AccessToken
      */
     protected ?AccessToken $storedAccessToken = null;
 
     /**
-     * Container id for session storage
+     * Container id for session storage.
      *
      * @var int
      */
@@ -100,11 +100,13 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
         $zotero = $this->getZoteroService(true);
         $user = $this->getUser();
         // First export goes to authorization:
-        $this->assertEquals('https://localhost/authorization', $zotero->export($user, 'https://localhost/callback'));
+        $this->assertSame('https://localhost/authorization', $zotero->export($user, 'https://localhost/callback'));
         // Emulate return from Zotero authorization:
-        $this->assertEquals(1, $zotero->handleAuthCallback($user, $this->oauthParams));
+        $this->assertSame(1, $zotero->handleAuthCallback($user, $this->oauthParams));
         // Subsequent call does export directly:
-        $this->assertEquals(1, $zotero->export($user, 'https://localhost/callback'));
+        $result = $zotero->export($user, 'https://localhost/callback');
+        $this->assertIsInt($result);
+        $this->assertSame(1, $result);
     }
 
     /**
@@ -117,7 +119,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
         $zotero = $this->getZoteroService(false, true);
         $user = $this->getUser();
         // First export goes to authorization:
-        $this->assertEquals('https://localhost/authorization', $zotero->export($user, 'https://localhost/callback'));
+        $this->assertSame('https://localhost/authorization', $zotero->export($user, 'https://localhost/callback'));
         // Check that emulated return from Zotero authorization would throw:
         $this->expectExceptionMessage('An error has occurred');
         $zotero->handleAuthCallback($user, $this->oauthParams);
@@ -133,7 +135,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
         $zotero = $this->getZoteroService(false);
         $user = $this->getUser();
         // Check that emulated return from Zotero authorization would redirect to authorization again:
-        $this->assertEquals('https://localhost/authorization', $zotero->handleAuthCallback($user, $this->oauthParams));
+        $this->assertSame('https://localhost/authorization', $zotero->handleAuthCallback($user, $this->oauthParams));
     }
 
     /**
@@ -179,7 +181,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
         $accessTokenService = $this->createMock(AccessTokenService::class);
         $accessTokenService->expects($expectCounts ? $this->exactly(4) : $this->any())
             ->method('getByIdAndType')
-            ->willReturnCallback(function ($id, $type, $create = true) {
+            ->willReturnCallback(function (string $id, string $type, bool $create = true) {
                 if (null === $this->storedAccessToken && $create) {
                     $this->storedAccessToken = new AccessToken();
                     $this->storedAccessToken->setId($id)
@@ -215,7 +217,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
         $guzzleService = $this->createMock(GuzzleService::class);
         $guzzleService->expects($expectCounts ? $this->exactly(4) : $this->any())
             ->method('createClient')
-            ->willReturnCallback(fn ($url) => match ($url) {
+            ->willReturnCallback(fn (?string $url) => match ($url) {
                 'https://localhost/callback' => $callbackClient,
                 $this->zoteroExportUrl => $exportClient,
             });
@@ -250,9 +252,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
     protected function getUser(): MockObject&User
     {
         $user = $this->createMock(User::class);
-        $user->expects($this->any())
-            ->method('getId')
-            ->willReturn(123);
+        $user->method('getId')->willReturn(123);
         return $user;
     }
 }

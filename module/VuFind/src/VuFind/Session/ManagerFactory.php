@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for instantiating Session Manager
+ * Factory for instantiating Session Manager.
  *
  * PHP version 8
  *
@@ -32,12 +32,12 @@ namespace VuFind\Session;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for instantiating Session Manager
+ * Factory for instantiating Session Manager.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -103,15 +103,15 @@ class ManagerFactory implements FactoryInterface
     /**
      * According to the PHP manual, session_write_close should always be
      * registered as a shutdown function when using an object as a session
-     * handler: http://us.php.net/manual/en/function.session-set-save-handler.php
+     * handler: http://us.php.net/manual/en/function.session-set-save-handler.php.
      *
      * This method sets that up.
      *
-     * @param SessionManager $sessionManager Session manager instance
+     * @param ManagerInterface $sessionManager Session manager instance
      *
      * @return void
      */
-    protected function registerShutdownFunction(SessionManager $sessionManager)
+    protected function registerShutdownFunction(ManagerInterface $sessionManager)
     {
         register_shutdown_function(
             function () use ($sessionManager): void {
@@ -124,7 +124,7 @@ class ManagerFactory implements FactoryInterface
     }
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Authority Autocomplete Module
+ * Solr Authority Autocomplete Module.
  *
  * PHP version 8
  *
@@ -30,8 +30,10 @@
 
 namespace VuFind\Autocomplete;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
- * Solr Authority Autocomplete Module
+ * Solr Authority Autocomplete Module.
  *
  * This class provides suggestions by using the local Solr authority index.
  *
@@ -44,10 +46,11 @@ namespace VuFind\Autocomplete;
 class SolrAuth extends Solr
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      */
+    #[Autowire]
     public function __construct(\VuFind\Search\Results\PluginManager $results)
     {
         parent::__construct($results);

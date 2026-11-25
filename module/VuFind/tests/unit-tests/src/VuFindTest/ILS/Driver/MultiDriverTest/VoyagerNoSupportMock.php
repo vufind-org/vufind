@@ -2,7 +2,7 @@
 
 /**
  * Support class (limited functionality mock Voyager driver) for MultiBackend ILS
- * driver test
+ * driver test.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFindTest\ILS\Driver\MultiDriverTest;
 
 /**
  * Support class (limited functionality mock Voyager driver) for MultiBackend ILS
- * driver test
+ * driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -47,12 +47,13 @@ class VoyagerNoSupportMock extends \VuFind\ILS\Driver\Voyager
     use ILSMockTrait;
 
     /**
-     * Ensure that ALL methods are marked as unsupported
+     * Ensure that ALL methods are marked as unsupported.
      *
      * @param array ...$args Arguments
      *
      * @return bool
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsMethod(...$args)
     {
         return false;

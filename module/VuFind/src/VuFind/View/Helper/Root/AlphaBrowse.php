@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AlphaBrowse view helper
+ * AlphaBrowse view helper.
  *
  * PHP version 8
  *
@@ -29,10 +29,11 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\Url;
+use VuFind\Http\RouteHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * AlphaBrowse view helper
+ * AlphaBrowse view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,36 +41,23 @@ use Laminas\View\Helper\Url;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
+class AlphaBrowse
 {
     /**
-     * URL helper
+     * Constructor.
      *
-     * @var Url
+     * @param RouteHelper $routeHelper Route helper
+     * @param array       $options     Additional configuration options
      */
-    protected $url;
-
-    /**
-     * Additional configuration options.
-     *
-     * @var array
-     */
-    protected $options;
-
-    /**
-     * Constructor
-     *
-     * @param Url   $helper  URL helper
-     * @param array $options Additional configuration options
-     */
-    public function __construct(Url $helper, array $options = [])
-    {
-        $this->url = $helper;
-        $this->options = $options;
+    public function __construct(
+        protected RouteHelper $routeHelper,
+        #[Autowire(config: 'config', path: 'AlphaBrowse', default: [])]
+        protected array $options = []
+    ) {
     }
 
     /**
-     * Get link to browse results (or null if no valid URL available)
+     * Get link to browse results (or null if no valid URL available).
      *
      * @param string $source AlphaBrowse index currently being used
      * @param array  $item   Item to link to
@@ -84,7 +72,8 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
 
         $query = [
             'type' => ucwords($source) . 'Browse',
-            'lookfor' => $this->escapeForSolr($item['sort_key']),
+            // this is needed for appropriate title browsing as searching by sort_key causes issues
+            'lookfor' => $this->escapeForSolr($source == 'title' ? $item['heading'] : $item['sort_key']),
         ];
         if ($this->options['bypass_default_filters'] ?? true) {
             $query['dfApplied'] = 1;
@@ -92,7 +81,7 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
         if ($item['count'] == 1) {
             $query['jumpto'] = 1;
         }
-        return ($this->url)('search-results', [], ['query' => $query]);
+        return $this->routeHelper->getUrlFromRoute('search-results', queryParams: $query);
     }
 
     /**
@@ -105,5 +94,15 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
     protected function escapeForSolr($str)
     {
         return '"' . addcslashes($str, '"') . '"';
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

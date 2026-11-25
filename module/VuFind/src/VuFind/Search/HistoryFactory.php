@@ -48,7 +48,7 @@ use VuFind\Db\Service\SearchService;
 class HistoryFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -72,9 +72,9 @@ class HistoryFactory implements FactoryInterface
         $searchService = $container->get(\VuFind\Db\Service\PluginManager::class)->get(SearchService::class);
         $resultsManager = $container
             ->get(\VuFind\Search\Results\PluginManager::class);
-        $sessionId = $container->get(\Laminas\Session\SessionManager::class)
+        $sessionId = $container->get(\Laminas\Session\ManagerInterface::class)
             ->getId();
-        $cfg = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $cfg = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         return new $requestedName($searchService, $sessionId, $resultsManager, $cfg);
     }
 }

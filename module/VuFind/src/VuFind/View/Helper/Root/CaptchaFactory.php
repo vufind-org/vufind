@@ -33,8 +33,10 @@ namespace VuFind\View\Helper\Root;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\View\Resolver\ResolverInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Captcha helper factory.
@@ -49,7 +51,7 @@ use Psr\Container\ContainerInterface;
 class CaptchaFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -71,9 +73,9 @@ class CaptchaFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
 
-        $captchaTypes = $config->Captcha->types ?? [];
+        $captchaTypes = $config['Captcha']['types'] ?? [];
 
         $captchas = [];
         foreach ($captchaTypes as $captchaType) {
@@ -83,7 +85,10 @@ class CaptchaFactory implements FactoryInterface
 
         return new $requestedName(
             $config,
-            $captchas
+            $captchas,
+            $container->get(TemplateRendererInterface::class),
+            $container->get(ResolverInterface::class),
+            $container->get('ViewHelperManager')->get('context')
         );
     }
 }

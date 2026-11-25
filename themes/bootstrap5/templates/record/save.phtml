@@ -1,7 +1,4 @@
 <?php
-  // Set page title.
-  $this->headTitle($this->translate('Save'));
-
   // Set up breadcrumbs:
   $this->breadcrumbs()->reset();
   if ($url = $this->searchMemory()->getLastSearchUrl()) {
@@ -10,7 +7,15 @@
   $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
     ->add($this->translate('Save'), active: true);
 ?>
-<h2><?=$this->translate('add_to_favorites_html', ['%%title%%' => $this->escapeHtml($this->driver->getBreadcrumb())]) ?></h2>
+<?=
+// Set page title and heading.
+  $this->component('page-title', [
+    'title' => $this->translate('add_to_favorites_html', ['%%title%%' => $this->escapeHtml($this->driver->getBreadcrumb())]),
+    'level' => 1,
+    'escape' => false,
+    'headTitle' => $this->translate('Save'),
+  ])
+?>
 <form class="form-record-save" method="post" action="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save')) ?>" name="saveRecord" data-lightbox-onclose="VuFind.saveStatuses.refresh">
   <input type="hidden" name="submitButton" value="1">
   <?=$this->context($this)->renderInContext('cart/form-record-hidden-inputs.phtml', []); ?>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SummonTopics Recommendations Module
+ * SummonTopics Recommendations Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * SummonTopics Recommendations Module
+ * SummonTopics Recommendations Module.
  *
  * This class provides database recommendations by doing a search of Summon.
  *
@@ -50,15 +50,15 @@ class SummonTopics extends AbstractSummonRecommend
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         parent::init($params, $request);
-        if ($params->getSearchClassId() == 'Summon') {
+        if ($params->getSearchClassId() === 'Summon') {
             $params->getOptions()->setMaxTopicRecommendations(1);
         }
     }

@@ -29,7 +29,6 @@
 
 namespace VuFindConsole\Command\OnlinePayment;
 
-use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -42,8 +41,8 @@ use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PaymentServiceInterface;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Mailer\Mailer;
-use VuFind\OnlinePayment\OnlinePaymentEventTrait;
 use VuFind\OnlinePayment\OnlinePaymentManager;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function count;
 
@@ -62,7 +61,6 @@ use function count;
 class MonitorCommand extends Command
 {
     use EmailSettingsTrait;
-    use OnlinePaymentEventTrait;
 
     /**
      * Minimum time after payment was paid for it to be considered for retry (SECONDS).
@@ -93,39 +91,39 @@ class MonitorCommand extends Command
     protected $fromEmail = null;
 
     /**
-     * Payments successfully registered
+     * Payments successfully registered.
      *
      * @var int
      */
     protected $registeredCount = 0;
 
     /**
-     * Payments that failed to register
+     * Payments that failed to register.
      *
      * @var int
      */
     protected $failedCount = 0;
 
     /**
-     * Expired payments
+     * Expired payments.
      *
      * @var int
      */
     protected $expiredCount = 0;
 
     /**
-     * Output interface
+     * Output interface.
      *
      * @var ?OutputInterface
      */
     protected ?OutputInterface $output = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PaymentServiceInterface    $paymentService       Payment database service
      * @param OnlinePaymentManager       $onlinePaymentManager Online payment manager
-     * @param PhpRenderer                $viewRenderer         View renderer
+     * @param TemplateRendererInterface  $templateRenderer     Template renderer
      * @param Mailer                     $mailer               Mailer
      * @param array                      $config               VuFind configuration
      * @param AuditEventServiceInterface $auditEventService    Audit event database service
@@ -133,12 +131,11 @@ class MonitorCommand extends Command
     public function __construct(
         protected PaymentServiceInterface $paymentService,
         protected OnlinePaymentManager $onlinePaymentManager,
-        protected PhpRenderer $viewRenderer,
+        protected TemplateRendererInterface $templateRenderer,
         protected Mailer $mailer,
         protected array $config,
-        AuditEventServiceInterface $auditEventService,
+        protected AuditEventServiceInterface $auditEventService,
     ) {
-        $this->auditEventService = $auditEventService;
         parent::__construct();
     }
 
@@ -277,7 +274,7 @@ class MonitorCommand extends Command
                 . ", card {$payment->getCatUsername()}: "
                 . (string)$e
             );
-            $this->addPaymentEvent(
+            $this->auditEventService->addPaymentEvent(
                 $payment,
                 AuditEventSubtype::PaymentRegistration,
                 'Exception processing payment',
@@ -312,7 +309,8 @@ class MonitorCommand extends Command
             $this->msg("Inform $errorCount expired payments to $recipient (source: $source)");
 
             $params = compact('source', 'errorCount');
-            $message = $this->viewRenderer->render('Email/online-payment-alert.phtml', $params);
+            $message = $this->templateRenderer
+                ->renderTemplateAsString(template: 'Email/online-payment-alert.phtml', params: $params);
 
             try {
                 $this->mailer->setMaxRecipients(0);
@@ -337,7 +335,7 @@ class MonitorCommand extends Command
     }
 
     /**
-     * Get error email recipient address for a source ILS
+     * Get error email recipient address for a source ILS.
      *
      * @param string $sourceIls Source ILS
      *
@@ -350,7 +348,7 @@ class MonitorCommand extends Command
     }
 
     /**
-     * Output a message with a timestamp
+     * Output a message with a timestamp.
      *
      * @param string $msg Message
      *
@@ -363,7 +361,7 @@ class MonitorCommand extends Command
     }
 
     /**
-     * Output an error message with a timestamp
+     * Output an error message with a timestamp.
      *
      * @param string $msg Message
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDSResultsDeferred Recommendations Module
+ * EDSResultsDeferred Recommendations Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * EDSResultsDeferred Recommendations Module
+ * EDSResultsDeferred Recommendations Module.
  *
  * This class sets up an AJAX call to trigger a call to the EDSResults module.
  *

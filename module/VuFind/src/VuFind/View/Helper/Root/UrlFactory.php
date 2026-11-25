@@ -48,7 +48,7 @@ use Psr\Container\ContainerInterface;
 class UrlFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -79,7 +79,7 @@ class UrlFactory implements FactoryInterface
 
         $match = $container->get('Application')
             ->getMvcEvent()
-            ->getRouteMatch();
+            ?->getRouteMatch();
 
         if ($match instanceof RouteMatch) {
             $helper->setRouteMatch($match);

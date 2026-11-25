@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS Hold Settings Class
+ * ILS Hold Settings Class.
  *
  * This class is responsible for determining hold settings for VuFind based
  * on configuration and defaults.
@@ -34,7 +34,7 @@
 namespace VuFind\ILS;
 
 /**
- * ILS Hold Settings Class
+ * ILS Hold Settings Class.
  *
  * This class is responsible for determining hold settings for VuFind based
  * on configuration and defaults.
@@ -49,25 +49,17 @@ namespace VuFind\ILS;
 class HoldSettings
 {
     /**
-     * ILS configuration
+     * Constructor.
      *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\Config $config Configuration representing the [Catalog]
+     * @param array $config Configuration representing the [Catalog]
      * section of config.ini
      */
-    public function __construct(\VuFind\Config\Config $config)
+    public function __construct(protected array $config)
     {
-        $this->config = $config;
     }
 
     /**
-     * Get Holds Mode
+     * Get Holds Mode.
      *
      * This is responsible for returning the holds mode
      *
@@ -75,11 +67,11 @@ class HoldSettings
      */
     public function getHoldsMode()
     {
-        return $this->config->holds_mode ?? 'all';
+        return $this->config['holds_mode'] ?? 'all';
     }
 
     /**
-     * Get Title Holds Mode
+     * Get Title Holds Mode.
      *
      * This is responsible for returning the Title holds mode
      *
@@ -87,6 +79,6 @@ class HoldSettings
      */
     public function getTitleHoldsMode()
     {
-        return $this->config->title_level_holds_mode ?? 'disabled';
+        return $this->config['title_level_holds_mode'] ?? 'disabled';
     }
 }

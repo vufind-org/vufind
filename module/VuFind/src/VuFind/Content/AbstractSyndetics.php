@@ -30,6 +30,7 @@
 namespace VuFind\Content;
 
 use DOMDocument;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Abstract base for Syndetics content loader plug-ins.
@@ -43,16 +44,18 @@ use DOMDocument;
 abstract class AbstractSyndetics extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param int $timeout HTTP timeout for API calls (in seconds)
      */
-    public function __construct(protected int $timeout = 10)
-    {
+    public function __construct(
+        #[Autowire(config: 'config', path: 'Syndetics/timeout', default: 10)]
+        protected int $timeout = 10
+    ) {
     }
 
     /**
-     * Get an HTTP client
+     * Get an HTTP client.
      *
      * @param string $url URL for client to use
      *
@@ -78,7 +81,7 @@ abstract class AbstractSyndetics extends AbstractBase
      */
     protected function getIsbnUrl($isbn, $id, $file = 'index.xml', $type = 'rw12,h7')
     {
-        $url = 'https://secure.syndetics.com/index.aspx?isbn=' . $isbn
+        $url = 'https://www.syndetics.com/index.aspx?isbn=' . $isbn
             . '/' . $file . '&client=' . $id . '&type=' . $type;
         $this->debug('Syndetics request: ' . $url);
         return $url;

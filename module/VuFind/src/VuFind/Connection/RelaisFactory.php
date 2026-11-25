@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class RelaisFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -68,11 +68,11 @@ class RelaisFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
-        $url = $config->Relais->authenticateurl ?? null;
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        $url = $config['Relais']['authenticateurl'] ?? null;
         $client = $container->get(\VuFindHttp\HttpService::class)
             ->createClient($url);
-        $client->setOptions(['timeout' => $config->Relais->timeout ?? 500]);
-        return new $requestedName($client, $config->Relais ?? null);
+        $client->setOptions(['timeout' => $config['Relais']['timeout'] ?? 500]);
+        return new $requestedName($client, $config['Relais'] ?? []);
     }
 }

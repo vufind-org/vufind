@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Excerpt Test Class
+ * Excerpt Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordTab;
 use VuFind\RecordTab\Excerpt;
 
 /**
- * Excerpt Test Class
+ * Excerpt Test Class.
  *
  * @category VuFind
  * @package  Tests

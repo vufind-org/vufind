@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy Tree Renderer Plugin Manager Test Class
+ * Hierarchy Tree Renderer Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Hierarchy\TreeRenderer;
 use VuFind\Hierarchy\TreeRenderer\PluginManager;
 
 /**
- * Hierarchy Tree Renderer Plugin Manager Test Class
+ * Hierarchy Tree Renderer Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

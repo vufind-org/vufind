@@ -41,7 +41,7 @@ namespace VuFind\Content\Covers;
 class OpenLibrary extends \VuFind\Content\AbstractCover
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -57,9 +57,8 @@ class OpenLibrary extends \VuFind\Content\AbstractCover
      * pointing to an ISBN object and 'issn' pointing to a string)
      *
      * @return string|bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getUrl($key, $size, $ids)
     {
         $size = strtoupper(substr($size, 0, 1));

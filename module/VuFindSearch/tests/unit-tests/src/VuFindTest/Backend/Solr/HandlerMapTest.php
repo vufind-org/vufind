@@ -184,7 +184,7 @@ class HandlerMapTest extends TestCase
     }
 
     /**
-     * Test addParameter
+     * Test addParameter.
      *
      * @return void
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Writer service
+ * Solr Writer service.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use VuFindSearch\Service;
 use function func_get_args;
 
 /**
- * Solr Writer service
+ * Solr Writer service.
  *
  * @category VuFind
  * @package  Solr
@@ -52,7 +52,7 @@ use function func_get_args;
 class Writer
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Service                       $searchService Search service
      * @param ChangeTrackerServiceInterface $changeTracker Change tracker database service
@@ -108,7 +108,7 @@ class Writer
     }
 
     /**
-     * Delete an array of IDs from the specified search backend
+     * Delete an array of IDs from the specified search backend.
      *
      * @param string $backend Backend ID
      * @param array  $idList  Record IDs to delete

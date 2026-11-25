@@ -30,7 +30,6 @@
 namespace VuFindTheme;
 
 use Exception;
-use Laminas\View\Helper\Url;
 use MatthiasMullie\Minify\Minify;
 use Psr\Log\LoggerAwareInterface;
 use VuFind\Log\LoggerAwareTrait;
@@ -66,16 +65,16 @@ class AssetPipeline implements LoggerAwareInterface
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeInfo   $themeInfo      Theme information service
-     * @param Url         $urlHelper      URL view helper
+     * @param string      $baseUrlPath    Path part of the base URL
      * @param string|bool $pipelineConfig Config for current application environment
      * @param ?int        $maxImportSize  Maximum imported (inlined) file size
      */
     public function __construct(
         protected ThemeInfo $themeInfo,
-        protected Url $urlHelper,
+        protected string $baseUrlPath,
         protected string|bool $pipelineConfig,
         protected ?int $maxImportSize = null
     ) {
@@ -102,7 +101,7 @@ class AssetPipeline implements LoggerAwareInterface
     }
 
     /**
-     * Check if config is enabled for the specified file type
+     * Check if config is enabled for the specified file type.
      *
      * @param string $fileType File type to check for pipeline config
      *
@@ -278,7 +277,7 @@ class AssetPipeline implements LoggerAwareInterface
 
     /**
      * Check if a file is minifiable i.e. does not have a pattern that denotes it's
-     * already minified
+     * already minified.
      *
      * @param string $filename File name
      *
@@ -312,7 +311,7 @@ class AssetPipeline implements LoggerAwareInterface
     }
 
     /**
-     * Get minified data for a file
+     * Get minified data for a file.
      *
      * @param array  $details    File details
      * @param string $concatPath Target path for the resulting file (used in minifier
@@ -344,7 +343,7 @@ class AssetPipeline implements LoggerAwareInterface
     }
 
     /**
-     * Create a concatenated file from the given group of files
+     * Create a concatenated file from the given group of files.
      *
      * @param string $concatPath Resulting file path
      * @param array  $group      Object containing 'key' and stdobj file 'items'
@@ -387,8 +386,10 @@ class AssetPipeline implements LoggerAwareInterface
                 $type . '/' . $path,
                 ThemeInfo::RETURN_ALL_DETAILS
             );
-            return ($this->urlHelper)('home') . 'themes/' . $details['theme']
-                . '/' . $type . '/' . $path;
+            $url = $this->baseUrlPath . 'themes/' . $details['theme'] . '/' . $type . '/' . $path;
+            $url .= str_contains($url, '?') ? '&_=' : '?_=';
+            $url .= filemtime($details['path']);
+            return $url;
         }
         // Locate/create concatenated asset file
         $filename = md5($group['key']) . '.min.' . $type;
@@ -420,7 +421,7 @@ class AssetPipeline implements LoggerAwareInterface
             fclose($handle);
         }
 
-        return ($this->urlHelper)('home') . 'cache/' . $filename;
+        return $this->baseUrlPath . 'cache/' . $filename;
     }
 
     /**

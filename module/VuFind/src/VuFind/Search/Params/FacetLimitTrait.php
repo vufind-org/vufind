@@ -29,8 +29,6 @@
 
 namespace VuFind\Search\Params;
 
-use VuFind\Config\Config;
-
 use function in_array;
 
 /**
@@ -45,18 +43,18 @@ use function in_array;
 trait FacetLimitTrait
 {
     /**
-     * Default facet result limit
+     * Default facet result limit.
      *
      * @var int
      */
-    protected $facetLimit = 30;
+    protected int $facetLimit = 30;
 
     /**
-     * Per-field facet result limit
+     * Per-field facet result limit.
      *
      * @var array
      */
-    protected $facetLimitByField = [];
+    protected array $facetLimitByField = [];
 
     /**
      * Hierarchical facet limit when facets are requested.
@@ -65,67 +63,67 @@ trait FacetLimitTrait
      *
      * @var int
      */
-    protected $hierarchicalFacetLimit = -1;
+    protected int $hierarchicalFacetLimit = -1;
 
     /**
-     * Initialize facet limit from a Config object.
+     * Initialize facet limit from a Config array.
      *
-     * @param ?Config $config Configuration
+     * @param ?array $config Configuration
      *
      * @return void
      */
-    protected function initFacetLimitsFromConfig(?Config $config = null)
+    protected function initFacetLimitsFromConfig(?array $config = null): void
     {
-        if (is_numeric($config->facet_limit ?? null)) {
-            $this->setFacetLimit($config->facet_limit);
+        if (is_numeric($config['facet_limit'] ?? null)) {
+            $this->setFacetLimit($config['facet_limit']);
         }
-        foreach ($config->facet_limit_by_field ?? [] as $k => $v) {
+        foreach ($config['facet_limit_by_field'] ?? [] as $k => $v) {
             $this->facetLimitByField[$k] = $v;
         }
     }
 
     /**
-     * Set Facet Limit
+     * Set Facet Limit.
      *
      * @param int $l the new limit value
      *
      * @return void
      */
-    public function setFacetLimit($l)
+    public function setFacetLimit(int $l): void
     {
         $this->facetLimit = $l;
     }
 
     /**
-     * Set Facet Limit by Field
+     * Set Facet Limit by Field.
      *
      * @param array $new Associative array of $field name => $limit
      *
      * @return void
      */
-    public function setFacetLimitByField(array $new)
+    public function setFacetLimitByField(array $new): void
     {
         $this->facetLimitByField = $new;
     }
 
     /**
-     * Get current limit for hierarchical facets
+     * Get current limit for hierarchical facets.
      *
      * @return int
      */
-    public function getHierarchicalFacetLimit()
+    public function getHierarchicalFacetLimit(): int
     {
         return $this->hierarchicalFacetLimit;
     }
 
     /**
-     * Set limit for hierarchical facets
+     * Set limit for hierarchical facets.
      *
      * @param int $limit New limit
      *
      * @return void
      */
-    public function setHierarchicalFacetLimit($limit)
+    public function setHierarchicalFacetLimit(int $limit): void
     {
         $this->hierarchicalFacetLimit = $limit;
     }
@@ -137,7 +135,7 @@ trait FacetLimitTrait
      *
      * @return int
      */
-    protected function getFacetLimitForField($field)
+    protected function getFacetLimitForField(string $field): int
     {
         $limit = $this->facetLimitByField[$field] ?? $this->facetLimit;
 

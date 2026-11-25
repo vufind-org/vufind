@@ -1,7 +1,7 @@
 <?php
 
 /**
- * IdentifierLinker view helper
+ * IdentifierLinker view helper.
  *
  * PHP version 8
  *
@@ -30,11 +30,12 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function in_array;
 
 /**
- * IdentifierLinker view helper
+ * IdentifierLinker view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,30 +43,32 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
+class IdentifierLinker
 {
     /**
-     * Instance counter (used for keeping track of records)
+     * Instance counter (used for keeping track of records).
      *
      * @var int
      */
     protected int $counter = 0;
 
     /**
-     * Supported identifier types
+     * Supported identifier types.
      *
      * @var string[]
      */
     protected array $supportedIdentifiers = ['doi', 'isbn', 'issn'];
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Context $contextHelper Context helper
-     * @param array   $config        Identifier-based linking configuration settings
+     * @param TemplateRendererInterface $templateRenderer Template renderer
+     * @param array                     $config           Identifier-based linking configuration settings
      */
-    public function __construct(protected Context $contextHelper, protected array $config = [])
-    {
+    public function __construct(
+        protected TemplateRendererInterface $templateRenderer,
+        protected array $config = []
+    ) {
         if (!empty($config['supportedIdentifiers'])) {
             $this->supportedIdentifiers = $config['supportedIdentifiers'];
         }
@@ -107,7 +110,7 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Render the identifier links template
+     * Render the identifier links template.
      *
      * @param RecordDriver $driver The current record driver
      *
@@ -120,8 +123,11 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
         $params = $this->getIdentifiers($driver) + compact('instance');
 
         // Render the subtemplate:
-        return ($this->contextHelper)($this->getView())
-            ->renderInContext('Helpers/identifierLinks.phtml', $params);
+        return $this->templateRenderer->renderTemplateAsString(
+            template: 'Helpers/identifierLinks.phtml',
+            params: $params,
+            rootContext: true
+        );
     }
 
     /**
@@ -147,11 +153,11 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
 
         // If we got this far, use the defaults -- true for results, false for
         // everywhere else.
-        return $context == 'results';
+        return $context === 'results';
     }
 
     /**
-     * Check whether identifier links are active for current record
+     * Check whether identifier links are active for current record.
      *
      * @param RecordDriver $driver  The current record driver
      * @param string       $context Display context ('results', 'record' or 'holdings')

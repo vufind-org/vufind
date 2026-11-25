@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Call Number Autocomplete Module
+ * Solr Call Number Autocomplete Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Autocomplete;
 
 /**
- * Solr Call Number Autocomplete Module
+ * Solr Call Number Autocomplete Module.
  *
  * This class provides smart call number suggestions by using the local Solr index.
  *
@@ -64,9 +64,8 @@ class SolrCN extends Solr
      * @param array  $options Array of extra parameters
      *
      * @return string        Processed query
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function mungeQuery(string $query, array $options = []): string
     {
         // Modify the query so it makes a nice, truncated autocomplete query:

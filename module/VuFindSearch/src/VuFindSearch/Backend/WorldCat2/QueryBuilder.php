@@ -50,7 +50,7 @@ class QueryBuilder
     /// Public API
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?string $oclcCodeToExclude OCLC code to exclude from results
      */
@@ -65,9 +65,8 @@ class QueryBuilder
      * @param ?ParamBag     $params Search backend parameters
      *
      * @return ParamBag
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function build(AbstractQuery $query, ?ParamBag $params = null)
     {
         // Build base query

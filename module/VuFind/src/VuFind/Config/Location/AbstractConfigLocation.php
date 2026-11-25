@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract config location
+ * Abstract config location.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Config\Location;
 use function dirname;
 
 /**
- * Abstract config location
+ * Abstract config location.
  *
  * @category VuFind
  * @package  Config_Location
@@ -78,7 +78,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
     protected ?ConfigLocationInterface $dirLocationsParent = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string  $path       Path to configuration
      * @param ?string $configName Optional configuration name (default is file name)

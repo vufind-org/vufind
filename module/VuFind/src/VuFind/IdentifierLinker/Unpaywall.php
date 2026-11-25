@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unpaywall identifier linker
+ * Unpaywall identifier linker.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface;
 
 /**
- * Unpaywall identifier linker
+ * Unpaywall identifier linker.
  *
  * @category VuFind
  * @package  IdentifierLinker
@@ -50,35 +50,35 @@ class Unpaywall implements
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * URL to Unpaywall API
+     * URL to Unpaywall API.
      *
      * @var string api url
      */
     protected $apiUrl;
 
     /**
-     * E-mail used as parameter when calling API
+     * E-mail used as parameter when calling API.
      *
      * @var string email
      */
     protected $email;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\Config $config DOI section of main VuFind config
+     * @param array $config DOI section of main VuFind config
      *
      * @throws \Exception
      */
     public function __construct($config)
     {
-        if (!isset($config->unpaywall_email)) {
+        if (!isset($config['unpaywall_email'])) {
             throw new \Exception(
                 'Missing configuration for Unpaywall DOI linker: unpaywall_email'
             );
         }
-        $this->email = $config->unpaywall_email;
-        $this->apiUrl = $config->unpaywall_api_url ?? 'https://api.unpaywall.org/v2';
+        $this->email = $config['unpaywall_email'];
+        $this->apiUrl = $config['unpaywall_api_url'] ?? 'https://api.unpaywall.org/v2';
     }
 
     /**
@@ -123,7 +123,7 @@ class Unpaywall implements
     }
 
     /**
-     * Takes a DOI and do an API call to Unpaywall service
+     * Takes a DOI and do an API call to Unpaywall service.
      *
      * @param string $doi DOI
      *

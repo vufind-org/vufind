@@ -45,7 +45,7 @@ use VuFindSearch\ParamBag;
 class RetrieveCommandTest extends TestCase
 {
     /**
-     * Test that a supported backed behaves as expected
+     * Test that a supported backed behaves as expected.
      *
      * @return void
      */
@@ -53,23 +53,21 @@ class RetrieveCommandTest extends TestCase
     {
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
-        $result = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
-            ->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
+        $result = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
         $command = new RetrieveCommand($backendId, 'id', $params);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn($backendId);
         $backend->expects($this->once())->method('retrieve')
             ->with(
-                $this->equalTo('id'),
-                $this->equalTo($params)
+                'id',
+                $params
             )->willReturn($result);
         $this->assertEquals($result, $command->execute($backend)->getResult());
     }
 
     /**
-     * Test getArguments method
+     * Test getArguments method.
      *
      * @return void
      */

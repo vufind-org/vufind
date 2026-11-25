@@ -29,7 +29,7 @@
 
 namespace VuFind\I18n\Translator;
 
-use Laminas\Mvc\I18n\Translator;
+use Laminas\I18n\Translator\Translator;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
@@ -54,7 +54,7 @@ class TranslatorFactory implements DelegatorFactoryInterface
     use \VuFind\I18n\Translator\LanguageInitializerTrait;
 
     /**
-     * A factory that creates delegates of a given service
+     * A factory that creates delegates of a given service.
      *
      * @param ContainerInterface $container Container
      * @param string             $name      Service name
@@ -66,9 +66,8 @@ class TranslatorFactory implements DelegatorFactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      *     creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $name,
@@ -92,7 +91,7 @@ class TranslatorFactory implements DelegatorFactoryInterface
     }
 
     /**
-     * Add caching to a translator object
+     * Add caching to a translator object.
      *
      * @param Translator         $translator Translator object
      * @param ContainerInterface $container  Service manager

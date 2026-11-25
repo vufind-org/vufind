@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search settings view helper
+ * Search settings view helper.
  *
  * PHP version 8
  *
@@ -29,11 +29,13 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Cart;
 use VuFind\Search\Base\Options;
 use VuFind\Search\Base\Params;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Search settings view helper
+ * Search settings view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,38 +43,34 @@ use VuFind\Search\Base\Params;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchSettings extends \Laminas\View\Helper\AbstractHelper
+class SearchSettings
 {
     /**
-     * VuFind configuration
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Search params
+     * Search params.
      *
      * @var Params
      */
     protected $params = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $config VuFind configuration
+     * @param Cart  $cart   Cart View Helper
      */
-    public function __construct(array $config)
-    {
-        $this->config = $config;
+    public function __construct(
+        #[Autowire(config: 'config', configType: 'array')]
+        protected array $config,
+        protected Cart $cart,
+    ) {
     }
 
     /**
-     * Store params and return this object
+     * Store params and return this object.
      *
      * @param Params $params Search params
      *
-     * @return SearchResults
+     * @return static
      */
     public function __invoke(Params $params)
     {
@@ -81,7 +79,7 @@ class SearchSettings extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Check if bulk options are enabled
+     * Check if bulk options are enabled.
      *
      * @return bool
      */
@@ -94,21 +92,20 @@ class SearchSettings extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Check if cart controls are enabled
+     * Check if cart controls are enabled.
      *
      * @return bool
      */
     public function cartControlsEnabled()
     {
-        $cart = $this->view->plugin('cart');
         return
             $this->getOptions()->supportsCart()
-            && $cart()->isActive()
-            && ($this->bulkOptionsEnabled() || !$cart()->isActiveInSearch());
+            && $this->cart->isActive()
+            && ($this->bulkOptionsEnabled() || !$this->cart->isActiveInSearch());
     }
 
     /**
-     * Check if result selection checkboxes are enabled
+     * Check if result selection checkboxes are enabled.
      *
      * @return bool
      */
@@ -118,7 +115,7 @@ class SearchSettings extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get search options from params
+     * Get search options from params.
      *
      * @return Options
      */

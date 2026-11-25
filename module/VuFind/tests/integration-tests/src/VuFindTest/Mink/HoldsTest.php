@@ -31,6 +31,7 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\DocumentElement;
 use Behat\Mink\Element\Element;
+use Iterator;
 
 /**
  * Test class for holds-related functionality.
@@ -50,6 +51,20 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**
+     * Sample record titles.
+     *
+     * @var array
+     */
+    protected array $sampleRecordTitles = [
+        'Journal of rational emotive therapy : the journal of the Institute for Rational-Emotive Therapy.',
+        'Rational living.',
+        'Psychotherapy in private practice.',
+        'Journal of quantitative criminology.',
+        'The Journal of parapsychology.',
+        'Journal of mathematics and mechanics.',
+    ];
+
+    /**
      * Standard setup method.
      *
      * @return void
@@ -62,17 +77,42 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Get config.ini override settings for testing ILS functions.
      *
+     * @param bool $pagination If pagination on holds is enabled
+     *
      * @return array
      */
-    public function getConfigIniOverrides(): array
+    public function getConfigIniOverrides(bool $pagination = false): array
     {
         return [
             'Catalog' => [
                 'driver' => 'Demo',
                 'holds_mode' => 'driver',
                 'title_level_holds_mode' => 'driver',
+                'holds_page_size' => $pagination ? 2 : 0,
             ],
         ];
+    }
+
+    /**
+     * Get Demo.ini override settings for testing myHolds with multiple items.
+     *
+     * @param int  $itemCount Number of items to be set up
+     * @param bool $ilsPaging If ils paging should be enabled
+     *
+     * @return array
+     */
+    public function getDemoIniOverridesForTestsWithMultipleItems(int $itemCount = 1, bool $ilsPaging = false): array
+    {
+        $config = $this->getDemoIniOverrides();
+        // first two records are already set
+        for ($i = 3; $i <= $itemCount; $i++) {
+            $config['StaticHoldings']['testsample' . $i] = json_encode([$this->getFakeItem()]);
+        }
+        if ($ilsPaging) {
+            $config['Holds']['paging'] = true;
+            $config['Holds']['max_page_size'] = 2;
+        }
+        return $config;
     }
 
     /**
@@ -82,7 +122,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return DocumentElement
      */
-    protected function gotoRecordById(string $id = 'testsample1'): DocumentElement
+    protected function goToRecordById(string $id = 'testsample1'): DocumentElement
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Record/' . urlencode($id));
@@ -98,7 +138,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return DocumentElement
      */
-    protected function gotoRecordWithSearch(
+    protected function goToRecordWithSearch(
         string $id = 'testsample1'
     ): DocumentElement {
         $session = $this->getMinkSession();
@@ -113,7 +153,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Support method to place a hold and click through to "Your Holds and Recalls."
+     * Support method to place a hold and click through to "Your Holds and Recalls.".
      *
      * @param Element $page           Page element.
      * @param array   $extras         Associative array of selector => value for additional
@@ -137,7 +177,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         if ($expectedStatus) {
             [, $query] = explode('?', $href);
             parse_str($query, $queryParams);
-            $this->assertEquals($expectedStatus, $queryParams['status']);
+            $this->assertSame($expectedStatus, $queryParams['status']);
         }
         $placeHold->click();
 
@@ -152,10 +192,12 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndSetValue($page, $selector, $value);
         }
         $this->clickCss($page, '.modal-body .btn.btn-primary');
+        // Ensure that the page has loaded and the "place hold" dialog is no longer present:
+        $this->waitForPageLoad($page);
     }
 
     /**
-     * Support method to place a hold and click through to "Your Holds and Recalls."
+     * Support method to place a hold and click through to "Your Holds and Recalls.".
      *
      * @param Element $page           Page element.
      * @param array   $extras         Associative array of selector => value for additional
@@ -178,14 +220,14 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $link->click();
 
         // Make sure we arrived where we expected to:
-        $this->assertEquals(
+        $this->assertSame(
             'Your Holds and Recalls',
-            $this->findCssAndGetText($page, 'h2')
+            $this->findCssAndGetText($page, 'h1')
         );
     }
 
     /**
-     * Test placing a hold
+     * Test placing a hold.
      *
      * @return void
      */
@@ -198,7 +240,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         // Use search to find a record to simulate a typical use case:
-        $page = $this->gotoRecordWithSearch();
+        $page = $this->goToRecordWithSearch();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
@@ -211,7 +253,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test invalid patron login
         $this->submitCatalogLoginForm($page, 'bad', 'incorrect');
-        $this->assertEquals(
+        $this->assertSame(
             'Invalid Patron Login',
             $this->findCssAndGetText($page, '.alert.alert-danger')
         );
@@ -221,7 +263,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test placing a hold with an empty "required by" date:
         $this->placeHold($page, ['#requiredByDate' => '']);
-        $this->assertEquals(
+        $this->assertSame(
             "Please enter a valid 'required by' date",
             $this->findCssAndGetText($page, '.alert.alert-danger')
         );
@@ -229,12 +271,12 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test placing a hold with an invalid "required by" date:
         $this->placeHold($page, ['#requiredByDate' => '01-01-2023']);
-        $this->assertEquals(
+        $this->assertSame(
             "Please enter a valid 'required by' date",
             $this->findCssAndGetText($page, '.alert.alert-danger')
         );
         // Verify the label for the "required by" field:
-        $this->assertEquals(
+        $this->assertSame(
             'No longer required after:',
             $this->findCssAndGetText($page, '.hold-required-by label')
         );
@@ -244,7 +286,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->placeHoldAndGoToHoldsScreen($page);
 
         // Verify the hold is correct:
-        $this->assertEquals(
+        $this->assertSame(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
             $this->findCssAndGetText($page, 'a.title')
@@ -255,12 +297,12 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertStringContainsString('Expires:', $pageContent);
 
         // Confirm that no cancel buttons appear, since they are not configured:
-        $this->assertNull($page->find('css', '#cancelSelected'));
-        $this->assertNull($page->find('css', '#cancelAll'));
+        $this->unFindCss($page, '#cancelSelected');
+        $this->unFindCss($page, '#cancelAll');
     }
 
     /**
-     * Test placing a hold using SSO
+     * Test placing a hold using SSO.
      *
      * @return void
      */
@@ -277,7 +319,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         // Use search to find a record to simulate a typical use case:
-        $page = $this->gotoRecordWithSearch();
+        $page = $this->goToRecordWithSearch();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
@@ -296,19 +338,19 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->placeHoldAndGoToHoldsScreen($page);
 
         // Verify the hold is correct:
-        $this->assertEquals(
+        $this->assertSame(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
             $this->findCssAndGetText($page, 'a.title')
         );
         $pageContent = $page->getContent();
-        $this->assertTrue(false !== strstr($pageContent, 'Campus B'));
-        $this->assertTrue(false !== strstr($pageContent, 'Created:'));
-        $this->assertTrue(false !== strstr($pageContent, 'Expires:'));
+        $this->assertNotFalse(strstr($pageContent, 'Campus B'));
+        $this->assertNotFalse(strstr($pageContent, 'Created:'));
+        $this->assertNotFalse(strstr($pageContent, 'Expires:'));
     }
 
     /**
-     * Test placing a hold using SSO and an existing catalog account
+     * Test placing a hold using SSO and an existing catalog account.
      *
      * @return void
      */
@@ -326,7 +368,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         // Use search to find a record to simulate a typical use case:
-        $page = $this->gotoRecordWithSearch('testsample2');
+        $page = $this->goToRecordWithSearch('testsample2');
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
@@ -347,14 +389,14 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->placeHoldAndGoToHoldsScreen($page);
 
         // Verify the hold is correct:
-        $this->assertEquals(
+        $this->assertSame(
             'Rational living.',
             $this->findCssAndGetText($page, 'a.title')
         );
         $pageContent = $page->getContent();
-        $this->assertTrue(false !== strstr($pageContent, 'Campus B'));
-        $this->assertTrue(false !== strstr($pageContent, 'Created:'));
-        $this->assertTrue(false !== strstr($pageContent, 'Expires:'));
+        $this->assertNotFalse(strstr($pageContent, 'Campus B'));
+        $this->assertNotFalse(strstr($pageContent, 'Created:'));
+        $this->assertNotFalse(strstr($pageContent, 'Expires:'));
     }
 
     /**
@@ -379,7 +421,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         // Use search to find a record to simulate a typical use case:
-        $page = $this->gotoRecordWithSearch();
+        $page = $this->goToRecordWithSearch();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals(
             'Login for hold and recall information',
@@ -402,12 +444,12 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test placing a hold with an invalid "required by" date:
         $this->placeHold($page, ['#requiredByDate' => '01-01-2023'], 'Available');
-        $this->assertEquals(
+        $this->assertSame(
             "Please enter a valid 'required by' date",
             $this->findCssAndGetText($page, '.alert.alert-danger')
         );
         // Verify the label for the "required by" field:
-        $this->assertEquals(
+        $this->assertSame(
             'No longer required after (optional):',
             $this->findCssAndGetText($page, '.hold-required-by label')
         );
@@ -417,19 +459,19 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->placeHoldAndGoToHoldsScreen($page, ['#requiredByDate' => ''], 'Available');
 
         // Verify the hold is correct:
-        $this->assertEquals(
+        $this->assertSame(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
             $this->findCssAndGetText($page, 'a.title')
         );
         $pageContent = $page->getContent();
-        $this->assertTrue(false !== strstr($pageContent, 'Campus B'));
-        $this->assertTrue(false !== strstr($pageContent, 'Created:'));
+        $this->assertNotFalse(strstr($pageContent, 'Campus B'));
+        $this->assertNotFalse(strstr($pageContent, 'Created:'));
         $this->assertFalse(strstr($pageContent, 'Expires:'));
 
         // Confirm that no cancel buttons appear, since they are not configured:
-        $this->assertNull($page->find('css', '#cancelSelected'));
-        $this->assertNull($page->find('css', '#cancelAll'));
+        $this->unFindCss($page, '#cancelSelected');
+        $this->unFindCss($page, '#cancelAll');
     }
 
     /**
@@ -448,89 +490,225 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test canceling a request.
+     * Data provider for tests with multiple items and pagination.
      *
-     * @param Element $page Page element.
-     * @param string  $type Request type being tested.
-     *
-     * @return void
+     * @return Iterator
      */
-    protected function cancelProcedure(Element $page, string $type): void
+    public static function multipleItemsAndPaginationTestProvider(): Iterator
     {
-        // Test that control is disabled upon empty selection
-        $this->clickCss($page, '#cancelSelected');
-        $this->assertNull($page->find('css', '.btn-group.open'));
-
-        // Test "cancel all" button -- first make sure item is there before
-        // cancel is pushed:
-        $this->assertEquals(
-            'Journal of rational emotive therapy :'
-            . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCssAndGetText($page, 'a.title')
-        );
-
-        // Click cancel but bail out with no... item should still be there.
-        $this->clickCss($page, '#cancelAll');
-        $this->clickButtonGroupLink($page, 'No');
-        $this->assertEquals(
-            'Journal of rational emotive therapy :'
-            . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCssAndGetText($page, 'a.title')
-        );
-
-        // Now cancel for real:
-        $this->clickCss($page, '#cancelAll');
-        $this->clickButtonGroupLink($page, 'Yes');
-        $this->assertEquals(
-            '1 request(s) were successfully canceled',
-            $this->findCssAndGetText($page, '.alert.alert-success')
-        );
-        $this->assertNull($page->find('css', 'a.title'));
+        yield 'single' => [false, false, false];
+        yield 'multiple' => [true, false, false];
+        yield 'single-with-pagination' => [false, true, false];
+        yield 'multiple-with-pagination' => [true, true, false];
+        yield 'single-with-ils-pagination' => [false, true, true];
+        yield 'multiple-with-ils-pagination' => [true, true, true];
     }
 
     /**
      * Test canceling a hold.
      *
+     * @param bool $testWithMultipleItems If testing with multiple items
+     * @param bool $pagination            If pagination on holds is enabled
+     * @param bool $ilsPaging             If ILS paging should be enabled
+     *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\Depends('testPlaceHold')]
-    public function testCancelHold(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('multipleItemsAndPaginationTestProvider')]
+    public function testCancelHold(bool $testWithMultipleItems, bool $pagination, bool $ilsPaging): void
     {
+        $itemCount = $testWithMultipleItems ? 6 : 1;
+
         // Turn on "cancel holds" in addition to normal defaults:
-        $config = $this->getConfigIniOverrides();
+        $config = $this->getConfigIniOverrides($pagination);
         $config['Catalog']['cancel_holds_enabled'] = 1;
         $this->changeConfigs(
             [
                 'config' => $config,
-                'Demo' => $this->getDemoIniOverrides(),
+                'Demo' => $this->getDemoIniOverridesForTestsWithMultipleItems($itemCount, $ilsPaging),
             ]
         );
 
         // Log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->fillInLoginForm($page, 'username1', 'test', false);
         $this->submitLoginForm($page, false);
 
-        // Place the hold:
+        // Place hold on first items
+        for ($i = 2; $i <= $itemCount; $i++) {
+            $this->placeHold($page);
+            $this->closeLightbox($page);
+            $page = $this->goToRecordById('testsample' . $i);
+        }
+
+        // Place the hold on last item:
         $this->placeHoldAndGoToHoldsScreen($page);
 
-        // Test canceling the hold:
-        $this->cancelProcedure($page, 'holds');
+        if (!$testWithMultipleItems) {
+            // Test canceling one hold:
+            $this->clickCss($page, '#cancelSelected');
+            $this->unFindCss($page, '.btn-group.open');
+            $this->unFindCss($page, '.pagination');
+
+            // Test "cancel all" button -- first make sure item is there before
+            // cancel is pushed:
+            $this->assertSame(
+                $this->sampleRecordTitles[0],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+
+            // Click cancel but bail out with no... item should still be there.
+            $this->clickCss($page, '#cancelAll');
+            $this->clickButtonGroupLink($page, 'No');
+            $this->assertSame(
+                $this->sampleRecordTitles[0],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+
+            // Now cancel for real:
+            $this->clickCss($page, '#cancelAll');
+            $this->clickButtonGroupLink($page, 'Yes');
+            $this->assertSame(
+                '1 request(s) were successfully canceled',
+                $this->findCssAndGetText($page, '.alert.alert-success')
+            );
+            $this->unFindCss($page, 'a.title');
+        } elseif (!$pagination) {
+            // Test canceling multiple items without pagination:
+            $this->clickCss($page, '#cancelSelected');
+            $this->unFindCss($page, '.btn-group.open');
+            $this->unFindCss($page, '.pagination');
+
+            for ($i = 0; $i < $itemCount; $i++) {
+                $this->assertSame(
+                    $this->sampleRecordTitles[$i],
+                    $this->findCssAndGetText($page, 'a.title', index: $i)
+                );
+            }
+
+            $this->clickCss($page, '.checkbox-select-item', index: 2);
+            $this->clickCss($page, '#cancelSelected');
+            $this->clickButtonGroupLink($page, 'Yes');
+            $this->assertSame(
+                '1 request(s) were successfully canceled',
+                $this->findCssAndGetText($page, '.alert.alert-success')
+            );
+
+            $reducedRecords = $this->sampleRecordTitles;
+            unset($reducedRecords[2]);
+            for ($i = 0; $i < $itemCount - 1; $i++) {
+                $this->assertSame(
+                    array_values($reducedRecords)[$i],
+                    $this->findCssAndGetText($page, 'a.title', index: $i)
+                );
+            }
+
+            $this->clickCss($page, '.checkbox-select-all');
+            $this->clickCss($page, '#cancelSelected');
+            $this->clickButtonGroupLink($page, 'Yes');
+            $this->assertSame(
+                '5 request(s) were successfully canceled',
+                $this->findCssAndGetText($page, '.alert.alert-success')
+            );
+            $this->unFindCss($page, 'a.title');
+        } else {
+            // Test canceling multiple items with pagination:
+            $this->assertStringStartsWith(
+                'Showing 1 - 2 of 6 Items',
+                trim($this->findCssAndGetText($page, '.search-stats'))
+            );
+            $this->clickCss($page, '#cancelSelected');
+            $this->unFindCss($page, '.btn-group.open');
+            $this->assertSame(
+                $this->sampleRecordTitles[0],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[1],
+                $this->findCssAndGetText($page, 'a.title', index: 1)
+            );
+
+            $this->clickCss($page, '.page-next .page-link');
+            $this->waitForPageLoad($page);
+            $this->assertStringStartsWith(
+                'Showing 3 - 4 of 6 Items',
+                trim($this->findCssAndGetText($page, '.search-stats'))
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[2],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[3],
+                $this->findCssAndGetText($page, 'a.title', index: 1)
+            );
+
+            $this->clickCss($page, '.checkbox-select-item', index: 1);
+            $this->clickCss($page, '#cancelSelected');
+            $this->clickButtonGroupLink($page, 'Yes');
+            $this->assertSame(
+                '1 request(s) were successfully canceled',
+                $this->findCssAndGetText($page, '.alert.alert-success')
+            );
+
+            $this->assertStringStartsWith(
+                'Showing 3 - 4 of 5 Items',
+                trim($this->findCssAndGetText($page, '.search-stats'))
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[2],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[4],
+                $this->findCssAndGetText($page, 'a.title', index: 1)
+            );
+            $this->clickCss($page, '.checkbox-select-all');
+            $this->clickCss($page, '#cancelSelected');
+            $this->clickButtonGroupLink($page, 'Yes');
+            $this->assertSame(
+                '2 request(s) were successfully canceled',
+                $this->findCssAndGetText($page, '.alert.alert-success')
+            );
+
+            $this->assertStringStartsWith(
+                'Showing 3 - 3 of 3 Items',
+                trim($this->findCssAndGetText($page, '.search-stats'))
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[5],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+            $this->unFindCss($page, 'a.title', index: 1);
+            if ($ilsPaging) {
+                $this->unFindCss($page, '#cancelAll');
+            } else {
+                $this->clickCss($page, '#cancelAll');
+                $this->clickButtonGroupLink($page, 'Yes');
+                $this->assertSame(
+                    '3 request(s) were successfully canceled',
+                    $this->findCssAndGetText($page, '.alert.alert-success')
+                );
+                $this->unFindCss($page, 'a.title');
+            }
+        }
     }
 
     /**
      * Create a frozen hold and navigate to the holds list. Return the page
      * object that was set up during the process.
      *
+     * @param int $itemCount Number of items to place holds on
+     *
      * @return DocumentElement
      */
-    protected function setUpFrozenHold(): DocumentElement
+    protected function setUpFrozenHold(int $itemCount = 1): DocumentElement
     {
         // Log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
@@ -540,6 +718,14 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Place the hold:
         $futureDate = date('m-d-Y', strtotime('+2 days'));
         $expectedDate = date('m-d-Y', strtotime('+1 day'));
+
+        // Place hold on first items
+        for ($i = 2; $i <= $itemCount; $i++) {
+            $this->placeHold($page, ['#startDate' => $futureDate]);
+            $this->closeLightbox($page);
+            $page = $this->goToRecordById('testsample' . $i);
+        }
+
         $this->placeHoldAndGoToHoldsScreen($page, ['#startDate' => $futureDate]);
 
         // Confirm that the hold is frozen, as expected (note that the expected
@@ -547,8 +733,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // when the hold will start, and the freeze ends on the previous day):
         $expected = "Frozen (temporarily suspended) through $expectedDate";
         $elementText = $this->findCssAndGetText($page, '.media-body');
-        $this->assertTrue(
-            false !== strstr($elementText, $expected),
+        $this->assertNotFalse(
+            strstr($elementText, $expected),
             "Missing expected text: '$expected' in '$elementText'"
         );
 
@@ -573,41 +759,58 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->setUpFrozenHold();
 
         // Confirm that no cancel buttons appear, since they are not configured:
-        $this->assertNull($page->find('css', '#cancelSelected'));
-        $this->assertNull($page->find('css', '#cancelAll'));
+        $this->unFindCss($page, '#cancelSelected');
+        $this->unFindCss($page, '#cancelAll');
 
         // Confirm that there are no edit controls on the page, since we didn't
         // enable them:
-        $this->assertNull($page->find('css', '#update_selected'));
-        $this->assertNull($page->find('css', '.hold-edit'));
+        $this->unFindCss($page, '#update_selected');
+        $this->unFindCss($page, '.hold-edit');
     }
 
     /**
      * Test creating, and then editing, a frozen hold.
      *
+     * @param bool $testWithMultipleItems If testing with multiple items
+     * @param bool $pagination            If pagination on holds is enabled
+     * @param bool $ilsPaging             If ils paging should be enabled
+     *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\Depends('testPlaceHold')]
-    public function testFrozenHoldEditing(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('multipleItemsAndPaginationTestProvider')]
+    public function testFrozenHoldEditing(bool $testWithMultipleItems, bool $pagination, bool $ilsPaging): void
     {
-        $demoConfig = $this->getDemoIniOverrides();
+        $itemCount = $testWithMultipleItems ? 6 : 1;
+
+        $demoConfig = $this->getDemoIniOverridesForTestsWithMultipleItems($itemCount, $ilsPaging);
         $demoConfig['Holds'] = ['updateFields' => 'frozen:frozenThrough:pickUpLocation'];
         $this->changeConfigs(
             [
-                'config' => $this->getConfigIniOverrides(),
+                'config' => $this->getConfigIniOverrides($pagination),
                 'Demo' => $demoConfig,
             ]
         );
 
-        $page = $this->setUpFrozenHold();
+        $page = $this->setUpFrozenHold($itemCount);
 
         // Confirm that no cancel buttons appear, since they are not configured:
-        $this->assertNull($page->find('css', '#cancelSelected'));
-        $this->assertNull($page->find('css', '#cancelAll'));
+        $this->unFindCss($page, '#cancelSelected');
+        $this->unFindCss($page, '#cancelAll');
 
         // Confirm that there are edit controls on the page:
-        $this->assertNotNull($page->find('css', '#update_selected'));
+        $this->findCss($page, '#update_selected');
 
+        if ($pagination && $itemCount > 1) {
+            $this->clickCss($page, '.page-next .page-link');
+            $this->waitForPageLoad($page);
+            $this->assertStringStartsWith(
+                'Showing 3 - 4 of 6 Items',
+                trim($this->findCssAndGetText($page, '.search-stats'))
+            );
+        }
+
+        // Test editing one hold
         // Open the edit dialog box using the link:
         $this->clickCss($page, '.hold-edit');
 
@@ -618,10 +821,44 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Confirm that the values have changed
         $this->waitForPageLoad($page);
-        $this->assertTrue(false !== strstr($page->getContent(), 'Campus A'));
-        $this->assertFalse(
-            strstr($page->getContent(), 'Frozen (temporarily suspended) through ')
+        $this->assertNotFalse(strstr($page->getContent(), 'Campus A'));
+        $expectedFrozenCount = $itemCount - 1;
+        if ($pagination && $itemCount > 1) {
+            $expectedFrozenCount = 1;
+        }
+        $this->assertSame(
+            $expectedFrozenCount,
+            substr_count($page->getContent(), 'Frozen (temporarily suspended) through ')
         );
+
+        if ($itemCount > 1) {
+            if ($pagination) {
+                $this->clickCss($page, '.page-next .page-link');
+                $this->waitForPageLoad($page);
+                $this->assertStringStartsWith(
+                    'Showing 5 - 6 of 6 Items',
+                    trim($this->findCssAndGetText($page, '.search-stats'))
+                );
+                $this->assertSame(
+                    2,
+                    substr_count($page->getContent(), 'Frozen (temporarily suspended) through ')
+                );
+            }
+
+            // Edit all holds on page
+            $this->clickCss($page, '.checkbox-select-all');
+            $this->clickCss($page, '#update_selected');
+
+            // Release the hold and change the pickup location
+            $this->findCssAndSetValue($page, '#frozen', '0');
+            $this->findCss($page, '#modal .btn.btn-primary')->click();
+            $this->waitForPageLoad($page);
+
+            $this->assertSame(
+                0,
+                substr_count($page->getContent(), 'Frozen (temporarily suspended) through ')
+            );
+        }
     }
 
     /**
@@ -645,7 +882,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->setUpFrozenHold();
 
         // Place the second hold:
-        $page = $this->gotoRecordById('dollar$ign/slashcombo');
+        $page = $this->goToRecordById('dollar$ign/slashcombo');
         $this->placeHoldAndGoToHoldsScreen($page, ['#pickUpLocation' => 'C']);
 
         // Open the edit dialog box using the button:
@@ -671,11 +908,11 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Locations should now match:
         $this->waitForPageLoad($page);
-        $this->assertTrue(false !== strstr($page->getContent(), 'Campus C'));
+        $this->assertNotFalse(strstr($page->getContent(), 'Campus C'));
         $this->assertFalse(strstr($page->getContent(), 'Campus B'));
 
         // Place a third hold:
-        $page = $this->gotoRecordById('dollar$ign/slashcombo');
+        $page = $this->goToRecordById('dollar$ign/slashcombo');
         $this->placeHoldAndGoToHoldsScreen($page, ['#pickUpLocation' => 'A']);
 
         // Update the two holds that have same possible pick up locations to
@@ -688,7 +925,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Confirm that it worked:
         $this->waitForPageLoad($page);
-        $this->assertTrue(false !== strstr($page->getContent(), 'Campus C'));
+        $this->assertNotFalse(strstr($page->getContent(), 'Campus C'));
         $this->assertFalse(strstr($page->getContent(), 'Campus A'));
         $this->assertFalse(strstr($page->getContent(), 'Campus B'));
     }
@@ -724,8 +961,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $expected = "Frozen (temporarily suspended) through $futureDate";
         $elementText = $this->findCssAndGetText($page, '.media-body');
-        $this->assertTrue(
-            false !== strstr($elementText, $expected),
+        $this->assertNotFalse(
+            strstr($elementText, $expected),
             "Missing expected text: '$expected' in '$elementText'"
         );
 
@@ -734,15 +971,15 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.checkbox-select-all');
         $this->clickCss($page, '#cancelSelected');
         $this->clickButtonGroupLink($page, 'Yes');
-        $this->assertEquals(
+        $this->assertSame(
             '1 request(s) were successfully canceled',
             $this->findCssAndGetText($page, '.alert.alert-success')
         );
-        $this->assertNull($page->find('css', 'a.title'));
+        $this->unFindCss($page, 'a.title');
     }
 
     /**
-     * Test create account path when in holds_mode = "all"
+     * Test create account path when in holds_mode = "all".
      *
      * IMPORTANT: this test uses an ID with a slash in it; if it fails, ensure
      * that Apache is configured with "AllowEncodedSlashes on" inside the
@@ -761,9 +998,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
                 'Demo' => $this->getDemoIniOverrides(),
             ]
         );
-        $page = $this->gotoRecordById('dollar$ign/slashcombo');
+        $page = $this->goToRecordById('dollar$ign/slashcombo');
         // No login at top
-        $this->assertNull($page->find('css', '.alert.alert-info a'));
+        $this->unFindCss($page, '.alert.alert-info a');
         // Hold links should be visible
         $element = $this->findCss($page, 'a.placehold');
         $element->click();
@@ -793,14 +1030,14 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Make sure we arrived where we expected to:
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Your Holds and Recalls',
-            $this->findCssAndGetText($page, 'h2')
+            $this->findCssAndGetText($page, 'h1')
         );
     }
 
     /**
-     * Test placing a hold with no valid pick up locations
+     * Test placing a hold with no valid pick up locations.
      *
      * @return void
      */
@@ -816,7 +1053,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Create account and log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
@@ -838,14 +1075,14 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->clickCss($page, 'a.placehold');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'No pickup locations available',
             $this->findCssAndGetText($page, '.alert.alert-danger')
         );
     }
 
     /**
-     * Test placing a hold for a proxy user
+     * Test placing a hold for a proxy user.
      *
      * @return void
      */
@@ -865,7 +1102,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Create account and log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
@@ -876,7 +1113,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->placeHoldAndGoToHoldsScreen($page, ['#proxiedUser' => 'user2']);
 
         // Make sure the item shows the appropriate proxy user:
-        $this->assertEquals(
+        $this->assertSame(
             'Proxy User 2',
             $this->findCssAndGetText($page, '.hold-proxied-for')
         );

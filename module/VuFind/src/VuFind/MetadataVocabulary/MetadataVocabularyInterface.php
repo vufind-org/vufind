@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Metadata vocabulary interface
+ * Metadata vocabulary interface.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\MetadataVocabulary;
 
 /**
- * Metadata vocabulary interface
+ * Metadata vocabulary interface.
  *
  * @category VuFind
  * @package  Metadata_Vocabularies

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Book Cover Generator
+ * Book Cover Generator.
  *
  * PHP version 8
  *
@@ -34,6 +34,7 @@ use VuFind\Content\Covers\PluginManager as ApiManager;
 use VuFindCode\ISBN;
 use VuFindCode\ISMN;
 
+use function dirname;
 use function func_get_args;
 use function in_array;
 use function is_array;
@@ -41,7 +42,7 @@ use function is_callable;
 use function strlen;
 
 /**
- * Book Cover Generator
+ * Book Cover Generator.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -61,135 +62,128 @@ class Loader extends \VuFind\ImageLoader
     protected $generator = null;
 
     /**
-     * Filename constructed from ISBN
+     * Filename constructed from ISBN.
      *
      * @var string
      */
     protected $localFile = '';
 
     /**
-     * Valid image sizes to request
+     * Valid image sizes to request.
      *
      * @var array
      */
     protected $validSizes = ['small', 'medium', 'large'];
 
     /**
-     * VuFind configuration settings
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Plugin manager for API handlers
+     * Plugin manager for API handlers.
      *
      * @var ApiManager
      */
     protected $apiManager;
 
     /**
-     * HTTP client factory
+     * HTTP client factory.
      *
      * @var \VuFindHttp\HttpService
      */
     protected $httpService;
 
     /**
-     * Directory to store downloaded images
+     * Directory to store downloaded images.
      *
      * @var string
      */
     protected $baseDir;
 
     /**
-     * User ISBNs parameter
+     * User ISBNs parameter.
      *
      * @var ISBN[]
      */
     protected $isbns = null;
 
     /**
-     * User ISSN parameter
+     * User ISSN parameter.
      *
      * @var string
      */
     protected $issn = null;
 
     /**
-     * User OCLC number parameter
+     * User OCLC number parameter.
      *
      * @var string
      */
     protected $oclc = null;
 
     /**
-     * User UPC number parameter
+     * User UPC number parameter.
      *
      * @var string
      */
     protected $upc = null;
 
     /**
-     * User National bibliography number parameter
+     * User National bibliography number parameter.
      *
      * @var array
      */
     protected $nbn = null;
 
     /**
-     * User ISMN parameter
+     * User ISMN parameter.
      *
      * @var ISMN
      */
     protected $ismn = null;
 
     /**
-     * User UUID parameter
+     * User UUID parameter.
      *
      * @var string
      */
     protected $uuid = null;
 
     /**
-     * User record id number parameter
+     * User record id number parameter.
      *
      * @var string
      */
     protected $recordid = null;
 
     /**
-     * User record source parameter
+     * User record source parameter.
      *
      * @var string
      */
     protected $source = null;
 
     /**
-     * User size parameter
+     * User size parameter.
      *
      * @var string
      */
     protected $size;
 
     /**
-     * User type parameter
+     * User type parameter.
      *
      * @var string
      */
     protected $type;
 
     /**
-     * Flag denoting the last loaded image was a FailImage
+     * Flag denoting the last loaded image was a FailImage.
      *
      * @var bool
      */
     protected $hasLoadedUnavailable = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\Config   $config      VuFind configuration
+     * @param array                   $config      VuFind configuration
      * @param ApiManager              $manager     Plugin manager for API handlers
      * @param \VuFindTheme\ThemeInfo  $theme       VuFind theme tools
      * @param \VuFindHttp\HttpService $httpService HTTP client factory
@@ -197,15 +191,14 @@ class Loader extends \VuFind\ImageLoader
      * images (set to system temp dir if not otherwise specified)
      */
     public function __construct(
-        $config,
+        protected array $config,
         ApiManager $manager,
         \VuFindTheme\ThemeInfo $theme,
         \VuFindHttp\HttpService $httpService,
         $baseDir = null
     ) {
         $this->setThemeInfo($theme);
-        $this->config = $config;
-        $this->configuredFailImage = $config->Content->noCoverAvailableImage ?? null;
+        $this->configuredFailImage = $config['Content']['noCoverAvailableImage'] ?? null;
         $this->apiManager = $manager;
         $this->httpService = $httpService;
         $this->baseDir = (null === $baseDir)
@@ -220,13 +213,12 @@ class Loader extends \VuFind\ImageLoader
      */
     protected function getCoverGeneratorSettings()
     {
-        $settings = isset($this->config->DynamicCovers)
-            ? $this->config->DynamicCovers->toArray() : [];
+        $settings = $this->config['DynamicCovers'] ?? [];
         if (
             !isset($settings['backgroundMode'])
-            && isset($this->config->Content->makeDynamicCovers)
+            && isset($this->config['Content']['makeDynamicCovers'])
         ) {
-            $settings['backgroundMode'] = $this->config->Content->makeDynamicCovers;
+            $settings['backgroundMode'] = $this->config['Content']['makeDynamicCovers'];
         }
         $size = $this->size;
         $pickSize = function ($setting) use ($size) {
@@ -242,7 +234,7 @@ class Loader extends \VuFind\ImageLoader
     }
 
     /**
-     * Set Cover Generator Object
+     * Set Cover Generator Object.
      *
      * @param Generator $generator Cover generator
      *
@@ -384,7 +376,7 @@ class Loader extends \VuFind\ImageLoader
 
     /**
      * {@inheritdoc}
-     * Adds @see self::$hasLoadedUnavailable flag
+     * Adds @see self::$hasLoadedUnavailable flag.
      *
      * @return void
      */
@@ -395,7 +387,7 @@ class Loader extends \VuFind\ImageLoader
     }
 
     /**
-     * Returns true if the last loaded image was the FailImage
+     * Returns true if the last loaded image was the FailImage.
      *
      * @return bool
      */
@@ -455,7 +447,7 @@ class Loader extends \VuFind\ImageLoader
             $ids['isbn'] = $this->isbns[0];
             $ids['isbns'] = $this->isbns;
         }
-        if ($this->issn && strlen($this->issn) == 8) {
+        if ($this->issn && strlen($this->issn) === 8) {
             $ids['issn'] = $this->issn;
         }
         if ($this->oclc && strlen($this->oclc) > 0) {
@@ -519,8 +511,7 @@ class Loader extends \VuFind\ImageLoader
     }
 
     /**
-     * Return a path to the image cache for the given size and ID; ensure that
-     * directories are created as needed.
+     * Return a path to the image cache for the given size and ID.
      *
      * @param string $size      Size category
      * @param string $id        Unique identifier (ISBN / ISSN)
@@ -530,15 +521,7 @@ class Loader extends \VuFind\ImageLoader
      */
     protected function getCachePath($size, $id, $extension = 'jpg')
     {
-        $base = $this->baseDir;
-        if (!is_dir($base)) {
-            mkdir($base);
-        }
-        $base .= '/' . $size;
-        if (!is_dir($base)) {
-            mkdir($base);
-        }
-        return $base . '/' . $id . '.' . $extension;
+        return $this->baseDir . '/' . $size . '/' . $id . '.' . $extension;
     }
 
     /**
@@ -564,7 +547,7 @@ class Loader extends \VuFind\ImageLoader
             // include a special case for jpg vs. jpeg:
             $format = substr($iconFile, -3);
             $this->contentType
-                = 'image/' . ($format == 'jpg' ? 'jpeg' : $format);
+                = 'image/' . ($format === 'jpg' ? 'jpeg' : $format);
             $this->image = file_get_contents($iconFile);
             return true;
         }
@@ -617,7 +600,7 @@ class Loader extends \VuFind\ImageLoader
         }
 
         // Conversion needed -- do some normalization for non-JPEG images:
-        if ($type != IMAGETYPE_JPEG) {
+        if ($type !== IMAGETYPE_JPEG) {
             // We no longer need the temp file:
             @unlink($tempFile);
             return $this->convertNonJpeg($image, $finalFile);
@@ -643,8 +626,8 @@ class Loader extends \VuFind\ImageLoader
         // configured....
         if ($allowCache) {
             // All other services cache based on configuration:
-            $conf = isset($this->config->Content->coverimagesCache)
-                ? trim(strtolower($this->config->Content->coverimagesCache)) : true;
+            $conf = isset($this->config['Content']['coverimagesCache'])
+                ? trim(strtolower($this->config['Content']['coverimagesCache'])) : true;
             if (in_array($conf, [true, 1, '1', 'true'], true)) {
                 $cache = true;
             } elseif (in_array($conf, [false, 0, '0', 'false'], true)) {
@@ -675,7 +658,7 @@ class Loader extends \VuFind\ImageLoader
             $imagePath = substr($url, 7);
 
             // Display the image:
-            $this->contentType = mime_content_type($imagePath);
+            $this->contentType = $this->getImageMimeTypeFromFile($imagePath);
             $this->image = file_get_contents($imagePath);
             return true;
         } else {
@@ -694,8 +677,14 @@ class Loader extends \VuFind\ImageLoader
             // Figure out file paths -- $tempFile will be used to store the
             // image for analysis. $finalFile will be used for long-term storage if
             // $cache is true or for temporary display purposes if $cache is false.
-            $tempFile = str_replace('.jpg', uniqid(), $this->localFile);
+            $directory = dirname($this->localFile);
+            $tempFile = $directory . DIRECTORY_SEPARATOR . uniqid();
             $finalFile = $cache ? $this->localFile : $tempFile . '.jpg';
+
+            // Make sure that the cache directory exists.
+            if (!is_dir($directory)) {
+                mkdir($directory, 0o755, true);
+            }
 
             // Write image data to disk:
             if (!@file_put_contents($tempFile, $image)) {
@@ -720,7 +709,7 @@ class Loader extends \VuFind\ImageLoader
     }
 
     /**
-     * Get urls for defined provider, works as generator
+     * Get urls for defined provider, works as generator.
      *
      * @return array
      */
@@ -752,17 +741,17 @@ class Loader extends \VuFind\ImageLoader
     }
 
     /**
-     * Return API handlers
+     * Return API handlers.
      *
      * @return \Generator Array with keys: key - API key, apiName - api name from
      * configuration, handler - handler object
      */
     public function getHandlers()
     {
-        if (!isset($this->config->Content->coverimages)) {
+        if (!isset($this->config['Content']['coverimages'])) {
             return [];
         }
-        $providers = explode(',', $this->config->Content->coverimages);
+        $providers = explode(',', $this->config['Content']['coverimages']);
         foreach ($providers as $provider) {
             $provider = explode(':', trim($provider));
             $apiName = strtolower(trim($provider[0]));
@@ -776,7 +765,7 @@ class Loader extends \VuFind\ImageLoader
     }
 
     /**
-     * Get identifiers for given settings
+     * Get identifiers for given settings.
      *
      * @param array $settings Settings from loadImage
      *

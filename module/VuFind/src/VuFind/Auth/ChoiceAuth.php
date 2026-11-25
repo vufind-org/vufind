@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MultiAuth Authentication plugin
+ * MultiAuth Authentication plugin.
  *
  * PHP version 8
  *
@@ -32,6 +32,8 @@ namespace VuFind\Auth;
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
 
 use function call_user_func_array;
 use function func_get_args;
@@ -40,7 +42,7 @@ use function is_callable;
 use function strlen;
 
 /**
- * ChoiceAuth Authentication plugin
+ * ChoiceAuth Authentication plugin.
  *
  * This module enables a user to choose between two authentication methods.
  * choices are presented side-by-side and one is manually selected.
@@ -56,44 +58,32 @@ use function strlen;
 class ChoiceAuth extends AbstractBase
 {
     /**
-     * Authentication strategies to present
+     * Authentication strategies to present.
      *
      * @var array
      */
     protected $strategies = [];
 
     /**
-     * Auth strategy selected by user
+     * Auth strategy selected by user.
      *
      * @var string
      */
     protected $strategy;
 
     /**
-     * Plugin manager for obtaining other authentication objects
+     * Constructor.
      *
-     * @var PluginManager
+     * @param \Laminas\Session\Container $session Session container for retaining user choices.
+     * @param PluginManager              $manager Plugin manager for obtaining other authentication objects.
      */
-    protected $manager;
-
-    /**
-     * Session container
-     *
-     * @var \Laminas\Session\Container
-     */
-    protected $session;
-
-    /**
-     * Constructor
-     *
-     * @param \Laminas\Session\Container $container Session container for retaining
-     * user choices.
-     */
-    public function __construct(\Laminas\Session\Container $container)
-    {
-        // Set up session container and load cached strategy (if found):
-        $this->session = $container;
-        $this->strategy = $this->session->auth_method ?? false;
+    public function __construct(
+        #[Autowire(container: SessionContainerRegistry::class, service: 'ChoiceAuth')]
+        protected \Laminas\Session\Container $session,
+        protected PluginManager $manager
+    ) {
+        // Load cached strategy (if found):
+        $this->strategy = $session->auth_method ?? false;
     }
 
     /**
@@ -106,10 +96,7 @@ class ChoiceAuth extends AbstractBase
      */
     protected function validateConfig()
     {
-        if (
-            !isset($this->config->ChoiceAuth->choice_order)
-            || !strlen($this->config->ChoiceAuth->choice_order)
-        ) {
+        if (!strlen($this->config['ChoiceAuth']['choice_order'] ?? '')) {
             throw new AuthException(
                 'One or more ChoiceAuth parameters are missing. ' .
                 'Check your config.ini!'
@@ -120,17 +107,17 @@ class ChoiceAuth extends AbstractBase
     /**
      * Set configuration; throw an exception if it is invalid.
      *
-     * @param \VuFind\Config\Config $config Configuration to set
+     * @param ?array $config Configuration to set
      *
      * @throws AuthException
      * @return void
      */
-    public function setConfig($config)
+    public function setConfig(?array $config): void
     {
         parent::setConfig($config);
         $this->strategies = array_map(
             'trim',
-            explode(',', $this->getConfig()->ChoiceAuth->choice_order)
+            explode(',', $this->getConfig()['ChoiceAuth']['choice_order'])
         );
     }
 
@@ -162,6 +149,40 @@ class ChoiceAuth extends AbstractBase
             unset($this->session->auth_method);
         }
         $this->strategy = false;
+    }
+
+    /**
+     * Set pre-authentication data.
+     *
+     * @param ?array $data Pre-authentication data
+     *
+     * @return void
+     */
+    public function setPreAuthenticationData(?array $data): void
+    {
+        $this->proxyAuthMethod('setPreAuthenticationData', func_get_args());
+    }
+
+    /**
+     * Attempt to pre-authenticate the current user. Throws exception if pre-authentication fails.
+     *
+     * @param Request $request Request object containing account credentials.
+     *
+     * @throws AuthException
+     * @return ?array Pre-authentication data if pre-authentication was performed.
+     */
+    public function preAuthenticate(Request $request): ?array
+    {
+        try {
+            return $this->proxyAuthMethod('preAuthenticate', func_get_args()) ?: null;
+        } catch (\Exception $e) {
+            // If an exception was thrown during login, we need to clear the
+            // stored strategy to ensure that we display the full ChoiceAuth
+            // form rather than the form for only the method that the user
+            // attempted to use.
+            $this->strategy = false;
+            throw $e;
+        }
     }
 
     /**
@@ -219,9 +240,6 @@ class ChoiceAuth extends AbstractBase
      */
     public function getPluginManager()
     {
-        if (null === $this->manager) {
-            throw new \Exception('Plugin manager missing.');
-        }
         return $this->manager;
     }
 
@@ -285,29 +303,29 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Does this authentication method support password changing
+     * Does this authentication method support password changing.
      *
      * @return bool
      */
-    public function supportsPasswordChange()
+    public function supportsPasswordChange(): bool
     {
         return $this->proxyAuthMethod('supportsPasswordChange', func_get_args());
     }
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
      * @return bool
      */
-    public function supportsPasswordRecovery(?string $target = null)
+    public function supportsPasswordRecovery(?string $target = null): bool
     {
         return $this->proxyAuthMethod('supportsPasswordRecovery', func_get_args());
     }
 
     /**
-     * Username policy for a new account (e.g. minLength, maxLength)
+     * Username policy for a new account (e.g. minLength, maxLength).
      *
      * @return array
      */
@@ -317,7 +335,7 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Password policy for a new password (e.g. minLength, maxLength)
+     * Password policy for a new password (e.g. minLength, maxLength).
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
@@ -351,8 +369,6 @@ class ChoiceAuth extends AbstractBase
      * @param Request $request Request object.
      *
      * @return string|bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDelegateAuthMethod(Request $request)
     {
@@ -448,7 +464,7 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Set the active strategy
+     * Set the active strategy.
      *
      * @param string $strategy New strategy
      *
@@ -489,8 +505,6 @@ class ChoiceAuth extends AbstractBase
      * @param Request $request Request object.
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function needsCsrfCheck($request)
     {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class ComponentTest
+ * Class ComponentTest.
  *
  * PHP version 8
  *
@@ -29,11 +29,12 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\View\Renderer\PhpRenderer;
+use VuFind\View\GlobalsContainer;
 use VuFind\View\Helper\Root\Component;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
- * Component Test Class
+ * Component Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -50,18 +51,16 @@ class ComponentTest extends \PHPUnit\Framework\TestCase
      */
     protected function getHelper()
     {
-        $helper = new Component();
+        $renderer = $this->createMock(TemplateRendererInterface::class);
+        $renderer->method('renderTemplateAsString')->willReturnArgument(1);
 
-        $view = $this->getMockBuilder(PhpRenderer::class)->getMock();
-        $helper->setView($view);
-
-        $helper->getView()->method('render')->willReturnArgument(0);
+        $helper = new Component($renderer, $this->createMock(GlobalsContainer::class));
 
         return $helper;
     }
 
     /**
-     * Test basic Component conversion
+     * Test basic Component conversion.
      *
      * @return void
      */

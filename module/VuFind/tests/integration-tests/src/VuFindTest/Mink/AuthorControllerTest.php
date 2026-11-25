@@ -60,7 +60,7 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test searching for an author in the author module
+     * Test searching for an author in the author module.
      *
      * @return void
      */
@@ -93,19 +93,17 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider that offers various author controller paths for testing.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function authorPathsProvider(): array
+    public static function authorPathsProvider(): \Iterator
     {
-        return [
-            'home page' => ['/Author/Home'],
-            'results page' => ['/Author/Search?lookfor=shakespeare'],
-            'author page' => ['/Author/Home?author=Shakespeare%2C+William+1564+-+1616'],
-        ];
+        yield 'home page' => ['/Author/Home'];
+        yield 'results page' => ['/Author/Search?lookfor=shakespeare'];
+        yield 'author page' => ['/Author/Home?author=Shakespeare%2C+William+1564+-+1616'];
     }
 
     /**
-     * Confirm that the author controller does not interfere with the regular search box
+     * Confirm that the author controller does not interfere with the regular search box.
      *
      * @param string $path Starting URL path to test
      *

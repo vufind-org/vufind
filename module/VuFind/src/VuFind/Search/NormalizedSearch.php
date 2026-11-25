@@ -47,49 +47,49 @@ use function get_class;
 class NormalizedSearch
 {
     /**
-     * Search results manager
+     * Search results manager.
      *
      * @var ResultsManager
      */
     protected $resultsManager;
 
     /**
-     * Raw search object provided to constructor
+     * Raw search object provided to constructor.
      *
      * @var Results
      */
     protected $raw;
 
     /**
-     * Minified version of search
+     * Minified version of search.
      *
      * @var Minified
      */
     protected $minified;
 
     /**
-     * Normalized search object
+     * Normalized search object.
      *
      * @var Results
      */
     protected $normalized;
 
     /**
-     * Search URL from normalized search object
+     * Search URL from normalized search object.
      *
      * @var string
      */
     protected $url;
 
     /**
-     * Checksum of normalized search URL
+     * Checksum of normalized search URL.
      *
      * @var string
      */
     protected $checksum;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ResultsManager $resultsManager ResultsManager
      * @param Results        $results        Search results object
@@ -169,8 +169,17 @@ class NormalizedSearch
      */
     public function isEquivalentToMinifiedSearch(Minified $otherSearch): bool
     {
+        // Check class to avoid deminification if they don't match:
+        if ($otherSearch->cl !== $this->minified->cl) {
+            return false;
+        }
         // Deminify the other search:
-        $searchToCheck = $otherSearch->deminify($this->resultsManager);
+        try {
+            $searchToCheck = $otherSearch->deminify($this->resultsManager);
+        } catch (\Exception $e) {
+            // If we can't deminify a search, assume it's not equivalent:
+            return false;
+        }
         // Check if classes and URLs match:
         return $searchToCheck::class === get_class($this->raw)
             && $this->url === $searchToCheck->getUrlQuery()->getParams();

@@ -29,6 +29,9 @@
 
 namespace VuFind\RecordDriver;
 
+use Laminas\Cache\Storage\StorageInterface;
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function count;
 use function floatval;
 use function in_array;
@@ -48,6 +51,7 @@ use function strlen;
 class EDS extends DefaultRecord
 {
     use Feature\IlsAwareTrait;
+    use \VuFind\Cache\CacheTrait;
 
     /**
      * Document types that are treated as ePub links.
@@ -64,9 +68,42 @@ class EDS extends DefaultRecord
     protected $pdfTypes = ['ebook-pdf', 'pdflink'];
 
     /**
+     * Constructor.
+     *
+     * @param ?array            $mainConfig   VuFind main configuration (omit for built-in defaults)
+     * @param ?array            $recordConfig Record-specific configuration file
+     * @param ?StorageInterface $cache        Cache
+     */
+    public function __construct(
+        #[Autowire(config: 'config')]
+        ?array $mainConfig = null,
+        #[Autowire(config: 'EDS')]
+        ?array $recordConfig = null,
+        #[Autowire(container: \VuFind\Cache\Manager::class, service: 'object')]
+        ?StorageInterface $cache = null,
+    ) {
+        if ($cache) {
+            $this->setCacheStorage($cache);
+        }
+        parent::__construct($mainConfig, $recordConfig);
+    }
+
+    /**
+     * Set the key to store in the cache to share between EDS cover loader and record driver.
+     *
+     * @param string $key Key to put in the cache
+     *
+     * @return string The determined key
+     */
+    protected function getCacheKey($key = '')
+    {
+        return 'EDS_Shared_' . md5($key);
+    }
+
+    /**
      * Return the unique identifier of this record within EDS API;
      * As Accession Numbers (AN) could be repetitive, we use Database ID
-     * to ensure a unique ID exists
+     * to ensure a unique ID exists.
      *
      * @return string Unique identifier.
      */
@@ -79,7 +116,7 @@ class EDS extends DefaultRecord
 
     /**
      * Return the rtac identifier of this record from EDS API;
-     * RTAC ID is basically the AN without the catalog prefix
+     * RTAC ID is basically the AN without the catalog prefix.
      *
      * @return string unique rtac identifier
      */
@@ -87,10 +124,10 @@ class EDS extends DefaultRecord
     {
         $dbid = $this->fields['Header']['DbId'];
         $an = $this->fields['Header']['An'];
-        $catId = $this->recordConfig?->Catalog?->CatalogDatabaseId ?? '';
+        $catId = $this->recordConfig['Catalog']['CatalogDatabaseId'] ?? '';
 
-        $regexArray = $this->recordConfig?->Catalog?->CatalogANRegex ?? [];
-        $replaceArray = $this->recordConfig?->Catalog?->CatalogANReplace ?? [];
+        $regexArray = $this->recordConfig['Catalog']['CatalogANRegex'] ?? [];
+        $replaceArray = $this->recordConfig['Catalog']['CatalogANReplace'] ?? [];
 
         if ($dbid === $catId && $this->pubTypeRtacEnabled()) {
             $returnValue = $an;
@@ -104,15 +141,15 @@ class EDS extends DefaultRecord
 
     /**
      * Identify if config tells us to expect a catalog, if catalog id is set
-     * and if catalog id matches databaseid
+     * and if catalog id matches databaseid.
      *
      * @return bool
      */
     public function hasCatalog()
     {
         $dbid = $this->fields['Header']['DbId'];
-        $hasCatalog = $this->recordConfig?->Catalog?->EDSHasCatalog ?? false;
-        $catId = $this->recordConfig?->Catalog?->CatalogDatabaseId ?? '';
+        $hasCatalog = $this->recordConfig['Catalog']['EDSHasCatalog'] ?? false;
+        $catId = $this->recordConfig['Catalog']['CatalogDatabaseId'] ?? '';
 
         // if config empty or false, return false
         if (!$hasCatalog) {
@@ -128,7 +165,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Based on publication type determine if RTAC should be available
+     * Based on publication type determine if RTAC should be available.
      *
      * @return bool
      */
@@ -169,7 +206,7 @@ class EDS extends DefaultRecord
 
     /**
      * Get an array of information about record holdings, obtained in real-time
-     * from the ILS. Instead of getUniqueID we use getUniqueIDOverrideForRequest
+     * from the ILS. Instead of getUniqueID we use getUniqueIDOverrideForRequest.
      *
      * @return array
      */
@@ -211,6 +248,24 @@ class EDS extends DefaultRecord
         }
 
         return false;
+    }
+
+    /**
+     * Get a highlighted title string, if available.
+     *
+     * @return string
+     */
+    public function getHighlightedTitle()
+    {
+        // If highlighting is available, it will be in the item data; the raw data will
+        // include <highlight> tags, but these get converted into spans by deeper layers
+        // of the record driver and should be further translated into highlight markers
+        // for appropriate processing by the highlight view helper.
+        return preg_replace(
+            '|<span class="highlight">([^<]*)</span>|',
+            '{{{{START_HILITE}}}}$1{{{{END_HILITE}}}}',
+            $this->getItemsTitle()
+        );
     }
 
     /**
@@ -271,7 +326,28 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get the authors of the record
+     * Check whether access to the record is restricted.
+     *
+     * @return bool
+     */
+    public function isRestrictedView(): bool
+    {
+        $accessLevel = $this->getAccessLevel();
+        return !empty($accessLevel) && $accessLevel !== '3';
+    }
+
+    /**
+     * Check whether the record is a placeholder.
+     *
+     * @return bool
+     */
+    public function isPlaceholder(): bool
+    {
+        return $this->getAccessLevel() === '1';
+    }
+
+    /**
+     * Get the authors of the record.
      *
      * @return string
      */
@@ -282,7 +358,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Obtain an array or authors indicated on the record
+     * Obtain an array or authors indicated on the record.
      *
      * @return array
      */
@@ -369,8 +445,7 @@ class EDS extends DefaultRecord
      */
     protected function itemIsIncluded(array $item, array $filter): bool
     {
-        $globalFilter = isset($this->recordConfig->ItemGlobalFilter)
-            ? $this->recordConfig->ItemGlobalFilter->toArray() : [];
+        $globalFilter = $this->recordConfig['ItemGlobalFilter'] ?? [];
 
         $filter['exclude']['Label'] =
             array_merge($globalFilter['excludeLabel'] ?? [], $filter['exclude']['Label'] ?? []);
@@ -423,12 +498,12 @@ class EDS extends DefaultRecord
     ): array {
         $items = [];
         if (is_array($this->fields['Items'] ?? null)) {
-            $itemGlobalOrderConfig = $this->recordConfig?->ItemGlobalOrder?->toArray() ?? [];
+            $itemGlobalOrderConfig = $this->recordConfig['ItemGlobalOrder'] ?? [];
             $origItems = $this->fields['Items'];
             // Only sort by label if we have a sort config:
             if (!empty($itemGlobalOrderConfig)) {
                 // We want unassigned labels to appear AFTER configured labels:
-                $nextPos = max(array_keys($itemGlobalOrderConfig));
+                $nextPos = (int)max(array_keys($itemGlobalOrderConfig));
                 foreach (array_keys($origItems) as $key) {
                     $label = $origItems[$key]['Label'] ?? '';
                     $configuredPos = array_search($label, $itemGlobalOrderConfig);
@@ -532,7 +607,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get the ebook url of the record. If missing, return false
+     * Get the ebook url of the record. If missing, return false.
      *
      * @param array $types Types that we are interested in checking for
      *
@@ -552,7 +627,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get the PDF url of the record. If missing, return false
+     * Get the PDF url of the record. If missing, return false.
      *
      * @return string
      */
@@ -562,7 +637,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get the ePub url of the record. If missing, return false
+     * Get the ePub url of the record. If missing, return false.
      *
      * @return string
      */
@@ -572,7 +647,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get the linked full text url of the record. If missing, return false
+     * Get the linked full text url of the record. If missing, return false.
      *
      * @return string
      */
@@ -614,6 +689,7 @@ class EDS extends DefaultRecord
      */
     public function getThumbnail($size = 'small')
     {
+        $thumbnail = null;
         // Create a ranked list of sizes so we can use "best available" when appropriate.
         // Note that "thumb" is a value used by EBSCO, not by VuFind; it is included so
         // it can be matched up with requests for "small."
@@ -626,7 +702,8 @@ class EDS extends DefaultRecord
             $target = $image['Target'] ?? '';
             if ($target) {
                 if ($currentFit === $desiredFit) {
-                    return $target;
+                    $thumbnail = $target;
+                    break;
                 }
                 // Aim for the best match that is smaller than the requested size; we
                 // don't want to overflow, but something small is better than nothing.
@@ -637,14 +714,39 @@ class EDS extends DefaultRecord
             }
         }
 
+        if (!$thumbnail && $closestMatch) {
+            $thumbnail = $closestMatch;
+        }
+
         // If EDS actually returned cover image data, use it.  EDS only provides this data
         // for certain ebook packages.
-        if ($closestMatch) {
-            return $closestMatch;
+        if ($thumbnail) {
+            // Determine if we are using the cover loader method or direct load
+            $loadDirectly = $this->recordConfig['Cover']['loadDirectly'] ?? true;
+            $edsCoverLoader = str_contains('EDS', ($this->mainConfig['Content']['coverimages'] ?? ''));
+            if ($loadDirectly || !$edsCoverLoader) {
+                return $thumbnail;
+            } else {
+                $lifetime = $this->recordConfig['Cover']['cacheLifetime'] ?? 3600;
+                // Refresh the cache if the existing entry is older than half its lifetime
+                // (guaranteeing at least half of the cache life for the cover loader)
+                $maxAge = (int)($lifetime / 2);
+                $cacheKey = "vfcover-{$size}-{$this->getUniqueID()}";
+                $cache = $this->getCachedData($cacheKey, $maxAge);
+                // Only update and save if the cached value is missing or different
+                if ($cache === null || $cache !== $thumbnail) {
+                    $this->putCachedData($cacheKey, $thumbnail, $lifetime);
+                }
+                return [
+                    'recordid' => $this->getUniqueID(),
+                    'size' => $size,
+                    'source' => 'EDS',
+                ];
+            }
         }
 
         // Optionally use VuFind's default cover loader
-        $fallBackToCoverLoader = $this->recordConfig?->Cover?->fallBackToCoverLoader?->toArray() ?? [];
+        $fallBackToCoverLoader = $this->recordConfig['Cover']['fallBackToCoverLoader'] ?? [];
         if ($fallBackToCoverLoader) {
             $parentThumbnail = parent::getThumbnail($size);
 
@@ -669,7 +771,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Obtain the title of the record from the record info section
+     * Obtain the title of the record from the record info section.
      *
      * @return string
      */
@@ -685,7 +787,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Obtain the authors from a record from the RecordInfo section
+     * Obtain the authors from a record from the RecordInfo section.
      *
      * @return array
      */
@@ -897,7 +999,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get record languages
+     * Get record languages.
      *
      * @return array
      */
@@ -942,7 +1044,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get ISSNs (of containing record)
+     * Get ISSNs (of containing record).
      *
      * @return array
      */
@@ -952,7 +1054,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get an array of ISBNs
+     * Get an array of ISBNs.
      *
      * @return array
      */
@@ -962,7 +1064,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get title of containing record
+     * Get title of containing record.
      *
      * @return string
      */
@@ -1004,7 +1106,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get issue of containing record
+     * Get issue of containing record.
      *
      * @return string
      */
@@ -1014,7 +1116,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get volume of containing record
+     * Get volume of containing record.
      *
      * @return string
      */
@@ -1042,7 +1144,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get year of containing record
+     * Get the start page of the item that contains this record.
      *
      * @return string
      */
@@ -1074,6 +1176,25 @@ class EDS extends DefaultRecord
                     }
                 }
             }
+        }
+        return '';
+    }
+
+    /**
+     * Get the page count.
+     *
+     * @return string
+     */
+    public function getPageCount(): string
+    {
+        if (
+            $pageCount = $this->extractEbscoDataFromRecordInfo(
+                'BibRecord/BibEntity/PhysicalDescription/Pagination/PageCount'
+            )[0] ?? ''
+        ) {
+            return $pageCount;
+        } elseif ($pageCount = $this->getItem('Name', 'Pages')[0]['Data'] ?? '') {
+            return $pageCount;
         }
         return '';
     }
@@ -1275,6 +1396,6 @@ class EDS extends DefaultRecord
                     : $this->recurseIntoRecordInfo($data[$key], $path);
             }
         }
-        return count($values) == 1 ? $values[0] : $values;
+        return count($values) === 1 ? $values[0] : $values;
     }
 }

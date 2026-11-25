@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get User ILL Requests" AJAX handler
+ * "Get User ILL Requests" AJAX handler.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\AjaxHandler;
 
 /**
- * "Get User ILL Requests" AJAX handler
+ * "Get User ILL Requests" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX

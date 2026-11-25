@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record driver plugin factory
+ * Record driver plugin factory.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\RecordDriver;
 
 /**
- * Record driver plugin factory
+ * Record driver plugin factory.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -41,7 +41,7 @@ namespace VuFind\RecordDriver;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

@@ -34,7 +34,6 @@ use Laminas\Session\Container;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\ChoiceAuth;
 use VuFind\Auth\PluginManager;
-use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Http\PhpEnvironment\Request as PhpEnvironmentRequest;
 
@@ -50,7 +49,7 @@ use VuFind\Http\PhpEnvironment\Request as PhpEnvironmentRequest;
 class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test config validation
+     * Test config validation.
      *
      * @return void
      */
@@ -59,26 +58,12 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('One or more ChoiceAuth parameters are missing.');
 
-        $ca = new ChoiceAuth($this->getSessionContainer());
-        $ca->setConfig(new Config([]));
+        $ca = new ChoiceAuth($this->getSessionContainer(), $this->getMockPluginManager());
+        $ca->setConfig([]);
     }
 
     /**
-     * Test default getPluginManager behavior
-     *
-     * @return void
-     */
-    public function testMissingPluginManager(): void
-    {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Plugin manager missing.');
-
-        $ca = new ChoiceAuth($this->getSessionContainer());
-        $ca->getPluginManager();
-    }
-
-    /**
-     * Test successful login
+     * Test successful login.
      *
      * @return void
      */
@@ -91,7 +76,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         $db = $pm->get('Database');
         $db->expects($this->once())
             ->method('authenticate')
-            ->with($this->equalTo($request))
+            ->with($request)
             ->willReturn($user);
         $ca = $this->getChoiceAuth($pm);
         $this->assertEquals($user, $ca->authenticate($request));
@@ -112,7 +97,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         $db = $pm->get('Database');
         $db->expects($this->once())
             ->method('authenticate')
-            ->with($this->equalTo($request))
+            ->with($request)
             ->willThrowException($exception);
         $ca = $this->getChoiceAuth($pm);
         try {
@@ -125,7 +110,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful account creation
+     * Test successful account creation.
      *
      * @return void
      */
@@ -136,14 +121,14 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         $user = $this->getMockUser();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('create')->with($this->equalTo($request))->willReturn($user);
+        $db->expects($this->once())->method('create')->with($request)->willReturn($user);
         $ca = $this->getChoiceAuth($pm);
         $this->assertEquals($user, $ca->create($request));
         $this->assertEquals('Database', $ca->getSelectedAuthOption());
     }
 
     /**
-     * Test getSelectableAuthOptions
+     * Test getSelectableAuthOptions.
      *
      * @return void
      */
@@ -153,7 +138,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getLogoutRedirectUrl
+     * Test getLogoutRedirectUrl.
      *
      * @return void
      */
@@ -164,14 +149,14 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         $shib = $pm->get('Shibboleth');
         $shib->expects($this->once())
             ->method('getLogoutRedirectUrl')
-            ->with($this->equalTo('http://foo'))
+            ->with('http://foo')
             ->willReturn('http://bar');
         $ca = $this->getChoiceAuth($pm, $session);
-        $this->assertEquals('http://bar', $ca->getLogoutRedirectUrl('http://foo'));
+        $this->assertSame('http://bar', $ca->getLogoutRedirectUrl('http://foo'));
     }
 
     /**
-     * Test update password
+     * Test update password.
      *
      * @return void
      */
@@ -184,7 +169,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         $db = $pm->get('Database');
         $db->expects($this->once())
             ->method('updatePassword')
-            ->with($this->equalTo($request))
+            ->with($request)
             ->willReturn($user);
         $ca = $this->getChoiceAuth($pm);
         $this->assertEquals($user, $ca->updatePassword($request));
@@ -192,7 +177,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test an illegal auth method
+     * Test an illegal auth method.
      *
      * @return void
      */
@@ -232,13 +217,11 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['__get', '__isset', '__set', '__unset'])
             ->disableOriginalConstructor()->getMock();
         if ($method) {
-            $mock->expects($this->any())
-                ->method('__isset')
-                ->with($this->equalTo('auth_method'))
+            $mock->method('__isset')
+                ->with('auth_method')
                 ->willReturn(true);
-            $mock->expects($this->any())
-                ->method('__get')
-                ->with($this->equalTo('auth_method'))
+            $mock->method('__get')
+                ->with('auth_method')
                 ->willReturn($method);
         }
         return $mock;
@@ -258,11 +241,10 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         ?Container $session = null,
         string $strategies = 'Database,Shibboleth'
     ): ChoiceAuth {
-        $ca = new ChoiceAuth($session ?: $this->getSessionContainer());
+        $ca = new ChoiceAuth($session ?? $this->getSessionContainer(), $pm ?? $this->getMockPluginManager());
         $ca->setConfig(
-            new Config(['ChoiceAuth' => ['choice_order' => $strategies]])
+            ['ChoiceAuth' => ['choice_order' => $strategies]]
         );
-        $ca->setPluginManager($pm ?: $this->getMockPluginManager());
         return $ca;
     }
 
@@ -283,7 +265,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock user object
+     * Get a mock user object.
      *
      * @return MockObject&UserEntityInterface
      */
@@ -293,7 +275,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock request object
+     * Get a mock request object.
      *
      * @return MockObject&PhpEnvironmentRequest
      */

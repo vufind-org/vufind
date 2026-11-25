@@ -108,7 +108,7 @@ class Backend extends AbstractBackend implements
     }
 
     /**
-     * Set the limit for batch queries
+     * Set the limit for batch queries.
      *
      * @param int $pageSize Records per Query
      *
@@ -183,7 +183,7 @@ class Backend extends AbstractBackend implements
     }
 
     /**
-     * Clears all accumulated extra request details
+     * Clears all accumulated extra request details.
      *
      * @return void
      */
@@ -228,7 +228,7 @@ class Backend extends AbstractBackend implements
     }
 
     /**
-     * Get Random records
+     * Get Random records.
      *
      * @param AbstractQuery $query  Search query
      * @param int           $limit  Search limit
@@ -324,8 +324,8 @@ class Backend extends AbstractBackend implements
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
-        $params->mergeWith($this->getSimilarBuilder()->build($id));
-        $response   = $this->connector->similar($id, $params);
+        $params = $this->getSimilarBuilder()->build($id, $params);
+        $response = $this->connector->similar($id, $params);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
@@ -560,7 +560,7 @@ class Backend extends AbstractBackend implements
     {
         $response = json_decode($json, true);
         $error    = json_last_error();
-        if ($error != \JSON_ERROR_NONE) {
+        if ($error !== \JSON_ERROR_NONE) {
             throw new BackendException(
                 sprintf('JSON decoding error: %s -- %s', $error, $json)
             );

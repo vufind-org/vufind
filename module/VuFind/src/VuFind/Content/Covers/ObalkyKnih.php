@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class ObalkyKnih
+ * Class ObalkyKnih.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFind\Content\Covers;
 use VuFind\Content\ObalkyKnihService;
 
 /**
- * Class ObalkyKnih
+ * Class ObalkyKnih.
  *
  * @category VuFind
  * @package  Content
@@ -45,14 +45,14 @@ use VuFind\Content\ObalkyKnihService;
 class ObalkyKnih extends \VuFind\Content\AbstractCover
 {
     /**
-     * Obalky knih service
+     * Obalky knih service.
      *
      * @var ObalkyKnihService
      */
     protected $service;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ObalkyKnihService $service Service for getting metadata from
      * obalkyknih.cz
@@ -83,9 +83,8 @@ class ObalkyKnih extends \VuFind\Content\AbstractCover
      * pointing to an ISBN object and 'issn' pointing to a string)
      *
      * @return string|bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getUrl($key, $size, $ids)
     {
         $data = $this->service->getData($ids);

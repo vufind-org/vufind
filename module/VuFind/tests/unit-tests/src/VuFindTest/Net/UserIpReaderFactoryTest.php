@@ -1,7 +1,7 @@
 <?php
 
 /**
- * UserIpReaderFactory Test Class
+ * UserIpReaderFactory Test Class.
  *
  * PHP version 8
  *
@@ -29,13 +29,12 @@
 
 namespace VuFindTest\Net;
 
-use Laminas\Stdlib\Parameters;
 use VuFind\Net\UserIpReaderFactory;
 
 use function func_get_args;
 
 /**
- * UserIpReaderFactory Test Class
+ * UserIpReaderFactory Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -62,17 +61,15 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
             \VuFind\Config\ConfigManagerInterface::class,
             $this->getMockConfigManager(compact('config'), [], $this->once())
         );
-        $mockRequest = $this
-            ->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockRequest = $this->createMock(\Laminas\Http\PhpEnvironment\Request::class);
         $mockRequest->expects($this->once())->method('getServer')
-            ->willReturn(new Parameters($server));
+            ->willReturn(new \Laminas\Stdlib\Parameters($server));
         $container->set('Request', $mockRequest);
         return $container;
     }
 
     /**
-     * Extend UserIpReader to capture constructor parameters
+     * Extend UserIpReader to capture constructor parameters.
      *
      * @return \VuFind\Net\UserIpReader
      */
@@ -87,14 +84,14 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
             public $args;
 
             /**
-             * Constructor
+             * Constructor.
              */
             public function __construct()
             {
                 $args = func_get_args();
                 $this->args = $args;
                 parent::__construct(
-                    ...(empty($args) ? [new Parameters([])] : $args)
+                    ...(empty($args) ? [[]] : $args)
                 );
             }
         };
@@ -102,7 +99,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the factory's defaults
+     * Test the factory's defaults.
      *
      * @return void
      */
@@ -112,13 +109,13 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
         $container = $this->getContainer();
         $reader = $factory($container, $this->getReaderClass());
         [$server, $allowForwardedIps, $ipFilter] = $reader->args;
-        $this->assertEquals(['server' => true], $server->toArray());
+        $this->assertEquals(['server' => true], $server);
         $this->assertFalse($allowForwardedIps);
         $this->assertEquals([], $ipFilter);
     }
 
     /**
-     * Test non-default values, with a single filtered IP
+     * Test non-default values, with a single filtered IP.
      *
      * @return void
      */
@@ -135,13 +132,13 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
         );
         $reader = $factory($container, $this->getReaderClass());
         [$server, $allowForwardedIps, $ipFilter] = $reader->args;
-        $this->assertEquals(['server' => true], $server->toArray());
+        $this->assertEquals(['server' => true], $server);
         $this->assertTrue($allowForwardedIps);
         $this->assertEquals(['1.2.3.4'], $ipFilter);
     }
 
     /**
-     * Test non-default values, with multiple filtered IPs
+     * Test non-default values, with multiple filtered IPs.
      *
      * @return void
      */
@@ -158,7 +155,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
         );
         $reader = $factory($container, $this->getReaderClass());
         [$server, $allowForwardedIps, $ipFilter] = $reader->args;
-        $this->assertEquals(['server' => true], $server->toArray());
+        $this->assertEquals(['server' => true], $server);
         $this->assertTrue($allowForwardedIps);
         $this->assertEquals(['1.2.3.4', '5.6.7.8'], $ipFilter);
     }

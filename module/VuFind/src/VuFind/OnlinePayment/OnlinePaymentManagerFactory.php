@@ -55,7 +55,7 @@ use function in_array;
 class OnlinePaymentManagerFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -87,7 +87,7 @@ class OnlinePaymentManagerFactory implements FactoryInterface
             $dbServiceManager->get(UserCardServiceInterface::class),
             $dbServiceManager->get(AuditEventServiceInterface::class),
             $container->get(\VuFind\OnlinePayment\Receipt::class),
-            $container->get(\Laminas\Session\SessionManager::class),
+            $container->get(\Laminas\Session\ManagerInterface::class),
             $devToolsAvailable
         );
     }

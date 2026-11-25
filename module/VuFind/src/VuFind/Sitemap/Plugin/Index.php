@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Index-based generator plugin
+ * Index-based generator plugin.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Sitemap\Plugin;
 
 /**
- * Index-based generator plugin
+ * Index-based generator plugin.
  *
  * @category VuFind
  * @package  Sitemap
@@ -41,7 +41,7 @@ namespace VuFind\Sitemap\Plugin;
 class Index extends AbstractGeneratorPlugin
 {
     /**
-     * Base URL for site
+     * Base URL for site.
      *
      * @var string
      */
@@ -62,21 +62,21 @@ class Index extends AbstractGeneratorPlugin
     protected $idFetcher;
 
     /**
-     * Page size for data retrieval
+     * Page size for data retrieval.
      *
      * @var int
      */
     protected $countPerPage;
 
     /**
-     * Search filters
+     * Search filters.
      *
      * @var string[]
      */
     protected $filters;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array                   $backendSettings Settings specifying which
      * backends to index

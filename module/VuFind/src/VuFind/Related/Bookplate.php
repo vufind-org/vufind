@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related Records: Bookplates
+ * Related Records: Bookplates.
  *
  * PHP version 8
  *
@@ -29,8 +29,10 @@
 
 namespace VuFind\Related;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
- * Related Records: Bookplates
+ * Related Records: Bookplates.
  *
  * @category VuFind
  * @package  Related_Records
@@ -41,37 +43,37 @@ namespace VuFind\Related;
 class Bookplate implements RelatedInterface
 {
     /**
-     * Bookplate config
+     * Bookplate config.
      */
     protected $config;
 
     /**
-     * Data fields (usually Solr)
+     * Data fields (usually Solr).
      */
     protected $fields;
 
     /**
-     * Bookplate strings
+     * Bookplate strings.
      */
     protected $bookplateStrs;
 
     /**
-     * Bookplate image names or full URLs
+     * Bookplate image names or full URLs.
      */
     protected $bookplateImages;
 
     /**
-     * Bookplate thumbnail image names or thumbnail URLs
+     * Bookplate thumbnail image names or thumbnail URLs.
      */
     protected $bookplateThumbnails;
 
     /**
-     * URL template for full bookplate
+     * URL template for full bookplate.
      */
     protected $fullUrlTemplate;
 
     /**
-     * URL template for thumbnail
+     * URL template for thumbnail.
      */
     protected $thumbUrlTemplate;
 
@@ -81,10 +83,11 @@ class Bookplate implements RelatedInterface
     protected $displayTitles;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager Config manager
      */
+    #[Autowire]
     public function __construct(protected \VuFind\Config\ConfigManagerInterface $configManager)
     {
     }
@@ -102,7 +105,7 @@ class Bookplate implements RelatedInterface
         $config = array_map('trim', explode(':', $settings));
         $configFile = !empty($config[0]) ? $config[0] : 'config';
         $configSection = !empty($config[1]) ? $config[1] : 'Record';
-        $this->config = $this->configManager->getConfigObject($configFile)->$configSection;
+        $this->config = $this->configManager->getConfigArray($configFile)[$configSection] ?? [];
         $this->fields = $driver->getRawData();
         $this->bookplateStrs = $this->getBookplateData(
             $this->getBookplateTitlesField()
@@ -140,7 +143,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateFullUrlTemplate()
     {
-        return $this->config->bookplate_full ?? '';
+        return $this->config['bookplate_full'] ?? '';
     }
 
     /**
@@ -150,7 +153,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateThumbUrlTemplate()
     {
-        return $this->config->bookplate_thumb ?? '';
+        return $this->config['bookplate_thumb'] ?? '';
     }
 
     /**
@@ -160,7 +163,7 @@ class Bookplate implements RelatedInterface
      */
     protected function displayBookplateTitles()
     {
-        return $this->config->bookplate_display_title ?? true;
+        return $this->config['bookplate_display_title'] ?? true;
     }
 
     /**
@@ -170,7 +173,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateTitlesField()
     {
-        return $this->config->bookplate_titles_field ?? '';
+        return $this->config['bookplate_titles_field'] ?? '';
     }
 
     /**
@@ -182,7 +185,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateFullImagesField()
     {
-        return $this->config->bookplate_images_field ?? '';
+        return $this->config['bookplate_images_field'] ?? '';
     }
 
     /**
@@ -194,7 +197,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateThumbnailsField()
     {
-        return $this->config->bookplate_thumbnails_field ?? '';
+        return $this->config['bookplate_thumbnails_field'] ?? '';
     }
 
     /**

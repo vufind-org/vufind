@@ -1,0 +1,57 @@
+<?php
+$items = $this->getThisLoader->getItems();
+$selectedItem = $this->getThisLoader->getItem();
+$useDropdown = $this->getThisLoader->makeHoldingsDropdown();
+$id = $this->driver->getUniqueId();
+$getLink = function ($item_id) use ($id) {
+    return $this->url(
+        'record-getthis',
+        [
+            'id' => $id,
+            'action' => 'GetThis',
+        ],
+        [
+            'query' => [
+                'item_id' => $item_id,
+            ],
+        ]
+    );
+};
+?>
+
+<ul<?= $useDropdown ? ' class="dropdown-menu"' : '' ?>>
+  <?php
+  $selectedItem['item_id'] ??= -1;
+  foreach ($items as $item):
+    $item['item_id'] ??= null;
+    $current = $selectedItem['item_id'] == $item['item_id'];
+    $itemClass = $current ? 'current' : '';
+    $itemClass .= $useDropdown ? ' dropdown-item' : '';
+    ?>
+    <li>
+      <?php if ($current && !$useDropdown): ?>
+        <span>
+          <?= $this->context($this)->renderInContext(
+              'record/get-this/holding-display.phtml',
+              [
+                  'item' => $item,
+              ]
+          ); ?> (<?= $this->translate('Selected') ?>)
+        </span>
+      <?php else: ?>
+        <a
+            href="<?= $getLink($item['item_id']) ?>"
+            class="<?= $itemClass ?>"
+            rel="nofollow"
+        >
+        <?= $this->context($this)->renderInContext(
+            'record/get-this/holding-display.phtml',
+            [
+                'item' => $item,
+            ]
+        ); ?>
+      </a>
+      <?php endif; ?>
+    </li>
+  <?php endforeach; ?>
+</ul>

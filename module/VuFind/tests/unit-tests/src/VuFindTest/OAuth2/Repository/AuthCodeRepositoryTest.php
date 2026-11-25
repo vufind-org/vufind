@@ -41,7 +41,7 @@ namespace VuFindTest\OAuth2\Repository;
 class AuthCodeRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
-     * Test auth code repository
+     * Test auth code repository.
      *
      * @return void
      */

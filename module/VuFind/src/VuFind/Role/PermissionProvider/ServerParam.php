@@ -32,6 +32,7 @@
 namespace VuFind\Role\PermissionProvider;
 
 use Laminas\Http\PhpEnvironment\Request;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function in_array;
@@ -54,41 +55,35 @@ class ServerParam implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Request object
-     *
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * Aliases for server param names (default: none)
+     * Aliases for server param names (default: none).
      *
      * @var array
      */
     protected $aliases = [];
 
     /**
-     * Delimiter for multi-valued server params (default: none)
+     * Delimiter for multi-valued server params (default: none).
      *
      * @var string
      */
     protected $serverParamDelimiter = '';
 
     /**
-     * Escape character for delimiter in server param strings (default: none)
+     * Escape character for delimiter in server param strings (default: none).
      *
      * @var string
      */
     protected $serverParamEscape = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Request $request Request object
      */
-    public function __construct(Request $request)
-    {
-        $this->request = $request;
+    public function __construct(
+        #[Autowire(service: 'Request')]
+        protected Request $request
+    ) {
     }
 
     /**
@@ -181,7 +176,7 @@ class ServerParam implements
     }
 
     /**
-     * Split string on delimiter unless dequalified with escape
+     * Split string on delimiter unless dequalified with escape.
      *
      * @param string $string    String to split
      * @param string $delimiter Delimiter character

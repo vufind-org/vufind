@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CurrencyFormatter Test Class
+ * CurrencyFormatter Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFindTest\Service;
 use NumberFormatter;
 
 /**
- * CurrencyFormatter Test Class
+ * CurrencyFormatter Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ use NumberFormatter;
 class CurrencyFormatterTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test the class
+     * Test the class.
      *
      * @return void
      */

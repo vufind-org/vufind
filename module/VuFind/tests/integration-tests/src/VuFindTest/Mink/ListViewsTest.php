@@ -62,7 +62,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoSearch()
+    protected function goToSearch()
     {
         $page = $this->getSearchHomePage();
         $this->findCss($page, '#searchForm_lookfor')
@@ -78,12 +78,85 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoRecord()
+    protected function goToRecord()
     {
-        $page = $this->gotoSearch();
+        $page = $this->goToSearch();
         $this->clickCss($page, '.result a.title');
         $this->waitForPageLoad($page);
+        // Ensure that accordion has completed its transition:
+        $this->unFindCss($page, '.collapsing');
         return $page;
+    }
+
+    /**
+     * Test that we can add a comment from tab mode.
+     *
+     * @return void
+     */
+    public function testCommentsInTabMode()
+    {
+        // Change the theme:
+        $this->changeConfigs(
+            ['searches' => ['List' => ['view' => 'tabs']]]
+        );
+        $page = $this->goToRecord();
+
+        // Assert that we are on the search results screen; we want to make sure that clicking on the comments
+        // tab doesn't manipulate the search URL inappropriately.
+        $session = $this->getMinkSession();
+        $initialUrl = $session->getCurrentUrl();
+        $this->assertStringEndsWith('/Search/Results?lookfor=id%3Atestdeweybrowse&type=AllFields', $initialUrl);
+
+        // Open the user comments tab and confirm that URL is unchanged and login is required:
+        $this->clickCss($page, '#tab-button-usercomments-cd588d8723d65ca0ce9439e79755fa0a');
+        $this->assertSame($initialUrl, $session->getCurrentUrl());
+        $this->assertSame(
+            'You must be logged in first',
+            $this->findCssAndGetText($page, '.comment-form .btn-primary')
+        );
+        // Make an account
+        $this->clickCss($page, '.comment-form .btn-primary');
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->fillInAccountForm($page, ['username' => 'commenter', 'email' => 'commenter@ignore.com']);
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+        // Save comment
+        $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'one');
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->assertSame('one', $this->findCssAndGetText($page, '.comment-text'));
+    }
+
+    /**
+     * Test that we can add a comment from accordion mode.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testCommentsInTabMode')]
+    public function testCommentsInAccordionMode()
+    {
+        // Change the theme:
+        $this->changeConfigs(
+            ['searches' => ['List' => ['view' => 'accordion']]]
+        );
+
+        $page = $this->goToRecord();
+
+        // Open the comments tab:
+        $this->clickCss($page, '#usercomments_cd588d8723d65ca0ce9439e79755fa0a');
+        $this->assertSame(
+            'You must be logged in first',
+            $this->findCssAndGetText($page, '.comment-form .btn-primary')
+        );
+        // Log in:
+        $this->clickCss($page, '.comment-form .btn-primary');
+        $this->fillInLoginForm($page, 'commenter', 'test');
+        $this->submitLoginForm($page);
+        // Add comment
+        $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'two');
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        // Confirm comments exist:
+        $this->assertSame('one', $this->findCssAndGetText($page, '.comment-text'));
+        $this->assertSame('two', $this->findCssAndGetText($page, '.comment-text', index: 1));
     }
 
     /**
@@ -98,11 +171,11 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
             ['searches' => ['List' => ['view' => 'tabs']]]
         );
 
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
 
         // Click save inside the tools tab
-        $this->clickCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a');
-        $this->clickCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-content .save-record');
+        $this->clickCss($page, '#tab-button-tools-cd588d8723d65ca0ce9439e79755fa0a');
+        $this->clickCss($page, '#tab-pane-tools-cd588d8723d65ca0ce9439e79755fa0a .save-record');
         // Make an account
         $this->clickCss($page, '.modal-body .createAccountLink');
         $this->fillInAccountForm($page);
@@ -113,8 +186,8 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->closeLightbox($page);
         $this->waitForPageLoad($page);
         // Check saved items status
-        $this->clickCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a');
-        $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
+        $this->clickCss($page, '#tab-button-information-cd588d8723d65ca0ce9439e79755fa0a');
+        $this->findCss($page, '#tab-pane-information-cd588d8723d65ca0ce9439e79755fa0a .savedLists ul');
     }
 
     /**
@@ -130,7 +203,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
             ['searches' => ['List' => ['view' => 'accordion']]]
         );
 
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
 
         // Click save inside the tools tab
         $this->clickCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a');
@@ -160,7 +233,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function localStorageDance()
     {
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         $session = $this->getMinkSession();
 
         // Reload the page to close all results
@@ -183,7 +256,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('anything else');
         $this->waitForPageLoad($page);
         // Come back
-        $page = $this->gotoSearch();
+        $page = $this->goToSearch();
         // Did our result close after not being being in the last search?
         $result = $page->find('css', '.result.embedded');
         $this->assertIsNotObject($result);
@@ -224,6 +297,6 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1']);
+        static::removeUsers(['commenter', 'username1']);
     }
 }

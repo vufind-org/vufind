@@ -52,7 +52,7 @@ use Psr\Container\ContainerInterface;
 class SessionCsrfFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -74,7 +74,7 @@ class SessionCsrfFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
-        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
+        $sessionManager = $container->get(\Laminas\Session\ManagerInterface::class);
         return new $requestedName(
             [
                 'session' => new \Laminas\Session\Container('csrf', $sessionManager),

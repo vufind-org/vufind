@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Developer settings status enum
+ * Developer settings status enum.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\DeveloperSettings;
 use function in_array;
 
 /**
- * Developer settings status enum
+ * Developer settings status enum.
  *
  * @category VuFind
  * @package  Developer_Settings

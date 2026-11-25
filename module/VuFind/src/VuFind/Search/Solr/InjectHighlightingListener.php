@@ -46,47 +46,26 @@ use VuFindSearch\Service;
 class InjectHighlightingListener
 {
     /**
-     * Backend.
-     *
-     * @var BackendInterface
-     */
-    protected $backend;
-
-    /**
      * Is highlighting active?
      *
      * @var bool
      */
-    protected $active = false;
-
-    /**
-     * Fields to highlight when active.
-     *
-     * @var string
-     */
-    protected $fieldList;
-
-    /**
-     * Extra Solr highlighting parameters.
-     *
-     * @var array
-     */
-    protected $extraHighlightingParameters;
+    protected bool $active = false;
 
     /**
      * Constructor.
      *
-     * @param BackendInterface $backend   Backend
-     * @param string           $fieldList Field(s) to highlight (hl.fl param)
-     * @param array            $extras    Extra Solr highlighting parameters
+     * @param BackendInterface $backend                     Backend
+     * @param string           $fieldList                   Field(s) to highlight when active (hl.fl param)
+     * @param array            $extraHighlightingParameters Extra Solr highlighting parameters
      *
      * @return void
      */
-    public function __construct(BackendInterface $backend, $fieldList = '*', $extras = [])
-    {
-        $this->backend = $backend;
-        $this->fieldList = $fieldList;
-        $this->extraHighlightingParameters = $extras;
+    public function __construct(
+        protected BackendInterface $backend,
+        protected string $fieldList = '*',
+        protected array $extraHighlightingParameters = []
+    ) {
     }
 
     /**
@@ -96,7 +75,7 @@ class InjectHighlightingListener
      *
      * @return void
      */
-    public function attach(SharedEventManagerInterface $manager)
+    public function attach(SharedEventManagerInterface $manager): void
     {
         $manager->attach(
             Service::class,
@@ -112,7 +91,7 @@ class InjectHighlightingListener
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event)
+    public function onSearchPre(EventInterface $event): EventInterface
     {
         $command = $event->getParam('command');
         if ($command->getContext() != 'search') {

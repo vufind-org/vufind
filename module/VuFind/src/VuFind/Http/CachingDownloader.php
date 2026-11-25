@@ -49,14 +49,14 @@ class CachingDownloader implements GuzzleServiceAwareInterface
     use GuzzleServiceAwareTrait;
 
     /**
-     * Cache to use for downloads
+     * Cache to use for downloads.
      *
      * @var StorageInterface
      */
     protected $cache;
 
     /**
-     * Cache ID to use for downloads
+     * Cache ID to use for downloads.
      *
      * @var string
      */
@@ -70,7 +70,7 @@ class CachingDownloader implements GuzzleServiceAwareInterface
     protected $cacheOptions = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param CacheManager           $cacheManager  VuFind Cache Manager
      * @param ConfigManagerInterface $configManager VuFind Config Manager

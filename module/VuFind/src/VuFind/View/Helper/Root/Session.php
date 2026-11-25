@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Session view helper
+ * Session view helper.
  *
  * PHP version 8
  *
@@ -30,9 +30,11 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Session\Container as SessionContainer;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
 
 /**
- * Session view helper
+ * Session view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,37 +42,31 @@ use Laminas\Session\Container as SessionContainer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Session extends \Laminas\View\Helper\AbstractHelper
+class Session
 {
-    /**
-     * Session container
-     *
-     * @var SessionContainer
-     */
-    protected $sessionContainer;
-
     /**
      * Config constructor.
      *
      * @param SessionContainer $sessionContainer Session container
      */
-    public function __construct(SessionContainer $sessionContainer)
-    {
-        $this->sessionContainer = $sessionContainer;
+    public function __construct(
+        #[Autowire(container: SessionContainerRegistry::class, service: 'SessionHelper')]
+        protected SessionContainer $sessionContainer
+    ) {
     }
 
     /**
-     * Return this object
+     * Return this object.
      *
-     * @return Session
+     * @return static
      */
-    public function __invoke(): Session
+    public function __invoke(): static
     {
         return $this;
     }
 
     /**
-     * Get an item from the session container
+     * Get an item from the session container.
      *
      * @param string $name Item name
      *
@@ -82,7 +78,7 @@ class Session extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Put an item to the session container
+     * Put an item to the session container.
      *
      * @param string $name  Item name
      * @param mixed  $value Item value

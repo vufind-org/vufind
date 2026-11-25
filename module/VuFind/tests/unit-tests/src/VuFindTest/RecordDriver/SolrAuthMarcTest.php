@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SolrAuthMarc Record Driver Test Class
+ * SolrAuthMarc Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\RecordDriver;
 
 /**
- * SolrAuthMarc Record Driver Test Class
+ * SolrAuthMarc Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -51,7 +51,7 @@ class SolrAuthMarcTest extends \PHPUnit\Framework\TestCase
     {
         // LCCN in 700
         $marc = $this->getFixture('marc/authlccn1.xml');
-        $config = new \VuFind\Config\Config([]);
+        $config = [];
         $record = new \VuFind\RecordDriver\SolrAuthMarc($config);
         $record->setRawData(['fullrecord' => $marc]);
         $this->assertEquals('foo', $record->getRawLCCN());

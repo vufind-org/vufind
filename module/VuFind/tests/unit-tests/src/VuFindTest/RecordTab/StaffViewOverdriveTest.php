@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Staff view (array dump) Test Class
+ * Staff view (array dump) Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordTab;
 use VuFind\RecordTab\StaffViewOverdrive;
 
 /**
- * Staff view (array dump) Test Class
+ * Staff view (array dump) Test Class.
  *
  * @category VuFind
  * @package  Tests

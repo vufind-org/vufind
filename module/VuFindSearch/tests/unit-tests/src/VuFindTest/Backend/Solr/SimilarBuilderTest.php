@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for SOLR similar records query builder
+ * Unit tests for SOLR similar records query builder.
  *
  * PHP version 8
  *
@@ -32,9 +32,10 @@
 namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Backend\Solr\SimilarBuilder;
+use VuFindSearch\ParamBag;
 
 /**
- * Unit tests for SOLR similar records query builder
+ * Unit tests for SOLR similar records query builder.
  *
  * @category VuFind
  * @package  Search
@@ -59,7 +60,20 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
         $q = $response->get('q');
         $this->assertEquals('id:"testrecord"', $q[0]);
         $qt = $response->get('qt');
-        $this->assertEquals('morelikethis', $qt[0]);
+        $this->assertNull($qt);
+    }
+
+    /**
+     * Test builder with an existing limit.
+     *
+     * @return void
+     */
+    public function testExistingLimit()
+    {
+        $sb = new SimilarBuilder();
+        $response = $sb->build('testrecord', new ParamBag(['rows' => 42]));
+        $rows = $response->get('rows');
+        $this->assertEquals(42, $rows[0]);
     }
 
     /**
@@ -87,13 +101,13 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
                 'count' => 10,
             ],
         ];
-        $sb = new SimilarBuilder(new \VuFind\Config\Config($config));
+        $sb = new SimilarBuilder($config);
         $response = $sb->build('testrecord');
         $rows = $response->get('rows');
         $this->assertEquals(10, $rows[0]);
 
         $config['MoreLikeThis']['useMoreLikeThisHandler'] = true;
-        $sb = new SimilarBuilder(new \VuFind\Config\Config($config));
+        $sb = new SimilarBuilder($config);
         $response = $sb->build('testrecord');
         $rows = $response->get('rows');
         $this->assertEquals(10, $rows[0]);
@@ -107,9 +121,56 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(null, $qt);
 
         $config['MoreLikeThis']['params'] = 'qf=title,topic';
-        $sb = new SimilarBuilder(new \VuFind\Config\Config($config));
+        $sb = new SimilarBuilder($config);
         $response = $sb->build('testrecord');
         $q = $response->get('q');
         $this->assertEquals('{!mlt qf=title,topic}testrecord', $q[0]);
+    }
+
+    /**
+     * Test builder with qt=morelikethis for legacy Solr instances.
+     *
+     * @return void
+     */
+    public function testUseQtParam()
+    {
+        $config = [
+            'MoreLikeThis' => [
+                'useQtParam' => true,
+                'count' => 10,
+            ],
+        ];
+        $sb = new SimilarBuilder($config);
+        $this->assertTrue($sb->usesQtParam());
+        $response = $sb->build('testrecord');
+        $rows = $response->get('rows');
+        $this->assertEquals(10, $rows[0]);
+        $q = $response->get('q');
+        $this->assertEquals('id:"testrecord"', $q[0]);
+        $qt = $response->get('qt');
+        $this->assertEquals('morelikethis', $qt[0]);
+    }
+
+    /**
+     * Test that useQtParam has no effect when the MoreLikeThis handler is used.
+     *
+     * @return void
+     */
+    public function testUseQtParamWithHandler()
+    {
+        $config = [
+            'MoreLikeThis' => [
+                'useMoreLikeThisHandler' => true,
+                'params' => 'qf=title,topic',
+                'useQtParam' => true,
+            ],
+        ];
+        $sb = new SimilarBuilder($config);
+        $this->assertTrue($sb->usesQtParam());
+        $response = $sb->build('testrecord');
+        $q = $response->get('q');
+        $this->assertEquals('{!mlt qf=title,topic}testrecord', $q[0]);
+        $qt = $response->get('qt');
+        $this->assertNull($qt);
     }
 }

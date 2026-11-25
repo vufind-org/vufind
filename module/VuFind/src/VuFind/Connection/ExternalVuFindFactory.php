@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ExternalVuFind connection factory
+ * ExternalVuFind connection factory.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * ExternalVuFind connection factory
+ * ExternalVuFind connection factory.
  *
  * @category VuFind
  * @package  Connection
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class ExternalVuFindFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -58,9 +58,8 @@ class ExternalVuFindFactory implements \Laminas\ServiceManager\Factory\FactoryIn
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $requestedName,

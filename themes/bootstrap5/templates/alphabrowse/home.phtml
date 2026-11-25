@@ -5,7 +5,7 @@
 
   // Set up upper search box if necessary:
   if ($this->searchbox()->alphaBrowseOptionsEnabled()) {
-    $this->layout()->searchbox = $this->context($this)->renderInContext(
+    $this->globals()['searchbox'] = $this->context($this)->renderInContext(
         'search/searchbox.phtml',
         [
           'lookfor' => $this->from,

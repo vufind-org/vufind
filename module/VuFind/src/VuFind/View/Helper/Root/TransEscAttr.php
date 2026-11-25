@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Translate + escape view helper for HTML attributes
+ * Translate + escape view helper for HTML attributes.
  *
  * PHP version 8
  *
@@ -31,10 +31,11 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\EscapeHtmlAttr;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Translate + escape view helper for HTML attributes
+ * Translate + escape view helper for HTML attributes.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,10 +44,24 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TransEscAttr extends AbstractHelper
+class TransEscAttr
 {
     /**
-     * Translate and escape a string for an HTML attribute
+     * Constructor.
+     *
+     * @param Translate      $translate      Translate view helper
+     * @param EscapeHtmlAttr $escapeHtmlAttr EscapeHtml view helper
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Translate $translate,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtmlAttr $escapeHtmlAttr
+    ) {
+    }
+
+    /**
+     * Translate and escape a string for an HTML attribute.
      *
      * @param string|object|array $str             String to translate or an array of text
      *                                             domain and string to translate
@@ -67,8 +82,8 @@ class TransEscAttr extends AbstractHelper
         $useIcuFormatter = false,
         $fallbackDomains = []
     ) {
-        $escaper = $this->getView()->plugin('escapeHtmlAttr');
-        $translator = $this->getView()->plugin('translate');
+        $escaper = $this->escapeHtmlAttr;
+        $translator = $this->translate;
         return $escaper($translator($str, $tokens, $default, $useIcuFormatter, $fallbackDomains));
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS Autocomplete Module
+ * EDS Autocomplete Module.
  *
  * PHP version 8
  *
@@ -31,12 +31,13 @@
 
 namespace VuFind\Autocomplete;
 
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Service;
 
 use function is_array;
 
 /**
- * EDS Autocomplete Module
+ * EDS Autocomplete Module.
  *
  * This class provides popular terms provided by EDS.
  *
@@ -50,34 +51,27 @@ use function is_array;
 class Eds implements AutocompleteInterface
 {
     /**
-     * Eds domain
+     * Eds domain.
      *
      * @var string
      */
     protected $domain = 'rawqueries';
 
     /**
-     * Search object family to use
+     * Search object family to use.
      *
      * @var string
      */
     protected $searchClassId = 'EDS';
 
     /**
-     * Search service
+     * Constructor.
      *
-     * @var Service
+     * @param Service $searchService Search service
      */
-    protected $searchService;
-
-    /**
-     * Constructor
-     *
-     * @param Service $ss Search service
-     */
-    public function __construct(Service $ss)
+    #[Autowire]
+    public function __construct(protected Service $searchService)
     {
-        $this->searchService = $ss;
     }
 
     /**

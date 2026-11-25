@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Demo Link Resolver Driver
+ * Demo Link Resolver Driver.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@
 namespace VuFind\Resolver\Driver;
 
 /**
- * Demo Link Resolver Driver
+ * Demo Link Resolver Driver.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -43,7 +43,7 @@ namespace VuFind\Resolver\Driver;
 class Demo extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $baseUrl Base URL for link resolver
      */
@@ -53,7 +53,7 @@ class Demo extends AbstractBase
     }
 
     /**
-     * Fetch Links
+     * Fetch Links.
      *
      * Fetches a set of links corresponding to an OpenURL
      *
@@ -67,7 +67,7 @@ class Demo extends AbstractBase
     }
 
     /**
-     * Parse Links
+     * Parse Links.
      *
      * Parses data returned by a link resolver
      * and converts it to a standardised format for display

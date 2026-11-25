@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EPFResults Recommendations Module
+ * EPFResults Recommendations Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Recommend;
 
 /**
- * EPFResults Recommendations Module
+ * EPFResults Recommendations Module.
  *
  * This class provides recommendations by doing a search of EBSCO Publication Finder (EPF).
  *

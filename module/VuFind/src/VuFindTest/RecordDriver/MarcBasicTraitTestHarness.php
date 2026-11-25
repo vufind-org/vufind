@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test harness for simulating MARC record drivers (ignore outside of test suite!)
+ * Test harness for simulating MARC record drivers (ignore outside of test suite!).
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\RecordDriver\Feature\MarcBasicTrait;
 use VuFind\RecordDriver\Feature\MarcReaderTrait;
 
 /**
- * Test harness for simulating MARC record drivers (ignore outside of test suite!)
+ * Test harness for simulating MARC record drivers (ignore outside of test suite!).
  *
  * @category VuFind
  * @package  RecordDrivers

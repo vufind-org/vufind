@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EmptySet aspect of the Search Multi-class (Options)
+ * EmptySet aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\EmptySet;
 
 /**
- * Search EmptySet Options
+ * Search EmptySet Options.
  *
  * @category VuFind
  * @package  Search_Tags
@@ -45,9 +45,9 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         // This should never be called!
-        return null;
+        return '';
     }
 }

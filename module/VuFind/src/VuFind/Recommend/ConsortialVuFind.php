@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ConsortialVuFind Recommendations Module
+ * ConsortialVuFind Recommendations Module.
  *
  * PHP version 8
  *
@@ -29,14 +29,13 @@
 
 namespace VuFind\Recommend;
 
-use VuFind\Config\Config;
 use VuFind\Connection\ExternalVuFind as Connection;
 
 use function intval;
 use function is_callable;
 
 /**
- * ConsortialVuFind Recommendations Module
+ * ConsortialVuFind Recommendations Module.
  *
  * This class searches a separate instance of VuFind via its public API and links to
  * the record and results pages hosted within that instance. This is intended to
@@ -54,80 +53,64 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Request parameter for the search query
+     * Request parameter for the search query.
      *
      * @var string
      */
     protected $requestParam = 'lookfor';
 
     /**
-     * Number of results to show
+     * Number of results to show.
      *
      * @var int
      */
     protected $limit = 5;
 
     /**
-     * Connection to consortial VuFind API
-     *
-     * @var Connection
-     */
-    protected $connection;
-
-    /**
-     * ConsortialVuFind.ini configuration
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * Base URL of a search results page
+     * Base URL of a search results page.
      *
      * @var string
      */
     protected $resultsBaseUrl = null;
 
     /**
-     * Base URL of a record page
+     * Base URL of a record page.
      *
      * @var string
      */
     protected $recordBaseUrl = null;
 
     /**
-     * Any filters used in the search
+     * Any filters used in the search.
      *
      * @var array
      */
     protected $searchFilters = [];
 
     /**
-     * Boolean indicating if at least the minimal required configuration is present
+     * Boolean indicating if at least the minimal required configuration is present.
      *
      * @var bool
      */
     protected $hasMinimumConfig = false;
 
     /**
-     * Query string from the original search results
+     * Query string from the original search results.
      *
      * @var ?string
      */
     protected $queryString = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Config     $config     ConsortialVuFind.ini configuration
+     * @param array      $config     ConsortialVuFind.ini configuration
      * @param Connection $connection Connection to consortial VuFind API
      */
     public function __construct(
-        Config $config,
-        Connection $connection
+        protected array $config,
+        protected Connection $connection
     ) {
-        $this->config = $config;
-        $this->connection = $connection;
     }
 
     /**
@@ -146,20 +129,20 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
         $configSectionName = $settings[2] ?? 'ReShare';
 
         // Read config file
-        $configSection = $this->config->get($configSectionName);
+        $configSection = $this->config[$configSectionName] ?? [];
         if ($configSection) {
-            $this->resultsBaseUrl = $configSection->results_base_url;
-            $this->recordBaseUrl = $configSection->record_base_url;
-            $this->searchFilters = $configSection->filters?->toArray() ?? [];
-
-            // Configure connection
-            $this->connection->setBaseUrl($configSection->api_base_url);
+            $this->resultsBaseUrl = $configSection['results_base_url'] ?? null;
+            $this->recordBaseUrl = $configSection['record_base_url'] ?? null;
+            $this->searchFilters = $configSection['filters'] ?? [];
 
             // Confirm that required configuration is present
             $this->hasMinimumConfig = $this->resultsBaseUrl
                 && $this->recordBaseUrl
-                && $configSection->api_base_url;
-            if (!$this->hasMinimumConfig) {
+                && ($configSection['api_base_url'] ?? null);
+            if ($this->hasMinimumConfig) {
+                // Configure connection
+                $this->connection->setBaseUrl($configSection['api_base_url']);
+            } else {
                 $this->logError("Required configuration missing in '$configSectionName'
                     section of ConsortialVuFind.ini.");
             }
@@ -176,14 +159,13 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function init($params, $request)
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // No action needed.
     }

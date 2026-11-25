@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Base62 generator
+ * Base62 generator.
  *
  * Class to encode and decode numbers using base62
  *
@@ -37,7 +37,7 @@ use function intval;
 use function strlen;
 
 /**
- * Base62 generator
+ * Base62 generator.
  *
  * Class to encode and decode numbers using base62
  *
@@ -71,13 +71,13 @@ class Base62
         }
 
         $base62Number = '';
-        while ($binaryNumber != 0) {
+        while ($binaryNumber !== 0) {
             $base62Number = self::BASE62_ALPHABET[$binaryNumber % self::BASE62_BASE]
                 . $base62Number;
             $binaryNumber = intdiv($binaryNumber, self::BASE62_BASE);
         }
 
-        return ($base62Number == '') ? '0' : $base62Number;
+        return ($base62Number === '') ? '0' : $base62Number;
     }
 
     /**

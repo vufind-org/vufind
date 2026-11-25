@@ -1,7 +1,7 @@
 <?php
 
 /**
- * View helper for escaping or cleaning HTML
+ * View helper for escaping or cleaning HTML.
  *
  * PHP version 8
  *
@@ -30,11 +30,11 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Escaper\Escaper;
-use Laminas\View\Helper\AbstractHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\String\PropertyStringInterface;
 
 /**
- * View helper for escaping or cleaning HTML
+ * View helper for escaping or cleaning HTML.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,29 +42,34 @@ use VuFind\String\PropertyStringInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class EscapeOrCleanHtml extends AbstractHelper
+class EscapeOrCleanHtml
 {
     /**
-     * Contexts that allow HTML
+     * Contexts that allow HTML.
      *
      * @var array
      */
     protected array $htmlContexts;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Escaper   $escaper   Escaper
      * @param CleanHtml $cleanHtml Clean HTML helper
      * @param array     $config    VuFind configuration
      */
-    public function __construct(protected Escaper $escaper, protected CleanHtml $cleanHtml, array $config)
-    {
+    public function __construct(
+        protected Escaper $escaper,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected CleanHtml $cleanHtml,
+        #[Autowire(config: 'config')]
+        array $config
+    ) {
         $this->htmlContexts = (array)($config['Allowed_HTML_Contexts'] ?? []);
     }
 
     /**
-     * Invoke this helper: escape a value
+     * Invoke this helper: escape a value.
      *
      * @param string|PropertyStringInterface $value            Value to escape
      * @param ?string                        $dataContext      Data context (for fields that allow sanitized HTML)
@@ -93,7 +98,7 @@ class EscapeOrCleanHtml extends AbstractHelper
     }
 
     /**
-     * Escape a string
+     * Escape a string.
      *
      * @param string $value String to escape
      *

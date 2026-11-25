@@ -49,7 +49,7 @@ interface PreviousUniqueIdInterface
     public function getPreviousUniqueId();
 
     /**
-     * Set previous unique ID
+     * Set previous unique ID.
      *
      * @param string $id ID to set
      *

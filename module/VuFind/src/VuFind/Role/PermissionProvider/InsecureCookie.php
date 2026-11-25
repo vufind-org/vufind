@@ -30,6 +30,7 @@
 namespace VuFind\Role\PermissionProvider;
 
 use VuFind\Cookie\CookieManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Insecure cookie permission provider for VuFind.
@@ -46,10 +47,11 @@ class InsecureCookie implements PermissionProviderInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param CookieManager $cookieManager Cookie manager
      */
+    #[Autowire]
     public function __construct(
         protected CookieManager $cookieManager
     ) {

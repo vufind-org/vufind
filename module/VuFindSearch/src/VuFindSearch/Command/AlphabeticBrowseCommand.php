@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Fetch alphabrowse data from the backend (currently only supported by Solr)
+ * Fetch alphabrowse data from the backend (currently only supported by Solr).
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\ParamBag;
 
 /**
- * Fetch alphabrowse data from the backend (currently only supported by Solr)
+ * Fetch alphabrowse data from the backend (currently only supported by Solr).
  *
  * @category VuFind
  * @package  Search
@@ -160,6 +160,19 @@ class AlphabeticBrowseCommand extends CallMethodCommand
     }
 
     /**
+     * Set result page to return.
+     *
+     * @param int $page New result page
+     *
+     * @return static
+     */
+    public function setPage(int $page): static
+    {
+        $this->page = $page;
+        return $this;
+    }
+
+    /**
      * Return number of results to return on each page.
      *
      * @return int
@@ -177,5 +190,18 @@ class AlphabeticBrowseCommand extends CallMethodCommand
     public function getOffsetDelta(): int
     {
         return $this->offsetDelta;
+    }
+
+    /**
+     * Set delta to use when calculating page offset.
+     *
+     * @param int $delta New offset delta
+     *
+     * @return static
+     */
+    public function setOffsetDelta(int $delta): static
+    {
+        $this->offsetDelta = $delta;
+        return $this;
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Citation view helper
+ * Citation view helper.
  *
  * PHP version 8
  *
@@ -30,8 +30,11 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Date\Converter;
 use VuFind\Date\DateException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function count;
 use function function_exists;
@@ -41,7 +44,7 @@ use function sprintf;
 use function strlen;
 
 /**
- * Citation view helper
+ * Citation view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -50,30 +53,23 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Citation extends \Laminas\View\Helper\AbstractHelper implements TranslatorAwareInterface
+class Citation implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Citation details
+     * Citation details.
      *
      * @var array
      */
     protected $details = [];
 
     /**
-     * Record driver
+     * Record driver.
      *
      * @var \VuFind\RecordDriver\AbstractBase
      */
     protected $driver;
-
-    /**
-     * Date converter
-     *
-     * @var \VuFind\Date\Converter
-     */
-    protected $dateConverter;
 
     /**
      * List of words to never capitalize when using title case.
@@ -105,88 +101,94 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Date\Converter $converter Date converter
+     * @param Converter                 $dateConverter    Date converter
+     * @param TemplateRendererInterface $templateRenderer Template renderer
      */
-    public function __construct(\VuFind\Date\Converter $converter)
-    {
-        $this->dateConverter = $converter;
+    #[Autowire]
+    public function __construct(
+        protected Converter $dateConverter,
+        protected TemplateRendererInterface $templateRenderer,
+    ) {
     }
 
     /**
      * Store a record driver object and return this object so that the appropriate
      * template can be rendered.
      *
-     * @param \VuFind\RecordDriver\Base $driver Record driver object.
+     * @param ?\VuFind\RecordDriver\AbstractBase $driver Record driver object.
      *
-     * @return Citation
+     * @return static
      */
-    public function __invoke($driver)
+    public function __invoke(?\VuFind\RecordDriver\AbstractBase $driver = null): static
     {
-        // Store the driver first, since we will need it for prepareAuthors checks.
-        $this->driver = $driver;
+        // Initialize if a driver is given
+        if ($driver !== null) {
+            // Store the driver first, since we will need it for prepareAuthors checks.
+            $this->driver = $driver;
 
-        // Build author list:
-        $authors = $this->prepareAuthors(
-            (array)$driver->tryMethod('getPrimaryAuthors')
-        );
-        $corporateAuthors = [];
-        if (empty($authors)) {
-            // Corporate authors are more likely to have inappropriate trailing
-            // punctuation; strip it off, unless the last word is short, like
-            // "Co.", "Ltd.," etc.:
-            $trimmer = function ($str) {
-                return preg_match('/\s+.{1,3}\.$/', $str)
-                    ? $str : rtrim($str, '.');
-            };
-            $corporateAuthors = $authors = $this->prepareAuthors(
-                array_map(
-                    $trimmer,
-                    (array)$driver->tryMethod('getCorporateAuthors')
-                ),
-                true
+            // Build author list:
+            $authors = $this->prepareAuthors(
+                (array)$driver->tryMethod('getPrimaryAuthors')
             );
-        }
-        $secondary = $this->prepareAuthors(
-            (array)$driver->tryMethod('getSecondaryAuthors')
-        );
-        if (!empty($secondary)) {
-            $authors = array_unique(array_merge($authors, $secondary));
-        }
+            $corporateAuthors = [];
+            if (empty($authors)) {
+                // Corporate authors are more likely to have inappropriate trailing
+                // punctuation; strip it off, unless the last word is short, like
+                // "Co.", "Ltd.," etc.:
+                $trimmer = function ($str) {
+                    return preg_match('/\s+.{1,3}\.$/', $str)
+                        ? $str : rtrim($str, '.');
+                };
+                $corporateAuthors = $authors = $this->prepareAuthors(
+                    array_map(
+                        $trimmer,
+                        (array)$driver->tryMethod('getCorporateAuthors')
+                    ),
+                    true
+                );
+            }
+            $secondary = $this->prepareAuthors(
+                (array)$driver->tryMethod('getSecondaryAuthors')
+            );
+            if (!empty($secondary)) {
+                $authors = array_unique(array_merge($authors, $secondary));
+            }
 
-        // Get best available title details:
-        $title = $driver->tryMethod('getShortTitle');
-        $subtitle = $driver->tryMethod('getSubtitle');
-        if (empty($title)) {
-            $title = $driver->tryMethod('getTitle');
-        }
-        if (empty($title)) {
-            $title = $driver->getBreadcrumb();
-        }
-        // Find subtitle in title if they're not separated:
-        if (empty($subtitle) && strstr($title, ':')) {
-            [$title, $subtitle] = explode(':', $title, 2);
-        }
+            // Get best available title details:
+            $title = $driver->tryMethod('getShortTitle');
+            $subtitle = $driver->tryMethod('getSubtitle');
+            if (empty($title)) {
+                $title = $driver->tryMethod('getTitle');
+            }
+            if (empty($title)) {
+                $title = $driver->getBreadcrumb();
+            }
+            // Find subtitle in title if they're not separated:
+            if (empty($subtitle) && strstr($title, ':')) {
+                [$title, $subtitle] = explode(':', $title, 2);
+            }
 
-        // Extract the additional details from the record driver:
-        $publishers = $driver->tryMethod('getPublishers');
-        $pubDates = $driver->tryMethod('getPublicationDates');
-        $pubPlaces = $driver->tryMethod('getPlacesOfPublication');
-        $edition = $driver->tryMethod('getEdition');
+            // Extract the additional details from the record driver:
+            $publishers = $driver->tryMethod('getPublishers');
+            $pubDates = $driver->tryMethod('getPublicationDates');
+            $pubPlaces = $driver->tryMethod('getPlacesOfPublication');
+            $edition = $driver->tryMethod('getEdition');
 
-        // Store all the collected details:
-        $this->details = [
-            'authors' => $authors,
-            'corporateAuthors' => $corporateAuthors,
-            'title' => trim($title ?? ''),
-            'subtitle' => trim($subtitle ?? ''),
-            'pubPlace' => $pubPlaces[0] ?? null,
-            'pubName' => $publishers[0] ?? null,
-            'pubDate' => $pubDates[0] ?? null,
-            'edition' => empty($edition) ? [] : [$edition],
-            'journal' => $driver->tryMethod('getContainerTitle'),
-        ];
+            // Store all the collected details:
+            $this->details = [
+                'authors' => $authors,
+                'corporateAuthors' => $corporateAuthors,
+                'title' => trim($title),
+                'subtitle' => trim($subtitle ?? ''),
+                'pubPlace' => $pubPlaces[0] ?? null,
+                'pubName' => $publishers[0] ?? null,
+                'pubDate' => $pubDates[0] ?? null,
+                'edition' => empty($edition) ? [] : [$edition],
+                'journal' => $driver->tryMethod('getContainerTitle'),
+            ];
+        }
 
         return $this;
     }
@@ -241,7 +243,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
                 // If we have exactly two parts, we should trim any trailing
                 // punctuation from the second part (this reduces the odds of
                 // accidentally trimming a "Jr." or "Sr."):
-                if (count($parts) == 2) {
+                if (count($parts) === 2) {
                     $parts[1] = rtrim($parts[1], '.');
                 }
                 // Put the parts back together; eliminate stray commas:
@@ -262,7 +264,27 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     }
 
     /**
-     * Retrieve a citation in a particular format
+     * Get the caption for a given format.
+     *
+     * @param string $format Citation format
+     *
+     * @return string
+     */
+    public function getCaption(string $format): string
+    {
+        // Some language files only contain translations for a short caption;
+        // let's try to detect whether or not long captions are getting translated
+        // properly and display the appropriate one accordingly. This logic can be
+        // removed once all of the language files contain the "Edition Citation"
+        // version of the relevant strings.
+        $shortCaption = $this->translate($format . ' Citation');
+        $longCaption = $this->translate($format . ' Edition Citation');
+        return (strpos($longCaption, 'Citation') > 0 && !str_contains($shortCaption, 'Citation'))
+            ? $shortCaption : $longCaption;
+    }
+
+    /**
+     * Retrieve a citation in a particular format.
      *
      * Returns the citation in the format specified
      *
@@ -308,12 +330,11 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             $apa['doi'] = $doi;
         }
 
-        $partial = $this->getView()->plugin('partial');
         // Behave differently for books vs. journals:
         if (empty($this->details['journal'])) {
             $apa['publisher'] = $this->getPublisher(false);
             $apa['year'] = $this->getYear();
-            return $partial('Citation/apa.phtml', $apa);
+            return $this->templateRenderer->renderTemplateAsString(template: 'Citation/apa.phtml', params: $apa);
         }
 
         // If we got this far, it's the default article case:
@@ -321,7 +342,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             = $this->getAPANumbersAndDate();
         $apa['journal'] = $this->details['journal'];
         $apa['pageRange'] = $this->getPageRange();
-        return $partial('Citation/apa-article.phtml', $apa);
+        return $this->templateRenderer->renderTemplateAsString(template: 'Citation/apa-article.phtml', params: $apa);
     }
 
     /**
@@ -397,12 +418,11 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         }
 
         // Behave differently for books vs. journals:
-        $partial = $this->getView()->plugin('partial');
         if (empty($this->details['journal'])) {
             $mla['publisher'] = $this->getPublisher($includePubPlace);
             $mla['year'] = $this->getYear();
             $mla['edition'] = $this->getEdition();
-            return $partial('Citation/mla.phtml', $mla);
+            return $this->templateRenderer->renderTemplateAsString(template: 'Citation/mla.phtml', params: $mla);
         }
         // If we got this far, we should add other journal-specific details:
         $mla['doiArticleComma'] = $doiArticleComma;
@@ -413,7 +433,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             $volPrefix,
             $yearFormat
         );
-        return $partial('Citation/mla-article.phtml', $mla);
+        return $this->templateRenderer->renderTemplateAsString(template: 'Citation/mla-article.phtml', params: $mla);
     }
 
     /**
@@ -584,7 +604,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
                 // Use the multi-byte substring function if available to avoid
                 // problems with accented characters:
                 $fnameParts[$i] = function_exists('mb_substr')
-                    ? mb_substr($fnameParts[$i], 0, 1, 'utf8') . '.'
+                    ? mb_substr($fnameParts[$i], 0, 1, 'UTF-8') . '.'
                     : substr($fnameParts[$i], 0, 1) . '.';
             }
             $name .= ', ' . implode(' ', $fnameParts);
@@ -607,7 +627,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     {
         // Fix abbreviated letters.
         if (
-            strlen($str) == 1
+            strlen($str) === 1
             || preg_match('/\s[a-zA-Z]/', substr($str, -2))
         ) {
             return $str . '.';
@@ -785,7 +805,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
                 // Do not abbreviate corporate authors:
                 $author = in_array($author, $this->details['corporateAuthors'])
                     ? $author : $this->abbreviateName($author);
-                if (($i + 1 == $authorCount) && ($i > 0)) { // Last
+                if (($i + 1 === $authorCount) && ($i > 0)) { // Last
                     // Do we already have periods of ellipsis?  If not, we need
                     // an ampersand:
                     $authorStr .= $ellipsis ? ' ' : '& ';
@@ -801,7 +821,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
                     // any commas yet, we can skip the comma. Otherwise, add one to
                     // the list. Useful for two-item lists including corporate
                     // authors as the first entry.
-                    $skipComma = ($i + 2 == $authorCount)
+                    $skipComma = ($i + 2 === $authorCount)
                         && (!str_contains($authorStr . $author, ','));
                     $authorStr .= $author . ($skipComma ? ' ' : ', ');
                 } else { // First and only
@@ -910,7 +930,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             } else {
                 foreach ($this->details['authors'] as $rawAuthor) {
                     $author = $this->formatPrimaryMLAAuthor($rawAuthor);
-                    if (($i + 1 == count($this->details['authors'])) && ($i > 0)) {
+                    if (($i + 1 === count($this->details['authors'])) && ($i > 0)) {
                         // Last
                         // Only add a comma if there are commas already in the
                         // preceding text. This helps, for example, with cases where

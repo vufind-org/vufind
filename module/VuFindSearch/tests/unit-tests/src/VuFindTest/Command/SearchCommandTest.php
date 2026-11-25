@@ -49,7 +49,7 @@ use VuFindSearch\Query\Query;
 class SearchCommandTest extends TestCase
 {
     /**
-     * Test that the command works as expected
+     * Test that the command works as expected.
      *
      * @return void
      */
@@ -58,17 +58,15 @@ class SearchCommandTest extends TestCase
         $query = new Query('foo');
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn($backendId);
         $backend->expects($this->once())->method('search')
             ->with(
-                $this->equalTo($query),
-                $this->equalTo(0),
-                $this->equalTo(1),
-                $this->equalTo($params)
+                $query,
+                0,
+                1,
+                $params
             )->willReturn('result');  // not a realistic value!
         $command = $this->getCommand();
         $this->assertEquals('result', $command->execute($backend)->getResult());
@@ -160,7 +158,7 @@ class SearchCommandTest extends TestCase
     }
 
     /**
-     * Test that the command throws an exception results are requested before execute
+     * Test that the command throws an exception results are requested before execute.
      *
      * @return void
      */
@@ -172,16 +170,14 @@ class SearchCommandTest extends TestCase
     }
 
     /**
-     * Test extra request details
+     * Test extra request details.
      *
      * @return void
      */
     public function testExtraRequestDetails(): void
     {
         $backendId = 'bar';
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn($backendId);
         $backend->expects($this->once())->method('getExtraRequestDetails')
@@ -191,7 +187,7 @@ class SearchCommandTest extends TestCase
     }
 
     /**
-     * Get test SearchCommand Object
+     * Get test SearchCommand Object.
      *
      * @return SearchCommand
      */

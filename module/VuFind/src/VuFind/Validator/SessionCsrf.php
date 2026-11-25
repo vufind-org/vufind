@@ -38,7 +38,7 @@ use function count;
  * Decorator for Laminas CSRF validator to add token counting/clearing functions.
  *
  * @category VuFind
- * @package  Solr
+ * @package  Validator
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -53,7 +53,7 @@ class SessionCsrf implements CsrfInterface
     protected Csrf $csrf;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $options Options to pass to CSRF validator
      */
@@ -93,7 +93,7 @@ class SessionCsrf implements CsrfInterface
     }
 
     /**
-     * Retrieve CSRF token
+     * Retrieve CSRF token.
      *
      * If no CSRF token currently exists, or should be regenerated,
      * generates one.

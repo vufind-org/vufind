@@ -34,7 +34,7 @@ function settext() {
       return VuFind.translate('more_topics_unescaped', { '%%count%%': d.count});
     }
 
-    // Csae 4 (default): Standard second-level field
+    // Case 4 (default): Standard second-level field
     return d.name + " (" + d.count + ")";
   });
 }

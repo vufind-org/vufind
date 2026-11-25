@@ -49,18 +49,16 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
      * Data provider for testing elements that should be hidden in mobile, visible
      * on desktop.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function windowDimensionProvider(): array
+    public static function windowDimensionProvider(): \Iterator
     {
-        return [
-            'mobile' => [500, 500, ['bulk' => false, 'offcanvas' => true]],
-            'desktop' => [1280, 768, ['bulk' => true, 'offcanvas' => false]],
-        ];
+        yield 'mobile' => [500, 500, ['bulk' => false, 'offcanvas' => true]];
+        yield 'desktop' => [1280, 768, ['bulk' => true, 'offcanvas' => false]];
     }
 
     /**
-     * Test that bulk controls are hidden in mobile view and visible in desktop
+     * Test that bulk controls are hidden in mobile view and visible in desktop.
      *
      * @param int   $windowWidth       Window width
      * @param int   $windowHeight      Window height
@@ -117,7 +115,7 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that offcanvas controls are visible in mobile and hidden in desktop
+     * Test that offcanvas controls are visible in mobile and hidden in desktop.
      *
      * @param int   $windowWidth       Window width
      * @param int   $windowHeight      Window height
@@ -150,7 +148,7 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals($shouldBeVisible, $this->findCss($page, '#search-sidebar .close-offcanvas')->isVisible());
 
         // Log in:
-        $session->visit($this->getVuFindUrl() . '/MyResearch/Home');
+        $session->visit($this->getVuFindUrl() . '/Account/Home');
         $this->clickCss($page, '.createAccountLink');
         $this->waitForPageLoad($page);
         $this->fillInAccountForm($page, ['username' => 'username2']);

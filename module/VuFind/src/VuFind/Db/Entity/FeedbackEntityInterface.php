@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for feedback table
+ * Entity model interface for feedback table.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Db\Entity;
 use DateTime;
 
 /**
- * Entity model interface for feedback table
+ * Entity model interface for feedback table.
  *
  * @category VuFind
  * @package  Database
@@ -50,7 +50,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function getId(): ?int;
 
     /**
-     * Message setter
+     * Message setter.
      *
      * @param string $message Message
      *
@@ -59,7 +59,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setMessage(string $message): static;
 
     /**
-     * Message getter
+     * Message getter.
      *
      * @return string
      */
@@ -75,7 +75,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setFormData(?array $data): static;
 
     /**
-     * Form data getter
+     * Form data getter.
      *
      * @return ?array
      */
@@ -91,7 +91,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setFormName(string $name): static;
 
     /**
-     * Form name getter
+     * Form name getter.
      *
      * @return string
      */
@@ -107,7 +107,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setCreated(DateTime $dateTime): static;
 
     /**
-     * Created getter
+     * Created getter.
      *
      * @return DateTime
      */
@@ -123,7 +123,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setUpdated(DateTime $dateTime): static;
 
     /**
-     * Updated getter
+     * Updated getter.
      *
      * @return DateTime
      */
@@ -139,7 +139,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setStatus(string $status): static;
 
     /**
-     * Status getter
+     * Status getter.
      *
      * @return string
      */
@@ -155,7 +155,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setSiteUrl(string $url): static;
 
     /**
-     * Site URL getter
+     * Site URL getter.
      *
      * @return string
      */
@@ -171,7 +171,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setUser(?UserEntityInterface $user): static;
 
     /**
-     * User getter
+     * User getter.
      *
      * @return ?UserEntityInterface
      */
@@ -187,7 +187,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setUpdatedBy(?UserEntityInterface $user): static;
 
     /**
-     * Updatedby getter
+     * Updatedby getter.
      *
      * @return ?UserEntityInterface
      */

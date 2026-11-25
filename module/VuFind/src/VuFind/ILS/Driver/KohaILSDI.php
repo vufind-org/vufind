@@ -1,7 +1,7 @@
 <?php
 
 /**
- * KohaILSDI ILS Driver
+ * KohaILSDI ILS Driver.
  *
  * PHP version 8
  *
@@ -38,14 +38,12 @@ use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface;
 
-use function array_slice;
 use function count;
 use function in_array;
-use function intval;
 use function is_callable;
 
 /**
- * VuFind Driver for Koha, using web APIs (ILSDI)
+ * VuFind Driver for Koha, using web APIs (ILSDI).
  *
  * Minimum Koha Version: 3.18.6
  *
@@ -66,28 +64,28 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Web services host
+     * Web services host.
      *
      * @var string
      */
     protected $host;
 
     /**
-     * ILS base URL
+     * ILS base URL.
      *
      * @var string
      */
     protected $ilsBaseUrl;
 
     /**
-     * Location codes
+     * Location codes.
      *
      * @var array
      */
     protected $locations;
 
     /**
-     * Codes of locations available for pickup
+     * Codes of locations available for pickup.
      *
      * @var array
      */
@@ -96,28 +94,28 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     /**
      * Codes of locations always should be available
      *   - For example reference material or material
-     *     not for loan
+     *     not for loan.
      *
      * @var array
      */
     protected $availableLocationsDefault;
 
     /**
-     * Default location code
+     * Default location code.
      *
      * @var string
      */
     protected $defaultLocation;
 
     /**
-     * Database connection
+     * Database connection.
      *
      * @var PDO
      */
     protected $db;
 
     /**
-     * Date converter object
+     * Date converter object.
      *
      * @var \VuFind\Date\Converter
      */
@@ -131,14 +129,14 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     protected $validatePasswords;
 
     /**
-     * Authorised values category for location, defaults to 'LOC'
+     * Authorised values category for location, defaults to 'LOC'.
      *
      * @var string
      */
     protected $locationAuthorisedValuesCategory;
 
     /**
-     * Default terms for block types, can be overridden by configuration
+     * Default terms for block types, can be overridden by configuration.
      *
      * @var array
      */
@@ -150,28 +148,28 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     ];
 
     /**
-     * Display comments for patron debarments, see KohaILSDI.ini
+     * Display comments for patron debarments, see KohaILSDI.ini.
      *
      * @var array
      */
     protected $showBlockComments;
 
     /**
-     * Should we show permanent location (or current)
+     * Should we show permanent location (or current).
      *
      * @var bool
      */
     protected $showPermanentLocation;
 
     /**
-     * Should we show homebranch instead of holdingbranch
+     * Should we show homebranch instead of holdingbranch.
      *
      * @var bool
      */
     protected $showHomebranch;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
@@ -298,7 +296,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
                     array_filter(
                         explode(',', $row['@@sql_mode']),
                         function ($mode) {
-                            return $mode != 'ONLY_FULL_GROUP_BY';
+                            return $mode !== 'ONLY_FULL_GROUP_BY';
                         }
                     )
                 );
@@ -374,7 +372,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Field
+     * Get Field.
      *
      * Check $contents is not "", return it; else return $default.
      *
@@ -385,7 +383,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      */
     protected function getField($contents, $default = 'Unknown')
     {
-        if ((string)$contents != '') {
+        if ((string)$contents !== '') {
             return (string)$contents;
         } else {
             return $default;
@@ -393,7 +391,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Make Request
+     * Make Request.
      *
      * Makes a request to the Koha ILSDI API
      *
@@ -445,7 +443,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Make Ilsdi Request Array
+     * Make Ilsdi Request Array.
      *
      * Makes a request to the Koha ILSDI API
      *
@@ -514,7 +512,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * To Koha Date
+     * To Koha Date.
      *
      * Turns a display date into a date format expected by Koha.
      *
@@ -540,14 +538,13 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function getConfig(string $function, array $params = []): array
     {
         if ('getMyTransactionHistory' === $function) {
             if (empty($this->config['TransactionHistory']['enabled'])) {
-                return false;
+                return [];
             }
             return [
                 'max_results' => 100,
@@ -562,11 +559,11 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
                 'default_sort' => 'checkout desc',
             ];
         }
-        return $this->config[$function] ?? false;
+        return $this->config[$function] ?? [];
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
@@ -584,9 +581,8 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @throws ILSException
      * @return array An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         if (!$this->locations) {
@@ -664,7 +660,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in KohaILSDI.ini
      *
@@ -676,16 +672,15 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * or may be ignored.
      *
      * @return string The default pickup location for the patron.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         return $this->defaultLocation;
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details or throws an exception on failure of support
@@ -759,7 +754,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
 
         $rsp = $this->makeRequest($rqString . $dateString);
 
-        if ($rsp->{'code'} == 'IllegalParameter' && $dateString != '') {
+        if ($rsp->{'code'} == 'IllegalParameter' && $dateString !== '') {
             // In older versions of Koha, the date parameters were named differently
             // and even never implemented, so if we got IllegalParameter, we know
             // the Koha version is before 20.05 and could retry without expiry_date
@@ -808,7 +803,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -822,9 +817,8 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $this->debug(
@@ -1039,54 +1033,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * This method queries the ILS for new items
-     *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @return array provides a count and the results of new items.
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        $this->debug("getNewItems called $page|$limit|$daysOld|$fundId");
-
-        $items = [];
-        $daysOld = min(abs(intval($daysOld)), 30);
-        $sql = "SELECT distinct biblionumber as id
-                FROM items
-                WHERE itemlost = 0
-                   and dateaccessioned > DATE_ADD(CURRENT_TIMESTAMP,
-                      INTERVAL -$daysOld day)
-                ORDER BY dateaccessioned DESC";
-
-        $this->debug($sql);
-
-        $itemSqlStmt = $this->getDb()->prepare($sql);
-        $itemSqlStmt->execute();
-
-        $rescount = 0;
-        foreach ($itemSqlStmt->fetchAll() as $rowItem) {
-            $items[] = [
-                'id' => $rowItem['id'],
-            ];
-            $rescount++;
-        }
-
-        $this->debug($rescount . ' fetched');
-
-        $results = array_slice($items, ($page - 1) * $limit, ($page * $limit) - 1);
-        return ['count' => $rescount, 'results' => $results];
-    }
-
-    /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -1096,9 +1043,9 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @param array  $details Item details from getHoldings return array
      *
      * @return string         URL to ILS's OPAC's place hold screen.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+
     /*public function getHoldLink($id, $details)
     {
         // Web link of the ILS for placing hold on the item
@@ -1106,7 +1053,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }*/
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1226,7 +1173,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1266,7 +1213,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1309,7 +1256,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Cancel Hold Details
+     * Get Cancel Hold Details.
      *
      * In order to cancel a hold, Koha requires the patron details and
      * an item ID. This function returns the item id as a string. This
@@ -1319,16 +1266,15 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['reserve_id'];
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold or recall on a particular item. The
      * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
@@ -1365,7 +1311,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -1446,7 +1392,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Patron Loan History
+     * Get Patron Loan History.
      *
      * This is responsible for retrieving all historic loans (i.e. items previously
      * checked out and then returned), for a specific patron.
@@ -1526,7 +1472,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -1586,12 +1532,9 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
-     * In order to renew an item, Koha requires the patron details and
-     * an item id. This function returns the item id as a string which
-     * is then used as submitted form data in checkedOut.php. This
-     * value is then extracted by the RenewMyItems function.
+     * This function returns the details required to renew items.
      *
      * @param array $checkOutDetails An array of item data
      *
@@ -1603,7 +1546,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -1645,7 +1588,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -1654,9 +1597,8 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      *
      * @throws ILSException
      * @return array An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         try {
@@ -1682,7 +1624,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -1699,7 +1641,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -1758,7 +1700,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Departments
+     * Get Departments.
      *
      * @throws ILSException
      * @return array An associative array with key = ID, value = dept. name.
@@ -1784,7 +1726,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * @throws ILSException
      * @return array An associative array with key = ID, value = name.
@@ -1811,7 +1753,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * @throws ILSException
      * @return array An associative array with key = ID, value = name.
@@ -1837,7 +1779,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -1899,7 +1841,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -1907,7 +1849,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @param string $password The patron's password
      *
      * @throws ILSException
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($username, $password)
@@ -1943,7 +1885,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Change Password
+     * Change Password.
      *
      * This method changes patron's password
      *
@@ -2047,9 +1989,8 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      *
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsMethod($method, $params)
     {
         // Loan history is only available if properly configured

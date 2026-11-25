@@ -32,6 +32,9 @@
 
 namespace VuFind\RecordDriver;
 
+use PHPMD\Attribute\SuppressWarnings;
+use PHPMD\Rule\ExcessivePublicCount;
+use VuFind\ServiceManager\Factory\DefaultFactory;
 use VuFindSearch\Command\SearchCommand;
 
 use function count;
@@ -50,9 +53,8 @@ use function is_array;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
- *
- * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
+#[SuppressWarnings(ExcessivePublicCount::class)]
 class SolrDefault extends DefaultRecord implements
     Feature\PreviousUniqueIdInterface,
     Feature\VersionAwareInterface
@@ -102,7 +104,7 @@ class SolrDefault extends DefaultRecord implements
     protected $snippet = false;
 
     /**
-     * Highlighting details
+     * Highlighting details.
      *
      * @var array
      */
@@ -116,29 +118,27 @@ class SolrDefault extends DefaultRecord implements
     protected $containerLinking = false;
 
     /**
-     * Search results plugin manager
+     * Search results plugin manager.
      *
      * @var \VuFindSearch\Service
      */
     protected $searchService = null;
 
     /**
-     * If the explain feature is enabled
+     * If the explain feature is enabled.
      *
      * @var bool
      */
     protected $explainEnabled = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
-     * for built-in defaults)
-     * @param \VuFind\Config\Config $recordConfig   Record-specific configuration
-     * file (omit to use $mainConfig as $recordConfig)
-     * @param \VuFind\Config\Config $searchSettings Search-specific configuration
-     * file
+     * @param ?array $mainConfig     VuFind main configuration (omit for built-in defaults)
+     * @param ?array $recordConfig   Record-specific configuration file (omit to use $mainConfig as $recordConfig)
+     * @param ?array $searchSettings Search-specific configuration file
      */
+    #[DefaultFactory(name: SolrDefaultFactory::class)]
     public function __construct(
         $mainConfig = null,
         $recordConfig = null,
@@ -146,22 +146,14 @@ class SolrDefault extends DefaultRecord implements
     ) {
         $this->setSourceIdentifiers('Solr');
         // Load snippet settings:
-        $this->snippet = !isset($searchSettings->General->snippets)
-            ? false : $searchSettings->General->snippets;
-        if (
-            isset($searchSettings->Snippet_Captions)
-            && count($searchSettings->Snippet_Captions) > 0
-        ) {
-            foreach ($searchSettings->Snippet_Captions as $key => $value) {
-                $this->snippetCaptions[$key] = $value;
-            }
+        $this->snippet = $searchSettings['General']['snippets'] ?? false;
+        foreach ($searchSettings['Snippet_Captions'] ?? [] as $key => $value) {
+            $this->snippetCaptions[$key] = $value;
         }
         // Container-contents linking
-        $this->containerLinking
-            = !isset($mainConfig->Hierarchy->simpleContainerLinks)
-            ? false : $mainConfig->Hierarchy->simpleContainerLinks;
+        $this->containerLinking = $mainConfig['Hierarchy']['simpleContainerLinks'] ?? false;
 
-        $this->explainEnabled = $searchSettings->Explain->enabled ?? false;
+        $this->explainEnabled = $searchSettings['Explain']['enabled'] ?? false;
 
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
     }
@@ -284,7 +276,7 @@ class SolrDefault extends DefaultRecord implements
 
     /**
      * Attach a Search Results Plugin Manager connection and related logic to
-     * the driver
+     * the driver.
      *
      * @param \VuFindSearch\Service $service Search Service Manager
      *
@@ -296,7 +288,7 @@ class SolrDefault extends DefaultRecord implements
     }
 
     /**
-     * Get the number of child records belonging to this record
+     * Get the number of child records belonging to this record.
      *
      * @return int Number of records
      */
@@ -336,7 +328,7 @@ class SolrDefault extends DefaultRecord implements
     }
 
     /**
-     * Get work identification keys
+     * Get work identification keys.
      *
      * @return array
      */

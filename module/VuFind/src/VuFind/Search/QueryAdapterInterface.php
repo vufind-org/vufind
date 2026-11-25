@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search query adapter interface
+ * Search query adapter interface.
  *
  * PHP version 8
  *
@@ -31,14 +31,14 @@
 
 namespace VuFind\Search;
 
-use Laminas\Stdlib\Parameters;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+use VuFindSearch\Query\QueryInterface;
 use VuFindSearch\Query\WorkKeysQuery;
 
 /**
- * Search query adapter interface
+ * Search query adapter interface.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -73,12 +73,12 @@ interface QueryAdapterInterface
      * Convert user request parameters into a query (currently for advanced searches
      * and work keys searches only).
      *
-     * @param Parameters $request        User-submitted parameters
-     * @param string     $defaultHandler Default search handler
+     * @param array  $request        User-submitted parameters
+     * @param string $defaultHandler Default search handler
      *
      * @return Query|QueryGroup|WorkKeysQuery
      */
-    public function fromRequest(Parameters $request, $defaultHandler);
+    public function fromRequest(array $request, string $defaultHandler): QueryInterface;
 
     /**
      * Convert a Query or QueryGroup into minified search arguments.

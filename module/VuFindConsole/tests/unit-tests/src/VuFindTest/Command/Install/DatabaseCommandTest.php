@@ -67,11 +67,11 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
         $command = new DatabaseCommand($builder);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newName' => 'name', 'newUser' => 'user', 'newPass' => 'pass']);
-        $this->assertEquals(
+        $this->assertSame(
             "Successfully created database.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -97,10 +97,10 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
         $command = new DatabaseCommand($builder);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newName' => 'name', 'newUser' => 'user', 'newPass' => 'pass', '--sql-only' => true]);
-        $this->assertEquals(
+        $this->assertSame(
             "foo\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 }

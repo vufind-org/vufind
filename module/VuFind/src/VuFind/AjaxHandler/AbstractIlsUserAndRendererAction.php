@@ -29,12 +29,12 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Connection;
 use VuFind\Session\Settings as SessionSettings;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Abstract base class for handlers depending on the ILS and a logged-in user.
@@ -50,21 +50,21 @@ abstract class AbstractIlsUserAndRendererAction extends AbstractBase implements 
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param SessionSettings      $ss               Session settings
-     * @param Connection           $ils              ILS connection
-     * @param ILSAuthenticator     $ilsAuthenticator ILS authenticator
-     * @param ?UserEntityInterface $user             Logged in user (or null)
-     * @param PhpRenderer          $renderer         View renderer
+     * @param SessionSettings           $ss               Session settings
+     * @param Connection                $ils              ILS connection
+     * @param ILSAuthenticator          $ilsAuthenticator ILS authenticator
+     * @param ?UserEntityInterface      $user             Logged in user (or null)
+     * @param TemplateRendererInterface $renderer         Template renderer
      */
     public function __construct(
         SessionSettings $ss,
         protected Connection $ils,
         protected ILSAuthenticator $ilsAuthenticator,
         protected ?UserEntityInterface $user,
-        protected PhpRenderer $renderer
+        protected TemplateRendererInterface $renderer
     ) {
-        $this->sessionSettings = $ss;
+        parent::__construct($ss);
     }
 }

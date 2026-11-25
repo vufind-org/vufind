@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cookie Container Test Class
+ * Cookie Container Test Class.
  *
  * PHP version 8
  *
@@ -31,10 +31,8 @@ namespace VuFindTest\Cookie;
 
 use VuFind\Cookie\Container;
 
-use function in_array;
-
 /**
- * Cookie Container Test Class
+ * Cookie Container Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +43,7 @@ use function in_array;
 class ContainerTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Cookie container
+     * Cookie container.
      *
      * @var Container
      */
@@ -74,7 +72,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getters and setters
+     * Test getters and setters.
      *
      * @return void
      */
@@ -82,7 +80,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
     {
         // Test get/set of single value:
         $this->container->value = 'tmp';
-        $this->assertEquals('tmp', $this->container->value);
+        $this->assertSame('tmp', $this->container->value);
 
         // Test get/set of array:
         $this->container->testArray = [1, 2];
@@ -91,12 +89,12 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         // Test getAllValues:
         $all = $this->container->getAllValues();
         $this->assertCount(2, $all);
-        $this->assertTrue(in_array('value', array_keys($all)));
-        $this->assertTrue(in_array('testArray', array_keys($all)));
+        $this->assertContains('value', array_keys($all));
+        $this->assertContains('testArray', array_keys($all));
     }
 
     /**
-     * Test isset/unset
+     * Test isset/unset.
      *
      * @return void
      */

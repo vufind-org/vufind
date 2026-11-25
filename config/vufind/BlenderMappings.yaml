@@ -322,7 +322,7 @@ Sorting:
       Mappings:
         EDS: relevance
         Primo: relevance
-        Solr: relevance
+        Solr: relevance,id asc
     title:
       Mappings:
         Primo: title

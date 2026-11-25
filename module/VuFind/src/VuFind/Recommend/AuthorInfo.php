@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AuthorInfo Recommendations Module
+ * AuthorInfo Recommendations Module.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFindSearch\Query\Query;
 use function count;
 
 /**
- * AuthorInfo Recommendations Module
+ * AuthorInfo Recommendations Module.
  *
  * This class gathers information from the Wikipedia API and publishes the results
  * to a module at the top of an author's results page
@@ -57,32 +57,18 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * HTTP client
-     *
-     * @var \Laminas\Http\Client
-     */
-    protected $client;
-
-    /**
-     * Wikipedia client
+     * Wikipedia client.
      *
      * @var Wikipedia
      */
     protected $wikipedia;
 
     /**
-     * Saved search results
+     * Saved search results.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $searchObject;
-
-    /**
-     * Results plugin manager
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
 
     /**
      * Should we use VIAF for authorized names?
@@ -92,30 +78,19 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     protected $useViaf = false;
 
     /**
-     * Sources of author data that may be used (comma-delimited string; currently
-     * only 'wikipedia' is supported).
+     * Constructor.
      *
-     * @var string
-     */
-    protected $sources;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
-     * @param \Laminas\Http\Client                 $client  HTTP client
-     * @param string                               $sources Source identifiers
+     * @param \VuFind\Search\Results\PluginManager $resultsManager Results plugin manager
+     * @param \Laminas\Http\Client                 $client         HTTP client
+     * @param string                               $sources        Source identifiers
      * (currently, only 'wikipedia' is supported)
      */
     public function __construct(
-        \VuFind\Search\Results\PluginManager $results,
-        \Laminas\Http\Client $client,
-        $sources = 'wikipedia'
+        protected \VuFind\Search\Results\PluginManager $resultsManager,
+        protected \Laminas\Http\Client $client,
+        protected $sources = 'wikipedia'
     ) {
-        $this->resultsManager = $results;
-        $this->client = $client;
         $this->wikipedia = new Wikipedia($client);
-        $this->sources = $sources;
     }
 
     /**
@@ -137,7 +112,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * Set a translator
+     * Set a translator.
      *
      * @param TranslatorInterface $translator Translator
      *
@@ -159,12 +134,12 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // No action needed here.
     }
@@ -184,7 +159,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * Returns info from Wikipedia to the view
+     * Returns info from Wikipedia to the view.
      *
      * @reference _parseWikipedia : Home.php (VuFind 1)
      * @refauthor Rushikesh Katikar <rushikesh.katikar@gmail.com>
@@ -283,7 +258,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * Takes the search term and extracts a normal name from it
+     * Takes the search term and extracts a normal name from it.
      *
      * @return string
      */

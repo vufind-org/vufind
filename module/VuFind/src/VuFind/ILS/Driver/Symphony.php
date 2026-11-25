@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Symphony Web Services (symws) ILS Driver
+ * Symphony Web Services (symws) ILS Driver.
  *
  * PHP version 8
  *
@@ -43,7 +43,7 @@ use function in_array;
 use function is_array;
 
 /**
- * Symphony Web Services (symws) ILS Driver
+ * Symphony Web Services (symws) ILS Driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -57,35 +57,35 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Cache for policy information
+     * Cache for policy information.
      *
      * @var object
      */
     protected $policyCache = false;
 
     /**
-     * Policy information
+     * Policy information.
      *
      * @var array
      */
     protected $policies;
 
     /**
-     * Cache manager
+     * Cache manager.
      *
      * @var CacheManager
      */
     protected $cacheManager;
 
     /**
-     * Record loader
+     * Record loader.
      *
      * @var Loader
      */
     protected $recordLoader;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Loader        $loader       Record loader
      * @param ?CacheManager $cacheManager Cache manager (optional)
@@ -386,7 +386,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Statuses from 999 Holdings Marc Tag
+     * Get Statuses from 999 Holdings Marc Tag.
      *
      * Protected support method for parsing status info from the marc record
      *
@@ -451,7 +451,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Look up title info
+     * Look up title info.
      *
      * Protected support method for parsing the call info into items.
      *
@@ -469,7 +469,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         // the use of something other than catkeys as record IDs).
         $invalid = preg_grep('/^[1-9][0-9]*$/', $ids, PREG_GREP_INVERT);
         if (count($invalid) > 0) {
-            $titleIDs = count($invalid) == 1 ? 'titleID' : 'titleIDs';
+            $titleIDs = count($invalid) === 1 ? 'titleID' : 'titleIDs';
             $msg = "Invalid $titleIDs: " . implode(', ', $invalid);
             throw new ILSException($msg);
         }
@@ -497,7 +497,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
         // If only one library is being exclusively included,
         // filtering can be done within Web Services.
-        if (count($this->config['LibraryFilter']['include_only']) == 1) {
+        if (count($this->config['LibraryFilter']['include_only']) === 1) {
             $params['libraryFilter']
                 = $this->config['LibraryFilter']['include_only'][0];
         }
@@ -527,7 +527,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Parse Call Info
+     * Parse Call Info.
      *
      * Protected support method for parsing the call info into items.
      *
@@ -623,7 +623,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                      * it is insufficient to provide just the location
                      * description as the "location."
                      */
-                    if (count($this->config['LibraryFilter']['include_only']) != 1) {
+                    if (count($this->config['LibraryFilter']['include_only']) !== 1) {
                         $location = "$library - $location";
                     }
                 }
@@ -715,7 +715,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Parse Bound With Link Info
+     * Parse Bound With Link Info.
      *
      * Protected support method for parsing bound with link information.
      *
@@ -776,7 +776,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Parse Title Order Info
+     * Parse Title Order Info.
      *
      * Protected support method for parsing order info.
      *
@@ -899,7 +899,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Live Statuses
+     * Get Live Statuses.
      *
      * Protected support method for retrieving a list of item statuses from symws.
      *
@@ -1005,7 +1005,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -1023,7 +1023,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -1043,7 +1043,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -1056,16 +1056,15 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -1081,7 +1080,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -1089,7 +1088,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @param string $password The patron password
      *
      * @throws ILSException
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($username, $password)
@@ -1170,7 +1169,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -1212,9 +1211,9 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             $zip         = $addressInfo[2]->addressValue;
             $phone       = $addressInfo[3]->addressValue;
 
-            if (strcmp($userProfileGroupField, 'GROUP_ID') == 0) {
+            if (strcmp($userProfileGroupField, 'GROUP_ID') === 0) {
                 $group = $result->patronInfo->groupID;
-            } elseif (strcmp($userProfileGroupField, 'USER_PROFILE_ID') == 0) {
+            } elseif (strcmp($userProfileGroupField, 'USER_PROFILE_ID') === 0) {
                 $group = $this->makeRequest(
                     'security',
                     'lookupSessionInfo',
@@ -1224,9 +1223,9 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                         'password' => $patron['cat_password'],
                     ]
                 )->userProfileID;
-            } elseif (strcmp($userProfileGroupField, 'PATRON_LIBRARY_ID') == 0) {
+            } elseif (strcmp($userProfileGroupField, 'PATRON_LIBRARY_ID') === 0) {
                 $group = $result->patronInfo->patronLibraryID;
-            } elseif (strcmp($userProfileGroupField, 'DEPARTMENT') == 0) {
+            } elseif (strcmp($userProfileGroupField, 'DEPARTMENT') === 0) {
                 $group = $result->patronInfo->department;
             } else {
                 $group = null;
@@ -1250,7 +1249,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -1311,7 +1310,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1368,7 +1367,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1418,7 +1417,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Cancel Hold Form
+     * Get Cancel Hold Form.
      *
      * Supplies the form details required to cancel a hold
      *
@@ -1426,16 +1425,15 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @param array $patron      Patron information from patronLogin
      *
      * @return string  Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['reqnum'];
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold on a particular item
      *
@@ -1490,22 +1488,17 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function getConfig(string $function, array $params = []): array
     {
-        $functionConfig = $this->config[$function] ?? false;
-        return $functionConfig;
+        return $this->config[$function] ?? [];
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
-     * In order to renew an item, Symphony requires the patron details and an item
-     * id. This function returns the item id as a string which is then used
-     * as submitted form data in checkedOut.php. This value is then extracted by
-     * the RenewMyItems function.
+     * This function returns the details required to renew items.
      *
      * @param array $checkOutDetails An array of item data
      *
@@ -1518,7 +1511,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -1570,7 +1563,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item
      *
@@ -1631,7 +1624,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Policy List
+     * Get Policy List.
      *
      * Protected support method for getting a list of policies.
      *
@@ -1678,7 +1671,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible get a list of valid library locations for holds / recall
      * retrieval
@@ -1695,9 +1688,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         $libraries = [];
@@ -1713,7 +1705,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in Symphony.ini
      *
@@ -1725,9 +1717,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         if (isset($patron['library'])) {

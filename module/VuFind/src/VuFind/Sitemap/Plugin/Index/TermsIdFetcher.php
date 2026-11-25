@@ -46,7 +46,7 @@ use function count;
 class TermsIdFetcher extends AbstractIdFetcher
 {
     /**
-     * Get the initial offset to seed the search process
+     * Get the initial offset to seed the search process.
      *
      * @return string
      */

@@ -62,36 +62,34 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testRateLimiter
+     * Data provider for testRateLimiter.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function rateLimiterDataProvider(): array
+    public static function rateLimiterDataProvider(): \Iterator
     {
         $searchPath = '/Search/Results';
         $searchQuery = ['lookfor' => 'foobar'];
-        return [
-            'search by bot' => [
-                true,
-                true,
-                2,
-                $searchPath,
-                $searchQuery,
-            ],
-            'search by user' => [
-                false,
-                false,
-                5,
-                $searchPath,
-                $searchQuery,
-            ],
-            'front page (unlimited)' => [
-                false,
-                false,
-                null,
-                '',
-                [],
-            ],
+        yield 'search by bot' => [
+            true,
+            true,
+            2,
+            $searchPath,
+            $searchQuery,
+        ];
+        yield 'search by user' => [
+            false,
+            false,
+            5,
+            $searchPath,
+            $searchQuery,
+        ];
+        yield 'front page (unlimited)' => [
+            false,
+            false,
+            null,
+            '',
+            [],
         ];
     }
 
@@ -128,7 +126,7 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get RateLimiter.yaml overrides
+     * Get RateLimiter.yaml overrides.
      *
      * @param bool $addHeaders Add X-RateLimit-* headers?
      *
@@ -185,7 +183,7 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Make a request and check the result
+     * Make a request and check the result.
      *
      * @param HttpService $http       HTTP Service
      * @param string      $path       Request URL path
@@ -217,7 +215,7 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
             $headerLimit = $headers->get('X-RateLimit-Limit')->getFieldValue();
             $this->assertEquals($limit, $headerLimit);
             if (null !== $current) {
-                $this->assertEquals($current, $limit - $headerRemaining);
+                $this->assertSame($current, $limit - $headerRemaining);
             }
         }
     }

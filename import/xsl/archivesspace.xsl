@@ -147,7 +147,7 @@
                         <xsl:value-of select="php:function('VuFind::extractBestDateOrRange', dc:date)"/>
                     </field>
                     <field name="publishDateRange">
-                        <xsl:value-of select="php:function('VuFind::extractBestDateOrRange', dc:date)"/>
+                        <xsl:value-of select="php:function('VuFind::extractBestDateOrRange', dc:date, boolean('true'))"/>
                     </field>
                     <field name="publishDateSort">
                         <xsl:value-of select="php:function('VuFind::extractEarliestYear', dc:date)"/>

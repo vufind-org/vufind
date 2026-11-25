@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ExpandFacets Module Controller
+ * ExpandFacets Module Controller.
  *
  * PHP version 8
  *
@@ -29,8 +29,10 @@
 
 namespace VuFind\Recommend;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
- * Recommendation class to expand recommendation interfaces
+ * Recommendation class to expand recommendation interfaces.
  *
  * @category VuFind
  * @package  Recommendations
@@ -41,28 +43,28 @@ namespace VuFind\Recommend;
 class ExpandFacets implements RecommendInterface
 {
     /**
-     * Facets to display
+     * Facets to display.
      *
      * @var array
      */
     protected $facets;
 
     /**
-     * Settings from configuration
+     * Settings from configuration.
      *
      * @var string
      */
     protected $settings;
 
     /**
-     * Search results
+     * Search results.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $searchObject;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      * @param \VuFind\Search\Solr\Results           $emptyResults  Empty result set (used
@@ -70,6 +72,7 @@ class ExpandFacets implements RecommendInterface
      */
     public function __construct(
         protected \VuFind\Config\ConfigManagerInterface $configManager,
+        #[Autowire(container: \VuFind\Search\Results\PluginManager::class, service: 'Solr')]
         protected \VuFind\Search\Solr\Results $emptyResults
     ) {
     }
@@ -106,12 +109,12 @@ class ExpandFacets implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // Turn on side facets in the search results:
         foreach ($this->facets as $name => $desc) {
@@ -134,7 +137,7 @@ class ExpandFacets implements RecommendInterface
     }
 
     /**
-     * Get the facet data
+     * Get the facet data.
      *
      * @return array
      */

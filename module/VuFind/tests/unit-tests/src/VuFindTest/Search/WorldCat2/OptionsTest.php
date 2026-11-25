@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WorldCat2 Search Object Options Test
+ * WorldCat2 Search Object Options Test.
  *
  * PHP version 8
  *
@@ -29,12 +29,11 @@
 
 namespace VuFindTest\Search\WorldCat2;
 
-use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\WorldCat2\Options;
 
 /**
- * WorldCat2 Search Object Options Test
+ * WorldCat2 Search Object Options Test.
  *
  * @category VuFind
  * @package  Tests
@@ -52,7 +51,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     public function testGetTermsLimitWithConfiguration(): void
     {
         $config = ['General' => ['terms_limit' => 5]];
-        $this->assertEquals(5, $this->getOptions($config)->getQueryTermsLimit());
+        $this->assertSame(5, $this->getOptions($config)->getQueryTermsLimit());
     }
 
     /**
@@ -62,7 +61,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetTermsLimitWithDefault(): void
     {
-        $this->assertEquals(30, $this->getOptions()->getQueryTermsLimit());
+        $this->assertSame(30, $this->getOptions()->getQueryTermsLimit());
     }
 
     /**
@@ -72,7 +71,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchAction(): void
     {
-        $this->assertEquals('worldcat2-search', $this->getOptions()->getSearchAction());
+        $this->assertSame('worldcat2-search', $this->getOptions()->getSearchAction());
     }
 
     /**
@@ -82,11 +81,11 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetAdvancedSearchAction(): void
     {
-        $this->assertEquals('worldcat2-advanced', $this->getOptions()->getAdvancedSearchAction());
+        $this->assertSame('worldcat2-advanced', $this->getOptions()->getAdvancedSearchAction());
     }
 
     /**
-     * Get Params object
+     * Get Params object.
      *
      * @param array $config Configuration to get from config manager
      *
@@ -95,8 +94,6 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     protected function getOptions(array $config = []): Options
     {
         $mockConfigManager = $this->createMock(ConfigManagerInterface::class);
-        $configObj = new Config($config);
-        $mockConfigManager->method('getConfigObject')->willReturn($configObj);
         $mockConfigManager->method('getConfigArray')->willReturn($config);
         return new Options($mockConfigManager);
     }

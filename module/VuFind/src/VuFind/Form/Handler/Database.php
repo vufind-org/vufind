@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Database
+ * Class Database.
  *
  * PHP version 8
  *
@@ -32,14 +32,18 @@ declare(strict_types=1);
 
 namespace VuFind\Form\Handler;
 
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
+use VuFind\Application\UriRegistry;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\FeedbackServiceInterface;
+use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\UserService;
 use VuFind\Log\LoggerAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Class Database
+ * Class Database.
  *
  * @category VuFind
  * @package  Form
@@ -52,34 +56,37 @@ class Database implements HandlerInterface, LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param FeedbackServiceInterface $feedbackService Feedback database service
      * @param UserService              $userService     User database service
      * @param string                   $baseUrl         Site base url
      */
     public function __construct(
+        #[Autowire(container: DbServicePluginManager::class)]
         protected FeedbackServiceInterface $feedbackService,
         protected UserService $userService,
-        protected string $baseUrl
+        #[Autowire(container: UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        protected string $baseUrl,
     ) {
     }
 
     /**
      * Get data from submitted form and process them.
      *
-     * @param \VuFind\Form\Form                     $form   Submitted form
-     * @param \Laminas\Mvc\Controller\Plugin\Params $params Request params
-     * @param ?UserEntityInterface                  $user   Authenticated user
+     * @param \VuFind\Form\Form      $form    Submitted form
+     * @param ServerRequestInterface $request Request
+     * @param ?UserEntityInterface   $user    Authenticated user
      *
      * @return bool
      */
     public function handle(
         \VuFind\Form\Form $form,
-        \Laminas\Mvc\Controller\Plugin\Params $params,
+        ServerRequestInterface $request,
         ?UserEntityInterface $user = null
     ): bool {
-        $fields = $form->mapRequestParamsToFieldValues($params->fromPost());
+        $postParams = $request->getParsedBody();
+        $fields = $form->mapRequestParamsToFieldValues($postParams);
         $fields = array_column($fields, 'value', 'name');
         $formData = $fields;
         unset($formData['message']);

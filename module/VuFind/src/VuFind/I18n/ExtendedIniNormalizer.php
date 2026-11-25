@@ -67,7 +67,7 @@ class ExtendedIniNormalizer
         $handle = opendir($dir);
         while ($file = readdir($handle)) {
             $full = $dir . '/' . $file;
-            if ($file != '.' && $file != '..' && is_dir($full)) {
+            if ($file !== '.' && $file !== '..' && is_dir($full)) {
                 $this->normalizeDirectory($full, $filter);
             } elseif ($this->filenameMatchesFilter($file, $filter)) {
                 $this->normalizeFile($full);
@@ -206,7 +206,7 @@ class ExtendedIniNormalizer
     }
 
     /**
-     * Check if the given filename matches the filter pattern
+     * Check if the given filename matches the filter pattern.
      *
      * @param string $filename Filename
      * @param string $filter   Filter

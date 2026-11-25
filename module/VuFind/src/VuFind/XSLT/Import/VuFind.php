@@ -50,14 +50,14 @@ use function strlen;
 class VuFind
 {
     /**
-     * ISO8601 date format string
+     * ISO8601 date format string.
      *
      * @var string
      */
     protected const ISO8601_FORMAT = 'Y-m-d\TH:i:s\Z';
 
     /**
-     * Service locator
+     * Service locator.
      *
      * @var ServiceLocatorInterface
      */
@@ -91,11 +91,24 @@ class VuFind
      *
      * @param string $config Configuration name
      *
-     * @return \VuFind\Config\Config
+     * @return     \VuFind\Config\Config
+     * @deprecated Use getConfigArray()
      */
     public static function getConfig($config = 'config')
     {
         return static::$serviceLocator->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($config);
+    }
+
+    /**
+     * Get a configuration file.
+     *
+     * @param string $config Configuration name
+     *
+     * @return array
+     */
+    public static function getConfigArray($config = 'config')
+    {
+        return static::$serviceLocator->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray($config);
     }
 
     /**
@@ -152,26 +165,26 @@ class VuFind
     }
 
     /**
-     * Read parser method from fulltext.ini
+     * Read parser method from fulltext.ini.
      *
      * @return string Name of parser to use (i.e. Aperture or Tika)
      */
     public static function getParser()
     {
-        $settings = static::getConfig('fulltext');
+        $settings = static::getConfigArray('fulltext');
 
         // Is user preference explicitly set?
-        if (isset($settings->General->parser)) {
-            return $settings->General->parser;
+        if (isset($settings['General']['parser'])) {
+            return $settings['General']['parser'];
         }
 
         // Is Aperture enabled?
-        if (isset($settings->Aperture->webcrawler)) {
+        if (isset($settings['Aperture']['webcrawler'])) {
             return 'Aperture';
         }
 
         // Is Tika enabled?
-        if (isset($settings->Tika->path)) {
+        if (isset($settings['Tika']['path'])) {
             return 'Tika';
         }
 
@@ -180,7 +193,7 @@ class VuFind
     }
 
     /**
-     * Call parsing method based on parser setting in fulltext.ini
+     * Call parsing method based on parser setting in fulltext.ini.
      *
      * @param string $url URL to harvest
      *
@@ -201,7 +214,7 @@ class VuFind
     }
 
     /**
-     * Generic method for building Aperture Command
+     * Generic method for building Aperture Command.
      *
      * @param string $input  name of input file | url
      * @param string $output name of output file
@@ -215,11 +228,11 @@ class VuFind
         $method = 'webcrawler'
     ) {
         // get the path to our sh/bat from the config
-        $settings = static::getConfig('fulltext');
-        if (!isset($settings->Aperture->webcrawler)) {
+        $settings = static::getConfigArray('fulltext');
+        if (!isset($settings['Aperture']['webcrawler'])) {
             return '';
         }
-        $cmd = $settings->Aperture->webcrawler;
+        $cmd = $settings['Aperture']['webcrawler'];
 
         // if we're using another method - substitute that into the path
         $cmd = ($method != 'webcrawler')
@@ -285,7 +298,7 @@ class VuFind
     }
 
     /**
-     * Generic method for building Tika command
+     * Generic method for building Tika command.
      *
      * @param string $input  url | fileresource
      * @param string $output name of output file
@@ -295,11 +308,11 @@ class VuFind
      */
     public static function getTikaCommand($input, $output, $arg)
     {
-        $settings = static::getConfig('fulltext');
-        if (!isset($settings->Tika->path)) {
-            return '';
+        $settings = static::getConfigArray('fulltext');
+        if (!isset($settings['Tika']['path'])) {
+            return [];
         }
-        $tika = $settings->Tika->path;
+        $tika = $settings['Tika']['path'];
 
         // We need to use this method to get the output from STDOUT into the file
         $descriptorspec = [
@@ -330,7 +343,9 @@ class VuFind
 
         // Determine the base Tika command and execute
         $tikaCommand = static::getTikaCommand($url, $outputFile, $arg);
-        proc_close(proc_open($tikaCommand[0], $tikaCommand[1], $tikaCommand[2]));
+        if ($tikaCommand) {
+            proc_close(proc_open(...$tikaCommand));
+        }
 
         // If we failed to process the file, give up now:
         if (!file_exists($outputFile)) {
@@ -615,18 +630,30 @@ class VuFind
      * Best is defined as the first value to consist of only YYYY or YYYY-ZZZZ,
      * with no other text. If no "best" match is found, the first value is used.
      *
-     * @param array $input DOM elements to search.
+     * @param array $input  DOM elements to search.
+     * @param bool  $strict Only return valid Solr date range values.
      *
      * @return string
      */
-    public static function extractBestDateOrRange($input)
+    public static function extractBestDateOrRange($input, $strict = false)
     {
+        $fallback = null;
         foreach ($input as $current) {
             if (preg_match('/^\d{4}(-\d{4})?$/', $current->textContent)) {
-                return $current->textContent;
+                return ($strict && str_contains($current->textContent, '-'))
+                    ? '[' . str_replace('-', ' TO ', $current->textContent) . ']'
+                    : $current->textContent;
+            } elseif (null === $fallback) {
+                if ($strict) {
+                    if (preg_match('/\d{4}/', $current->textContent, $matches)) {
+                        $fallback = $matches[0];
+                    }
+                } else {
+                    $fallback = $current->textContent;
+                }
             }
         }
-        return reset($input)->textContent;
+        return $fallback ?? '';
     }
 
     /**
@@ -689,7 +716,7 @@ class VuFind
     }
 
     /**
-     * Invert "Firstname Lastname" authors into "Lastname, Firstname."
+     * Invert "Firstname Lastname" authors into "Lastname, Firstname.".
      *
      * @param string $rawName Raw name
      *

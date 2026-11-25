@@ -29,6 +29,11 @@
 
 namespace VuFindTheme\View\Helper;
 
+use Laminas\View\Helper\HeadLink;
+use Laminas\View\Helper\HeadMeta;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFindTheme\ResourceContainer;
+
 use function in_array;
 use function is_array;
 
@@ -41,23 +46,28 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
+class SetupThemeResources
 {
     /**
-     * Theme resource container
+     * Constructor.
      *
-     * @var \VuFindTheme\ResourceContainer
+     * @param ResourceContainer $container    Theme resource container
+     * @param HeadMeta          $headMeta     HeadMeta helper
+     * @param AssetManager      $assetManager HeadMeta helper
+     * @param HeadLink          $headLink     HeadLink helper
+     * @param ImageLink         $imageLink    ImageLink helper
      */
-    protected $container;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFindTheme\ResourceContainer $container Theme resource container
-     */
-    public function __construct(\VuFindTheme\ResourceContainer $container)
-    {
-        $this->container = $container;
+    public function __construct(
+        protected \VuFindTheme\ResourceContainer $container,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected HeadMeta $headMeta,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected AssetManager $assetManager,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected HeadLink $headLink,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected ImageLink $imageLink,
+    ) {
     }
 
     /**
@@ -86,8 +96,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
     protected function addMetaTags()
     {
         // Set up encoding:
-        $headMeta = $this->getView()->plugin('headMeta');
-        $headMeta()->prependHttpEquiv(
+        ($this->headMeta)->prependHttpEquiv(
             'Content-Type',
             'text/html; charset=' . $this->container->getEncoding()
         );
@@ -95,7 +104,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
         // Set up generator:
         $generator = $this->container->getGenerator();
         if (!empty($generator)) {
-            $headMeta()->appendName('Generator', $generator);
+            ($this->headMeta)->appendName('Generator', $generator);
         }
     }
 
@@ -108,13 +117,10 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
      */
     protected function addLinks(bool $partial = false)
     {
-        // Convenient shortcut to view helper:
-        $assetManager = $this->getView()->plugin('assetManager');
-
         // Load CSS (make sure we prepend them in the appropriate order; theme
         // resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getCss()) as $current) {
-            $assetManager->forcePrependStyleLink(
+            $this->assetManager->forcePrependStyleLink(
                 $current['file'],
                 empty($current['media']) ? 'all' : $current['media'],
                 $current['conditional'] ?? '',
@@ -128,20 +134,18 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
         // a link element for each.
         // Skip favicons in partial mode because they are illegal outside of <head>.
         if (!$partial && ($favicon = $this->container->getFavicon())) {
-            $headLink = $this->getView()->plugin('headLink');
-            $imageLink = $this->getView()->plugin('imageLink');
             if (is_array($favicon)) {
                 foreach ($favicon as $attrs) {
                     if (isset($attrs['href'])) {
-                        $attrs['href'] = $imageLink($attrs['href']);
+                        $attrs['href'] = ($this->imageLink)($attrs['href']);
                     }
                     $attrs['rel'] ??= 'icon';
-                    $headLink($attrs);
+                    ($this->headLink)($attrs);
                 }
             } else {
-                $headLink(
+                ($this->headLink)(
                     [
-                        'href' => $imageLink($favicon),
+                        'href' => ($this->imageLink)($favicon),
                         'type' => 'image/x-icon',
                         'rel' => 'icon',
                     ]
@@ -170,13 +174,11 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
                     . $current['file'] . ': ' . $position . '.'
                 );
             }
-            $this->getView()
-                ->plugin('assetManager')
-                ->forcePrependScriptLink(
-                    $current['file'],
-                    $current['attributes'] ?? [],
-                    position: $position
-                );
+            $this->assetManager->forcePrependScriptLink(
+                $current['file'],
+                $current['attributes'] ?? [],
+                position: $position
+            );
         }
     }
 }

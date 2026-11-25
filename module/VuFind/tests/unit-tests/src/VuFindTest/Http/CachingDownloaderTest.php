@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CachingDownloader Test Class
+ * CachingDownloader Test Class.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\Http\GuzzleService;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * CachingDownloader Test Class
+ * CachingDownloader Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -50,20 +50,18 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Data provider for testDownload
+     * Data provider for testDownload.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function downloadProvider(): array
+    public static function downloadProvider(): \Iterator
     {
-        return [
-            'cache enabled' => [true],
-            'cache disabled' => [false],
-        ];
+        yield 'cache enabled' => [true];
+        yield 'cache disabled' => [false];
     }
 
     /**
-     * Test a download
+     * Test a download.
      *
      * @param bool $cacheEnabled Is the cache enabled?
      *
@@ -82,7 +80,7 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
         $service = $this->createMock(GuzzleService::class);
 
         $stream = $this->createMock(StreamInterface::class);
-        $stream->expects($this->any())->method('getContents')->willReturn($testBody);
+        $stream->method('getContents')->willReturn($testBody);
         $stream->expects($this->once())->method('rewind');
 
         $response = $this->createMock(ResponseInterface::class);
@@ -135,7 +133,7 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test exception handling
+     * Test exception handling.
      *
      * @return void
      */

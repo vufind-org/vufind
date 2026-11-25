@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Office 365 Log Handler Test Class
+ * Office 365 Log Handler Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Monolog\LogRecord;
 use VuFind\Log\Handler\Office365Handler;
 
 /**
- * Office 365 Log Handler Test Class
+ * Office 365 Log Handler Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ use VuFind\Log\Handler\Office365Handler;
 class Office365Test extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test handler functionality
+     * Test handler functionality.
      *
      * @return void
      */
@@ -67,16 +67,15 @@ class Office365Test extends \PHPUnit\Framework\TestCase
             extra: []
         );
 
-        $client = $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()->getMock();
+        $client = $this->createMock(Client::class);
         $client->expects($this->once())->method('setUri')
-            ->with($this->equalTo($fakeUri));
+            ->with($fakeUri);
         $client->expects($this->once())->method('setMethod')
-            ->with($this->equalTo('POST'));
+            ->with('POST');
         $client->expects($this->once())->method('setEncType')
-            ->with($this->equalTo('application/json'));
+            ->with('application/json');
         $client->expects($this->once())->method('setRawBody')
-            ->with($this->equalTo($expectedBody));
+            ->with($expectedBody);
         $client->expects($this->once())->method('send');
 
         $handler = new Office365Handler($fakeUri, $client, $options);

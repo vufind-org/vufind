@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -68,7 +68,7 @@ class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $sessionFactory = function ($namespace) use ($container) {
-            $manager = $container->get(\Laminas\Session\SessionManager::class);
+            $manager = $container->get(\Laminas\Session\ManagerInterface::class);
             return new \Laminas\Session\Container("KohaRest_$namespace", $manager);
         };
         $currencyFormatter

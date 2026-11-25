@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Libraryh3lp Recommendations Module
+ * Libraryh3lp Recommendations Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Recommend;
 
 /**
- * Libraryh3lp Recommendations Module
+ * Libraryh3lp Recommendations Module.
  *
  * This class provides access to the Libraryh3lp chat service.
  *
@@ -45,14 +45,14 @@ namespace VuFind\Recommend;
 class Libraryh3lp implements RecommendInterface
 {
     /**
-     * Chat identifier
+     * Chat identifier.
      *
      * @var string
      */
     protected $chatId;
 
     /**
-     * Widget skin number
+     * Widget skin number.
      *
      * @var int
      */
@@ -82,12 +82,12 @@ class Libraryh3lp implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
     }
 
@@ -105,7 +105,7 @@ class Libraryh3lp implements RecommendInterface
     }
 
     /**
-     * Get queue name
+     * Get queue name.
      *
      * @return string
      */
@@ -115,7 +115,7 @@ class Libraryh3lp implements RecommendInterface
     }
 
     /**
-     * Get skin number
+     * Get skin number.
      *
      * @return int
      */

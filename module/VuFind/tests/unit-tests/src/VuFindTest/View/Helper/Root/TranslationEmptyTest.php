@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TranslationEmpty view helper Test Class
+ * TranslationEmpty view helper Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\View\Helper\Root\TranslationEmpty;
 use VuFindTest\Feature\TranslatorTrait;
 
 /**
- * TranslationEmpty view helper Test Class
+ * TranslationEmpty view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ class TranslationEmptyTest extends \PHPUnit\Framework\TestCase
     use TranslatorTrait;
 
     /**
-     * Test TranslationEmpty
+     * Test TranslationEmpty.
      *
      * @return void
      */

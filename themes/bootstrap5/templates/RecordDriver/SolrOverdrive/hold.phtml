@@ -157,7 +157,7 @@
                 <label id="select-suspension-label"><?=$this->transEsc('od_susp_hold_confirm')?></label>
                 <select class="form-select" name="suspendValue" id="select-suspension" data-open="false">
                     <option value="0" selected=""><?=$this->transEsc('od_susp_asap')?></option>
-                    <?php $durations = $this->config()->get('Overdrive')->Overdrive->suspendDurations ?? [7, 14, 21, 28, 60, 90, 180]; ?>
+                    <?php $durations = $this->config()->getArray('Overdrive')['Overdrive']['suspendDurations'] ?? [7, 14, 21, 28, 60, 90, 180]; ?>
                     <?php foreach ($durations as $duration): ?>
                       <option value="<?=$duration?>"><?=$this->transEsc('od_susp_after', ['%%days%%' => $duration])?></option>
                     <?php endforeach; ?>
@@ -176,7 +176,7 @@
             <div class="form-group">
                 <label id="select-suspension-label"><?=$this->transEsc('od_susp_hold_confirm')?></label>
                 <select class="form-select" name="suspendValue"  id="select-suspension" data-open="false">
-                    <?php $durations = $this->config()->get('Overdrive')->Overdrive->suspendDurations ?? [7, 14, 21, 28, 60, 90, 180]; ?>
+                    <?php $durations = $this->config()->getArray('Overdrive')['Overdrive']['suspendDurations'] ?? [7, 14, 21, 28, 60, 90, 180]; ?>
                     <?php foreach ($durations as $duration): ?>
                       <option value="<?=$duration?>"><?=$this->transEsc('od_susp_after', ['%%days%%' => $duration])?></option>
                     <?php endforeach; ?>

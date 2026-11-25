@@ -2,13 +2,13 @@
   // Determine link attributes; use legacy $this->link property as a fallback for backward compatibility.
   $linkAttributes = $this->linkAttributes ?? ($this->link ? ['href' => $this->link] : []);
   if ($linkAttributes && !isset($linkAttributes['class'])) {
-    $linkAttributes['class'] = 'record-cover-link';
+    $linkAttributes['class'] = 'record-cover-container record-cover-link';
   }
 ?>
 <?php if ($linkAttributes): ?>
   <a<?=$this->htmlAttributes($linkAttributes)?>>
 <?php else: ?>
-  <div aria-hidden="true">
+  <div class="record-cover-container" aria-hidden="true">
 <?php endif; ?>
 <?php /* Display thumbnail if appropriate: */ ?>
 <?php if ($cover): ?>

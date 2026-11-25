@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LDAP authentication class
+ * LDAP authentication class.
  *
  * PHP version 8
  *
@@ -32,11 +32,12 @@ namespace VuFind\Auth;
 
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 
 /**
- * LDAP authentication class
+ * LDAP authentication class.
  *
  * @category VuFind
  * @package  Authentication
@@ -48,10 +49,11 @@ use function in_array;
 class LDAP extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
      */
+    #[Autowire]
     public function __construct(protected ILSAuthenticator $ilsAuthenticator)
     {
     }
@@ -68,10 +70,9 @@ class LDAP extends AbstractBase
     {
         // Check for missing parameters:
         if (
-            empty($this->config->LDAP->basedn ?? '')
-            || empty($this->config->LDAP->username ?? '')
-            || (empty($this->config->LDAP->uri ?? '')
-                && empty($this->config->LDAP->host ?? ''))
+            empty($this->config['LDAP']['basedn'])
+            || empty($this->config['LDAP']['username'])
+            || empty($this->config['LDAP']['uri'])
         ) {
             throw new AuthException(
                 'One or more LDAP parameters are missing. Check your config.ini!'
@@ -89,7 +90,7 @@ class LDAP extends AbstractBase
     protected function getSetting($name)
     {
         $config = $this->getConfig();
-        $value = $config->LDAP->$name ?? '';
+        $value = $config['LDAP'][$name] ?? '';
 
         // Normalize all values to lowercase except for potentially case-sensitive
         // bind and basedn credentials.
@@ -110,7 +111,7 @@ class LDAP extends AbstractBase
     {
         $username = trim($request->getPost()->get('username', ''));
         $password = trim($request->getPost()->get('password', ''));
-        if ($username == '' || $password == '') {
+        if ($username === '' || $password === '') {
             throw new AuthException('authentication_error_blank');
         }
         return $this->checkLdap($username, $password);
@@ -159,20 +160,6 @@ class LDAP extends AbstractBase
         // is unavailable -- we need to check for bad return values again at search
         // time!
         $uri = $this->getSetting('uri');
-        if (!$uri) {
-            // Use deprecated old settings.
-            $host = $this->getSetting('host');
-            if (str_starts_with($host, 'ldap://') || str_starts_with($host, 'ldaps://')) {
-                $uri = $host;
-            } else {
-                $port = $this->getSetting('port');
-                if ($port === '') {
-                    $port = 389;
-                }
-                $uri = 'ldap://' . $host . ':' . $port;
-            }
-        }
-
         $this->debug("connecting to URI=$uri");
         $connection = @ldap_connect($uri);
         if (!$connection) {
@@ -188,8 +175,7 @@ class LDAP extends AbstractBase
         // if the uri parameter is not specified as ldaps://
         // then (unless TLS is disabled) we need to initiate TLS so we
         // can have a secure connection over the standard LDAP port.
-        $disableTls = isset($this->config->LDAP->disable_tls)
-            && $this->config->LDAP->disable_tls;
+        $disableTls = $this->config['LDAP']['disable_tls'] ?? false;
         if (!str_starts_with($uri, 'ldaps://') && !$disableTls) {
             $this->debug('Starting TLS');
             if (!@ldap_start_tls($connection)) {
@@ -202,7 +188,7 @@ class LDAP extends AbstractBase
     }
 
     /**
-     * If configured, bind an administrative user in order to perform a search
+     * If configured, bind an administrative user in order to perform a search.
      *
      * @param resource $connection LDAP connection
      *
@@ -226,7 +212,7 @@ class LDAP extends AbstractBase
     }
 
     /**
-     * Find the specified username in the directory
+     * Find the specified username in the directory.
      *
      * @param resource $connection LDAP connection
      * @param string   $username   Username
@@ -248,7 +234,7 @@ class LDAP extends AbstractBase
     }
 
     /**
-     * Validate credentials
+     * Validate credentials.
      *
      * @param resource $connection LDAP connection
      * @param array    $info       Data from findUsername()
@@ -308,7 +294,7 @@ class LDAP extends AbstractBase
                     $configValue = $this->getSetting($field);
                     if ($data[$i][$j] == $configValue && !empty($configValue)) {
                         $value = $data[$i][$configValue];
-                        $separator = $this->config->LDAP->separator;
+                        $separator = $this->config['LDAP']['separator'] ?? null;
                         // if no separator is given map only the first value
                         if (isset($separator)) {
                             $tmp = [];
@@ -320,7 +306,7 @@ class LDAP extends AbstractBase
                             $value = $value[0];
                         }
 
-                        if ($field != 'cat_password') {
+                        if ($field !== 'cat_password') {
                             $this->setUserValueByField($user, $field, $value ?? '');
                         } else {
                             $catPassword = $value;

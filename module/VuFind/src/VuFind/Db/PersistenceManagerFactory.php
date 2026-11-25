@@ -48,7 +48,7 @@ use Psr\Container\ContainerInterface;
 class PersistenceManagerFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -83,6 +83,6 @@ class PersistenceManagerFactory implements FactoryInterface
      */
     protected function getEntityManager(ContainerInterface $container): EntityManagerInterface
     {
-        return $container->get('doctrine.entitymanager.orm_vufind');
+        return $container->get(EntityManagerInterface::class);
     }
 }

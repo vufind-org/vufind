@@ -38,6 +38,7 @@ use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PaymentServiceInterface;
 use VuFind\Mailer\Mailer;
 use VuFind\OnlinePayment\OnlinePaymentManager;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Factory for online payment background monitor.
@@ -51,7 +52,7 @@ use VuFind\OnlinePayment\OnlinePaymentManager;
 class MonitorCommandFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -70,17 +71,17 @@ class MonitorCommandFactory implements FactoryInterface
         ?array $options = null
     ) {
         // We need to initialize the theme so that the view renderer works:
-        $mainConfig = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
-        $theme = new \VuFindTheme\Initializer($mainConfig->Site, $container);
+        $mainConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        $theme = new \VuFindTheme\Initializer($mainConfig['Site'], $container);
         $theme->init();
 
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
             $dbServiceManager->get(PaymentServiceInterface::class),
             $container->get(OnlinePaymentManager::class),
-            $container->get('ViewRenderer'),
+            $container->get(TemplateRendererInterface::class),
             $container->get(Mailer::class),
-            $mainConfig->toArray(),
+            $mainConfig,
             $dbServiceManager->get(AuditEventServiceInterface::class),
             ...($options ?? [])
         );

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Invalid Authentication Argument Exception
+ * Invalid Authentication Argument Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Auth;
 
 /**
- * Invalid Authentication Argument Exception
+ * Invalid Authentication Argument Exception.
  *
  * @category VuFind
  * @package  Exceptions

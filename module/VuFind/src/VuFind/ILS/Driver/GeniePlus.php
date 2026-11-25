@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GeniePlus API driver
+ * GeniePlus API driver.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use function count;
 use function in_array;
 
 /**
- * GeniePlus API driver
+ * GeniePlus API driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -46,14 +46,14 @@ use function in_array;
 class GeniePlus extends AbstractAPI
 {
     /**
-     * Status messages indicating available items
+     * Status messages indicating available items.
      *
      * @var string[]
      */
     protected $availableStatuses;
 
     /**
-     * Access token
+     * Access token.
      *
      * @var string
      */
@@ -67,14 +67,14 @@ class GeniePlus extends AbstractAPI
     protected $sessionFactory;
 
     /**
-     * Session cache
+     * Session cache.
      *
      * @var \Laminas\Session\Container
      */
     protected $sessionCache;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param callable $sessionFactory Factory function returning SessionContainer
      * object
@@ -347,7 +347,7 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -375,7 +375,7 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -390,7 +390,7 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -402,16 +402,15 @@ class GeniePlus extends AbstractAPI
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber, duedate,
      * number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -419,9 +418,8 @@ class GeniePlus extends AbstractAPI
      * @param string $id The record id to retrieve the info for
      *
      * @return mixed     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         // Not supported here:
@@ -436,10 +434,9 @@ class GeniePlus extends AbstractAPI
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function getConfig(string $function, array $params = []): array
     {
         if ('getMyTransactions' === $function) {
             return $this->config['Transactions'] ?? [
@@ -447,11 +444,11 @@ class GeniePlus extends AbstractAPI
             ];
         }
 
-        return false;
+        return [];
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -459,7 +456,7 @@ class GeniePlus extends AbstractAPI
      * @param string $password The patron password
      *
      * @throws ILSException
-     * @return mixed           Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($username, $password)
@@ -512,7 +509,7 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -603,7 +600,7 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.

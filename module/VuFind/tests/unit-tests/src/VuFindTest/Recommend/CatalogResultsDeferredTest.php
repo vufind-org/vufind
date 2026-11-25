@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CatalogResultsDeferred recommendation module Test Class
+ * CatalogResultsDeferred recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\Recommend;
 
 /**
- * CatalogResultsDeferred recommendation module Test Class
+ * CatalogResultsDeferred recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +41,7 @@ namespace VuFindTest\Recommend;
 class CatalogResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
 {
     /**
-     * Test standard operation
+     * Test standard operation.
      *
      * @return void
      */
@@ -50,7 +50,7 @@ class CatalogResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestC
         $mod = $this->getRecommend(
             \VuFind\Recommend\CatalogResultsDeferred::class,
             ':3',
-            new \Laminas\Stdlib\Parameters(['lookfor' => 'foo'])
+            ['lookfor' => 'foo']
         );
         $this->assertEquals(
             'mod=CatalogResults&params=lookfor%3A3&lookfor=foo',
@@ -69,7 +69,7 @@ class CatalogResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestC
         $mod = $this->getRecommend(
             \VuFind\Recommend\CatalogResultsDeferred::class,
             ':3',
-            new \Laminas\Stdlib\Parameters(['lookfor' => ['foo', 'bar']])
+            ['lookfor' => ['foo', 'bar']]
         );
         $this->assertEquals(
             'mod=CatalogResults&params=lookfor%3A3&lookfor=foo+bar',

@@ -56,17 +56,6 @@ interface OaiResumptionServiceInterface extends DbServiceInterface
      * Retrieve a row from the database based on primary key; return null if it
      * is not found.
      *
-     * @param string $token The resumption token to retrieve.
-     *
-     * @return     ?OaiResumptionEntityInterface
-     * @deprecated Use OaiResumptionService::findWithId
-     */
-    public function findToken(string $token): ?OaiResumptionEntityInterface;
-
-    /**
-     * Retrieve a row from the database based on primary key; return null if it
-     * is not found.
-     *
      * @param string $id Id to use for the search.
      *
      * @return ?OaiResumptionEntityInterface

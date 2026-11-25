@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Oracle support code for VTLS Virtua Driver
+ * Oracle support code for VTLS Virtua Driver.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use function count;
 use function is_array;
 
 /**
- * Oracle support code for VTLS Virtua Driver
+ * Oracle support code for VTLS Virtua Driver.
  *
  * @category VuFind
  * @package  Oracle
@@ -44,35 +44,35 @@ use function is_array;
 class Oracle
 {
     /**
-     * Database Handle
+     * Database Handle.
      *
      * @var resource
      */
     protected $dbHandle;
 
     /**
-     * Error information - message
+     * Error information - message.
      *
      * @var string
      */
     protected $lastError;
 
     /**
-     * Error information - type
+     * Error information - type.
      *
      * @var string
      */
     protected $lastErrorType;
 
     /**
-     * Error information - bind params
+     * Error information - bind params.
      *
      * @var array
      */
     protected $lastErrorFields;
 
     /**
-     * Error information - SQL attempted
+     * Error information - SQL attempted.
      *
      * @var string
      */
@@ -109,7 +109,7 @@ class Oracle
     }
 
     /**
-     * Destructor
+     * Destructor.
      *
      * @return void
      */
@@ -154,7 +154,7 @@ class Oracle
     }
 
     /**
-     * Convert data type name into constant
+     * Convert data type name into constant.
      *
      * @param string $data_type Data type (string, integer, float, long, date,
      * row_id, clob, or blob)

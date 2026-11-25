@@ -86,7 +86,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.logoutOptions a.logout');
 
         // Go to profile page:
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
 
         // Log back in
         $this->clickCss($page, '#loginOptions a');
@@ -100,7 +100,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Change the password (but get the old password wrong)
         $this->fillInChangePasswordForm($page, 'bad', 'good');
         $this->clickCss($page, '#newpassword .btn.btn-primary');
-        $this->assertEquals(
+        $this->assertSame(
             'Invalid login -- please try again.',
             $this->findCssAndGetText($page, '.alert-danger')
         );
@@ -108,7 +108,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Change the password successfully:
         $this->fillInChangePasswordForm($page, 'test', 'good');
         $this->clickCss($page, '#newpassword .btn.btn-primary');
-        $this->assertEquals(
+        $this->assertSame(
             'Your password has successfully been changed',
             $this->findCssAndGetText($page, '.alert-success')
         );
@@ -144,7 +144,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
 
         // Go to profile page:
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
 
         // Log back in using UPPERCASE version of username (it was created in lowercase above).
         $this->clickCss($page, '#loginOptions a');
@@ -159,16 +159,14 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testLoginWithSessionSettings().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function sessionSettingsProvider(): array
+    public static function sessionSettingsProvider(): \Iterator
     {
-        return [
-            'unencrypted file' => ['File', false],
-            'encrypted file' => ['File', true],
-            'unencrypted database' => ['Database', false],
-            'encrypted database' => ['Database', true],
-        ];
+        yield 'unencrypted file' => ['File', false];
+        yield 'encrypted file' => ['File', true];
+        yield 'unencrypted database' => ['Database', false];
+        yield 'encrypted database' => ['Database', true];
     }
 
     /**
@@ -195,7 +193,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Go to profile page:
         $session = $this->getMinkSession();
         $page = $session->getPage();
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
 
         // Log in
         $this->clickCss($page, '#loginOptions a');
@@ -217,7 +215,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     {
         // Go to profile page:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $page = $session->getPage();
 
         // Log in
@@ -252,7 +250,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Go to profile page:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $page = $session->getPage();
 
         // Log in
@@ -269,21 +267,21 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '[name="email"]', 'new@email.com');
         $this->clickCss($page, '[name="submitButton"]');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Your email address has been changed successfully',
             $this->findCssAndGetText($page, '.alert-success')
         );
 
         // Now go to profile page and confirm that email has changed:
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
-        $this->assertEquals(
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
+        $this->assertSame(
             'First Name: Tester Last Name: McTestenson Email: new@email.com',
             $this->findCssAndGetText($page, '.table-striped')
         );
     }
 
     /**
-     * Test default pick up location
+     * Test default pick up location.
      *
      * @return void
      */
@@ -319,7 +317,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Go to profile page:
         $this->waitForPageLoad($page);
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
 
         // Do patron login:
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
@@ -327,7 +325,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Check the default library and possible values:
         $userService = $this->getDbService(UserService::class);
         $this->assertSame('', $userService->getUserByUsername('username2')->getHomeLibrary());
-        $this->assertEquals(
+        $this->assertSame(
             '',
             $this->findCssAndGetValue($page, '#home_library')
         );
@@ -350,10 +348,10 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#home_library', 'B');
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
-        $this->assertEquals('B', $this->findCssAndGetValue($page, '#home_library'));
+        $this->assertSame('B', $this->findCssAndGetValue($page, '#home_library'));
         $entityManager = $this->getLiveDatabaseContainer()->get(EntityManager::class);
         $entityManager->clear();
-        $this->assertEquals(
+        $this->assertSame(
             'B',
             $userService->getUserByUsername('username2')->getHomeLibrary()
         );
@@ -362,7 +360,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#home_library', ' ** ');
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             ' ** ',
             $this->findCssAndGetValue($page, '#home_library')
         );
@@ -373,7 +371,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#home_library', '');
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             '',
             $this->findCssAndGetValue($page, '#home_library')
         );
@@ -401,7 +399,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $page = $session->getPage();
 
         // Log in
@@ -432,7 +430,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $page = $session->getPage();
 
         // Log in
@@ -441,30 +439,28 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Delete the account
-        $this->clickCss($page, '.fa-trash-o');
+        $this->clickCss($page, '.fa-trash-can');
         $this->clickCss($page, '.modal #delete-account-submit');
         $this->waitForPageLoad($page);
 
         // Try to log back in; it shouldn't work:
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $page = $session->getPage();
         $this->fillInLoginForm($page, 'username2', 'test', false);
         $this->submitLoginForm($page, false);
         $this->waitForPageLoad($page);
-        $this->assertEquals('Invalid login -- please try again.', $this->findCssAndGetText($page, '.alert-danger'));
+        $this->assertSame('Invalid login -- please try again.', $this->findCssAndGetText($page, '.alert-danger'));
     }
 
     /**
      * Data provider for testRecoverPasswordByUsername().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function honestyProvider(): array
+    public static function honestyProvider(): \Iterator
     {
-        return [
-            'be honest' => [true],
-            'be dishonest' => [false],
-        ];
+        yield 'be honest' => [true];
+        yield 'be dishonest' => [false];
     }
 
     /**
@@ -506,11 +502,11 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#recovery_username', 'bad');
         $this->clickCss($page, '.modal-body input[type="submit"]');
         if ($beHonest) {
-            $this->assertEquals('We could not find your account', $this->findCssAndGetText($page, '.alert-danger'));
+            $this->assertSame('We could not find your account', $this->findCssAndGetText($page, '.alert-danger'));
         } else {
-            $this->assertEquals(
+            $this->assertSame(
                 'Password recovery instructions have been sent to the email address registered with this account.',
-                $this->findCssAndGetText($page, '.alert-success')
+                $this->findCssAndGetText($page, '.alert-info')
             );
         }
 
@@ -552,23 +548,30 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .recover-account-link');
         $this->findCssAndSetValue($page, '#recovery_username', 'username1');
         $this->clickCss($page, '.modal-body input[type="submit"]');
-        $this->assertEquals(
+        $this->assertSame(
             'Password recovery instructions have been sent to the email address registered with this account.',
-            $this->findCssAndGetText($page, '.alert-success')
+            $this->findCssAndGetText($page, '.alert-info')
         );
 
-        // Extract URL from email:
-        $email = $this->getLoggedEmail();
-        preg_match('/You can reset your password at this URL: (http.*)/', $email->getBody()->getBody(), $matches);
-        $link = $matches[1];
+        // Try wrong code first:
+        $this->findCssAndSetValue($page, '#recovery_password', '123');
+        $this->clickCss($page, '.form-password-recovery .btn-primary');
+        $this->assertSame(
+            'Invalid login -- please try again.',
+            $this->findCssAndGetText($page, '.modal .alert-danger')
+        );
+
+        // Enter the one-time code:
+        $code = $this->extractRecoveryCodeFromEmail();
+        $this->findCssAndSetValue($page, '#recovery_password', $code);
+        $this->clickCss($page, '.form-password-recovery .btn-primary');
 
         // Reset the password:
-        $session->visit($link);
-        $this->assertEquals('username1', $this->findCssAndGetText($page, '.form-control-static'));
+        $this->assertSame('username1', $this->findCssAndGetText($page, '.form-control-static'));
         $this->findCssAndSetValue($page, '#password', 'recovered');
         $this->findCssAndSetValue($page, '#password2', 'recovered');
         $this->clickCss($page, '.form-new-password .btn-primary');
-        $this->assertEquals(
+        $this->assertSame(
             'Your password has successfully been changed',
             $this->findCssAndGetText($page, '.alert-success')
         );
@@ -577,18 +580,16 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testRecoverILSPassword
+     * Data provider for testRecoverILSPassword.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function recoverILSPasswordProvider(): array
+    public static function recoverILSPasswordProvider(): \Iterator
     {
-        return [
-            [false, false],
-            [false, true],
-            [true, false],
-            [true, true],
-        ];
+        yield [false, false];
+        yield [false, true];
+        yield [true, false];
+        yield [true, true];
     }
 
     /**
@@ -673,7 +674,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         if ($multiBackend) {
             // Check that there's no visible recovery link for the default target:
             $this->findCss($page, '.modal-body #login_MultiILS_username');
-            $this->assertEqualsWithTimeout(
+            $this->assertSameWithTimeout(
                 'btn btn-link recover-account-link hidden',
                 function () use ($page) {
                     return $page->find('css', '.modal-body .recover-account-link')?->getAttribute('class');
@@ -682,7 +683,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
             // Switch to demo2 and check that there's now a visible recovery link:
             $this->clickCss($page, '.modal-body #login_MultiILS_target option', null, 1);
-            $this->assertEqualsWithTimeout(
+            $this->assertSameWithTimeout(
                 'btn btn-link recover-account-link',
                 function () use ($page) {
                     return $page->find('css', '.modal-body .recover-account-link')?->getAttribute('class');
@@ -697,7 +698,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#recovery_username', '');
         $this->clickCss($page, '.modal-body input[type="submit"]');
         $this->waitForPageLoad($page);
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'Username cannot be blank',
             fn () => $this->findCssAndGetText($page, '.alert-danger')
         );
@@ -706,7 +707,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#recovery_username', 'nonexistent');
         $this->findCssAndSetValue($page, '#recovery_email', '');
         $this->clickCss($page, '.modal-body input[type="submit"]');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'Email address missing.',
             fn () => $this->findCssAndGetText($page, '.alert-danger')
         );
@@ -715,7 +716,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#recovery_username', 'nonexistent');
         $this->findCssAndSetValue($page, '#recovery_email', 'vufind@localhost');
         $this->clickCss($page, '.modal-body input[type="submit"]');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'We could not find your account',
             fn () => $this->findCssAndGetText($page, '.alert-danger')
         );
@@ -725,28 +726,30 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#recovery_email', 'vufind@localhost');
         $this->clickCss($page, '.modal-body input[type="submit"]');
         $this->waitForPageLoad($page);
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'Password recovery instructions have been sent to the email address registered with this account.',
-            fn () => $this->findCssAndGetText($page, '.alert-success')
+            fn () => $this->findCssAndGetText($page, '.alert-info')
         );
 
-        // Extract URL from email:
-        $email = $this->getLoggedEmail()->getBody()->getBody();
-        preg_match('/You can reset your password at this URL: <(http.*)>/', $email, $matches);
-        $this->assertArrayHasKey(
-            1,
-            $matches,
-            "No recovery link in email: $email"
+        // Try wrong code first:
+        $this->findCssAndSetValue($page, '#recovery_password', '123');
+        $this->clickCss($page, '.form-password-recovery .btn-primary');
+        $this->assertSame(
+            'Invalid login -- please try again.',
+            $this->findCssAndGetText($page, '.modal .alert-danger')
         );
-        $link = $matches[1];
+
+        // Enter the one-time code:
+        $code = $this->extractRecoveryCodeFromEmail();
+        $this->findCssAndSetValue($page, '#recovery_password', $code);
+        $this->clickCss($page, '.form-password-recovery .btn-primary');
 
         // Reset the password:
-        $session->visit($link);
-        $this->assertEquals('catuser', $this->findCssAndGetText($page, '.form-control-static'));
+        $this->assertSame('catuser', $this->findCssAndGetText($page, '.form-control-static'));
         $this->findCssAndSetValue($page, '#password', 'recovered');
         $this->findCssAndSetValue($page, '#password2', 'recovered');
         $this->clickCss($page, '.form-new-password .btn-primary');
-        $this->assertEquals(
+        $this->assertSame(
             'Your password has successfully been changed',
             $this->findCssAndGetText($page, '.alert-success')
         );

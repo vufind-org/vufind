@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Online payment manager
+ * Online payment manager.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\OnlinePayment;
 
 use Laminas\Http\PhpEnvironment\Response;
 use Laminas\Session\Container as SessionContainer;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Laminas\Stdlib\RequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use VuFind\Auth\ILSAuthenticator;
@@ -53,7 +53,7 @@ use VuFind\OnlinePayment\Handler\HandlerInterface;
 use VuFind\OnlinePayment\Handler\PluginManager as HandlerPluginManager;
 
 /**
- * Online payment manager
+ * Online payment manager.
  *
  * @category VuFind
  * @package  OnlinePayment
@@ -64,7 +64,6 @@ use VuFind\OnlinePayment\Handler\PluginManager as HandlerPluginManager;
 class OnlinePaymentManager implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
-    use OnlinePaymentEventTrait;
 
     /**
      * Constructor.
@@ -77,7 +76,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
      * @param UserCardServiceInterface   $userCardService   User card database service
      * @param AuditEventServiceInterface $auditEventService Audit event database service
      * @param Receipt                    $receipt           Receipt handler
-     * @param SessionManager             $sessionManager    Session manager
+     * @param ManagerInterface           $sessionManager    Session manager
      * @param bool                       $testHandlerUsable Is the test payment handler available?
      */
     public function __construct(
@@ -87,16 +86,15 @@ class OnlinePaymentManager implements LoggerAwareInterface
         protected PaymentServiceInterface $paymentService,
         protected PaymentFeeServiceInterface $paymentFeeService,
         protected UserCardServiceInterface $userCardService,
-        AuditEventServiceInterface $auditEventService,
+        protected AuditEventServiceInterface $auditEventService,
         protected Receipt $receipt,
-        protected SessionManager $sessionManager,
+        protected ManagerInterface $sessionManager,
         protected bool $testHandlerUsable
     ) {
-        $this->auditEventService = $auditEventService;
     }
 
     /**
-     * Get online payment handler
+     * Get online payment handler.
      *
      * @param string $sourceIls Source ILS
      *
@@ -192,7 +190,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Process a response from a payment handler
+     * Process a response from a payment handler.
      *
      * @param PaymentEntityInterface $payment    Payment
      * @param RequestInterface       $request    Request
@@ -237,7 +235,8 @@ class OnlinePaymentManager implements LoggerAwareInterface
                 }
                 break;
             case BaseHandler::PAYMENT_PENDING:
-                $this->addPaymentEvent($payment, AuditEventSubtype::Payment, 'Payment still pending');
+                $this->auditEventService
+                    ->addPaymentEvent($payment, AuditEventSubtype::Payment, 'Payment still pending');
                 break;
         }
 
@@ -255,7 +254,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
                     $this->ils->getMyProfile($patron)
                 );
                 $res = $this->receipt->sendEmail($payment->getUser(), $patronProfile, $payment, $paymentConfig);
-                $this->addPaymentEvent(
+                $this->auditEventService->addPaymentEvent(
                     $payment,
                     AuditEventSubtype::PaymentReceipt,
                     $res ? 'Receipt sent' : 'Receipt not sent (no email address)'
@@ -264,7 +263,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
                 $this->logError(
                     'Failed to send email receipt for ' . $payment->getLocalIdentifier() . ': ' . (string)$e
                 );
-                $this->addPaymentEvent(
+                $this->auditEventService->addPaymentEvent(
                     $payment,
                     AuditEventSubtype::PaymentReceipt,
                     'Sending of receipt failed',
@@ -277,7 +276,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Find patron for a payment
+     * Find patron for a payment.
      *
      * @param PaymentEntityInterface $payment Payment
      *
@@ -292,7 +291,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
         // Check if user's current credentials match (typical case):
         $catPassword = $this->ilsAuthenticator->getCatPasswordForUser($user);
         if (
-            mb_strtolower($user->getCatUsername(), 'UTF-8') === mb_strtolower($payment->getCatUsername(), 'UTF-8')
+            mb_strtolower($user->getCatUsername() ?? '', 'UTF-8') === mb_strtolower($payment->getCatUsername(), 'UTF-8')
             && ($patron = $this->ils->patronLogin($user->getCatUsername(), $catPassword))
         ) {
             // Success!
@@ -325,7 +324,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Register the given payment with ILS
+     * Register the given payment with ILS.
      *
      * @param PaymentEntityInterface $payment Payment
      *
@@ -359,7 +358,6 @@ class OnlinePaymentManager implements LoggerAwareInterface
      * @param array  $fines           Patron's fines
      * @param ?array $selectedFineIds Selected fines
      *
-     * @throws ILSException
      * @return array Associative array of payment details
      */
     public function getAndCheckOnlinePaymentDetails(array $patron, array $fines, ?array $selectedFineIds): array
@@ -395,7 +393,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Register a payment with ILS for the given patron
+     * Register a payment with ILS for the given patron.
      *
      * @param PaymentEntityInterface $payment Payment
      * @param array                  $patron  Patron information
@@ -412,7 +410,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
                 '    Payment ' . $payment->getLocalIdentifier() . ' already being registered since '
                 . ($payment->getRegistrationStartDate()?->format('Y-m-d H:i:s') ?? '[date missing]')
             );
-            $this->addPaymentEvent(
+            $this->auditEventService->addPaymentEvent(
                 $payment,
                 AuditEventSubtype::PaymentRegistration,
                 'Payment already being registered'
@@ -632,7 +630,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
                 $this->paymentFeeService->persistEntity($fee);
             }
 
-            $this->addPaymentEvent($payment, AuditEventSubtype::Payment, 'Payment created');
+            $this->auditEventService->addPaymentEvent($payment, AuditEventSubtype::Payment, 'Payment created');
         } catch (\Exception $e) {
             $this->paymentService->rollbackTransaction();
             throw $e;
@@ -659,7 +657,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Get stored payable amount from session
+     * Get stored payable amount from session.
      *
      * @param array $patron Patron
      *
@@ -683,7 +681,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Get any successful payment flag from session and clear the session
+     * Get any successful payment flag from session and clear the session.
      *
      * @return bool
      */
@@ -724,7 +722,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Get patron's source ILS
+     * Get patron's source ILS.
      *
      * @param array $patron Patron
      *
@@ -736,7 +734,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Store a flag for successful payment in the session
+     * Store a flag for successful payment in the session.
      *
      * @return void
      */

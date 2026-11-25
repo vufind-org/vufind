@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CleanHtml view helper Test Class
+ * CleanHtml view helper Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\View\Helper\Root;
 use VuFindTest\Feature\ViewTrait;
 
 /**
- * CleanHtml view helper Test Class
+ * CleanHtml view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,31 +45,29 @@ class CleanHtmlTest extends \PHPUnit\Framework\TestCase
     use ViewTrait;
 
     /**
-     * Data provider for testCleanHtml
+     * Data provider for testCleanHtml.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function cleanHtmlProvider(): array
+    public static function cleanHtmlProvider(): \Iterator
     {
         $link = '<a href="https://vufind.org/">VuFind</a>';
         $linkTargetBlank
             = '<a href="https://vufind.org/" rel="nofollow noreferrer noopener" target="_blank">VuFind</a>';
         $script = '<script>console.log("foo");</script>';
         $summaryDetails = '<summary>Summary</summary> <details>Details</details>';
-        return [
-            'plain string' => ['plain string', null, null, 'plain string'],
-            'link' => [$link, null, null, $link],
-            'link + script' => [$link . $script, null, null, $link],
-            'link + script + link' => [$link . $script . $link, null, null, $link . $link],
-            'link with target="_blank"' => [$link, true, null, $linkTargetBlank],
-            'link in heading' => [$link, null, 'heading', $link],
-            'summary and details in default context' => [$summaryDetails, null, null, $summaryDetails],
-            'summary and details in heading' => [$summaryDetails, null, 'heading', 'Summary Details'],
-        ];
+        yield 'plain string' => ['plain string', null, null, 'plain string'];
+        yield 'link' => [$link, null, null, $link];
+        yield 'link + script' => [$link . $script, null, null, $link];
+        yield 'link + script + link' => [$link . $script . $link, null, null, $link . $link];
+        yield 'link with target="_blank"' => [$link, true, null, $linkTargetBlank];
+        yield 'link in heading' => [$link, null, 'heading', $link];
+        yield 'summary and details in default context' => [$summaryDetails, null, null, $summaryDetails];
+        yield 'summary and details in heading' => [$summaryDetails, null, 'heading', 'Summary Details'];
     }
 
     /**
-     * Test cleanHtml
+     * Test cleanHtml.
      *
      * @param string  $input       Input string
      * @param ?bool   $targetBlank Add target="_blank" to external links?

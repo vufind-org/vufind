@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Custom Database log handler
+ * Custom Database log handler.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Monolog\Level;
 use Monolog\LogRecord;
 
 /**
- * Custom Database Handler for VuFind with verbosity support and flexible column mapping
+ * Custom Database Handler for VuFind with verbosity support and flexible column mapping.
  *
  * @category VuFind
  * @package  Error_Logging
@@ -51,7 +51,7 @@ class DatabaseHandler extends AbstractProcessingHandler
     use VerbosityTrait;
 
     /**
-     * Column mapping for log data
+     * Column mapping for log data.
      */
     protected array $columnMapping = [
         'priority' => 'priority',
@@ -61,7 +61,7 @@ class DatabaseHandler extends AbstractProcessingHandler
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Connection $connection Database connection instance
      * @param string     $tableName  Name of the database table to store logs
@@ -71,7 +71,7 @@ class DatabaseHandler extends AbstractProcessingHandler
     }
 
     /**
-     * Set column mapping
+     * Set column mapping.
      *
      * @param array $mapping Associative array of field-column mappings
      *
@@ -83,7 +83,7 @@ class DatabaseHandler extends AbstractProcessingHandler
     }
 
     /**
-     * Write log record to database
+     * Write log record to database.
      *
      * @param LogRecord $record Log record to write to database
      *
@@ -95,7 +95,7 @@ class DatabaseHandler extends AbstractProcessingHandler
     }
 
     /**
-     * Format log record data for database insertion
+     * Format log record data for database insertion.
      *
      * @param LogRecord $record Log record to format
      *
@@ -122,7 +122,7 @@ class DatabaseHandler extends AbstractProcessingHandler
     }
 
     /**
-     * Convert Monolog log level to syslog priority
+     * Convert Monolog log level to syslog priority.
      *
      * @param Level $level Monolog log level
      *

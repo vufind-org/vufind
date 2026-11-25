@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cart view helper Test Class
+ * Cart view helper Test Class.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\View\Helper\Root;
 
 /**
- * Cart view helper Test Class
+ * Cart view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -41,16 +41,14 @@ namespace VuFindTest\View\Helper\Root;
 class CartTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test the helper
+     * Test the helper.
      *
      * @return void
      */
     public function testCart()
     {
         // Create a mock cart object:
-        $cart = $this->getMockBuilder(\VuFind\Cart::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $cart = $this->createMock(\VuFind\Cart::class);
 
         // Create a helper object:
         $helper = new \VuFind\View\Helper\Root\Cart($cart);

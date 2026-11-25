@@ -29,7 +29,9 @@
 
 namespace VuFindTest\AjaxHandler;
 
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\AjaxHandler\RelaisOrder;
+use VuFindTest\Unit\AjaxHandlerTestCase;
 
 /**
  * RelaisOrder test class.
@@ -40,7 +42,7 @@ use VuFind\AjaxHandler\RelaisOrder;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class RelaisOrderTest extends \PHPUnit\Framework\TestCase
+class RelaisOrderTest extends AjaxHandlerTestCase
 {
     /**
      * Test authorization failure.
@@ -54,21 +56,19 @@ class RelaisOrderTest extends \PHPUnit\Framework\TestCase
             $this->createMock(\VuFind\Connection\Relais::class),
             null
         );
-        $params = $this->createMock(\Laminas\Mvc\Controller\Plugin\Params::class);
-        $this->assertEquals(['Failed', 403], $handler->handleRequest($params));
+        $request = $this->createMock(ServerRequestInterface::class);
+        $this->assertSame(['Failed', 403], $handler->handleRequest($request));
     }
 
     /**
-     * Data provider for testSearchResponse()
+     * Data provider for testSearchResponse().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function authenticatedBehaviorProvider(): array
+    public static function authenticatedBehaviorProvider(): \Iterator
     {
-        return [
-            'failure' => ['error: it is broken', ['error: it is broken', 500]],
-            'success' => ['success', [['result' => 'success']]],
-        ];
+        yield 'failure' => ['error: it is broken', ['error: it is broken', 500]];
+        yield 'success' => ['success', [['result' => 'success']]];
     }
 
     /**
@@ -84,9 +84,7 @@ class RelaisOrderTest extends \PHPUnit\Framework\TestCase
     {
         $user = $this->createMock(\VuFind\Db\Entity\UserEntityInterface::class);
         $user->expects($this->once())->method('getCatUsername')->willReturn('user');
-        $params = $this->createMock(\Laminas\Mvc\Controller\Plugin\Params::class);
-        $params->expects($this->once())->method('fromQuery')->with('oclcNumber')
-            ->willReturn('oclcnum');
+        $request = $this->getRequest(['oclcNumber' => 'oclcnum']);
         $relais = $this->createMock(\VuFind\Connection\Relais::class);
         $relais->expects($this->once())->method('authenticatePatron')
             ->with('user')
@@ -99,6 +97,6 @@ class RelaisOrderTest extends \PHPUnit\Framework\TestCase
             $relais,
             $user
         );
-        $this->assertEquals($expected, $handler->handleRequest($params));
+        $this->assertEquals($expected, $handler->handleRequest($request));
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RandomRecommend Recommendations Module
+ * RandomRecommend Recommendations Module.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFindSearch\Command\RandomCommand;
 use function count;
 
 /**
- * RandomRecommend Module
+ * RandomRecommend Module.
  *
  * This class provides random recommendations based on the Solr random field
  *
@@ -49,77 +49,77 @@ use function count;
 class RandomRecommend implements RecommendInterface
 {
     /**
-     * Results
+     * Results.
      *
      * @var array
      */
     protected $results;
 
     /**
-     * Backend to use
+     * Backend to use.
      *
      * @var string
      */
     protected $backend = 'Solr';
 
     /**
-     * Results Limit
+     * Results Limit.
      *
      * @var int
      */
     protected $limit = 10;
 
     /**
-     * Display Mode
+     * Display Mode.
      *
      * @var string
      */
     protected $displayMode = 'standard';
 
     /**
-     * Mode
+     * Mode.
      *
      * @var string
      */
     protected $mode = 'retain';
 
     /**
-     * Result Set Minimum
+     * Result Set Minimum.
      *
      * @var number
      */
     protected $minimum = 0;
 
     /**
-     * Filters
+     * Filters.
      *
      * @var array
      */
     protected $filters = [];
 
     /**
-     * Settings from configuration
+     * Settings from configuration.
      *
      * @var string
      */
     protected $settings;
 
     /**
-     * Search Service
+     * Search Service.
      *
      * @var \VuFindSearch\Service
      */
     protected $searchService;
 
     /**
-     * Params manager
+     * Params manager.
      *
      * @var \VuFind\Search\Params\PluginManager
      */
     protected $paramManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFindSearch\Service               $searchService VuFind Search Service
      * @param \VuFind\Search\Params\PluginManager $paramManager  Params manager
@@ -169,12 +169,12 @@ class RandomRecommend implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         $randomParams = 'retain' !== $this->mode
             ? $this->paramManager->get($params->getSearchClassId())
@@ -208,7 +208,7 @@ class RandomRecommend implements RecommendInterface
     }
 
     /**
-     * Get Results
+     * Get Results.
      *
      * @return array
      */
@@ -221,7 +221,7 @@ class RandomRecommend implements RecommendInterface
     }
 
     /**
-     * Get Display Mode
+     * Get Display Mode.
      *
      * @return string
      */

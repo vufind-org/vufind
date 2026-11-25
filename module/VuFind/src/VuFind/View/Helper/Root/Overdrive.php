@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Overdrive view helper
+ * Overdrive view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use VuFind\DigitalContent\OverdriveConnector;
 
 /**
- * Overdrive view helper
+ * Overdrive view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,23 +40,15 @@ use VuFind\DigitalContent\OverdriveConnector;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Overdrive extends \Laminas\View\Helper\AbstractHelper
+class Overdrive
 {
     /**
-     * Overdrive connector.
-     *
-     * @var OverdriveConnector
-     */
-    protected $connector;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param ?OverdriveConnector $connector Overdrive connector
      */
-    public function __construct(?OverdriveConnector $connector = null)
+    public function __construct(protected ?OverdriveConnector $connector = null)
     {
-        $this->connector = $connector;
     }
 
     /**
@@ -86,5 +78,15 @@ class Overdrive extends \Laminas\View\Helper\AbstractHelper
         }
         $config = $this->connector->getConfig();
         return (bool)($config->showOverdriveAdminMenu ?? false);
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

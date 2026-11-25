@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for login_token table
+ * Entity model interface for login_token table.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Db\Entity;
 use DateTime;
 
 /**
- * Entity model interface for login_token table
+ * Entity model interface for login_token table.
  *
  * @category VuFind
  * @package  Database

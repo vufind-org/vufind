@@ -30,7 +30,6 @@
 namespace VuFindTheme;
 
 use Laminas\Mvc\View\Http\InjectTemplateListener as ParentInjectTemplateListener;
-use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Module definition for the VuFind theme system.
@@ -44,7 +43,7 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
 class Module
 {
     /**
-     * Return generic configuration
+     * Return generic configuration.
      *
      * @return array
      */
@@ -86,16 +85,6 @@ class Module
             'aliases' => [
                 ParentInjectTemplateListener::class => InjectTemplateListener::class,
             ],
-            'factories' => [
-                AssetPipeline::class => AssetPipelineFactory::class,
-                InjectTemplateListener::class => InjectTemplateListenerFactory::class,
-                MixinGenerator::class => ThemeInfoInjectorFactory::class,
-                Mobile::class => InvokableFactory::class,
-                ResourceContainer::class => InvokableFactory::class,
-                ThemeCompiler::class => ThemeInfoInjectorFactory::class,
-                ThemeGenerator::class => ThemeGeneratorFactory::class,
-                ThemeInfo::class => ThemeInfoFactory::class,
-            ],
         ];
     }
 
@@ -107,13 +96,11 @@ class Module
     public function getViewHelperConfig()
     {
         return [
+            'abstract_factories' => [
+                \VuFind\ServiceManager\Factory\AbstractAutowiringFactory::class,
+            ],
             'factories' => [
                 View\Helper\AssetManager::class => View\Helper\AssetManagerFactory::class,
-                View\Helper\ImageLink::class => View\Helper\ImageLinkFactory::class,
-                View\Helper\ParentTemplate::class => View\Helper\ParentTemplateFactory::class,
-                View\Helper\Slot::class => InvokableFactory::class,
-                View\Helper\TemplatePath::class => View\Helper\TemplatePathFactory::class,
-                View\Helper\SetupThemeResources::class => View\Helper\SetupThemeResourcesFactory::class,
             ],
             'aliases' => [
                 'assetManager' => View\Helper\AssetManager::class,

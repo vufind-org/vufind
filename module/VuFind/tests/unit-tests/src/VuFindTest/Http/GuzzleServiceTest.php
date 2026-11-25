@@ -45,7 +45,7 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
-     * Test GET request with associative array parameters
+     * Test GET request with associative array parameters.
      *
      * @return void
      */
@@ -60,7 +60,7 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test GET request with pre-formatted parameter strings
+     * Test GET request with pre-formatted parameter strings.
      *
      * @return void
      */
@@ -75,7 +75,7 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test GET request with special characters in associative array
+     * Test GET request with special characters in associative array.
      *
      * @return void
      */
@@ -90,7 +90,7 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test GET request with empty params
+     * Test GET request with empty params.
      *
      * @return void
      */
@@ -102,7 +102,7 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test client creation
+     * Test client creation.
      *
      * @return void
      */
@@ -115,7 +115,7 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test Guzzle client creation
+     * Test Guzzle client creation.
      *
      * @return void
      */

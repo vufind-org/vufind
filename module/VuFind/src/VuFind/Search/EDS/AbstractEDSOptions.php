@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Common EDS & EPF API Options
+ * Common EDS & EPF API Options.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ namespace VuFind\Search\EDS;
 use function count;
 
 /**
- * Common EDS & EPF API Options
+ * Common EDS & EPF API Options.
  *
  * @category VuFind
  * @package  EBSCO
@@ -51,11 +51,11 @@ abstract class AbstractEDSOptions extends \VuFind\Search\Base\Options
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
-     * Default view option
+     * Default view option.
      *
      * @var string
      */
-    protected $defaultView = 'list_brief';
+    protected string $defaultView = 'list_brief';
 
     /**
      * Extract a component from the defaultView API property.
@@ -82,9 +82,9 @@ abstract class AbstractEDSOptions extends \VuFind\Search\Base\Options
     /**
      * Get default view setting.
      *
-     * @return int
+     * @return string
      */
-    public function getDefaultView()
+    public function getDefaultView(): string
     {
         return $this->getDefaultViewPart(0, 'list');
     }
@@ -94,7 +94,7 @@ abstract class AbstractEDSOptions extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getEbscoView()
+    public function getEbscoView(): string
     {
         return $this->getDefaultViewPart(1, $this->getConfiguredDefaultView());
     }

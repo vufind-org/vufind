@@ -55,7 +55,7 @@ class DeleteDocumentTest extends TestCase
         $document = new DeleteDocument();
         $document->addKey('foobar');
         $document->addQuery('timestamp:[* TO NOW-12HOUR]');
-        $this->assertEquals(
+        $this->assertSame(
             'text/xml; charset=UTF-8',
             $document->getContentType()
         );

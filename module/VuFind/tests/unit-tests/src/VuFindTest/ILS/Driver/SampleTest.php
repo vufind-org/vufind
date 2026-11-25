@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\Sample;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -61,13 +61,12 @@ class SampleTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that sample driver never returns new items.
+     * Test that sample driver never returns departments.
      *
      * @return void
      */
-    public function testGetNewItems()
+    public function testGetDepartments()
     {
-        $new = $this->driver->getNewItems(1, 1, 1);
-        $this->assertEquals(0, $new['count']);
+        $this->assertSame([], $this->driver->getDepartments());
     }
 }

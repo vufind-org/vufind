@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Plugin Manager
+ * VuFind Plugin Manager.
  *
  * PHP version 8
  *
@@ -31,24 +31,25 @@ namespace VuFind\ServiceManager;
 
 use Laminas\ServiceManager\AbstractPluginManager as Base;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
+use PHPMD\Attribute\SuppressWarnings;
+use PHPMD\Rule\Design\NumberOfChildren;
 
 /**
- * VuFind Plugin Manager
+ * VuFind Plugin Manager.
  *
  * @category VuFind
  * @package  ServiceManager
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
- *
- * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
+#[SuppressWarnings(NumberOfChildren::class)]
 abstract class AbstractPluginManager extends Base
 {
     use LowerCaseServiceNameTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *
@@ -61,13 +62,11 @@ abstract class AbstractPluginManager extends Base
         array $v3config = []
     ) {
         parent::__construct($configOrContainerInstance, $v3config);
-        $this->addInitializer(
-            \VuFind\ServiceManager\ServiceInitializer::class
-        );
+        $this->addInitializer(\VuFind\ServiceManager\ServiceInitializer::class);
     }
 
     /**
-     * Validate the plugin
+     * Validate the plugin.
      *
      * Checks that the filter loaded is either a valid callback or an instance
      * of FilterInterface.

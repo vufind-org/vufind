@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait for ChannelProviders to configure and calculate batch sizes
+ * Trait for ChannelProviders to configure and calculate batch sizes.
  *
  * PHP version 8
  *
@@ -29,8 +29,10 @@
 
 namespace VuFind\ChannelProvider;
 
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
+
 /**
- * Trait for ChannelProviders to configure and calculate batch sizes
+ * Trait for ChannelProviders to configure and calculate batch sizes.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -57,6 +59,44 @@ trait BatchTrait
     protected $maxBatchSize = 48;
 
     /**
+     * Page of results to retrieve.
+     *
+     * @var int
+     */
+    protected $page = 1;
+
+    /**
+     * Page size for retrieved results.
+     *
+     * @var ?int
+     */
+    protected $limit = null;
+
+    /**
+     * Apply appropriate defaults and calculations in order to return an array of batch-related settings.
+     *
+     * @param array $options Options
+     *
+     * @return array{
+     *     itemsPerRow: int,
+     *     rowsPerPage: int,
+     *     maxBatchSize: int,
+     *     batchSize: int,
+     * }
+     */
+    public function performBatchCalculations(array $options): array
+    {
+        $itemsPerRow = $options['itemsPerRow'] ?? 6;
+        $rowsPerPage = $options['rowsPerPage'] ?? 1;
+        $maxBatchSize = $options['maxBatchSize'] ?? 48;
+        $batchSize = min(
+            self::calcBatchSize($itemsPerRow, $rowsPerPage),
+            $maxBatchSize,
+        );
+        return compact('itemsPerRow', 'rowsPerPage', 'maxBatchSize', 'batchSize');
+    }
+
+    /**
      * Calculate and set the provider's batch-related properties from the provided options array.
      *
      * @param array $options Options
@@ -66,13 +106,10 @@ trait BatchTrait
     public function setBatchSizeFromOptions(array $options): void
     {
         // Calculate batch size
-        $itemsPerRow = $options['itemsPerRow'] ?? 6;
-        $rowsPerPage = $options['rowsPerPage'] ?? 1;
-        $this->maxBatchSize = $options['maxBatchSize'] ?? 48;
-        $this->batchSize = min(
-            self::calcBatchSize($itemsPerRow, $rowsPerPage),
-            $this->maxBatchSize,
-        );
+        $batchOptions = $this->performBatchCalculations($options);
+        // Apply to class
+        $this->maxBatchSize = $batchOptions['maxBatchSize'];
+        $this->batchSize = $batchOptions['batchSize'];
     }
 
     /**
@@ -93,5 +130,19 @@ trait BatchTrait
         }
 
         return $batchSize;
+    }
+
+    /**
+     * Hook to extract pagination parameters from the request.
+     *
+     * @param HttpRequest $request Current HTTP request
+     *
+     * @return void
+     */
+    public function applyPaginationFromRequest(HttpRequest $request): void
+    {
+        // Add pagination params
+        $this->page = (int)($request->getQuery('page', 1));
+        $this->limit = min((int)($request->getQuery('limit', $this->batchSize)), $this->maxBatchSize);
     }
 }

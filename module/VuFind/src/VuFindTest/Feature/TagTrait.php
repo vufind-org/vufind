@@ -43,7 +43,7 @@ use Behat\Mink\Element\Element;
 trait TagTrait
 {
     /**
-     * Add tags to a record
+     * Add tags to a record.
      *
      * @param Element $page Page object
      * @param string  $tags Tag(s) to add (space delimited string formatted for the tag input box)
@@ -100,7 +100,7 @@ trait TagTrait
     protected function goToTagAdmin(string $subPage = ''): Element
     {
         $this->changeConfigs(
-            [
+            $this->getAdminPermissionConfig() + [
                 'config' => [
                     'Site' => ['admin_enabled' => 1],
                     'Social' => ['case_sensitive_tags' => 'true'],

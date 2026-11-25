@@ -45,14 +45,14 @@ use function sprintf;
 class VuFindGeo
 {
     /**
-     * Method for logging errors (overridable for testing purposes)
+     * Method for logging errors (overridable for testing purposes).
      *
      * @var callable
      */
     public static $logMethod = 'error_log';
 
     /**
-     * Log an error message
+     * Log an error message.
      *
      * @param string $msg Message
      *
@@ -76,7 +76,7 @@ class VuFindGeo
         $parsed = [];
         foreach ($parts as $part) {
             $chunks = array_map('trim', explode('=', $part, 2));
-            if (count($chunks) == 2) {
+            if (count($chunks) === 2) {
                 [$key, $value] = $chunks;
                 $parsed[$key] = $value;
             }

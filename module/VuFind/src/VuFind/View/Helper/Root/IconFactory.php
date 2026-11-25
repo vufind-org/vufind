@@ -35,6 +35,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\GlobalsContainer;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Icon helper factory.
@@ -49,7 +51,7 @@ use Psr\Container\ContainerInterface;
 class IconFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -87,7 +89,8 @@ class IconFactory implements FactoryInterface
             $config,
             $cache,
             $helpers->get('escapeHtmlAttr'),
-            $container->get('ViewManager')->getViewModel()->rtl
+            $container->get(TemplateRendererInterface::class),
+            $container->get(GlobalsContainer::class)['rtl']
         );
     }
 }

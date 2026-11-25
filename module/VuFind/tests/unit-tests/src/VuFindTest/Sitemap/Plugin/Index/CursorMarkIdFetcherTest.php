@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CursorMarkIdFetcher Test Class
+ * CursorMarkIdFetcher Test Class.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFindSearch\Command\SetRecordCollectionFactoryCommand;
 use VuFindSearch\Service;
 
 /**
- * CursorMarkIdFetcher Test Class
+ * CursorMarkIdFetcher Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -51,28 +51,28 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Backend ID to use in tests
+     * Backend ID to use in tests.
      *
      * @var string
      */
     protected $backendId = 'foo';
 
     /**
-     * Unique key field to use in tests
+     * Unique key field to use in tests.
      *
      * @var string
      */
     protected $uniqueKey = 'id';
 
     /**
-     * Page size to use in tests
+     * Page size to use in tests.
      *
      * @var int
      */
     protected $countPerPage = 100;
 
     /**
-     * Get a mock search service
+     * Get a mock search service.
      *
      * @return MockObject&Service
      */
@@ -190,9 +190,7 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
         $expectedIds2 = $this->addRecordsToCollection($records2, $this->countPerPage);
         $expectedMods2 = array_map($nullify, $expectedIds2);
         $service = $this->getMockService();
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->exactly(2))->method('getResult')
             ->willReturnOnConsecutiveCalls($records1, $records2);
 
@@ -236,7 +234,7 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
             )
         );
         // If we send the same cursor mark a second time, we should get no results...
-        $this->assertEquals(
+        $this->assertSame(
             ['ids' => []],
             $fetcher->getIdsFromBackend(
                 $this->backendId,

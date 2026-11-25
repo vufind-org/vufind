@@ -1,4 +1,6 @@
-<?php if ($this->callnumberHandler): ?>
+<?php if ('' === trim($this->displayCallnumber ?? '')): ?>
+  <?=$this->transEsc('No call number') ?>
+<?php elseif ($this->callnumberHandler): ?>
   <?php
     $url = $this->url('alphabrowse-home') . '?' . http_build_query([
         'source' => $this->callnumberHandler,

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Evergreen ILS Driver
+ * Evergreen ILS Driver.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFind\Exception\ILS as ILSException;
 use function count;
 
 /**
- * VuFind Connector for Evergreen
+ * VuFind Connector for Evergreen.
  *
  * Written by Warren Layton at the NRCan (Natural Resources Canada)
  * Library.
@@ -54,28 +54,28 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Database connection
+     * Database connection.
      *
      * @var PDO
      */
     protected $db;
 
     /**
-     * Database name
+     * Database name.
      *
      * @var string
      */
     protected $dbName;
 
     /**
-     * Date converter object
+     * Date converter object.
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter
      */
@@ -85,7 +85,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Evergreen constants
+     * Evergreen constants.
      */
     public const EVG_ITEM_STATUS_IN_TRANSIT = '6';
 
@@ -128,7 +128,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -197,7 +197,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -217,7 +217,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -231,9 +231,8 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $holding = [];
@@ -307,7 +306,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -316,9 +315,8 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         // TODO
@@ -326,7 +324,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -334,7 +332,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @param string $passwd  The patron password
      *
      * @throws ILSException
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array         Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($barcode, $passwd)
@@ -377,7 +375,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -419,7 +417,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $due_date = $this->formatDate($row['due_date']);
                 $_due_time = new \DateTime($row['due_date']);
-                if ($_due_time->format('H:i:s') == '23:59:59') {
+                if ($_due_time->format('H:i:s') === '23:59:59') {
                     $dueTime = ''; // don't display due time for non-hourly loans
                 } else {
                     $dueTime = $this->dateConverter->convertToDisplayTime(
@@ -467,7 +465,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -524,7 +522,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -582,7 +580,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -648,7 +646,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      */
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details or throws an exception on failure of support
@@ -683,7 +681,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     //}
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -697,104 +695,6 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     //public function getHoldLink($recordId, $details)
     //{
     //}
-
-    /**
-     * Get New Items
-     *
-     * Retrieve the IDs of items recently added to the catalog.
-     *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @throws ILSException
-     * @return array       Associative array with 'count' and 'results' keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        $items = [];
-
-        $enddate = date('Y-m-d', strtotime('now'));
-        $startdate = date('Y-m-d', strtotime("-$daysOld day"));
-
-        $sql = 'select count(distinct copy.id) as count ' .
-               'from asset.copy ' .
-               "where copy.create_date >= '$startdate' " .
-               'and copy.status = 0 ' .
-               "and copy.create_date < '$enddate' LIMIT 50";
-
-        try {
-            $sqlStmt = $this->db->prepare($sql);
-            $sqlStmt->execute();
-            $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
-            $items['count'] = $row['count'];
-        } catch (PDOException $e) {
-            $this->logError((string)$e);
-            $this->throwAsIlsException($e);
-        }
-
-        // TODO: implement paging support
-        //$page = ($page) ? $page : 1;
-        //$limit = ($limit) ? $limit : 20;
-        //$startRow = (($page-1)*$limit)+1;
-        //$endRow = ($page*$limit);
-
-        $sql = 'select copy.id, call_number.record from asset.copy ' .
-               'join asset.call_number on (call_number.id = copy.call_number) ' .
-               "where copy.create_date >= '$startdate' " .
-               'and copy.status = 0 ' .
-               "and copy.create_date < '$enddate' LIMIT 50";
-
-        try {
-            $sqlStmt = $this->db->prepare($sql);
-            $sqlStmt->execute();
-            while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $items['results'][]['id'] = $row['record'];
-            }
-        } catch (PDOException $e) {
-            $this->logError((string)$e);
-            $this->throwAsIlsException($e);
-        }
-        return $items;
-    }
-
-    /**
-     * Get Funds
-     *
-     * Return a list of funds which may be used to limit the getNewItems list.
-     *
-     * @throws ILSException
-     * @return array An associative array with key = fund ID, value = fund name.
-     */
-    public function getFunds()
-    {
-        $list = [];
-
-        /* TODO:
-        $sql = "";
-
-        try {
-            $sqlStmt = $this->db->prepare($sql);
-            $sqlStmt->execute();
-            while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $list[] = $row['name'];
-            }
-        } catch (PDOException $e) {
-            $this->logError((string)$e);
-            $this->throwAsIlsException($e);
-        }
-        */
-
-        return $list;
-    }
 
     /**
      * Get suppressed records.
@@ -827,7 +727,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     // *** The functions below are not (yet) applicable to Evergreen ***
 
     /**
-     * Get Departments
+     * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
      *
@@ -841,7 +741,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * Obtain a list of instructors for use in limiting the reserves list.
      *
@@ -855,7 +755,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -869,7 +769,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -879,9 +779,8 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function findReserves($course, $inst, $dept)
     {
         // TODO
@@ -889,7 +788,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Format date
+     * Format date.
      *
      * This formats a date coming from Evergreen for display
      *

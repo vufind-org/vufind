@@ -52,14 +52,14 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     protected $records = [];
 
     /**
-     * Source identifier
+     * Source identifier.
      *
      * @var string
      */
     protected $source;
 
     /**
-     * Array pointer
+     * Array pointer.
      *
      * @var int
      */
@@ -224,7 +224,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     }
 
     /**
-     * Check if the collection contains the given record
+     * Check if the collection contains the given record.
      *
      * @param RecordInterface $record Record to check
      *

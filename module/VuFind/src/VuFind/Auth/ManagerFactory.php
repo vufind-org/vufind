@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Application\UriRegistry;
 
 /**
  * Authentication Manager factory.
@@ -47,7 +48,7 @@ use Psr\Container\ContainerInterface;
 class ManagerFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -69,16 +70,15 @@ class ManagerFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         // Load dependencies:
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         $userService = $dbServiceManager->get(\VuFind\Db\Service\UserServiceInterface::class);
-        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
+        $sessionManager = $container->get(\Laminas\Session\ManagerInterface::class);
         $pm = $container->get(\VuFind\Auth\PluginManager::class);
         $cookies = $container->get(\VuFind\Cookie\CookieManager::class);
         $csrf = $container->get(\VuFind\Validator\CsrfInterface::class);
         $loginTokenManager = $container->get(\VuFind\Auth\LoginTokenManager::class);
         $ils = $container->get(\VuFind\ILS\Connection::class);
-        $viewRenderer = $container->get('ViewRenderer');
         $auditEventService = $dbServiceManager->get(\VuFind\Db\Service\AuditEventServiceInterface::class);
 
         // Build the object and make sure account credentials haven't expired:
@@ -92,7 +92,7 @@ class ManagerFactory implements FactoryInterface
             $csrf,
             $loginTokenManager,
             $ils,
-            $viewRenderer,
+            fn () => $container->get(UriRegistry::class)->get('AccountHomeAbsoluteUrl'),
             $auditEventService
         );
         $manager->setIlsAuthenticator($container->get(\VuFind\Auth\ILSAuthenticator::class));

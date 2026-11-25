@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract authentication base class
+ * Abstract authentication base class.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use function in_array;
 use function is_callable;
 
 /**
- * Abstract authentication base class
+ * Abstract authentication base class.
  *
  * @category VuFind
  * @package  Authentication
@@ -68,11 +68,18 @@ abstract class AbstractBase implements
     protected $configValidated = false;
 
     /**
-     * Configuration settings
+     * Configuration settings.
      *
-     * @var \VuFind\Config\Config
+     * @var ?array
      */
     protected $config = null;
+
+    /**
+     * Pre-authentication data, if any.
+     *
+     * @var ?array
+     */
+    protected ?array $preAuthenticationData = null;
 
     /**
      * Map of database column name to setter method for UserEntityInterface objects.
@@ -94,7 +101,7 @@ abstract class AbstractBase implements
      * exception if the configuration is invalid.
      *
      * @throws AuthException
-     * @return \VuFind\Config\Config
+     * @return ?array
      */
     public function getConfig()
     {
@@ -116,9 +123,8 @@ abstract class AbstractBase implements
      *
      * @throws AuthException
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function preLoginCheck($request)
     {
         // By default, do no checking.
@@ -138,11 +144,11 @@ abstract class AbstractBase implements
     /**
      * Set configuration.
      *
-     * @param \VuFind\Config\Config $config Configuration to set
+     * @param ?array $config Configuration to set
      *
      * @return void
      */
-    public function setConfig($config)
+    public function setConfig(?array $config): void
     {
         $this->config = $config;
         $this->configValidated = false;
@@ -154,9 +160,8 @@ abstract class AbstractBase implements
      * @param Request $request Request object.
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function needsCsrfCheck($request)
     {
         // Enabled by default
@@ -169,9 +174,8 @@ abstract class AbstractBase implements
      * @param Request $request Request object.
      *
      * @return string|bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDelegateAuthMethod(Request $request)
     {
         // No delegate by default
@@ -189,6 +193,32 @@ abstract class AbstractBase implements
     protected function validateConfig()
     {
         // By default, do no checking.
+    }
+
+    /**
+     * Attempt to pre-authenticate the current user. Throws exception if pre-authentication fails.
+     *
+     * @param Request $request Request object containing account credentials.
+     *
+     * @throws AuthException
+     * @return ?array Pre-authentication data if pre-authentication was performed.
+     */
+    public function preAuthenticate(Request $request): ?array
+    {
+        // By default, do not perform pre-authentication.
+        return null;
+    }
+
+    /**
+     * Set pre-authentication data.
+     *
+     * @param ?array $data Pre-authentication data
+     *
+     * @return void
+     */
+    public function setPreAuthenticationData(?array $data): void
+    {
+        $this->preAuthenticationData = $data;
     }
 
     /**
@@ -239,9 +269,8 @@ abstract class AbstractBase implements
      *
      * @throws AuthException
      * @return UserEntityInterface New user entity.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function create($request)
     {
         throw new AuthException(
@@ -256,9 +285,8 @@ abstract class AbstractBase implements
      *
      * @throws AuthException
      * @return UserEntityInterface Updated user entity.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function updatePassword($request)
     {
         throw new AuthException(
@@ -274,9 +302,8 @@ abstract class AbstractBase implements
      *
      * @throws AuthException
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function resetPassword(array $recoveryData, array $params)
     {
         throw new AuthException('Account password reset not supported by ' . static::class);
@@ -300,9 +327,8 @@ abstract class AbstractBase implements
      * send user after login (some drivers may override this).
      *
      * @return ?string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getSessionInitiator(string $target): ?string
     {
         return null;
@@ -333,24 +359,24 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Does this authentication method support password changing
+     * Does this authentication method support password changing.
      *
      * @return bool
      */
-    public function supportsPasswordChange()
+    public function supportsPasswordChange(): bool
     {
         // By default, password changing is not supported.
         return false;
     }
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
      * @return bool
      */
-    public function supportsPasswordRecovery(?string $target = null)
+    public function supportsPasswordRecovery(?string $target = null): bool
     {
         // By default, password recovery is not supported.
         return false;
@@ -365,9 +391,8 @@ abstract class AbstractBase implements
      *   string email    User's email address
      *   string username Username (optional, for display)
      *   array  details  Array of user details required for resetPassword request
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPasswordRecoveryData(array $params): ?array
     {
         // By default, don't return password recovery data
@@ -386,7 +411,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Return a canned username or password policy hint when available
+     * Return a canned username or password policy hint when available.
      *
      * @param string  $type    Policy type (password or username)
      * @param ?string $pattern Current policy pattern
@@ -407,7 +432,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get a policy configuration
+     * Get a policy configuration.
      *
      * @param string $type Policy type (password or username)
      *
@@ -417,9 +442,7 @@ abstract class AbstractBase implements
     {
         $policy = [];
         $config = $this->getConfig();
-        $authConfig = isset($config->Authentication)
-            ? $config->Authentication->toArray()
-            : [];
+        $authConfig = $config['Authentication'] ?? [];
         /* Map settings to the policy array, e.g.:
          *
          * password_minimum_length or username_minimum_length => minLength
@@ -448,7 +471,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get username policy for a new account (e.g. minLength, maxLength)
+     * Get username policy for a new account (e.g. minLength, maxLength).
      *
      * @return array
      */
@@ -458,7 +481,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get password policy for a new password (e.g. minLength, maxLength)
+     * Get password policy for a new password (e.g. minLength, maxLength).
      *
      * @param ?string $target Authentication target for methods that support target selection
      *

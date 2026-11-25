@@ -78,7 +78,7 @@ class LintMarcCommandTest extends \PHPUnit\Framework\TestCase
             245: Subfield _b should be preceded by space-colon, space-semicolon, or space-equals sign.
 
             EXPECTED;
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 }

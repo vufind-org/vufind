@@ -45,7 +45,7 @@ use function is_array;
 class Pazpar2 extends DefaultRecord
 {
     /**
-     * Pazpar2 fields
+     * Pazpar2 fields.
      *
      * @var array
      */
@@ -68,7 +68,7 @@ class Pazpar2 extends DefaultRecord
     }
 
     /**
-     * Converts a SimpleXMLElement to an array
+     * Converts a SimpleXMLElement to an array.
      *
      * @param \SimpleXMLElement $xml to be converted
      *
@@ -132,7 +132,7 @@ class Pazpar2 extends DefaultRecord
      *
      * @return string Unique identifier.
      */
-    public function getUniqueId()
+    public function getUniqueID()
     {
         return $this->pz2fields['location']['md-id'] ?? $this->pz2fields['recid'];
     }

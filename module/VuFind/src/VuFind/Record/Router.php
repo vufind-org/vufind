@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record route generator
+ * Record route generator.
  *
  * PHP version 8
  *
@@ -29,11 +29,13 @@
 
 namespace VuFind\Record;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function count;
 use function is_object;
 
 /**
- * Record route generator
+ * Record route generator.
  *
  * @category VuFind
  * @package  Record
@@ -44,20 +46,14 @@ use function is_object;
 class Router
 {
     /**
-     * VuFind configuration
+     * Constructor.
      *
-     * @var \VuFind\Config\Config
+     * @param array $config VuFind configuration
      */
-    protected $config;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\Config $config VuFind configuration
-     */
-    public function __construct(\VuFind\Config\Config $config)
-    {
-        $this->config = $config;
+    public function __construct(
+        #[Autowire(config: 'config')]
+        protected array $config
+    ) {
     }
 
     /**
@@ -100,9 +96,8 @@ class Router
         // If collections are active and the record route was selected, we need
         // to check if the driver is actually a collection; if so, we should switch
         // routes.
-        if ($this->config->Collections->collections ?? false) {
-            $routeConfig = isset($this->config->Collections->route)
-                ? $this->config->Collections->route->toArray() : [];
+        if ($this->config['Collections']['collections'] ?? false) {
+            $routeConfig = $this->config['Collections']['route'] ?? [];
             $collectionRoutes
                 = array_merge(
                     ['record' => 'collection',
@@ -143,7 +138,7 @@ class Router
         // Extract source and ID from driver or string:
         if (is_object($driver)) {
             $source = $driver->getSourceIdentifier();
-            $id = $driver->getUniqueId();
+            $id = $driver->getUniqueID();
         } else {
             [$source, $id] = $this->extractSourceAndId($driver);
         }

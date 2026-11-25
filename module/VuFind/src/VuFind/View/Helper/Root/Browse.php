@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Browse controller view helper
+ * Browse controller view helper.
  *
  * PHP version 8
  *
@@ -29,10 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 /**
- * Browse controller view helper
+ * Browse controller view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,7 +38,7 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Browse extends AbstractHelper
+class Browse
 {
     /**
      * Get the Solr field associated with a particular browse action.
@@ -74,5 +72,15 @@ class Browse extends AbstractHelper
             return $action;
         }
         return $this->getSolrField($backup);
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

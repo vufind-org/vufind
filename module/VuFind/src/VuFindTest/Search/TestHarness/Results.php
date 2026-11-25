@@ -47,28 +47,28 @@ use VuFindTest\RecordDriver\TestHarness as RecordDriver;
 class Results extends \VuFind\Search\Base\Results
 {
     /**
-     * Fake expected total
+     * Fake expected total.
      *
      * @var int
      */
-    protected $fakeExpectedTotal;
+    protected int $fakeExpectedTotal;
 
     /**
-     * Cache for fake drivers
+     * Cache for fake drivers.
      *
      * @var array
      */
-    protected $driverCache = [];
+    protected array $driverCache = [];
 
     /**
-     * Fake facet response
+     * Fake facet response.
      *
      * @var array
      */
-    protected $facets;
+    protected array $facets;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
      * search parameters.
@@ -82,8 +82,8 @@ class Results extends \VuFind\Search\Base\Results
         \VuFind\Search\Base\Params $params,
         SearchService $searchService,
         Loader $recordLoader,
-        $total = 100,
-        $facets = []
+        int $total = 100,
+        array $facets = []
     ) {
         parent::__construct($params, $searchService, $recordLoader);
         $this->fakeExpectedTotal = $total;
@@ -92,14 +92,14 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
      * @param array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    public function getFacetList($filter = null)
+    public function getFacetList(?array $filter = null): array
     {
         return $this->facets;
     }
@@ -111,7 +111,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $this->resultTotal = $this->fakeExpectedTotal;
         $this->results = [];
@@ -129,13 +129,13 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Get a fake record driver
+     * Get a fake record driver.
      *
      * @param string $id ID to use
      *
      * @return RecordDriver
      */
-    public function getMockRecordDriver($id)
+    public function getMockRecordDriver(string $id): RecordDriver
     {
         if (!isset($this->driverCache[$id])) {
             $this->driverCache[$id] = new RecordDriver();

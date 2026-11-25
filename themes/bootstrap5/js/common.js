@@ -1,7 +1,21 @@
 /*global grecaptcha, loadCovers */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery, addRecordRatingFromUserList */
 
-var VuFind = (function VuFind() {
+/**
+ * HTML-encode a string.
+ * @param {string} value The string to encode.
+ * @returns {string} The encoded string.
+ */
+function htmlEncode(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+var VuFind = (function VuFindModule() {
   var defaultSearchBackend = null;
   var path = null;
   var _initialized = false;
@@ -169,12 +183,25 @@ var VuFind = (function VuFind() {
         document.getElementById(elem.dataset.clickSetChecked).checked = true;
         event.preventDefault();
       }
+      if (elem.hasAttribute('data-click-set-query-params')) {
+        const setParams = new URLSearchParams(elem.dataset.clickSetQueryParams);
+        const url = new URL(window.location.href);
+        for (const [key, value] of setParams) {
+          url.searchParams.set(key, value);
+        }
+        window.location.href = url.toString();
+        event.preventDefault();
+      }
       if (elem.hasAttribute('data-toggle-aria-expanded')) {
         elem.setAttribute('aria-expanded', elem.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
         event.preventDefault();
       }
-      // Check also parent node for spans (e.g. a button with icon)
-      if (!event.defaultPrevented && elem.localName === 'span' && elem.parentNode) {
+      // Check also parent node for spans or other elements with the icon class (e.g. a button with icon)
+      if (
+        !event.defaultPrevented
+        && elem.parentNode instanceof HTMLElement
+        && (elem.localName === 'span' || elem.classList.contains('icon'))
+      ) {
         checkClickHandlers(event, elem.parentNode);
       }
     };
@@ -183,15 +210,6 @@ var VuFind = (function VuFind() {
       'click',
       function handleClick(event) {
         checkClickHandlers(event, event.target);
-      }
-    );
-    window.addEventListener(
-      'change',
-      function handleChange(event) {
-        let elem = event.target;
-        if (elem.hasAttribute('data-submit-on-change')) {
-          elem.form.requestSubmit();
-        }
       }
     );
   };
@@ -215,6 +233,9 @@ var VuFind = (function VuFind() {
     }
     return translation;
   };
+  var transEsc = function(op, _replacements) {
+    return htmlEncode(translate(op, _replacements));
+  }
 
   var addIcons = function addIcons(s) {
     for (var i in s) {
@@ -377,7 +398,7 @@ var VuFind = (function VuFind() {
     const tmpDiv = document.createElement('div');
     tmpDiv.innerHTML = html;
     const scripts = [];
-    // Cloning scripts wont work as they pass internal executed state so save them for later
+    // Cloning scripts won't work as they pass internal executed state so save them for later
     tmpDiv.querySelectorAll('script').forEach(script => {
       const type = script.getAttribute('type');
       if (!type || 'text/javascript' === type) {
@@ -525,10 +546,25 @@ var VuFind = (function VuFind() {
   };
 
   /**
+   * Focus the first element that has the data-focus-on-load attribute.
+   * @returns {void}
+   */
+  var setFocusOnLoad = function setFocusOnLoad() {
+    const focusEl = document.querySelector('[data-focus-on-load="important"]')
+      || document.querySelector('[data-focus-on-load]');
+    if (focusEl) {
+      focusEl.focus();
+    }
+  };
+
+  /**
    * Initialize all registered submodules and global handlers.
    * @returns {void}
    */
   var init = function init() {
+    // Handle focus on load before anything else:
+    setFocusOnLoad();
+
     for (var i = 0; i < _submodules.length; i++) {
       if (this[_submodules[i]].init) {
         this[_submodules[i]].init();
@@ -667,6 +703,7 @@ var VuFind = (function VuFind() {
     loading: loading,
     loadingElement: loadingElement,
     loadingOverlay,
+    transEsc: transEsc,
     translate: translate,
     updateCspNonce: updateCspNonce,
     getCurrentSearchId: getCurrentSearchId,
@@ -688,20 +725,6 @@ var VuFind = (function VuFind() {
 })();
 
 /* --- GLOBAL FUNCTIONS --- */
-
-/**
- * HTML-encode a string.
- * @param {string} value The string to encode.
- * @returns {string} The encoded string.
- */
-function htmlEncode(value) {
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
 
 /**
  * Keyboard and focus controllers
@@ -826,7 +849,7 @@ function deparam(url) {
  */
 function getUrlRoot(url) {
   // Parse out the base URL for the current record:
-  var urlroot = null;
+  var urlroot;
   var urlParts = url.split(/[?#]/);
   var urlWithoutFragment = urlParts[0];
   var slashSlash = urlWithoutFragment.indexOf('//');

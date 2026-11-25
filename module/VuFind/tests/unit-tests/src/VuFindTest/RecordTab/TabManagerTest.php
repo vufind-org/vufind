@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RecordTab Manager Test Class
+ * RecordTab Manager Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\RecordTab\PluginManager as RecordTabPluginManager;
 use VuFind\RecordTab\TabManager;
 
 /**
- * RecordTab Manager Test Class
+ * RecordTab Manager Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
-     * Default configuration for mock plugin manager
+     * Default configuration for mock plugin manager.
      *
      * @var array
      */
@@ -84,20 +84,17 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @param ?RecordTabPluginManager $recordTabPluginManager Plugin manager to use (null for default)
      * @param ?ConfigManagerInterface $configManager          Config manager to use (null for default)
-     * @param array                   $legacyConfig           Legacy config
      *
      * @return TabManager
      */
     protected function getTabManager(
         ?RecordTabPluginManager $recordTabPluginManager = null,
         ?ConfigManagerInterface $configManager = null,
-        array $legacyConfig = []
     ): TabManager {
         return new TabManager(
             $recordTabPluginManager ?? $this->getMockRecordTabPluginManager(),
             $configManager
-                ?? $this->getMockConfigManager($this->defaultConfig),
-            $legacyConfig
+                ?? $this->getMockConfigManager($this->defaultConfig)
         );
     }
 
@@ -109,49 +106,11 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
     protected function getMockRecordTabPluginManager(): MockObject&RecordTabPluginManager
     {
         $mockTab = $this->createMock(\VuFind\RecordTab\StaffViewArray::class);
-        $mockTab->expects($this->any())->method('isActive')
-            ->willReturn(true);
+        $mockTab->method('isActive')->willReturn(true);
         $pm = $this->createMock(\VuFind\RecordTab\PluginManager::class);
-        $pm->expects($this->any())->method('has')
-            ->willReturn(true);
-        $pm->expects($this->any())->method('get')
-            ->willReturn($mockTab);
+        $pm->method('has')->willReturn(true);
+        $pm->method('get')->willReturn($mockTab);
         return $pm;
-    }
-
-    /**
-     * Test deprecated config warning.
-     *
-     * @return void
-     */
-    public function testDeprecatedConfigTriggersWarning(): void
-    {
-        $this->expectExceptionMessage(
-            'Using deprecated way of fetching tab configuration! Use RecordTabs.ini instead.'
-        );
-        $errorCallback = function (int $code, string $msg): void {
-            throw new \Exception($msg, $code);
-        };
-        $legacyConfig = [
-            'vufind' => [
-                'recorddriver_tabs' => [
-                    'VuFind\RecordDriver\AbstractBase' => [
-                        'tabs' => [
-                            'foo' => 'bar',
-                        ],
-                        'defaultTab' => null,
-                    ],
-                ],
-            ],
-        ];
-        set_error_handler($errorCallback, E_USER_WARNING);
-        try {
-            $this->getTabManager(legacyConfig: $legacyConfig);
-        } catch (\Throwable $e) {
-            throw $e;
-        } finally {
-            restore_error_handler();
-        }
     }
 
     /**
@@ -165,16 +124,16 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
         $driver1 = $this->createMock(\VuFind\RecordDriver\EDS::class);
         $details1 = $tabManager->getTabDetailsForRecord($driver1);
         $this->assertEquals('zip', $details1['default']);
-        $this->assertEquals(['xyzzy', 'zip'], array_keys($details1['tabs']));
+        $this->assertSame(['xyzzy', 'zip'], array_keys($details1['tabs']));
         $driver2 = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $details2 = $tabManager->getTabDetailsForRecord($driver2);
         $this->assertEquals('foo', $details2['default']);
-        $this->assertEquals(['foo'], array_keys($details2['tabs']));
+        $this->assertSame(['foo'], array_keys($details2['tabs']));
         // Switch to collection mode to load a different configuration:
         $tabManager->setContext('collection');
         $details2b = $tabManager->getTabDetailsForRecord($driver2);
         $this->assertEquals('coll', $details2b['default']);
-        $this->assertEquals(['coll'], array_keys($details2b['tabs']));
+        $this->assertSame(['coll'], array_keys($details2b['tabs']));
     }
 
     /**
@@ -186,8 +145,8 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
     {
         $tabManager = $this->getTabManager();
         $driver1 = $this->createMock(\VuFind\RecordDriver\EDS::class);
-        $this->assertEquals(['xyzzy'], $tabManager->getBackgroundTabNames($driver1));
+        $this->assertSame(['xyzzy'], $tabManager->getBackgroundTabNames($driver1));
         $driver2 = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
-        $this->assertEquals([], $tabManager->getBackgroundTabNames($driver2));
+        $this->assertSame([], $tabManager->getBackgroundTabNames($driver2));
     }
 }

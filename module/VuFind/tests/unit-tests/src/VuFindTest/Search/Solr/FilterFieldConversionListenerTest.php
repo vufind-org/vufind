@@ -57,9 +57,9 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
         $listener = new FilterFieldConversionListener(['foo' => 'bar']);
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            $this->equalTo(\VuFindSearch\Service::class),
-            $this->equalTo('pre'),
-            $this->equalTo([$listener, 'onSearchPre'])
+            \VuFindSearch\Service::class,
+            'pre',
+            [$listener, 'onSearchPre']
         );
         $listener->attach($mock);
     }
@@ -88,8 +88,7 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
             ['foo' => 'bar', 'baz' => 'boo']
         );
 
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $command = $this->getMockSearchCommand($params);
         $event = new Event(
             Service::EVENT_PRE,

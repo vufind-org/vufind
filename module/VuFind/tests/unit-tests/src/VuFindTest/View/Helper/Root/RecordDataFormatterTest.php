@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RecordDataFormatter Test Class
+ * RecordDataFormatter Test Class.
  *
  * PHP version 8
  *
@@ -29,20 +29,32 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\View\Helper\EscapeHtml;
+use Laminas\View\Helper\EscapeHtmlAttr;
+use Laminas\View\HelperPluginManager;
+use Laminas\View\Renderer\PhpRenderer;
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
+use Laminas\View\Resolver\TemplatePathStack;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
+use VuFind\ActionHelper\LoginHelper;
 use VuFind\Escaper\Escaper;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
 use VuFind\RecordDataFormatter\Specs\DefaultRecord as DefaultRecordSpec;
+use VuFind\RecordDriver\AbstractBase;
 use VuFind\RecordDriver\Response\PublicationDetails;
 use VuFind\Tags\TagsService;
+use VuFind\View\GlobalsContainer;
 use VuFind\View\Helper\Root\RecordDataFormatter;
-use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 use VuFind\View\Helper\Root\SchemaOrg;
+use VuFind\View\Helper\Root\Url;
 
 use function count;
 
 /**
- * RecordDataFormatter Test Class
+ * RecordDataFormatter Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -67,43 +79,119 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['getActionRouteDetails'])
             ->getMock();
-        $mock->expects($this->any())->method('getActionRouteDetails')
-            ->willReturn(['route' => 'home', 'params' => []]);
+        $mock->method('getActionRouteDetails')->willReturn(['route' => 'home', 'params' => []]);
         return $mock;
     }
 
     /**
      * Get view helpers needed by test.
      *
-     * @param ContainerInterface $container       Mock service container
-     * @param SchemaOrg          $schemaOrgHelper schema.org helper
+     * @param ContainerInterface  $container           Mock service container
+     * @param SchemaOrg           $schemaOrgHelper     schema.org helper
+     * @param RendererInterface   $renderer            View renderer
+     * @param HelperPluginManager $helperPluginManager View helper plugin manager
+     * @param ResolverInterface   $resolver            View resolver
+     * @param Url                 $url                 Url view helper
      *
      * @return array
      */
-    protected function getViewHelpers(ContainerInterface $container, SchemaOrg $schemaOrgHelper): array
-    {
-        $context = new \VuFind\View\Helper\Root\Context();
-        $record = new \VuFind\View\Helper\Root\Record($this->createMock(TagsService::class));
+    protected function getViewHelpers(
+        ContainerInterface $container,
+        SchemaOrg $schemaOrgHelper,
+        RendererInterface $renderer,
+        HelperPluginManager $helperPluginManager,
+        ResolverInterface $resolver,
+        Url $url
+    ): array {
+        $escapeHtml = new EscapeHtml(new Escaper());
+        $serverUrlHelper = new ServerUrlHelper(false);
+
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $configHelper = new \VuFind\View\Helper\Root\Config($configManager, $this->createMock(LoginHelper::class));
+        $configEntity = $configManager->getConfigArray('config');
+
+        $translate = new \VuFind\View\Helper\Root\Translate();
+
+        $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapeHtml);
+        $truncate = new \VuFind\View\Helper\Root\Truncate();
+
+        $memory = $this->createMock(\VuFind\Search\Memory::class);
+        $memory->method('getLastSearchId')->willReturn(-123);
+
+        $pluginManager = new \VuFind\Search\Options\PluginManager($container);
+        $searchOptions = new \VuFind\View\Helper\Root\SearchOptions($pluginManager);
+        $recordLinker = new \VuFind\View\Helper\Root\RecordLinker(
+            $this->getMockRecordRouter(),
+            $memory,
+            $this->createMock(RouteHelper::class),
+            $pluginManager,
+            $translate,
+            $truncate,
+            $escapeHtml
+        );
+
+        $templateRenderer = $this->getTemplateRenderer($helperPluginManager, renderer: $renderer);
+
+        $context = new \VuFind\View\Helper\Root\Context($this->getPhpRenderer($helperPluginManager), $templateRenderer);
+
+        $authManager = $this->createMock(\VuFind\Auth\Manager::class);
+        $authManager->method('loginEnabled')->willReturn(true);
+        $authManager->method('inPrivacyMode')->willReturn(false);
+        $auth = new \VuFind\View\Helper\Root\Auth(
+            $authManager,
+            $this->createMock(\VuFind\Auth\ILSAuthenticator::class),
+            $templateRenderer,
+            $resolver,
+            $context
+        );
+
+        $coverRouter = $this->createMock(\VuFind\Cover\Router::class);
+
+        $highlight = new \VuFind\View\Helper\Root\Highlight();
+        $addEllipsis = new \VuFind\View\Helper\Root\AddEllipsis();
+        $escapeOrCleanHtml = $this->createMock(\VuFind\View\Helper\Root\EscapeOrCleanHtml::class);
+        $record = new \VuFind\View\Helper\Root\Record(
+            $this->createMock(TagsService::class),
+            $coverRouter,
+            $memory,
+            $context,
+            $templateRenderer,
+            $resolver,
+            $this->createMock(\VuFind\View\Helper\Root\SearchTabs::class),
+            $transEsc,
+            $highlight,
+            $addEllipsis,
+            $escapeOrCleanHtml,
+            $truncate,
+            $auth,
+            new RouteHelper(fn () => $url),
+            $serverUrlHelper,
+            new GlobalsContainer(),
+            $configEntity
+        );
+
         $serviceManager = $this->createMock(\VuFind\Db\Service\PluginManager::class);
-        $serviceManager->method('get')->willReturnCallback(function ($service) {
-            return $this->createMock($service);
-        });
+        $serviceManager->method('get')
+            ->willReturnCallback(function (string $service) {
+                return $this->createMock($service);
+            });
         $record->setDbServiceManager($serviceManager);
+
+        $escapeHtmlAttr = new EscapeHtmlAttr(new Escaper());
+
         return [
-            'auth' => new \VuFind\View\Helper\Root\Auth(
-                $this->createMock(\VuFind\Auth\Manager::class),
-                $this->createMock(\VuFind\Auth\ILSAuthenticator::class)
-            ),
+            'assetManager' => $this->getAssetManager($helperPluginManager),
+            'auth' => $auth,
             'context' => $context,
-            'config' => new \VuFind\View\Helper\Root\Config(
-                $container->get(\VuFind\Config\ConfigManagerInterface::class)
-            ),
-            'identifierLinker' => new \VuFind\View\Helper\Root\IdentifierLinker($context),
-            'htmlSafeJsonEncode' => new \VuFind\View\Helper\Root\HtmlSafeJsonEncode(),
+            'config' => $configHelper,
+            'escapeHtmlAttr' => $escapeHtmlAttr,
+            'identifierLinker' => new \VuFind\View\Helper\Root\IdentifierLinker($templateRenderer),
+            'htmlSafeJsonEncode' => new \VuFind\View\Helper\Root\HtmlSafeJsonEncode($helperPluginManager),
             'icon' => new \VuFind\View\Helper\Root\Icon(
                 [],
                 new \Laminas\Cache\Storage\Adapter\BlackHole(),
-                new \Laminas\View\Helper\EscapeHtmlAttr(new Escaper()),
+                $escapeHtmlAttr,
+                $templateRenderer
             ),
             'openUrl' => new \VuFind\View\Helper\Root\OpenUrl(
                 $context,
@@ -112,17 +200,21 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ),
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
             'record' => $record,
-            'recordLinker' => new \VuFind\View\Helper\Root\RecordLinker($this->getMockRecordRouter()),
+            'recordLinker' => $recordLinker,
             'schemaOrg' => $schemaOrgHelper,
-            'searchMemory' => $this->getSearchMemoryViewHelper(),
-            'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(
-                new \VuFind\Search\Options\PluginManager($container)
+            'searchMemory' => $this->getSearchMemoryViewHelper($memory),
+            'searchOptions' => $searchOptions,
+            'searchTabs' => $this->createMock(\VuFind\View\Helper\Root\SearchTabs::class),
+            'transEsc' => $transEsc,
+            'translate' => $translate,
+            'escapeHtml' => $escapeHtml,
+            'url' => $url,
+            'usertags' => new \VuFind\View\Helper\Root\UserTags(
+                new \VuFind\Config\AccountCapabilities(
+                    [],
+                    fn () => $authManager
+                )
             ),
-            'searchTabs' => $this->getMockBuilder(\VuFind\View\Helper\Root\SearchTabs::class)
-                ->disableOriginalConstructor()->getMock(),
-            'transEsc' => new \VuFind\View\Helper\Root\TransEsc(),
-            'translate' => new \VuFind\View\Helper\Root\Translate(),
-            'usertags' => new \VuFind\View\Helper\Root\UserTags(),
         ];
     }
 
@@ -131,9 +223,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $overrides Fixture fields to override.
      *
-     * @return SolrDefault
+     * @return AbstractBase
      */
-    protected function getDriver($overrides = [])
+    protected function getDriver($overrides = []): AbstractBase
     {
         $record = new class () extends \VuFind\RecordDriver\SolrDefault {
             /**
@@ -165,9 +257,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
              * getAuthorDataFields)
              *
              * @return array
-             *
-             * @SuppressWarnings(PHPMD.UnusedFormalParameter)
              */
+            #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
             public function getDeduplicatedAuthors($dataFields = [])
             {
                 return [
@@ -238,10 +329,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return RecordDataFormatter
      */
-    protected function getFormatter($additionalConfig = [], $additionalSpecs = [])
+    protected function getFormatter(array $additionalConfig = [], array $additionalSpecs = []): RecordDataFormatter
     {
-        // Build the formatter:
-        $factory = new RecordDataFormatterFactory();
         $container = new \VuFindTest\Container\MockContainer($this);
         $recordDataFormatterConfig = array_merge($additionalConfig, [
             'Defaults' => [
@@ -269,7 +358,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ],
         ]);
         $schemaOrgHelper = new \VuFind\View\Helper\Root\SchemaOrg(
-            new \Laminas\View\Helper\HtmlAttributes()
+            new \Laminas\View\Helper\HtmlAttributes(new Escaper())
         );
         $specManager = $this->createMock(\VuFind\RecordDataFormatter\Specs\PluginManager::class);
         $specs = new DefaultRecordSpec($recordDataFormatterConfig, $schemaOrgHelper);
@@ -277,34 +366,54 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $contextSpec = $specs->getDefaults($context);
             $specs->setDefaults($context, array_merge($additionalContextSpec, $contextSpec));
         }
-        $specManager->expects($this->any())
-            ->method('get')
-            ->with($this->isType('string'))
-            ->willReturn($specs);
+        $specManager->method('get')->with($this->isString())->willReturn($specs);
         $container->set(
             \VuFind\RecordDataFormatter\Specs\PluginManager::class,
             $specManager
         );
         $this->addConfigRelatedServicesToContainer($container);
 
-        // Create a view object with a set of helpers:
-        $helpers = $this->getViewHelpers($container, $schemaOrgHelper);
-        $view = $this->getPhpRenderer($helpers);
-        $container->set(\Laminas\View\HelperPluginManager::class, $view->getHelperPluginManager());
-        $formatter = $factory($container, RecordDataFormatter::class);
-
-        // Mock out the router to avoid errors:
         $match = new \Laminas\Router\RouteMatch([]);
         $match->setMatchedRouteName('foo');
-        $view->plugin('url')
-            ->setRouter($this->createMock(\Laminas\Router\RouteStackInterface::class))
-            ->setRouteMatch($match);
 
-        // Inject the view object into all of the helpers:
-        $formatter->setView($view);
+        $url = new Url();
+        $url->setRouter($this->createMock(\Laminas\Router\RouteStackInterface::class));
+        $url->setRouteMatch($match);
+
+        // Create resolver and view
+        $resolver = new TemplatePathStack();
+        $resolver->setPaths([
+            $this->getPathForTheme('root'),
+            $this->getPathForTheme('bootstrap5'),
+        ]);
+
+        $helperPluginManager = $this->getHelperPluginManager(container: $container);
+        $view = new PhpRenderer();
+        $view->setHelperPluginManager($helperPluginManager);
+        $view->setResolver($resolver);
+        $container->set(PhpRenderer::class, $view);
+        $container->set('config', []);
+
+        $helpers = $this->getViewHelpers($container, $schemaOrgHelper, $view, $helperPluginManager, $resolver, $url);
+
         foreach ($helpers as $helper) {
-            $helper->setView($view);
+            if (method_exists($helper, 'setView')) {
+                $helper->setView($view);
+            }
         }
+
+        $pluginManager = $view->getHelperPluginManager();
+        $pluginManager->setAllowOverride(true);
+        foreach ($helpers as $key => $value) {
+            $pluginManager->setService($key, $value);
+        }
+
+        $formatter = new RecordDataFormatter(
+            $specManager,
+            $helpers['record'],
+            $helpers['transEsc'],
+            $helpers['escapeHtml'],
+        );
 
         return $formatter;
     }
@@ -317,7 +426,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return mixed
      */
-    protected function findResult($needle, $haystack)
+    protected function findResult(string $needle, array $haystack): mixed
     {
         foreach ($haystack as $current) {
             if ($current['label'] == $needle) {
@@ -334,7 +443,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getLabels($results)
+    protected function getLabels(array $results): array
     {
         $callback = function ($c) {
             return $c['label'];
@@ -665,7 +774,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getGlobalTestConfig()
+    public function getGlobalTestConfig(): array
     {
         return [
             'Global' => [
@@ -781,13 +890,13 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Invokes a RecordDataFormatter with a driver and returns getData results.
      *
-     * @param SolrDefault $driver        Driver to invoke with.
-     * @param array       $spec          Specifications to test with.
-     * @param array       $globalOptions Optional global options.
+     * @param AbstractBase $driver        Driver to invoke with.
+     * @param array        $spec          Specifications to test with.
+     * @param array        $globalOptions Optional global options.
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getInvokedSpecs($driver, array $spec, $globalOptions = []): array
+    protected function getInvokedSpecs(AbstractBase $driver, array $spec, array $globalOptions = []): array
     {
         $formatter = ($this->getFormatter($globalOptions))($driver);
         return $formatter->getData($spec);
@@ -796,13 +905,13 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Calls RecordDataFormatter::getData with a driver as parameter and returns the results.
      *
-     * @param SolrDefault $driver        Driver to call with.
-     * @param array       $spec          Specifications to test with.
-     * @param array       $globalOptions Optional global options.
+     * @param AbstractBase $driver        Driver to call with.
+     * @param array        $spec          Specifications to test with.
+     * @param array        $globalOptions Optional global options.
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getOldSpecs($driver, array $spec, $globalOptions = []): array
+    protected function getOldSpecs(AbstractBase $driver, array $spec, array $globalOptions = []): array
     {
         $formatter = $this->getFormatter($globalOptions);
         return $formatter->getData($driver, $spec);
@@ -811,12 +920,12 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Invokes a RecordDataFormatter with global options and with a driver and returns getData results.
      *
-     * @param SolrDefault $driver Driver to invoke with.
-     * @param array       $spec   Specifications to test with.
+     * @param AbstractBase $driver Driver to invoke with.
+     * @param array        $spec   Specifications to test with.
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getInvokedSpecsWithGlobalOptions($driver, array $spec): array
+    protected function getInvokedSpecsWithGlobalOptions(AbstractBase $driver, array $spec): array
     {
         return $this->getInvokedSpecs($driver, $spec, $this->getGlobalTestConfig());
     }
@@ -824,12 +933,12 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Calls RecordDataFormatter::getData with global options with a driver as parameter and returns the results.
      *
-     * @param SolrDefault $driver Driver to call with.
-     * @param array       $spec   Specifications to test with.
+     * @param AbstractBase $driver Driver to call with.
+     * @param array        $spec   Specifications to test with.
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getOldSpecsWithGlobalOptions($driver, array $spec): array
+    protected function getOldSpecsWithGlobalOptions(AbstractBase $driver, array $spec): array
     {
         return $this->getOldSpecs($driver, $spec, $this->getGlobalTestConfig());
     }

@@ -50,7 +50,7 @@ use VuFind\Search\Results\PluginManager;
 trait SearchObjectsTrait
 {
     /**
-     * Get an instance of an anonymous class extending the Base Options object
+     * Get an instance of an anonymous class extending the Base Options object.
      *
      * @param ?ConfigManagerInterface $configManager Config manager for Options object (null
      * for new mock)
@@ -65,7 +65,7 @@ trait SearchObjectsTrait
              *
              * @return string
              */
-            public function getSearchAction()
+            public function getSearchAction(): string
             {
                 return '';
             }
@@ -75,7 +75,7 @@ trait SearchObjectsTrait
              *
              * @return string
              */
-            public function getSearchClassId()
+            public function getSearchClassId(): string
             {
                 return 'Mock';
             }

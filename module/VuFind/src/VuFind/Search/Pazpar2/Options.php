@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Pazpar2 Search Options
+ * Pazpar2 Search Options.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Config\ConfigManagerInterface;
 use function is_array;
 
 /**
- * Pazpar2 Search Options
+ * Pazpar2 Search Options.
  *
  * @category VuFind
  * @package  Search_Pazpar2
@@ -45,7 +45,7 @@ use function is_array;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */
@@ -91,20 +91,20 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'pazpar2-search';
     }
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): ?string
     {
-        return false;
+        return null;
     }
 
     /**
@@ -112,7 +112,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return bool
      */
-    public function supportsCart()
+    public function supportsCart(): bool
     {
         // Not currently supported
         return false;

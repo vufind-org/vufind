@@ -63,42 +63,42 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
     use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
 
     /**
-     * HTTP client factory
+     * HTTP client factory.
      *
      * @var callable
      */
     protected $clientFactory;
 
     /**
-     * Primo JWT API URL
+     * Primo JWT API URL.
      *
      * @var string
      */
     protected $jwtUrl;
 
     /**
-     * Primo REST API search URL
+     * Primo REST API search URL.
      *
      * @var string
      */
     protected $searchUrl;
 
     /**
-     * Institution code
+     * Institution code.
      *
      * @var string
      */
     protected $inst;
 
     /**
-     * Session container
+     * Session container.
      *
      * @var SessionContainer
      */
     protected $session;
 
     /**
-     * Response for an empty search
+     * Response for an empty search.
      *
      * @var array
      */
@@ -110,7 +110,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
     ];
 
     /**
-     * Mappings from VuFind index names to Primo
+     * Mappings from VuFind index names to Primo.
      *
      * @var array
      */
@@ -124,7 +124,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
     ];
 
     /**
-     * Legacy sort mappings
+     * Legacy sort mappings.
      *
      * @var array
      */
@@ -135,7 +135,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Sets up the Primo API Client
      *
@@ -163,7 +163,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
 
     /**
      * Execute a search. Adds all the querystring parameters into
-     * $this->client and returns the parsed response
+     * $this->client and returns the parsed response.
      *
      * @param string $institution Institution
      * @param array  $terms       Associative array:
@@ -259,7 +259,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
 
     /**
      * Get the institution code based on user IP. If user is coming from
-     * off campus return
+     * off campus return.
      *
      * @return string
      */
@@ -269,7 +269,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Support method for query() -- perform inner search logic
+     * Support method for query() -- perform inner search logic.
      *
      * @param array $terms Associative array:
      *     index       string: primo index to search (default "any")
@@ -474,7 +474,16 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
             $control = $pnx->control;
             $display = $pnx->display;
             $search = $pnx->search ?? null;
-            $item['recordid'] = $this->getRecordId($control->recordid[0]);
+            $recordId = $control->recordid[0];
+            if (str_starts_with($recordId, 'dedupmrg')) {
+                $recordId = $control->almaid[0] ?? false;
+                if (!$recordId) {
+                    $recordId = $control->sourcerecordid[0];
+                }
+                $parts = explode('$$', $recordId);
+                $recordId = substr(end($parts), 1);
+            }
+            $item['recordid'] = $this->getRecordId($recordId);
             $item['title'] = $display->title[0] ?? '';
             $item['format'] = $display->type ?? [];
             // creators (use the search fields instead of display (if available) to get them as an array instead of a
@@ -513,6 +522,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
             $item['fulltext'] = $pnx->delivery->fulltext[0] ?? '';
             $item['isbn'] = array_values(array_unique($addata->isbn ?? []));
             $item['issn'] = $search->issn ?? [];
+            $item['publishDate'] = $search->creationdate ?? [];
             $item['publisher'] = $display->publisher ?? [];
             $item['peer_reviewed'] = ($display->lds50[0] ?? '') === 'peer_reviewed';
             $item['attributes'] = (array)($display->attribute ?? []);
@@ -556,7 +566,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
             // (We could convert dash-less ISSNs to dashed ones, but try to stay
             // true to the metadata)
             $callback = function ($issn) use ($item) {
-                return strlen($issn) != 8
+                return strlen($issn) !== 8
                     || !in_array(
                         substr($issn, 0, 4) . '-' . substr($issn, 4),
                         $item['issn']
@@ -613,7 +623,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Process highlighting tags of the record fields
+     * Process highlighting tags of the record fields.
      *
      * @param array     $record    Record data
      * @param array     $params    Request params
@@ -691,7 +701,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Get a JWT token for the session
+     * Get a JWT token for the session.
      *
      * @param bool $renew Whether to renew the token
      *
@@ -720,7 +730,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Build a URL from a configured one
+     * Build a URL from a configured one.
      *
      * @param string $url URL
      *
@@ -732,7 +742,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Get a working identifier from an identifier of a search result
+     * Get a working identifier from an identifier of a search result.
      *
      * @param string $id Identifier
      *
@@ -745,7 +755,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Get first subfield from a field that can contain subfields
+     * Get first subfield from a field that can contain subfields.
      *
      * Example field: 'Mattila, Jaakko$$QMattila, Jaakko'
      *

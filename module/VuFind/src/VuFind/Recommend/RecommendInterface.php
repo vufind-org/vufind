@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search Recommendations Interface
+ * Search Recommendations Interface.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * Search Recommendations Interface
+ * Search Recommendations Interface.
  *
  * This interface class is the definition of the required methods for
  * generating search recommendations.
@@ -67,12 +67,12 @@ interface RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request);
+    public function init(\VuFind\Search\Base\Params $params, array $request): void;
 
     /**
      * Called after the Search Results object has performed its main search. This

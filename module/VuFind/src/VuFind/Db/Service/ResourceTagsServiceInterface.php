@@ -49,7 +49,7 @@ use VuFind\Db\Entity\UserListEntityInterface;
 interface ResourceTagsServiceInterface extends DbServiceInterface
 {
     /**
-     * Get Resource Tags Paginator
+     * Get Resource Tags Paginator.
      *
      * @param ?int    $userId            ID of user (null for any)
      * @param ?int    $resourceId        ID of the resource (null for any)
@@ -79,7 +79,7 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
     public function createEntity(): ResourceTagsEntityInterface;
 
     /**
-     * Create a resource_tags row linking the specified resources
+     * Create a resource_tags row linking the specified resources.
      *
      * @param ResourceEntityInterface|int|null $resourceOrId Resource entity or ID to link up (optional)
      * @param TagsEntityInterface|int          $tagOrId      Tag entity or ID to link up
@@ -237,7 +237,7 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
     ): int;
 
     /**
-     * Get count of anonymous tags
+     * Get count of anonymous tags.
      *
      * @return int count
      */

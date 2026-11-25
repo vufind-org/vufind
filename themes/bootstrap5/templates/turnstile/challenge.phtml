@@ -1,4 +1,5 @@
 <?php
+  $this->headTitle($this->translate('challenge_title'));
   $this->assetManager()->appendScriptLink($jsLibraryUrl, ['defer' => '', 'async' => '']);
   $js = <<<JS
       function turnstileChallengeEnded(token) {
@@ -8,6 +9,8 @@
       JS;
 ?>
 <?=$this->assetManager()->outputInlineScriptString($js)?>
+
+<h1><?=$this->transEsc('challenge_heading')?></h1>
 
 <div
     class="cf-turnstile"

@@ -37,7 +37,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use PDO;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\Config;
 use VuFind\Config\Feature\SecretTrait;
 
 /**
@@ -55,13 +54,6 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     use SecretTrait;
 
     /**
-     * VuFind configuration
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * Configuration file name when used as a factory.
      *
      * @var string
@@ -76,22 +68,22 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     protected string $wrapperClass = \VuFind\Db\Connection::class;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param ?Config             $config    VuFind configuration (provided when used
+     * @param ?array              $config    VuFind configuration (provided when used
      * as service; omitted when used as factory)
      * @param ?ContainerInterface $container Service container (provided when used
      * as service; omitted when used as factory)
      */
     public function __construct(
-        ?Config $config = null,
+        protected ?array $config = null,
         protected ?ContainerInterface $container = null
     ) {
-        $this->config = $config ?: new Config([]);
+        $this->config = $config ?: [];
     }
 
     /**
-     * Create an object (glue code for FactoryInterface compliance)
+     * Create an object (glue code for FactoryInterface compliance).
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -103,9 +95,8 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
@@ -114,13 +105,8 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $doctrineCacheDir = $container
-            ->get('config')['caches']['doctrinemodule.cache.filesystem']['options']['cache_dir'];
-        $cacheManager = $container->get(\VuFind\Cache\Manager::class);
-        $cacheManager->ensureCacheDirectoryExists($doctrineCacheDir);
-
         $this->config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject($this->configName);
+            ->getConfigArray($this->configName);
         $this->container = $container;
         return $this->getConnection();
     }
@@ -137,28 +123,25 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      */
     public function getConnection($overrideUser = null, $overridePass = null)
     {
-        // Make sure object cache is initialized; Doctrine needs it:
-        $this->container->get(\VuFind\Cache\Manager::class)->getCache('object');
-
         // Parse details from connection string if available, otherwise use
         // more granular config settings.
-        if (isset($this->config->Database->database)) {
+        if (isset($this->config['Database']['database'])) {
             $options = $this->getOptionsFromConnectionString(
-                $this->config->Database->database,
+                $this->config['Database']['database'],
                 $overrideUser,
                 $overridePass
             );
         } else {
-            $dbConfig = $this->config->Database ?? new Config([]);
+            $dbConfig = $this->config['Database'] ?? [];
             $options = [
-                'driver' => $this->getDriverName($dbConfig->database_driver ?? ''),
-                'host' => $dbConfig->database_host ?? null,
-                'user' => $overrideUser ?? $dbConfig->database_username ?? null,
+                'driver' => $this->getDriverName($dbConfig['database_driver'] ?? ''),
+                'host' => $dbConfig['database_host'] ?? null,
+                'user' => $overrideUser ?? $dbConfig['database_username'] ?? null,
                 'password' => $overridePass ?? $this->getSecretFromConfig($dbConfig, 'database_password'),
-                'dbname' => $dbConfig->database_name ?? null,
+                'dbname' => $dbConfig['database_name'] ?? null,
             ];
-            if (!empty($dbConfig->database_port)) {
-                $options['port'] = $dbConfig->database_port;
+            if (!empty($dbConfig['database_port'])) {
+                $options['port'] = $dbConfig['database_port'];
             }
         }
 
@@ -196,18 +179,34 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     protected function getDriverOptions($driver)
     {
         // Load options from the configuration:
-        $driverOptions = $this->config?->Database?->extra_options?->toArray() ?? [];
+        $driverOptions = $this->config['Database']['extra_options'] ?? [];
 
         // Apply MySQL-specific adjustments:
         if ($driver == 'pdo_mysql') {
-            $driverOptions[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT]
-                = $this->config->Database->verify_server_certificate ?? false;
-            $sslKeyMap = [
-                'client_key' => PDO::MYSQL_ATTR_SSL_KEY,
-                'client_cert' => PDO::MYSQL_ATTR_SSL_CERT,
-                'ca_cert' => PDO::MYSQL_ATTR_SSL_CA,
-                'ca_path' => PDO::MYSQL_ATTR_SSL_CAPATH,
-            ];
+            if (PHP_VERSION_ID >= 80400) {
+                // @phpstan-ignore-next-line
+                $driverOptions[Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT]
+                    = $this->config['Database']['verify_server_certificate'] ?? false;
+                $sslKeyMap = [
+                    // @phpstan-ignore-next-line
+                    'client_key' => Pdo\Mysql::ATTR_SSL_KEY,
+                    // @phpstan-ignore-next-line
+                    'client_cert' => Pdo\Mysql::ATTR_SSL_CERT,
+                    // @phpstan-ignore-next-line
+                    'ca_cert' => Pdo\Mysql::ATTR_SSL_CA,
+                    // @phpstan-ignore-next-line
+                    'ca_path' => Pdo\Mysql::ATTR_SSL_CAPATH,
+                ];
+            } else {
+                $driverOptions[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT]
+                    = $this->config['Database']['verify_server_certificate'] ?? false;
+                $sslKeyMap = [
+                    'client_key' => PDO::MYSQL_ATTR_SSL_KEY,
+                    'client_cert' => PDO::MYSQL_ATTR_SSL_CERT,
+                    'ca_cert' => PDO::MYSQL_ATTR_SSL_CA,
+                    'ca_path' => PDO::MYSQL_ATTR_SSL_CAPATH,
+                ];
+            }
             $sslConfigured = false;
             foreach ($sslKeyMap as $oldKey => $newKey) {
                 if (isset($driverOptions[$oldKey])) {
@@ -216,7 +215,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
                 }
                 $sslConfigured = $sslConfigured || isset($driverOptions[$newKey]);
             }
-            $useSsl = $this->config->Database->use_ssl ?? false;
+            $useSsl = $this->config['Database']['use_ssl'] ?? false;
             if ($useSsl && !$sslConfigured) {
                 throw new \Exception(
                     'To use SSL with MySQL, please configure appropriate extra_options in '
@@ -247,7 +246,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         $driver = strtolower($options['driver']);
         switch ($driver) {
             case 'pdo_mysql':
-                $options['charset'] = $this->config->Database->charset ?? 'utf8mb4';
+                $options['charset'] = $this->config['Database']['charset'] ?? 'utf8mb4';
                 if (strtolower($options['charset']) === 'latin1') {
                     throw new \Exception(
                         'The latin1 encoding is no longer supported for MySQL databases in VuFind.'
@@ -261,11 +260,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (empty($this->container)) {
             throw new \Exception('Container is missing!');
         }
-        $connection = DriverManager::getConnection(
-            $options
-        );
-
-        return $connection;
+        return DriverManager::getConnection($options);
     }
 
     /**

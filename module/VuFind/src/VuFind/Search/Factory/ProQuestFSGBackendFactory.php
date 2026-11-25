@@ -30,7 +30,11 @@
 
 namespace VuFind\Search\Factory;
 
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use VuFindSearch\Backend\ProQuestFSG\Backend;
 use VuFindSearch\Backend\ProQuestFSG\Connector;
 use VuFindSearch\Backend\ProQuestFSG\Response\XML\RecordCollectionFactory;
@@ -50,41 +54,40 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
-     * VuFind configuration
+     * ProQuestFSG configuration.
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
-    protected $config;
+    protected array $proQuestFSGConfig;
 
     /**
-     * ProQuestFSG configuration
+     * Create an object.
      *
-     * @var \VuFind\Config\Config
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
+     *
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    protected $proQuestFSGConfig;
-
-    /**
-     * Create service
-     *
-     * @param ContainerInterface $sm      Service manager
-     * @param string             $name    Requested service name (unused)
-     * @param array              $options Extra options (unused)
-     *
-     * @return Backend
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
-    {
-        $this->setup($sm);
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        ?array $options = null
+    ) {
+        $this->setup($container);
         $configManager = $this->getService(\VuFind\Config\ConfigManagerInterface::class);
-        $this->config = $configManager->getConfigObject('config');
-        $this->proQuestFSGConfig = $configManager->getConfigObject('ProQuestFSG');
+        $this->proQuestFSGConfig = $configManager->getConfigArray('ProQuestFSG');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
@@ -100,7 +103,7 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
      *
      * @return Backend
      */
-    protected function createBackend(Connector $connector)
+    protected function createBackend(Connector $connector): Backend
     {
         $backend = new Backend($connector, $this->createRecordCollectionFactory());
         $backend->setLogger($this->logger);
@@ -112,9 +115,9 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
      *
      * @return Connector
      */
-    protected function createConnector()
+    protected function createConnector(): Connector
     {
-        $connector = new Connector($this->createHttpClient(), $this->proQuestFSGConfig->toArray());
+        $connector = new Connector($this->createHttpClient(), $this->proQuestFSGConfig);
         $connector->setLogger($this->logger);
         if ($cache = $this->createConnectorCache($this->proQuestFSGConfig)) {
             $connector->setCache($cache);
@@ -123,11 +126,11 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */
-    protected function createRecordCollectionFactory()
+    protected function createRecordCollectionFactory(): RecordCollectionFactory
     {
         $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {

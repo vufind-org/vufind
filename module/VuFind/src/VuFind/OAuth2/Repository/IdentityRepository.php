@@ -48,7 +48,7 @@ use VuFind\OAuth2\Entity\UserEntity;
 class IdentityRepository implements IdentityProviderInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param UserServiceInterface        $userService        User service
      * @param AccessTokenServiceInterface $accessTokenService Access token service

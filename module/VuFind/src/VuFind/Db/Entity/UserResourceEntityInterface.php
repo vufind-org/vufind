@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for user_resource table
+ * Entity model interface for user_resource table.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Db\Entity;
 use DateTime;
 
 /**
- * Entity model interface for user_resource table
+ * Entity model interface for user_resource table.
  *
  * @category VuFind
  * @package  Database

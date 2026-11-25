@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: CSV importer
+ * Console command: CSV importer.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use VuFind\CSV\Importer;
 use function is_callable;
 
 /**
- * Console command: CSV importer
+ * Console command: CSV importer.
  *
  * @category VuFind
  * @package  Console
@@ -55,14 +55,14 @@ use function is_callable;
 class ImportCsvCommand extends Command
 {
     /**
-     * CSV importer
+     * CSV importer.
      *
      * @var Importer
      */
     protected $importer;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Importer    $importer CSV importer
      * @param string|null $name     The name of the command; passing null means it

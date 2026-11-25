@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS aware delegator factory
+ * ILS aware delegator factory.
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -36,7 +36,7 @@ use function call_user_func;
 use function is_array;
 
 /**
- * ILS aware delegator factory
+ * ILS aware delegator factory.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -55,9 +55,8 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
      * @param array|null         $options   Service options
      *
      * @return AbstractBase
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $name,

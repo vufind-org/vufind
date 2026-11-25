@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Make tag view helper
+ * Make tag view helper.
  *
  * PHP version 8
  *
@@ -30,11 +30,15 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\EscapeHtml;
+use Laminas\View\Helper\HtmlAttributes;
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function in_array;
 use function is_array;
 
 /**
- * Make tag view helper
+ * Make tag view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,10 +47,10 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class MakeTag extends \Laminas\View\Helper\AbstractHelper
+class MakeTag
 {
     /**
-     * List of all valid body tags
+     * List of all valid body tags.
      *
      * Source: https://developer.mozilla.org/en-US/docs/Web/HTML/Element
      * Last checked: September 27, 2022
@@ -198,7 +202,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
     ];
 
     /**
-     * List of all void tags (tags that access no innerHTML)
+     * List of all void tags (tags that access no innerHTML).
      *
      * Source: https://html.spec.whatwg.org/multipage/syntax.html#void-elements
      * Last checked: September 27, 2022
@@ -261,7 +265,21 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
     ];
 
     /**
-     * Render an HTML tag
+     * Constructor.
+     *
+     * @param HtmlAttributes $htmlAttributes HtmlAttributes helper
+     * @param EscapeHtml     $escapeHtml     EscapeHtml helper
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected HtmlAttributes $htmlAttributes,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml,
+    ) {
+    }
+
+    /**
+     * Render an HTML tag.
      *
      * A string passed into $attrs will be treated like a class.
      * These two are equivalent:
@@ -294,7 +312,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Verify HTML tag matches HTML spec
+     * Verify HTML tag matches HTML spec.
      *
      * @param string $tagName Element tag name
      *
@@ -351,7 +369,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Turn associative array into a string of attributes in an anchor
+     * Turn associative array into a string of attributes in an anchor.
      *
      * Additional options
      * - escapeContent: Default true, set to false to skip escaping (like for HTML).
@@ -371,7 +389,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
     ) {
         $this->verifyTagName($tagName);
 
-        $htmlAttrs = $this->getView()->plugin('htmlAttributes')($attrs);
+        $htmlAttrs = ($this->htmlAttributes)($attrs);
 
         if (empty($contents) && in_array($tagName, $this->voidElements)) {
             return '<' . $tagName . $htmlAttrs . '>';
@@ -379,7 +397,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
 
         // Special option: escape content
         if ($options['escapeContent'] ?? true) {
-            $contents = $this->getView()->plugin('escapeHtml')($contents);
+            $contents = ($this->escapeHtml)($contents);
         }
 
         return '<' . $tagName . $htmlAttrs . '>' . $contents . '</' . $tagName . '>';

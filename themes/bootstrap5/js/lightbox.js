@@ -12,7 +12,7 @@ VuFind.register('lightbox', function Lightbox() {
   var _modalParams = {};
   // Elements
   var _modal, _modalBody, _clickedButton = null;
-  // Boostrap modal
+  // Bootstrap modal
   var _bsModal = null;
 
   /**
@@ -174,11 +174,11 @@ VuFind.register('lightbox', function Lightbox() {
     _html(finalHTML);
     VuFind.modal('show');
     // Attach capturing events
-    _modalBody.find('a').click(_constrainLink);
+    _modalBody.find('a').on('click', _constrainLink);
     // Handle submit buttons attached to a form as well as those in a form. Store
     // information about which button was clicked here as checking focused button
     // doesn't work on all browsers and platforms.
-    _modalBody.find('[type=submit]').click(_storeClickedStatus);
+    _modalBody.find('[type=submit]').on('click', _storeClickedStatus);
 
     var forms = _modalBody.find('form:not([data-lightbox-ignore])');
     for (var i = 0; i < forms.length; i++) {
@@ -241,7 +241,6 @@ VuFind.register('lightbox', function Lightbox() {
     _xhr = $.ajax(obj);
     _xhr.always(function lbAjaxAlways() { _xhr = false; })
       .done(function lbAjaxDone(content, status, jq_xhr) {
-        var errorMsgs = [];
         var flashMessages = [];
         if (jq_xhr.status === 204) {
           // No content, close lightbox
@@ -249,7 +248,7 @@ VuFind.register('lightbox', function Lightbox() {
           return;
         } else if (jq_xhr.status !== 205) {
           var testDiv = $('<div/>').html(content);
-          errorMsgs = testDiv.find('.flash-message.alert-danger:not([data-lightbox-ignore])');
+          const errorMsgs = testDiv.find('.flash-message.alert-danger:not([data-lightbox-ignore])');
           flashMessages = testDiv.find('.flash-message:not([data-lightbox-ignore])');
           // Place Hold error isolation
           if (obj.url.match(/\/Record\/.*(Hold|Request)\?/)) {
@@ -265,12 +264,13 @@ VuFind.register('lightbox', function Lightbox() {
         // Close the lightbox after deliberate login provided that:
         // - is a form
         // - catalog login for holds
-        // - or that matches login/create account
+        // - or that matches login/create account (supports both Account and legacy MyResearch URLs)
         // - not a failed login
         if (
           obj.method && (
             obj.url.match(/catalogLogin/)
             || obj.url.match(/MyResearch\/(?!Bulk|Delete|Recover)/)
+            || obj.url.match(/Account\/(?!Bulk|Delete|Recover)/)
           ) && flashMessages.length === 0
         ) {
           let doRefresh = true;
@@ -577,6 +577,7 @@ VuFind.register('lightbox', function Lightbox() {
     _currentUrl = false;
     _lbReferrerUrl = false;
     _lightboxTitle = false;
+    VuFind.lightbox.refreshOnClose = false;
     _modalParams = {};
   }
 

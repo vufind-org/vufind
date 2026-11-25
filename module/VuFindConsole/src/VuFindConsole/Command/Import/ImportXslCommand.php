@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: XSLT importer
+ * Console command: XSLT importer.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use VuFind\XSLT\Importer;
 use function is_callable;
 
 /**
- * Console command: XSLT importer
+ * Console command: XSLT importer.
  *
  * @category VuFind
  * @package  Console
@@ -55,14 +55,14 @@ use function is_callable;
 class ImportXslCommand extends Command
 {
     /**
-     * XSLT importer
+     * XSLT importer.
      *
      * @var Importer
      */
     protected $importer;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Importer    $importer XSLT importer
      * @param string|null $name     The name of the command; passing null means it

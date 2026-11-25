@@ -32,10 +32,10 @@ namespace VuFindTest\Auth;
 use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\Database;
-use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Http\PhpEnvironment\Request;
+use VuFind\Validator\EmailAddressValidator;
 
 /**
  * Database authentication test class.
@@ -58,7 +58,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Username cannot be blank');
 
-        $db = new Database();
+        $db = $this->getDatabaseAuth();
         $db->create($this->getRequest());
     }
 
@@ -72,7 +72,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Password cannot be blank');
 
-        $db = new Database();
+        $db = $this->getDatabaseAuth();
         $arr = $this->getCreateParams();
         $arr['password'] = $arr['password2'] = '';
         $db->create($this->getRequest($arr));
@@ -88,18 +88,18 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Passwords do not match');
 
-        $db = new Database();
+        $db = $this->getDatabaseAuth();
         $arr = $this->getCreateParams();
         $arr['password2'] = 'bad';
         $db->create($this->getRequest($arr));
     }
 
     /**
-     * Data provider for testCreateWithPasswordPolicy
+     * Data provider for testCreateWithPasswordPolicy.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTestCreateWithPasswordPolicyData(): array
+    public static function getTestCreateWithPasswordPolicyData(): \Iterator
     {
         $numericConfig = [
             'minimum_password_length' => 4,
@@ -116,96 +116,92 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
             'maximum_password_length' => 5,
             'password_pattern' => '([\p{L}\p{N}]+)',
         ];
-        return [
-            // Numeric:
-            [
-                $numericConfig,
-                '123',
-                \VuFind\Exception\Auth::class,
-                'password_minimum_length',
-            ],
-            [
-                $numericConfig,
-                '123456',
-                \VuFind\Exception\Auth::class,
-                'password_maximum_length',
-            ],
-            [
-                $numericConfig,
-                'pass',
-                \VuFind\Exception\Auth::class,
-                'password_error_invalid',
-            ],
-            [
-                $numericConfig,
-                '1234',
-                \Exception::class,
-                'Service manager missing', // == success
-            ],
-            [
-                $numericConfig,
-                '12345',
-                \Exception::class,
-                'Service manager missing', // == success
-            ],
-
-            // Alphanumeric:
-            [
-                $alnumConfig,
-                '1ab',
-                \VuFind\Exception\Auth::class,
-                'password_minimum_length',
-            ],
-            [
-                $alnumConfig,
-                '1abcde',
-                \VuFind\Exception\Auth::class,
-                'password_maximum_length',
-            ],
-            [
-                $alnumConfig,
-                'pass!',
-                \VuFind\Exception\Auth::class,
-                'password_error_invalid',
-            ],
-            [
-                $alnumConfig,
-                '1abc',
-                \Exception::class,
-                'Service manager missing', // == success
-            ],
-            [
-                $alnumConfig,
-                '1abcd',
-                \Exception::class,
-                'Service manager missing', // == success
-            ],
-
-            // Pattern:
-            [
-                $patternConfig,
-                '1abc!',
-                \VuFind\Exception\Auth::class,
-                'password_error_invalid',
-            ],
-            [
-                $patternConfig,
-                'abd/e',
-                \VuFind\Exception\Auth::class,
-                'password_error_invalid',
-            ],
-            [
-                $patternConfig,
-                '1abcÖ',
-                \Exception::class,
-                'Service manager missing', // == success
-            ],
-            [
-                $patternConfig,
-                'abcδ',
-                \Exception::class,
-                'Service manager missing', // == success
-            ],
+        // Numeric:
+        yield [
+            $numericConfig,
+            '123',
+            \VuFind\Exception\Auth::class,
+            'password_minimum_length',
+        ];
+        yield [
+            $numericConfig,
+            '123456',
+            \VuFind\Exception\Auth::class,
+            'password_maximum_length',
+        ];
+        yield [
+            $numericConfig,
+            'pass',
+            \VuFind\Exception\Auth::class,
+            'password_error_invalid',
+        ];
+        yield [
+            $numericConfig,
+            '1234',
+            \Exception::class,
+            'Service manager missing', // == success
+        ];
+        yield [
+            $numericConfig,
+            '12345',
+            \Exception::class,
+            'Service manager missing', // == success
+        ];
+        // Alphanumeric:
+        yield [
+            $alnumConfig,
+            '1ab',
+            \VuFind\Exception\Auth::class,
+            'password_minimum_length',
+        ];
+        yield [
+            $alnumConfig,
+            '1abcde',
+            \VuFind\Exception\Auth::class,
+            'password_maximum_length',
+        ];
+        yield [
+            $alnumConfig,
+            'pass!',
+            \VuFind\Exception\Auth::class,
+            'password_error_invalid',
+        ];
+        yield [
+            $alnumConfig,
+            '1abc',
+            \Exception::class,
+            'Service manager missing', // == success
+        ];
+        yield [
+            $alnumConfig,
+            '1abcd',
+            \Exception::class,
+            'Service manager missing', // == success
+        ];
+        // Pattern:
+        yield [
+            $patternConfig,
+            '1abc!',
+            \VuFind\Exception\Auth::class,
+            'password_error_invalid',
+        ];
+        yield [
+            $patternConfig,
+            'abd/e',
+            \VuFind\Exception\Auth::class,
+            'password_error_invalid',
+        ];
+        yield [
+            $patternConfig,
+            '1abcÖ',
+            \Exception::class,
+            'Service manager missing', // == success
+        ];
+        yield [
+            $patternConfig,
+            'abcδ',
+            \Exception::class,
+            'Service manager missing', // == success
         ];
     }
 
@@ -226,13 +222,8 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         string $expectedExceptionClass,
         string $expectedExceptionMsg
     ): void {
-        $config = new Config(
-            [
-                'Authentication' => $authConfig,
-            ]
-        );
-        $db = new Database();
-        $db->setConfig($config);
+        $config = ['Authentication' => $authConfig];
+        $db = $this->getDatabaseAuth($config);
         $arr = $this->getCreateParams();
         $arr['password'] = $password;
         $arr['password2'] = $password;
@@ -248,15 +239,8 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      */
     public function testCreateWithBadPasswordPolicyPattern(): void
     {
-        $config = new Config(
-            [
-                'Authentication' => [
-                    'password_pattern' => 'a/',
-                ],
-            ]
-        );
-        $db = new Database();
-        $db->setConfig($config);
+        $config = ['Authentication' => ['password_pattern' => 'a/']];
+        $db = $this->getDatabaseAuth($config);
         $arr = $this->getCreateParams();
         $arr['password'] = 'abcδ';
         $arr['password2'] = 'abcδ';
@@ -265,11 +249,11 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testCreateWithUsernamePolicy
+     * Data provider for testCreateWithUsernamePolicy.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTestCreateWithUsernamePolicyData(): array
+    public static function getTestCreateWithUsernamePolicyData(): \Iterator
     {
         $defaultConfig = [
             'username_pattern' => '([\\x21\\x23-\\x2B\\x2D-\\x2F\\x3D\\x3F\\x40'
@@ -290,116 +274,111 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
             'maximum_username_length' => 5,
             'username_pattern' => '([\p{L}\p{N}]+)',
         ];
-        return [
-            // Default pattern:
-            [
-                $defaultConfig,
-                '"foo"',
-                \VuFind\Exception\Auth::class,
-                'username_error_invalid',
-            ],
-            [
-                $defaultConfig,
-                '😀',
-                \VuFind\Exception\Auth::class,
-                'username_error_invalid',
-            ],
-            [
-                $defaultConfig,
-                "!#$%&'*+-/=?^_`{|}~abcδä",
-                \Exception::class,
-                'Service manager missing', // == success
-            ],
-
-            // Numeric:
-            [
-                $numericConfig,
-                '123',
-                \VuFind\Exception\Auth::class,
-                'username_minimum_length',
-            ],
-            [
-                $numericConfig,
-                '123456',
-                \VuFind\Exception\Auth::class,
-                'username_maximum_length',
-            ],
-            [
-                $numericConfig,
-                'abcd',
-                \VuFind\Exception\Auth::class,
-                'username_error_invalid',
-            ],
-            [
-                $numericConfig,
-                '1234',
-                \Exception::class,
-                'Service manager missing', // == success
-            ],
-            [
-                $numericConfig,
-                '12345',
-                \Exception::class,
-                'Service manager missing', // == success
-            ],
-
-            // Alphanumeric:
-            [
-                $alnumConfig,
-                '1ab',
-                \VuFind\Exception\Auth::class,
-                'username_minimum_length',
-            ],
-            [
-                $alnumConfig,
-                '1abcde',
-                \VuFind\Exception\Auth::class,
-                'username_maximum_length',
-            ],
-            [
-                $alnumConfig,
-                'pass!',
-                \VuFind\Exception\Auth::class,
-                'username_error_invalid',
-            ],
-            [
-                $alnumConfig,
-                '1abc',
-                \Exception::class,
-                'Service manager missing', // == success
-            ],
-            [
-                $alnumConfig,
-                '1abcd',
-                \Exception::class,
-                'Service manager missing', // == success
-            ],
-
-            // Pattern:
-            [
-                $patternConfig,
-                '1abc!',
-                \VuFind\Exception\Auth::class,
-                'username_error_invalid',
-            ],
-            [
-                $patternConfig,
-                'abd/e',
-                \VuFind\Exception\Auth::class,
-                'username_error_invalid',
-            ],
-            [
-                $patternConfig,
-                '1abcÖ',
-                \Exception::class,
-                'Service manager missing', // == success
-            ],
-            [
-                $patternConfig,
-                'abcδ',
-                \Exception::class,
-                'Service manager missing', // == success
-            ],
+        // Default pattern:
+        yield [
+            $defaultConfig,
+            '"foo"',
+            \VuFind\Exception\Auth::class,
+            'username_error_invalid',
+        ];
+        yield [
+            $defaultConfig,
+            '😀',
+            \VuFind\Exception\Auth::class,
+            'username_error_invalid',
+        ];
+        yield [
+            $defaultConfig,
+            "!#$%&'*+-/=?^_`{|}~abcδä",
+            \Exception::class,
+            'Service manager missing', // == success
+        ];
+        // Numeric:
+        yield [
+            $numericConfig,
+            '123',
+            \VuFind\Exception\Auth::class,
+            'username_minimum_length',
+        ];
+        yield [
+            $numericConfig,
+            '123456',
+            \VuFind\Exception\Auth::class,
+            'username_maximum_length',
+        ];
+        yield [
+            $numericConfig,
+            'abcd',
+            \VuFind\Exception\Auth::class,
+            'username_error_invalid',
+        ];
+        yield [
+            $numericConfig,
+            '1234',
+            \Exception::class,
+            'Service manager missing', // == success
+        ];
+        yield [
+            $numericConfig,
+            '12345',
+            \Exception::class,
+            'Service manager missing', // == success
+        ];
+        // Alphanumeric:
+        yield [
+            $alnumConfig,
+            '1ab',
+            \VuFind\Exception\Auth::class,
+            'username_minimum_length',
+        ];
+        yield [
+            $alnumConfig,
+            '1abcde',
+            \VuFind\Exception\Auth::class,
+            'username_maximum_length',
+        ];
+        yield [
+            $alnumConfig,
+            'pass!',
+            \VuFind\Exception\Auth::class,
+            'username_error_invalid',
+        ];
+        yield [
+            $alnumConfig,
+            '1abc',
+            \Exception::class,
+            'Service manager missing', // == success
+        ];
+        yield [
+            $alnumConfig,
+            '1abcd',
+            \Exception::class,
+            'Service manager missing', // == success
+        ];
+        // Pattern:
+        yield [
+            $patternConfig,
+            '1abc!',
+            \VuFind\Exception\Auth::class,
+            'username_error_invalid',
+        ];
+        yield [
+            $patternConfig,
+            'abd/e',
+            \VuFind\Exception\Auth::class,
+            'username_error_invalid',
+        ];
+        yield [
+            $patternConfig,
+            '1abcÖ',
+            \Exception::class,
+            'Service manager missing', // == success
+        ];
+        yield [
+            $patternConfig,
+            'abcδ',
+            \Exception::class,
+            'Service manager missing', // == success
         ];
     }
 
@@ -420,13 +399,8 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         string $expectedExceptionClass,
         string $expectedExceptionMsg
     ): void {
-        $config = new Config(
-            [
-                'Authentication' => $authConfig,
-            ]
-        );
-        $db = new Database();
-        $db->setConfig($config);
+        $config = ['Authentication' => $authConfig];
+        $db = $this->getDatabaseAuth($config);
         $arr = $this->getCreateParams();
         $arr['username'] = $username;
         $this->expectException($expectedExceptionClass);
@@ -444,7 +418,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Service manager missing');
 
-        $db = new Database();
+        $db = $this->getDatabaseAuth();
         $db->create($this->getRequest($this->getCreateParams()));
     }
 
@@ -541,7 +515,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $post = new Parameters($post);
         $request = $this->getMockBuilder(Request::class)
             ->onlyMethods(['getPost'])->getMock();
-        $request->expects($this->any())->method('getPost')->willReturn($post);
+        $request->method('getPost')->willReturn($post);
         return $request;
     }
 
@@ -556,12 +530,26 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     {
         $serviceManager = $this->getMockBuilder(\VuFind\Db\Service\PluginManager::class)
             ->disableOriginalConstructor()->onlyMethods(['get'])->getMock();
-        $serviceManager->expects($this->any())->method('get')
-            ->with($this->equalTo(UserServiceInterface::class))
+        $serviceManager->method('get')
+            ->with(UserServiceInterface::class)
             ->willReturn($service);
 
-        $db = new Database();
+        $db = $this->getDatabaseAuth();
         $db->setDbServiceManager($serviceManager);
+        return $db;
+    }
+
+    /**
+     * Get a Database authenticator instance.
+     *
+     * @param array $config Configuration
+     *
+     * @return Database
+     */
+    protected function getDatabaseAuth(array $config = []): Database
+    {
+        $db = new Database(new EmailAddressValidator());
+        $db->setConfig($config);
         return $db;
     }
 }

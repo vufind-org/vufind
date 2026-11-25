@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Session view helper Test Class
+ * Session view helper Test Class.
  *
  * PHP version 8
  *
@@ -29,11 +29,11 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\Session\Container;
 use VuFind\View\Helper\Root\Session;
-use VuFind\View\Helper\Root\SessionFactory;
 
 /**
- * Session view helper Test Class
+ * Session view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -44,19 +44,13 @@ use VuFind\View\Helper\Root\SessionFactory;
 class SessionTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test the helper
+     * Test the helper.
      *
      * @return void
      */
     public function testSession()
     {
-        // Set up a real session manager so that we can test the factory behavior:
-        $container = new \VuFindTest\Container\MockContainer($this);
-        $container->set(\Laminas\Session\SessionManager::class, \Laminas\Session\Container::getDefaultManager());
-        $factory = new SessionFactory();
-
-        // Now build the test subject
-        $session = $factory($container, Session::class);
+        $session = new Session(new Container('SessionTest'));
         // Values default to null
         $this->assertNull($session->get('foo'));
         // Put returns last assigned value

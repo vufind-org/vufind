@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: generate sitemaps
+ * Console command: generate sitemaps.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Sitemap\Generator;
 
 /**
- * Console command: generate sitemaps
+ * Console command: generate sitemaps.
  *
  * @category VuFind
  * @package  Console
@@ -52,14 +52,14 @@ use VuFind\Sitemap\Generator;
 class SitemapCommand extends Command
 {
     /**
-     * Sitemap generator
+     * Sitemap generator.
      *
      * @var Generator
      */
     protected $generator;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Generator   $generator Sitemap generator
      * @param string|null $name      The name of the command; passing null means it

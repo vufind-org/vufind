@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TemplatePath view helper Test Class
+ * TemplatePath view helper Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\View\Helper;
 use VuFindTheme\View\Helper\TemplatePath;
 
 /**
- * TemplatePath view helper Test Class
+ * TemplatePath view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,14 +45,14 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Path to theme fixtures
+     * Path to theme fixtures.
      *
      * @var string
      */
     protected $fixturePath;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @return void
      */
@@ -70,16 +70,13 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     protected function getHelper()
     {
         // Get mock TemplateStack
-        $stackMock = $this->getMockBuilder(\Laminas\View\Resolver\TemplatePathStack::class)
-            ->disableOriginalConstructor()->getMock();
+        $stackMock = $this->createMock(\Laminas\View\Resolver\TemplatePathStack::class);
 
         $return = new \SplStack();
         $return->push("{$this->fixturePath}/asdf/templates/");
         $return->rewind();
 
-        $stackMock->expects($this->any())
-            ->method('getPaths')
-            ->willReturn($return);
+        $stackMock->method('getPaths')->willReturn($return);
 
         // Make helper
         return new TemplatePath($stackMock);
@@ -100,7 +97,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test thrown error
+     * Test thrown error.
      *
      * @return void
      */
@@ -114,7 +111,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test thrown error
+     * Test thrown error.
      *
      * @return void
      */

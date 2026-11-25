@@ -34,6 +34,9 @@ use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Reflection\ClassReflection;
 use Psr\Container\ContainerInterface;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\ServiceManager\Factory\AutowiringFactory;
+use VuFind\ServiceManager\FactoryDetector;
 
 use function count;
 use function in_array;
@@ -56,20 +59,16 @@ class GeneratorTools
     use \VuFindConsole\ConsoleOutputTrait;
 
     /**
-     * Laminas configuration
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
      * Constructor.
      *
-     * @param array $config Laminas configuration
+     * @param array           $config          Laminas configuration
+     * @param FactoryDetector $factoryDetector Factory detector
      */
-    public function __construct(array $config)
-    {
-        $this->config = $config;
+    public function __construct(
+        #[Autowire(service: 'config')]
+        protected array $config,
+        protected FactoryDetector $factoryDetector
+    ) {
     }
 
     /**
@@ -182,7 +181,6 @@ class GeneratorTools
 
         // Force getExpectedInterface() to be public so we can read it:
         $reflectionMethod = new \ReflectionMethod($pm, 'getExpectedInterface');
-        $reflectionMethod->setAccessible(true);
         return $reflectionMethod->invoke($pm);
     }
 
@@ -351,9 +349,9 @@ class GeneratorTools
                     'defaultValue' => null,
                 ];
                 $method->setParameters([$param1, $param2, $param3]);
-                // Copy doc block from this class' factory:
+                // Copy doc block from a factory that is unlikely to be removed from the project:
                 $reflection = new \Laminas\Code\Reflection\MethodReflection(
-                    GeneratorToolsFactory::class,
+                    \VuFind\ServiceManager\AbstractPluginManagerFactory::class,
                     '__invoke'
                 );
                 $example = MethodGenerator::fromReflection($reflection);
@@ -403,7 +401,11 @@ class GeneratorTools
             $delegators = $this->getDelegatorsFromContainer($pm, $class);
         }
 
-        // No factory found? Throw an error!
+        // No factory found? Try to detect one!
+        if (empty($factory)) {
+            $factory = $this->factoryDetector->detectFactoryForClass($class);
+        }
+        // Still no factory found? Throw an error!
         if (empty($factory)) {
             throw new \Exception('Could not find factory for ' . $class);
         }
@@ -450,7 +452,6 @@ class GeneratorTools
     {
         // There is no "getFactories" method, so we need to use reflection:
         $reflectionProperty = new \ReflectionProperty($container, 'factories');
-        $reflectionProperty->setAccessible(true);
         return $reflectionProperty->getValue($container);
     }
 
@@ -460,9 +461,9 @@ class GeneratorTools
      * @param ContainerInterface $container Container to inspect
      * @param string             $class     Class whose factory we want
      *
-     * @return string
+     * @return ?string
      */
-    protected function getFactoryFromContainer(ContainerInterface $container, $class)
+    protected function getFactoryFromContainer(ContainerInterface $container, string $class): ?string
     {
         $factories = $this->getAllFactoriesFromContainer($container);
         return $factories[$class] ?? null;
@@ -479,7 +480,6 @@ class GeneratorTools
     {
         // There is no "getDelegators" method, so we need to use reflection:
         $reflectionProperty = new \ReflectionProperty($container, 'delegators');
-        $reflectionProperty->setAccessible(true);
         return $reflectionProperty->getValue($container);
     }
 
@@ -582,6 +582,9 @@ class GeneratorTools
      */
     protected function cloneFactory($factory, $module)
     {
+        if ($factory === AutowiringFactory::class) {
+            $this->writeln('WARNING: you are extending AutowiringFactory, which is not recommended.');
+        }
         // If the factory is a stand-alone class, it's simple to clone:
         if (class_exists($factory)) {
             return $this->createSubclassInModule($factory, $module);
@@ -592,7 +595,7 @@ class GeneratorTools
         // string; anything else will cause a problem.
         $parts = is_string($factory) ? explode('::', $factory) : $factory;
         if (
-            !is_array($parts) || count($parts) != 2 || !class_exists($parts[0])
+            !is_array($parts) || count($parts) !== 2 || !class_exists($parts[0])
             || !is_callable($parts)
         ) {
             throw new \Exception('Unexpected factory configuration format.');
@@ -667,7 +670,7 @@ class GeneratorTools
         preg_match_all($regex, $body, $matches);
         $classNames = $matches[1];
         $count = count($classNames);
-        if ($count != 1) {
+        if ($count !== 1) {
             throw new \Exception("Found $count class names; expected 1.");
         }
         $className = $classNames[0];
@@ -756,7 +759,8 @@ class GeneratorTools
         $this->createTree($parts);
 
         // Generate the new class:
-        $generator = FileGenerator::fromArray(['classes' => [$classGenerator]]);
+        $generator = new FileGenerator();
+        $generator->setClass($classGenerator);
         $filename = $classGenerator->getName() . '.php';
         $fullPath = APPLICATION_PATH . '/' . implode('/', $parts) . '/' . $filename;
         if (file_exists($fullPath)) {
@@ -873,11 +877,8 @@ class GeneratorTools
      */
     public function writeModuleConfig($configPath, $config)
     {
-        $generator = FileGenerator::fromArray(
-            [
-                'body' => 'return ' . var_export($config, true) . ';',
-            ]
-        );
+        $generator = new FileGenerator();
+        $generator->setBody('return ' . var_export($config, true) . ';');
         if (!file_put_contents($configPath, $generator->generate())) {
             throw new \Exception("Cannot write to $configPath");
         }

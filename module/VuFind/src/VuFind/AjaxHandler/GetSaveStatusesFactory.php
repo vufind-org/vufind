@@ -35,6 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Db\Service\PluginManager as DbServiceManager;
 use VuFind\Db\Service\UserResourceServiceInterface;
+use VuFind\Http\RouteHelper;
 
 /**
  * Factory for GetSaveStatuses AJAX handler.
@@ -48,7 +49,7 @@ use VuFind\Db\Service\UserResourceServiceInterface;
 class GetSaveStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -60,8 +61,6 @@ class GetSaveStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryI
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -74,7 +73,7 @@ class GetSaveStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryI
         return new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
-            $container->get('ControllerPluginManager')->get('url'),
+            $container->get(RouteHelper::class),
             $container->get(DbServiceManager::class)->get(UserResourceServiceInterface::class)
         );
     }

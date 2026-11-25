@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Directory Utility Trait
+ * VuFind Directory Utility Trait.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Feature;
 use VuFind\Exception\FileAccess;
 
 /**
- * VuFind Directory Utility Trait
+ * VuFind Directory Utility Trait.
  *
  * @category VuFind
  * @package  Feature

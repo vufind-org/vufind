@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class TemplateBased
+ * Class TemplateBased.
  *
  * PHP version 8
  *
@@ -29,10 +29,12 @@
 
 namespace VuFind\ContentBlock;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function is_callable;
 
 /**
- * Class TemplateBased
+ * Class TemplateBased.
  *
  * @category VuFind
  * @package  VuFind\ContentBlock
@@ -43,27 +45,20 @@ use function is_callable;
 class TemplateBased implements ContentBlockInterface
 {
     /**
-     * Name of template for rendering
+     * Name of template for rendering.
      *
      * @var string
      */
     protected $templateName;
 
     /**
-     * Page content
-     *
-     * @var \VuFind\Content\PageLocator
-     */
-    protected $pageLocator;
-
-    /**
      * TemplateBased constructor.
      *
      * @param \VuFind\Content\PageLocator $pageLocator Content page locator service
      */
-    public function __construct(\VuFind\Content\PageLocator $pageLocator)
+    #[Autowire]
+    public function __construct(protected \VuFind\Content\PageLocator $pageLocator)
     {
-        $this->pageLocator = $pageLocator;
     }
 
     /**
@@ -109,15 +104,14 @@ class TemplateBased implements ContentBlockInterface
     }
 
     /**
-     * Return context array for markdown
+     * Return context array for markdown.
      *
      * @param string $relativePath Relative path to template
      * @param string $path         Full path of template file
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getContextForMd(string $relativePath, string $path): array
     {
         return [
@@ -127,15 +121,14 @@ class TemplateBased implements ContentBlockInterface
     }
 
     /**
-     * Return context array of phtml
+     * Return context array of phtml.
      *
      * @param string $relativePath Relative path to template
      * @param string $path         Full path of template file
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getContextForPhtml(string $relativePath, string $path): array
     {
         return ['template' => $relativePath];

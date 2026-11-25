@@ -50,28 +50,28 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Base url for searches
+     * Base url for searches.
      *
      * @var string
      */
     protected $base;
 
     /**
-     * The HTTP_Request object used for REST transactions
+     * The HTTP_Request object used for REST transactions.
      *
      * @var Client
      */
     protected $client;
 
     /**
-     * Session ID
+     * Session ID.
      *
      * @var string
      */
     protected $session = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $base     Base URL for Pazpar2
      * @param Client $client   An HTTP client object
@@ -94,7 +94,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
 
     /**
      * Initializes a session. Returns session ID to be used in subsequent requests.
-     * Adds session to the base
+     * Adds session to the base.
      *
      * @return session id
      */
@@ -110,7 +110,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Requests and receives information from pazpar
+     * Requests and receives information from pazpar.
      *
      * @param string    $command the command to be executed
      * @param ?ParamBag $data    optional extra data
@@ -189,7 +189,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * Keeps a session alive. An idle session will time out after one minute.
      * The ping command can be used to keep the session alive absent other activity.
      * It is suggested that any browser client have a simple alarm handler
-     * which sends a ping every 50 seconds or so once a session has been initialized
+     * which sends a ping every 50 seconds or so once a session has been initialized.
      *
      * @return void
      */
@@ -235,7 +235,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Return session id
+     * Return session id.
      *
      * @return session id
      */
@@ -246,7 +246,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
 
     /**
      * Applies settings to this session
-     * Each setting parameter has the form name[target]=value
+     * Each setting parameter has the form name[target]=value.
      *
      * TODO: Make the array more useful to get the correct format?
      *
@@ -264,7 +264,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Proper alias of results
+     * Proper alias of results.
      *
      * Options (default):
      *  - start : int (0)

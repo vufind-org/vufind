@@ -1,7 +1,7 @@
 <?php
 
 /**
- * User comments tab
+ * User comments tab.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\RecordTab;
 
 /**
- * User comments tab
+ * User comments tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -55,7 +55,7 @@ class UserComments extends AbstractBase
     protected $useCaptcha;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param bool $enabled is this tab enabled?
      * @param bool $uc      use captcha?

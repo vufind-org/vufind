@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Horizon ILS Driver (w/ XML API support)
+ * Horizon ILS Driver (w/ XML API support).
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function in_array;
 use function is_array;
 
 /**
- * Horizon ILS Driver (w/ XML API support)
+ * Horizon ILS Driver (w/ XML API support).
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -50,35 +50,35 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * API profile
+     * API profile.
      *
      * @var string
      */
     protected $wsProfile;
 
     /**
-     * API URL
+     * API URL.
      *
      * @var string
      */
     protected $wsURL;
 
     /**
-     * Available pickup locations for holds
+     * Available pickup locations for holds.
      *
      * @var array
      */
     protected $wsPickUpLocations;
 
     /**
-     * Default pickup location for holds
+     * Default pickup location for holds.
      *
      * @var string
      */
     protected $wsDefaultPickUpLocation;
 
     /**
-     * Date format used by API
+     * Date format used by API.
      *
      * @var string
      */
@@ -118,13 +118,11 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function getConfig(string $function, array $params = []): array
     {
-        $functionConfig = $this->config[$function] ?? false;
-        return $functionConfig;
+        return $this->config[$function] ?? [];
     }
 
     /**
@@ -151,7 +149,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     * Determine Renewability
+     * Determine Renewability.
      *
      * This is responsible for determining if an item is renewable
      *
@@ -190,7 +188,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     /* Horizon XML API Functions */
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
@@ -208,9 +206,8 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickUpLocations($patron, $holdDetails = null)
     {
         $pickresponse = [];
@@ -274,7 +271,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * This is responsible for retrieving the pickup location for a logged in patron.
      *
@@ -286,9 +283,8 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         if ($this->wsDefaultPickUpLocation == false) {
@@ -331,7 +327,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     * Make Request
+     * Make Request.
      *
      * Makes a request to the Horizon API
      *
@@ -385,7 +381,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     *  Get Session
+     *  Get Session.
      *
      * Gets a Horizon session
      *
@@ -409,7 +405,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     *  Register User
+     *  Register User.
      *
      * Associates a user with a session
      *
@@ -435,7 +431,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
 
         $auth = (string)$response->security->auth;
 
-        if ($auth == 'true') {
+        if ($auth === 'true') {
             return $session;
         }
 
@@ -443,7 +439,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     * Check if Request is Valid
+     * Check if Request is Valid.
      *
      * Determines if a user can place a hold or recall on a specific item
      *
@@ -489,7 +485,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     *  Get Items
+     *  Get Items.
      *
      * Gets a list of items on loan
      *
@@ -516,7 +512,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     *  Renew Items
+     *  Renew Items.
      *
      * Submits a renewal request to the Horizon API and returns the results
      *
@@ -546,7 +542,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     * Place Request
+     * Place Request.
      *
      * Submits a hold request to the Horizon XML API and processes the result
      *
@@ -624,7 +620,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     * Cancel Request
+     * Cancel Request.
      *
      * Submits a cancel request to the Horizon API and processes the result
      *
@@ -703,7 +699,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details or throws an exception on failure of support
@@ -751,7 +747,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold or recall on a particular item. The
      * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
@@ -786,7 +782,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     * Process Renewals
+     * Process Renewals.
      *
      * This is responsible for processing renewals and is necessary
      * as result of renew attempt is not returned
@@ -842,7 +838,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -888,12 +884,9 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
-     * In order to renew an item, Voyager requires the patron details and an item
-     * id. This function returns the item id as a string which is then used
-     * as submitted form data in checkedOut.php. This value is then extracted by
-     * the RenewMyItems function.
+     * This function returns the details required to renew items.
      *
      * @param array $checkOutDetails An array of item data
      *
@@ -905,7 +898,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     * Get Cancel Hold Details
+     * Get Cancel Hold Details.
      *
      * In order to cancel a hold, Voyager requires the patron details an item ID
      * and a recall ID. This function returns the item id and recall id as a string
@@ -916,9 +909,8 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         $cancelDetails = $holdDetails['id'] . '|' . $holdDetails['item_id'];

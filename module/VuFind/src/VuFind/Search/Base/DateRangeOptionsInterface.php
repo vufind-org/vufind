@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface for date range options
+ * Interface for date range options.
  *
  * Copyright (C) The National Library of Finland 2025.
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\Base;
 
 /**
- * Interface for date range options
+ * Interface for date range options.
  *
  * @category VuFind
  * @package  Search_Base

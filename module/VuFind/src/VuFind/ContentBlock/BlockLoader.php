@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content block loader
+ * Content block loader.
  *
  * PHP version 8
  *
@@ -29,14 +29,14 @@
 
 namespace VuFind\ContentBlock;
 
-use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\ContentBlock\PluginManager as BlockManager;
 use VuFind\Search\Base\Options;
 use VuFind\Search\Options\PluginManager as OptionsManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Content block plugin manager
+ * Content block plugin manager.
  *
  * @category VuFind
  * @package  ContentBlock
@@ -47,12 +47,13 @@ use VuFind\Search\Options\PluginManager as OptionsManager;
 class BlockLoader
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param OptionsManager         $optionsManager Options manager
      * @param ConfigManagerInterface $configManager  Config manager
      * @param BlockManager           $blockManager   Block manager
      */
+    #[Autowire]
     public function __construct(
         protected OptionsManager $optionsManager,
         protected ConfigManagerInterface $configManager,
@@ -86,7 +87,7 @@ class BlockLoader
     }
 
     /**
-     * Fetch blocks using a configuration name
+     * Fetch blocks using a configuration name.
      *
      * @param string $name    Configuration name
      * @param string $section Section to load from object
@@ -99,32 +100,30 @@ class BlockLoader
         $section = 'HomePage',
         $setting = 'content'
     ) {
-        $config = $this->configManager->getConfigObject($name);
-        return $this->getFromConfigObject($config, $section, $setting);
+        $config = $this->configManager->getConfigArray($name);
+        return $this->getFromConfigArray($config, $section, $setting);
     }
 
     /**
      * Fetch blocks using Config object.
      *
-     * @param Config $config  Configuration object
+     * @param array  $config  Configuration object
      * @param string $section Section to load from object
      * @param string $setting Setting to load from section
      *
      * @return array
      */
-    public function getFromConfigObject(
-        Config $config,
+    protected function getFromConfigArray(
+        array $config,
         $section = 'HomePage',
         $setting = 'content'
     ) {
         $blocks = [];
-        if (isset($config->$section->$setting)) {
-            foreach ($config->$section->$setting as $current) {
-                $parts = explode(':', $current, 2);
-                $block = $this->blockManager->get($parts[0]);
-                $block->setConfig($parts[1] ?? '');
-                $blocks[] = $block;
-            }
+        foreach ($config[$section][$setting] ?? [] as $current) {
+            $parts = explode(':', $current, 2);
+            $block = $this->blockManager->get($parts[0]);
+            $block->setConfig($parts[1] ?? '');
+            $blocks[] = $block;
         }
         return $blocks;
     }

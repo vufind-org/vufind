@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class OptionsFactory extends \VuFind\Search\Options\OptionsFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

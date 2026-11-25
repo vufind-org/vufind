@@ -62,7 +62,7 @@ interface PaymentFeeServiceInterface extends DbServiceInterface
     public function getFeesForPayment(PaymentEntityInterface $payment): array;
 
     /**
-     * Get IDs from fines associated with a payment
+     * Get IDs from fines associated with a payment.
      *
      * @param PaymentEntityInterface $payment Payment
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Secure session delegator
+ * Secure session delegator.
  *
  * Copyright (C) Villanova University 2018,
  *               Leipzig University Library <info@ub.uni-leipzig.de> 2018.
@@ -37,7 +37,7 @@ use VuFind\Crypt\BlockCipher;
 use function func_get_args;
 
 /**
- * Secure session delegator
+ * Secure session delegator.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -148,7 +148,7 @@ class SecureDelegator implements HandlerInterface
     }
 
     /**
-     * Enable session writing (default)
+     * Enable session writing (default).
      *
      * @return void
      */
@@ -158,7 +158,7 @@ class SecureDelegator implements HandlerInterface
     }
 
     /**
-     * Disable session writing, i.e. make it read-only
+     * Disable session writing, i.e. make it read-only.
      *
      * @return void
      */
@@ -168,7 +168,7 @@ class SecureDelegator implements HandlerInterface
     }
 
     /**
-     * Pass calls to non-existing methods to the wrapped Handler
+     * Pass calls to non-existing methods to the wrapped Handler.
      *
      * @param string $name      Name of the method being called
      * @param array  $arguments Passed Arguments

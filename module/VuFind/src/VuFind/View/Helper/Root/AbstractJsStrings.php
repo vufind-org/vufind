@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AbstractJsStrings helper for passing transformed text to Javascript
+ * AbstractJsStrings helper for passing transformed text to Javascript.
  *
  * PHP version 8
  *
@@ -29,10 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 /**
- * AbstractJsStrings helper for passing transformed text to Javascript
+ * AbstractJsStrings helper for passing transformed text to Javascript.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,34 +38,36 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractJsStrings extends AbstractHelper
+abstract class AbstractJsStrings
 {
     /**
-     * Variable name to store values
-     *
-     * @var string
-     */
-    protected $varName;
-
-    /**
-     * Strings to convey (key = js key, value = value to map)
+     * Strings to convey (key = js key, value = value to map).
      *
      * @var array
      */
     protected $strings = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $varName Variable name to store values
      */
-    public function __construct($varName = 'vufindString')
+    public function __construct(protected string $varName = 'vufindString')
     {
-        $this->varName = $varName;
     }
 
     /**
-     * Transform strings before JSON encoding
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
+    }
+
+    /**
+     * Transform strings before JSON encoding.
      *
      * @param string|array $str String to transform
      * @param string       $key JSON object key
@@ -91,7 +91,7 @@ abstract class AbstractJsStrings extends AbstractHelper
     }
 
     /**
-     * Generate JSON from an array
+     * Generate JSON from an array.
      *
      * @param array $strings Strings to convey (key = js key, value = value to map)
      *
@@ -107,7 +107,7 @@ abstract class AbstractJsStrings extends AbstractHelper
     }
 
     /**
-     * Generate JSON from the internal strings
+     * Generate JSON from the internal strings.
      *
      * @return string
      */

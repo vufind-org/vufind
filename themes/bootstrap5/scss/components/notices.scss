@@ -1,0 +1,30 @@
+.notices {
+  margin: .5rem 0;
+}
+
+.notice {
+  display: inline-block;
+  margin-bottom: .5rem;
+  padding: 1rem 2rem;
+  width: 100%;
+
+  p {
+    margin: 0;
+  }
+}
+
+.notice-form fieldset[name="style_fieldset"] {
+  .form-check {
+    padding-left: 0;
+  }
+
+  .notice-form-style {
+    padding: 5px 8px;
+    margin-right: 10px;
+  }
+
+  .form-check-input {
+    float: unset;
+    margin-left: unset;
+  }
+}

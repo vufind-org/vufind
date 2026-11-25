@@ -34,7 +34,6 @@ use Laminas\Http\Request;
 use VuFind\Auth\Shibboleth;
 use VuFind\Auth\Shibboleth\MultiIdPConfigurationLoader;
 use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
-use VuFind\Config\Config;
 
 /**
  * Shibboleth authentication test class.
@@ -131,10 +130,10 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
         bool $useHeaders = false,
         bool $requiredAttributes = true
     ): Shibboleth {
-        $config = new Config($config ?? $this->getAuthConfig($useHeaders, $requiredAttributes));
+        $config ??= $this->getAuthConfig($useHeaders, $requiredAttributes);
         $loader = ($shibConfig === null)
             ? new SingleIdPConfigurationLoader($config)
-            : new MultiIdPConfigurationLoader($config, new Config($shibConfig));
+            : new MultiIdPConfigurationLoader($config, $shibConfig);
         $obj = new Shibboleth(
             $this->createMock(\Laminas\Session\ManagerInterface::class),
             $loader,
@@ -147,7 +146,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a working configuration for the Shibboleth object
+     * Get a working configuration for the Shibboleth object.
      *
      * @param bool $useHeaders         Value for use_headers config setting
      * @param bool $requiredAttributes Should we include a required attribute in config?
@@ -172,7 +171,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a working configuration for the Shibboleth object
+     * Get a working configuration for the Shibboleth object.
      *
      * @return array
      */
@@ -300,13 +299,13 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test session initiator
+     * Test session initiator.
      *
      * @return void
      */
     public function testSessionInitiator(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             'http://myserver?target=http%3A%2F%2Ftarget%3Fauth_method%3DShibboleth',
             $this->getAuthObject()->getSessionInitiator('http://target')
         );
@@ -333,8 +332,8 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     {
         $user = $this->getAuthObject(null, $this->getShibbolethConfig())
             ->authenticate($this->getLoginRequest($this->user1, false));
-        $this->assertEquals($user->getCatUsername(), 'example1.testuser1');
-        $this->assertEquals($user->getUsername(), 'testuser1');
+        $this->assertEquals('example1.testuser1', $user->getCatUsername());
+        $this->assertEquals('testuser1', $user->getUsername());
     }
 
     /**
@@ -346,8 +345,8 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     {
         $user = $this->getAuthObject(null, $this->getShibbolethConfig())
             ->authenticate($this->getLoginRequest($this->user2, false));
-        $this->assertEquals($user->getCatUsername(), 'example2.12345');
-        $this->assertEquals($user->getUsername(), 'testuser2');
+        $this->assertEquals('example2.12345', $user->getCatUsername());
+        $this->assertEquals('testuser2', $user->getUsername());
     }
 
     /**
@@ -371,8 +370,8 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     {
         $user = $this->getAuthObject(null, $this->getShibbolethConfig(), true, false)
             ->authenticate($this->getLoginRequest($this->proxyUser, true));
-        $this->assertEquals($user->getCatUsername(), 'example1.testuser3');
-        $this->assertEquals($user->getUsername(), 'testuser3');
+        $this->assertEquals('example1.testuser3', $user->getCatUsername());
+        $this->assertEquals('testuser3', $user->getUsername());
     }
 
     /**

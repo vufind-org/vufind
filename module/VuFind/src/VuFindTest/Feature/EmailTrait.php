@@ -108,4 +108,69 @@ trait EmailTrait
         $decoder = fn ($email) => unserialize(base64_decode($email));
         return array_filter(array_map($decoder, explode("\x1E", $data)));
     }
+
+    /**
+     * Extract one-time login code from logged email.
+     *
+     * @param string $expectedRecipient Expected recipient address
+     *
+     * @return string
+     */
+    protected function extractLoginCodeFromEmail(string $expectedRecipient): string
+    {
+        $email = $this->getLoggedEmail();
+        $headers = $email->getHeaders();
+        $body = $email->getBody()->getBody();
+        $this->assertSame('From: noreply@vufind.org', $headers->get('from')->toString());
+        $this->assertSame("To: $expectedRecipient", $headers->get('to')->toString());
+
+        preg_match('/Your code: (\\d+)/', $body, $matches);
+        $this->assertArrayHasKey(
+            1,
+            $matches,
+            "No login code in email: $body"
+        );
+        return $matches[1];
+    }
+
+    /**
+     * Extract one-time verification code from logged email.
+     *
+     * @param string $expectedRecipient Expected recipient address
+     *
+     * @return string
+     */
+    protected function extractVerificationCodeFromEmail(string $expectedRecipient): string
+    {
+        $email = $this->getLoggedEmail();
+        $headers = $email->getHeaders();
+        $body = $email->getBody()->getBody();
+        $this->assertSame('From: noreply@vufind.org', $headers->get('from')->toString());
+        $this->assertSame("To: $expectedRecipient", $headers->get('to')->toString());
+
+        preg_match('/Use the following code to verify your email address.*: (\\d+)/', $body, $matches);
+        $this->assertArrayHasKey(
+            1,
+            $matches,
+            "No verification code in email: $body"
+        );
+        return $matches[1];
+    }
+
+    /**
+     * Extract account recovery code from logged email.
+     *
+     * @return string
+     */
+    protected function extractRecoveryCodeFromEmail(): string
+    {
+        $email = $this->getLoggedEmail()->getBody()->getBody();
+        preg_match('/Use the following code to reset your password.*: (\\d+)/', $email, $matches);
+        $this->assertArrayHasKey(
+            1,
+            $matches,
+            "No recovery code in email: $email"
+        );
+        return $matches[1];
+    }
 }

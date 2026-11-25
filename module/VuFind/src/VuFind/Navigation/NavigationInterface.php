@@ -29,6 +29,8 @@
 
 namespace VuFind\Navigation;
 
+use VuFind\Section\Plugin\SectionInterface;
+
 /**
  * Marker interface for VuFind navigation classes.
  *
@@ -38,6 +40,6 @@ namespace VuFind\Navigation;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-interface NavigationInterface
+interface NavigationInterface extends SectionInterface
 {
 }

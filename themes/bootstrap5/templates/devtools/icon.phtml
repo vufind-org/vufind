@@ -11,7 +11,7 @@
     if ($icon === "$lastIcon-rtl") {
       // There is no current mechanism to force display of left-to-right icons in right-to-left mode, so we'll just
       // ignore the alternate version in this situation.
-      if (!$this->layout()->rtl) {
+      if (!$this->globals()['rtl']) {
         // If we're in left-to-right mode, we can display LTR and RTL versions on the same line; we need to
         // discard the previous uncombined version of the line before adding the combined version
         array_pop($icons);

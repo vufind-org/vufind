@@ -601,7 +601,7 @@ class WorldCat2 extends DefaultRecord
      */
     public function getURLs()
     {
-        if (!($this->recordConfig->Record->show_urls ?? false)) {
+        if (!($this->recordConfig['Record']['show_urls'] ?? false)) {
             return [];
         }
         $raw = array_map(

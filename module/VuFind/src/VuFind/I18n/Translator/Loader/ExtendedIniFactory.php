@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ExtendedIni Loader Factory
+ * ExtendedIni Loader Factory.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\Config\PathResolver;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
- * ExtendedIni Loader Factory
+ * ExtendedIni Loader Factory.
  *
  * @category VuFind
  * @package  Translator
@@ -48,7 +48,7 @@ use VuFind\I18n\Locale\LocaleSettings;
 class ExtendedIniFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -60,9 +60,8 @@ class ExtendedIniFactory implements \Laminas\ServiceManager\Factory\FactoryInter
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $requestedName,

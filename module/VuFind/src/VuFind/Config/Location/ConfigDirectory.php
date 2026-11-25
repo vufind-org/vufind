@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Directory configuration location
+ * Directory configuration location.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Config\Location;
 use VuFind\Config\Handler\Dir;
 
 /**
- * Directory configuration location
+ * Directory configuration location.
  *
  * @category VuFind
  * @package  Config_Location

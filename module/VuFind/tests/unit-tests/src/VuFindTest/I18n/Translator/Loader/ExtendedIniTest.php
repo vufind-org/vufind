@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ExtendedIni translation loader Test Class
+ * ExtendedIni translation loader Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\I18n\Translator\Loader;
 use VuFind\I18n\Translator\Loader\ExtendedIni;
 
 /**
- * ExtendedIni translation loader Test Class
+ * ExtendedIni translation loader Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -57,8 +57,8 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
             realpath($this->getFixtureDir() . 'language/overrides'),
         ];
         $loader = new ExtendedIni($pathStack);
-        $result = $loader->load('en', null);
-        $this->assertEquals(
+        $result = $loader->load('en', '');
+        $this->assertSame(
             [
                 'blank_line' =>
                     html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8'),
@@ -80,8 +80,8 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
             realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack, 'en');
-        $result = $loader->load('fake', null);
-        $this->assertEquals(
+        $result = $loader->load('fake', '');
+        $this->assertSame(
             [
                 'blank_line' =>
                     html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8'),
@@ -104,8 +104,8 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
             realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack, 'fake');
-        $result = $loader->load('fake', null);
-        $this->assertEquals(
+        $result = $loader->load('fake', '');
+        $this->assertSame(
             [
                 'test3' => 'test three',
             ],
@@ -124,8 +124,8 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
             realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack);
-        $result = $loader->load('self-parent', null);
-        $this->assertEquals(
+        $result = $loader->load('self-parent', '');
+        $this->assertSame(
             [
                 '@parent_ini' => 'self-parent.ini',
                 'string' => 'bad',
@@ -145,13 +145,13 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
             realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack);
-        $result = $loader->load('child2', null);
-        $this->assertEquals(
+        $result = $loader->load('child2', '');
+        $this->assertSame(
             [
-                '@parent_ini' => 'child1.ini',
-                'test1' => 'test 1',
-                'test2' => 'test 2',
                 'test3' => 'test three',
+                '@parent_ini' => 'child1.ini',
+                'test2' => 'test 2',
+                'test1' => 'test 1',
             ],
             (array)$result
         );
@@ -168,7 +168,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('Ini file \'en.ini\' not found');
 
         $loader = new ExtendedIni();
-        $loader->load('en', null);
+        $loader->load('en', '');
     }
 
     /**
@@ -182,12 +182,12 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
             realpath($this->getFixtureDir() . 'language/aliases'),
         ];
         $loader = new ExtendedIni($pathStack, 'en');
-        $result = $loader->load('en', null);
-        $this->assertEquals(
+        $result = $loader->load('en', '');
+        $this->assertSame(
             [
                 'bar' => 'Translation',
-                'baz' => 'Domain Translation',
                 'foo' => 'Translation',
+                'baz' => 'Domain Translation',
                 'xyzzy' => 'Domain Translation',
                 'foofoo' => 'Translation',
             ],
@@ -207,7 +207,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack, 'en');
         $result = $loader->load('en', 'Domain');
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'bar' => 'Domain Translation',
                 'foofoo' => 'Translation',
@@ -228,7 +228,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack, 'en');
         $this->expectExceptionMessage('Circular alias detected resolving Domain::baz');
-        $loader->load('en', null);
+        $loader->load('en', '');
     }
 
     /**
@@ -242,14 +242,14 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
             realpath($this->getFixtureDir() . 'language/aliases'),
         ];
         $loader = new ExtendedIni($pathStack, 'en');
-        $result = $loader->load('en-gb', null);
-        $this->assertEquals(
+        $result = $loader->load('en-gb', '');
+        $this->assertSame(
             [
                 'bar' => 'Translation',
-                'baz' => 'Domain Translation',
-                'foo' => 'Translation',
-                'xyzzy' => 'Child Overriding Alias',
                 '@parent_ini' => 'en.ini',
+                'xyzzy' => 'Child Overriding Alias',
+                'foo' => 'Translation',
+                'baz' => 'Domain Translation',
                 'foofoo' => 'Translation',
             ],
             (array)$result
@@ -268,19 +268,19 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack, 'en');
         $loader->disableAliases();
-        $result = $loader->load('en', null);
-        $this->assertEquals(
+        $result = $loader->load('en', '');
+        $this->assertSame(
             [
                 'bar' => 'Translation',
             ],
             (array)$result
         );
-        $result = $loader->load('en-gb', null);
-        $this->assertEquals(
+        $result = $loader->load('en-gb', '');
+        $this->assertSame(
             [
                 'bar' => 'Translation',
-                'xyzzy' => 'Child Overriding Alias',
                 '@parent_ini' => 'en.ini',
+                'xyzzy' => 'Child Overriding Alias',
             ],
             (array)$result
         );

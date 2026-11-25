@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait for tests requiring mock search Command objects
+ * Trait for tests requiring mock search Command objects.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFindSearch\Command\AbstractBase as Command;
 use VuFindSearch\ParamBag;
 
 /**
- * Trait for tests requiring mock search Command objects
+ * Trait for tests requiring mock search Command objects.
  *
  * @category VuFind
  * @package  Tests

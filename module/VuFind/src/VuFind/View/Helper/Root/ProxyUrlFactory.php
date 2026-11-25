@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class ProxyUrlFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -68,7 +68,7 @@ class ProxyUrlFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $cache = $container->get(\VuFind\Cache\Manager::class)
             ->getCache('object');
         return new $requestedName($config, $cache);

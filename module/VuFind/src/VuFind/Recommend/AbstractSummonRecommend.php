@@ -29,6 +29,8 @@
 
 namespace VuFind\Recommend;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Abstract base class for pulling Summon-specific recommendations.
  *
@@ -41,41 +43,34 @@ namespace VuFind\Recommend;
 abstract class AbstractSummonRecommend implements RecommendInterface
 {
     /**
-     * Database details
+     * Database details.
      *
      * @var \VuFind\Search\Summon\Results
      */
     protected $results;
 
     /**
-     * Request parameter to pull query from
+     * Request parameter to pull query from.
      *
      * @var string
      */
     protected $requestParam = 'lookfor';
 
     /**
-     * User query
+     * User query.
      *
      * @var string
      */
     protected $lookfor;
 
     /**
-     * Results plugin manager
+     * Constructor.
      *
-     * @var \VuFind\Search\Results\PluginManager
+     * @param \VuFind\Search\Results\PluginManager $resultsManager Results plugin manager
      */
-    protected $resultsManager;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
-     */
-    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    #[Autowire]
+    public function __construct(protected \VuFind\Search\Results\PluginManager $resultsManager)
     {
-        $this->resultsManager = $results;
     }
 
     /**
@@ -100,15 +95,15 @@ abstract class AbstractSummonRecommend implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // Save search query in case we need it later:
-        $this->lookfor = $request->get($this->requestParam);
+        $this->lookfor = $request[$this->requestParam] ?? '';
     }
 
     /**
@@ -143,7 +138,7 @@ abstract class AbstractSummonRecommend implements RecommendInterface
      */
     protected function configureSummonResults(\VuFind\Search\Summon\Results $results)
     {
-        $results->getParams()->setBasicSearch($this->lookfor, 'AllFields');
+        $results->getParams()->setBasicSearch($this->lookfor ?? '', 'AllFields');
     }
 
     /**

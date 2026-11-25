@@ -50,7 +50,7 @@ use Psr\Container\ContainerInterface;
 class CookieManagerFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -75,7 +75,7 @@ class CookieManagerFactory implements FactoryInterface
             ->getConfigArray('config')['Cookies'] ?? [];
         $path = '/';
         if ($config['limit_by_path'] ?? false) {
-            $path = (PHP_SAPI == 'cli')
+            $path = (PHP_SAPI === 'cli')
                 ? '' : $container->get('Request')->getBasePath();
             if (empty($path)) {
                 $path = '/';

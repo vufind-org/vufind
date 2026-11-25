@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AuthorityRecommend Recommendations Module
+ * AuthorityRecommend Recommendations Module.
  *
  * PHP version 8
  *
@@ -30,14 +30,14 @@
 
 namespace VuFind\Recommend;
 
-use Laminas\Stdlib\Parameters;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Backend\Exception\RequestErrorException;
 
 use function count;
 use function intval;
 
 /**
- * AuthorityRecommend Module
+ * AuthorityRecommend Module.
  *
  * This class provides recommendations based on Authority records.
  * i.e. searches for a pseudonym will provide the user with a link
@@ -56,14 +56,14 @@ use function intval;
 class AuthorityRecommend implements RecommendInterface
 {
     /**
-     * User search query
+     * User search query.
      *
      * @var string
      */
     protected $lookfor;
 
     /**
-     * Configured filters for authority searches
+     * Configured filters for authority searches.
      *
      * @var array
      */
@@ -78,25 +78,18 @@ class AuthorityRecommend implements RecommendInterface
     protected $resultLimit = 0;
 
     /**
-     * Current user search
+     * Current user search.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $results;
 
     /**
-     * Generated recommendations
+     * Generated recommendations.
      *
      * @var array
      */
     protected $recommendations = [];
-
-    /**
-     * Results plugin manager
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
 
     /**
      * Which lookup mode(s) to use.
@@ -113,13 +106,13 @@ class AuthorityRecommend implements RecommendInterface
     protected $header = 'See also';
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     * @param \VuFind\Search\Results\PluginManager $resultsManager Results plugin manager
      */
-    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    #[Autowire]
+    public function __construct(protected \VuFind\Search\Results\PluginManager $resultsManager)
     {
-        $this->resultsManager = $results;
     }
 
     /**
@@ -155,17 +148,16 @@ class AuthorityRecommend implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param Parameters                 $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function init($params, $request)
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // Save user search query:
-        $this->lookfor = $request->get('lookfor');
+        $this->lookfor = $request['lookfor'] ?? '';
     }
 
     /**
@@ -182,7 +174,7 @@ class AuthorityRecommend implements RecommendInterface
         try {
             $authResults = $this->resultsManager->get('SolrAuth');
             $authParams = $authResults->getParams();
-            $authParams->initFromRequest(new Parameters($params));
+            $authParams->initFromRequest($params);
             foreach ($this->filters as $filter) {
                 $authParams->addHiddenFilter($filter);
             }
@@ -205,7 +197,7 @@ class AuthorityRecommend implements RecommendInterface
         $normalize = function ($str) {
             return trim(strtolower(preg_replace('/\W/', '', $str)));
         };
-        return $normalize($a) == $normalize($b);
+        return $normalize($a) === $normalize($b);
     }
 
     /**

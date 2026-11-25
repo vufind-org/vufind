@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Record Driver for SolrOverdrive Records
+ * VuFind Record Driver for SolrOverdrive Records.
  *
  * PHP version 8
  *
@@ -32,13 +32,12 @@
 namespace VuFind\RecordDriver;
 
 use Psr\Log\LoggerAwareInterface;
-use VuFind\Config\Config;
 use VuFind\DigitalContent\OverdriveConnector;
 
 use function in_array;
 
 /**
- * VuFind Record Driver for SolrOverdrive Records
+ * VuFind Record Driver for SolrOverdrive Records.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -55,38 +54,38 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Overdrive Connector
+     * Overdrive Connector.
      *
      * @var OverdriveConnector $connector Overdrive Connector
      */
     protected $connector;
 
     /**
-     * Overdrive Configuration Object
+     * Overdrive Configuration Object.
      *
-     * @var object
+     * @var array
      */
     protected $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param ?Config             $mainConfig   VuFind main configuration
-     * @param ?Config             $recordConfig Record-specific configuration
+     * @param ?array              $mainConfig   VuFind main configuration
+     * @param ?array              $recordConfig Record-specific configuration
      * @param ?OverdriveConnector $connector    Overdrive Connector
      */
     public function __construct(
-        ?Config $mainConfig = null,
-        $recordConfig = null,
+        ?array $mainConfig = null,
+        ?array $recordConfig = null,
         ?OverdriveConnector $connector = null
     ) {
         $this->connector = $connector;
-        $this->config = $connector->getConfig();
+        $this->config = (array)$connector->getConfig();
         parent::__construct($mainConfig, $recordConfig, null);
     }
 
     /**
-     * Supports OpenURL
+     * Supports OpenURL.
      *
      * @return bool
      */
@@ -96,7 +95,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Supports coins OpenURL
+     * Supports coins OpenURL.
      *
      * @return bool
      */
@@ -106,7 +105,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Available Digital Formats
+     * Get Available Digital Formats.
      *
      * Return the digital download formats that are available for linking to.
      *
@@ -137,7 +136,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Formats
+     * Get Formats.
      *
      * Returns an array of digital formats for this resource.
      *
@@ -168,7 +167,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     /**
      * Get an array of all the formats associated with the record with metadata
      * associated with it. This array is designed to be used in a template.
-     * The key for each entry is the translatable token for the format name
+     * The key for each entry is the translatable token for the format name.
      *
      * @return array
      * @throws \Exception
@@ -211,7 +210,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Returns links for showing previews
+     * Returns links for showing previews.
      *
      * @return array      an array of links
      * @throws \Exception
@@ -245,11 +244,11 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function supportsAjaxStatus()
     {
-        return $this->config->enableAjaxStatus ?? true;
+        return $this->config['enableAjaxStatus'] ?? true;
     }
 
     /**
-     * Get Overdrive Access
+     * Get Overdrive Access.
      *
      * Pass-through to the connector to determine whether logged-in user
      * has access to Overdrive actions
@@ -262,7 +261,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Is Logged in
+     * Is Logged in.
      *
      * Returns whether the current user is logged in
      *
@@ -274,7 +273,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Overdrive ID
+     * Get Overdrive ID.
      *
      * Returns the Overdrive ID (or resource ID) for the current item. Note: for
      * records in marc format, this may be different than the Solr Record ID
@@ -288,8 +287,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
 
         if ($this->config) {
             if ($this->getIsMarc()) {
-                $field = $this->config->idField;
-                $subfield = $this->config->idSubfield;
+                $field = $this->config['idField'];
+                $subfield = $this->config['idSubfield'];
                 $result = strtolower(
                     $this->getFieldArray($field, $subfield)[0] ?? ''
                 );
@@ -301,7 +300,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Returns the availability for the current record
+     * Returns the availability for the current record.
      *
      * @return object|bool returns an object with the info in it (see URL above)
      * or false if there was a problem.
@@ -314,17 +313,17 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Returns a boolean indicating if patron actions are supported
+     * Returns a boolean indicating if patron actions are supported.
      *
      * @return bool
      */
     public function supportsPatronActions()
     {
-        return $this->config->usePatronAPI;
+        return $this->config['usePatronAPI'];
     }
 
     /**
-     * Is Checked Out
+     * Is Checked Out.
      *
      * Is this resource already checked out to the user?
      *
@@ -396,7 +395,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Bread Crumb
+     * Get Bread Crumb.
      *
      * @return string
      */
@@ -407,7 +406,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Marc Reader
+     * Get Marc Reader.
      *
      * Override the base marc trait to return an empty marc reader object if no MARC
      * is available.
@@ -422,7 +421,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Title Section
+     * Get Title Section.
      *
      * @return string
      */
@@ -496,7 +495,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Is Marc Based Record
+     * Is Marc Based Record.
      *
      * Return whether this is a marc-based record.
      *
@@ -504,7 +503,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getIsMarc()
     {
-        return $this->config->isMarc;
+        return $this->config['isMarc'];
     }
 
     /**
@@ -531,7 +530,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Formatted Raw Data
+     * Get Formatted Raw Data.
      *
      * Returns the raw data formatted for staff display tab
      *
@@ -590,13 +589,13 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Permanent Link to the resource on your institution's OverDrive site
+     * Get Permanent Link to the resource on your institution's OverDrive site.
      *
      * @return array the permanent link to the resource
      */
     public function getPermanentLink()
     {
-        if (!empty($libraryURL = $this->config->libraryURL)) {
+        if (!empty($libraryURL = $this->config['libraryURL'])) {
             $data = json_decode($this->fields['fullrecord'], false);
             $desc = $this->translate('od_resource_page');
             $permlink = "$libraryURL/media/" . $data->crossRefId;

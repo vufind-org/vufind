@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Result Counts" AJAX Handler
+ * "Get Result Counts" AJAX Handler.
  *
  * PHP version 8
  *
@@ -31,13 +31,13 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\Stdlib\Parameters;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
- * "Get Result Counts" AJAX Handler
+ * "Get Result Counts" AJAX Handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -49,44 +49,39 @@ use VuFind\Session\Settings as SessionSettings;
 class GetResultCount extends AbstractBase
 {
     /**
-     * ResultsManager
+     * Constructor.
      *
-     * @var resultsManager
+     * @param SessionSettings $sessionSettings Session settings
+     * @param ResultsManager  $resultsManager  Results Manager
      */
-    protected $resultsManager;
-
-    /**
-     * Constructor
-     *
-     * @param ResultsManager  $resultsManager Results Manager
-     * @param SessionSettings $ss             Session settings
-     */
-    public function __construct(ResultsManager $resultsManager, SessionSettings $ss)
-    {
-        $this->resultsManager = $resultsManager;
-        $this->sessionSettings = $ss;
+    #[Autowire]
+    public function __construct(
+        SessionSettings $sessionSettings,
+        protected ResultsManager $resultsManager
+    ) {
+        parent::__construct($sessionSettings);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();
-        $queryString = $params->fromQuery('querystring');
-        parse_str(parse_url($queryString, PHP_URL_QUERY), $searchParams);
+        $queryString = $this->getQueryParam($request, 'querystring', '');
+        parse_str(parse_url($queryString, PHP_URL_QUERY) ?? '', $searchParams);
 
-        $backend = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
+        $backend = $this->getQueryParam($request, 'source', DEFAULT_SEARCH_BACKEND);
         $results = $this->resultsManager->get($backend);
         $paramsObj = $results->getParams();
         $paramsObj->getOptions()->disableHighlighting();
         $paramsObj->getOptions()->spellcheckEnabled(false);
         $paramsObj->getOptions()->setLimitOptions([0]);
-        $paramsObj->initFromRequest(new Parameters($searchParams));
+        $paramsObj->initFromRequest($searchParams);
 
         return $this->formatResponse(['total' => $results->getResultTotal()]);
     }

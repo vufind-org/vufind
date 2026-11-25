@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Availability Status Logic Interface
+ * Availability Status Logic Interface.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\ILS\Logic;
 
 /**
- * Availability Status Logic Interface
+ * Availability Status Logic Interface.
  *
  * @category VuFind
  * @package  ILS_Logic
@@ -43,28 +43,28 @@ namespace VuFind\ILS\Logic;
 interface AvailabilityStatusInterface
 {
     /**
-     * Status code for unavailable items
+     * Status code for unavailable items.
      *
      * @var int
      */
     public const STATUS_UNAVAILABLE = 0;
 
     /**
-     * Status code for available items
+     * Status code for available items.
      *
      * @var int
      */
     public const STATUS_AVAILABLE = 1;
 
     /**
-     * Status code for items with uncertain availability
+     * Status code for items with uncertain availability.
      *
      * @var int
      */
     public const STATUS_UNCERTAIN = 2;
 
     /**
-     * Status code for items where no status information is available
+     * Status code for items where no status information is available.
      *
      * @var int
      */
@@ -131,7 +131,7 @@ interface AvailabilityStatusInterface
     public function getSchemaAvailabilityUri(): ?string;
 
     /**
-     * Convert availability to a string
+     * Convert availability to a string.
      *
      * @return string
      */

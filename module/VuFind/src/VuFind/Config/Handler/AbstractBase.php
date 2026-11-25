@@ -29,10 +29,13 @@
 
 namespace VuFind\Config\Handler;
 
+use PHPMD\Attribute\SuppressWarnings;
+use PHPMD\Rule\Design\NumberOfChildren;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Exception\ConfigException;
 use VuFind\Exception\FileAccess as FileAccessException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function get_class;
 
@@ -44,19 +47,41 @@ use function get_class;
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
- *
- * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
+#[SuppressWarnings(NumberOfChildren::class)]
 abstract class AbstractBase implements HandlerInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PathResolver $pathResolver Path Resolver
      */
+    #[Autowire]
     public function __construct(
         protected PathResolver $pathResolver,
     ) {
+    }
+
+    /**
+     * Handle an include statement.
+     *
+     * @param string $includeSetting Settings of the include statement
+     * @param string $basePath       Base path used for relative includes
+     *
+     * @return mixed
+     */
+    public function handleInclude(string $includeSetting, string $basePath): mixed
+    {
+        // default for file based configuration handlers
+        $includeSettingParts = explode('::', $includeSetting, 2);
+        $configurationPath = (($includeSettingParts[1] ?? 'absolute') === 'relative')
+            ? $basePath . DIRECTORY_SEPARATOR . $includeSettingParts[0]
+            : $includeSettingParts[0];
+        $configLocation = $this->pathResolver->getConfigLocationOnPath($configurationPath);
+        if ($configLocation === null) {
+            throw new ConfigException('Can not include file ' . $configurationPath . '. File not found.');
+        }
+        return $this->parseConfig($configLocation)['data'];
     }
 
     /**
@@ -98,21 +123,20 @@ abstract class AbstractBase implements HandlerInterface
 
     /**
      * Create a new config location object on a path based on another config location.
+     * Returns null if no config exists on path.
      *
      * @param ConfigLocationInterface $configLocation Original config location
      * @param string                  $path           New config location path
      *
-     * @return ConfigLocationInterface
-     *
-     * @throws FileAccessException
+     * @return ?ConfigLocationInterface
      */
     protected function getParentLocationOnPath(
         ConfigLocationInterface $configLocation,
         string $path
-    ): ConfigLocationInterface {
+    ): ?ConfigLocationInterface {
         $parentLocation = $this->pathResolver->getConfigLocationOnPath($path);
         if ($parentLocation === null) {
-            throw new FileAccessException("Error: $path does not exist.");
+            return null;
         }
         $parentLocation->setConfigName($configLocation->getConfigName())
             // parent locations on a different path should still refer to the same

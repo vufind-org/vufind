@@ -42,6 +42,8 @@ use Behat\Mink\Element\Element;
  */
 class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\RetryClickTrait;
+
     /**
      * Get config settings for combined.ini.
      *
@@ -104,11 +106,11 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             // only appear after AJAX returns):
             $this->unFindCss($page, '.callnumber.ajax-availability');
             $this->unFindCss($page, '.location.ajax-availability');
-            $this->assertEquals(
+            $this->assertSame(
                 'A1234.567',
                 $this->findCssAndGetText($page, "$container .callnumber")
             );
-            $this->assertEquals(
+            $this->assertSame(
                 '3rd Floor Main Library',
                 $this->findCssAndGetText($page, "$container .location")
             );
@@ -129,6 +131,107 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->unFindCss($page, '.fa-spinner.icon--spin');
         $this->assertResultsForDefaultQuery($page);
+    }
+
+    /**
+     * Test that bulk cite options open in a lightbox.
+     *
+     * @return void
+     */
+    public function testCombinedSearchBulkCiteLightbox(): void
+    {
+        $this->changeConfigs(
+            [
+                'combined' => $this->getCombinedIniOverrides(),
+                'config' => [
+                    'Site' => ['showBulkOptions' => true],
+                    'Citation' => ['search_bulk' => true],
+                ],
+            ],
+            ['combined']
+        );
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
+        $this->unFindCss($page, '.fa-spinner.icon--spin');
+        $this->assertResultsForDefaultQuery($page);
+
+        // Confirm that an appropriate message appears if no items are checked:
+        $buttonSelector = '#ribbon-cite';
+        $alert = $this->openLightboxAndFindCss($page, $buttonSelector, '.modal-body .alert-danger');
+        $this->assertSame(
+            'No items were selected. '
+            . 'Please click on a checkbox next to an item and try again.',
+            $alert->getText()
+        );
+
+        // Now do it for real -- we should get a lightbox prompt.
+        $page->find('css', '#addFormCheckboxSelectAll')->check();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $this->clickCss($page, $buttonSelector);
+
+        // Check that citations are rendered:
+        $this->waitForPageLoad($page);
+        foreach (['APA', 'Chicago', 'MLA'] as $format) {
+            $this->findCss($page, '#modal #tab-button-' . $format);
+            $this->assertStringContainsString(
+                'Institute for Rational-Emotive Therapy',
+                $this->findCssAndGetText($page, '#modal .tab-pane #citation-' . $format . '-0')
+            );
+            $this->assertStringContainsString(
+                'Mathematibob',
+                $this->findCssAndGetText($page, '#modal .tab-pane #citation-' . $format . '-1')
+            );
+        }
+    }
+
+    /**
+     * Test that bulk export options open in a lightbox.
+     *
+     * @return void
+     */
+    public function testCombinedSearchBulkExportLightbox(): void
+    {
+        $this->changeConfigs(
+            [
+                'combined' => $this->getCombinedIniOverrides(),
+                'config' => ['Site' => ['showBulkOptions' => true]],
+            ],
+            ['combined']
+        );
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
+        $this->unFindCss($page, '.fa-spinner.icon--spin');
+        $this->assertResultsForDefaultQuery($page);
+
+        // Confirm that an appropriate message appears if no items are checked:
+        $buttonSelector = '#ribbon-export';
+        $alert = $this->openLightboxAndFindCss($page, $buttonSelector, '.modal-body .alert-danger');
+        $this->assertSame(
+            'No items were selected. '
+            . 'Please click on a checkbox next to an item and try again.',
+            $alert->getText()
+        );
+
+        // Now do it for real -- we should get a lightbox prompt.
+        $page->find('css', '#addFormCheckboxSelectAll')->check();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $this->clickCss($page, $buttonSelector);
+
+        // Select EndNote option
+        try {
+            // We don't want to wait the full default timeout here since that wastes a lot
+            // of time if a click failed to register; however, we shouldn't wait for too
+            // short of a time, or else a slow response can break the test by causing a
+            // double form submission.
+            $select = $this->findCss($page, '#format', 1500);
+        } catch (\Exception $e) {
+            $this->retryClickWithResizedWindow($this->getMinkSession(), $page, $buttonSelector);
+            $select = $this->findCss($page, '#format');
+        }
+        $select->selectOption('EndNote');
+
+        // Do the export:
+        $this->clickCss($page, '.form-cart-export input[name=submitButton]');
+        $buttonText = $this->findCssAndGetText($page, '.alert .text-center .btn');
+        $this->assertSame('Download File', $buttonText);
     }
 
     /**
@@ -169,18 +272,16 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for different combinations of AJAX columns
+     * Data provider for different combinations of AJAX columns.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function ajaxCombinationsProvider(): array
+    public static function ajaxCombinationsProvider(): \Iterator
     {
-        return [
-            'no ajax' => [false, false],
-            'left ajax' => [true, false],
-            'right ajax' => [false, true],
-            'all ajax' => [true, true],
-        ];
+        yield 'no ajax' => [false, false];
+        yield 'left ajax' => [true, false];
+        yield 'right ajax' => [false, true];
+        yield 'all ajax' => [true, true];
     }
 
     /**
@@ -215,11 +316,11 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // The author link in each column should have an appropriate hidden filter applied:
         $this->assertStringContainsString(
             'hiddenFilters%5B%5D=building%3A%22author_relators.mrc%22',
-            $this->findCss($page, '#combined_Solr____one .result-author')->getAttribute('href')
+            (string)$this->findCss($page, '#combined_Solr____one .result-author')->getAttribute('href')
         );
         $this->assertStringContainsString(
             'hiddenFilters%5B%5D=building%3A%22weird_ids.mrc%22',
-            $this->findCss($page, '#combined_Solr____two .result-author')->getAttribute('href')
+            (string)$this->findCss($page, '#combined_Solr____two .result-author')->getAttribute('href')
         );
     }
 
@@ -276,16 +377,14 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testJumpMenu()
+     * Data provider for testJumpMenu().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function jumpMenuProvider(): array
+    public static function jumpMenuProvider(): \Iterator
     {
-        return [
-            'anchor mode' => ['anchor'],
-            'link mode' => ['link'],
-        ];
+        yield 'anchor mode' => ['anchor'];
+        yield 'link mode' => ['link'];
     }
 
     /**
@@ -311,7 +410,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // The AJAX count may not load right away, so wait to be sure we assert on the final value:
         $getText = "document.getElementsByClassName('combined-jump-links')[0].textContent.replace(/\s+/g, ' ').trim()";
         $this->waitStatement("$getText === '$expectedContent'");
-        $this->assertEquals(
+        $this->assertSame(
             $expectedContent,
             $this->findCssAndGetText($page, '.combined-jump-links')
         );

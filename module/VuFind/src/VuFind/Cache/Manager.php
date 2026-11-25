@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Cache Manager
+ * VuFind Cache Manager.
  *
  * PHP version 8
  *
@@ -36,6 +36,9 @@ namespace VuFind\Cache;
 use Laminas\Cache\Service\StorageAdapterFactory;
 use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\StorageInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerAwareInterface;
 use stdClass;
 use VuFind\Log\LoggerAwareTrait;
@@ -45,7 +48,7 @@ use function is_array;
 use function strlen;
 
 /**
- * VuFind Cache Manager
+ * VuFind Cache Manager.
  *
  * Creates caches based on configuration
  *
@@ -57,7 +60,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager implements LoggerAwareInterface
+class Manager implements ContainerInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -151,7 +154,7 @@ class Manager implements LoggerAwareInterface
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array                 $config  Main VuFind configuration
      * @param StorageAdapterFactory $factory Cache storage adapter factory
@@ -171,6 +174,37 @@ class Manager implements LoggerAwareInterface
     }
 
     /**
+     * Finds an entry of the container by its identifier and returns it.
+     *
+     * @param string $id Identifier of the entry to look for.
+     *
+     * @throws NotFoundExceptionInterface  No entry was found for **this** identifier.
+     * @throws ContainerExceptionInterface Error while retrieving the entry.
+     *
+     * @return mixed Entry.
+     */
+    public function get(string $id)
+    {
+        return $this->getCache($id);
+    }
+
+    /**
+     * Returns true if the container can return an entry for the given identifier.
+     * Returns false otherwise.
+     *
+     * `has($id)` returning true does not mean that `get($id)` will not throw an exception.
+     * It does however mean that `get($id)` will not throw a `NotFoundExceptionInterface`.
+     *
+     * @param string $id Identifier of the entry to look for.
+     *
+     * @return bool
+     */
+    public function has(string $id): bool
+    {
+        return isset($this->cacheSettings[$id]);
+    }
+
+    /**
      * Retrieve the specified cache object.
      *
      * @param string      $name      Name of the requested cache.
@@ -178,7 +212,7 @@ class Manager implements LoggerAwareInterface
      * value of $name.
      *
      * @return StorageInterface
-     * @throws \Exception
+     * @throws NotFoundException
      */
     public function getCache($name, $namespace = null)
     {
@@ -188,7 +222,7 @@ class Manager implements LoggerAwareInterface
 
         if (!isset($this->caches[$key])) {
             if (!isset($this->cacheSettings[$name])) {
-                throw new \Exception('Requested unknown cache: ' . $name);
+                throw new NotFoundException('Requested unknown cache: ' . $name);
             }
             $settings = $this->cacheSettings[$name];
             $settings['options']['namespace'] = $namespace;
@@ -227,11 +261,28 @@ class Manager implements LoggerAwareInterface
         }
 
         // Use separate cache dir in CLI mode to avoid permission issues:
-        if ($allowCliOverride && PHP_SAPI == 'cli') {
+        if ($allowCliOverride && PHP_SAPI === 'cli') {
             $dir .= 'cli/';
         }
 
         return $dir;
+    }
+
+    /**
+     * Get the path to a specific cache.
+     *
+     * @param string $name Name of the cache
+     *
+     * @return string
+     */
+    public function getNamedCacheDir(string $name): string
+    {
+        $config = $this->cacheSpecs[$name] ?? null;
+        $directory = $config['directory'] ?? null;
+        if ($directory === null) {
+            throw new \Exception('Directory not specified for cache ' . $name);
+        }
+        return $this->getCacheDir($config['cliOverride'] ?? true) . $directory;
     }
 
     /**
@@ -323,7 +374,7 @@ class Manager implements LoggerAwareInterface
     }
 
     /**
-     * Ensure that a file cache is properly set up
+     * Ensure that a file cache is properly set up.
      *
      * @param string $name Cache name
      *
@@ -333,8 +384,8 @@ class Manager implements LoggerAwareInterface
     {
         // Use $this->cacheSettings to determine if $this->createFileCache() has been called yet:
         if (!isset($this->cacheSettings[$name]) && $config = $this->cacheSpecs[$name] ?? null) {
-            $base = $this->getCacheDir($config['cliOverride'] ?? true);
-            $this->createFileCache($name, $base . $config['directory'], $config['options'] ?? []);
+            $cacheDir = $this->getNamedCacheDir($name);
+            $this->createFileCache($name, $cacheDir, $config['options'] ?? []);
         }
     }
 
@@ -366,18 +417,6 @@ class Manager implements LoggerAwareInterface
         $opts = array_merge($this->defaults, $overrideOpts);
 
         if (!is_dir($dirName)) {
-            if (isset($opts['umask'])) {
-                // convert umask from string
-                $umask = octdec($opts['umask']);
-                // validate
-                if ($umask & 0o700) {
-                    throw new \Exception(
-                        'Invalid umask: ' . $opts['umask']
-                        . '; need permission to execute, read and write by owner'
-                    );
-                }
-                umask($umask);
-            }
             if (isset($opts['dir_permission'])) {
                 $dir_perm = octdec($opts['dir_permission']);
             } else {
@@ -437,7 +476,7 @@ class Manager implements LoggerAwareInterface
     }
 
     /**
-     * Create an in-memory cache
+     * Create an in-memory cache.
      *
      * @param array $storageConfig See Storage in RateLimiter.yaml
      *

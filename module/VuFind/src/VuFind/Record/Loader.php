@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record loader
+ * Record loader.
  *
  * PHP version 8
  *
@@ -34,6 +34,7 @@ namespace VuFind\Record;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\FallbackLoader\PluginManager as FallbackLoader;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Command\RetrieveBatchCommand;
 use VuFindSearch\Command\RetrieveCommand;
@@ -44,7 +45,7 @@ use function count;
 use function is_object;
 
 /**
- * Record loader
+ * Record loader.
  *
  * @category VuFind
  * @package  Record
@@ -58,51 +59,20 @@ class Loader implements \Psr\Log\LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Record factory
-     *
-     * @var RecordFactory
-     */
-    protected $recordFactory;
-
-    /**
-     * Search service
-     *
-     * @var SearchService
-     */
-    protected $searchService;
-
-    /**
-     * Record cache
-     *
-     * @var Cache
-     */
-    protected $recordCache;
-
-    /**
-     * Fallback record loader
-     *
-     * @var FallbackLoader
-     */
-    protected $fallbackLoader;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param SearchService   $searchService  Search service
      * @param RecordFactory   $recordFactory  Record loader
      * @param ?Cache          $recordCache    Record Cache
      * @param ?FallbackLoader $fallbackLoader Fallback record loader
      */
+    #[Autowire]
     public function __construct(
-        SearchService $searchService,
-        RecordFactory $recordFactory,
-        ?Cache $recordCache = null,
-        ?FallbackLoader $fallbackLoader = null
+        protected SearchService $searchService,
+        protected RecordFactory $recordFactory,
+        protected ?Cache $recordCache = null,
+        protected ?FallbackLoader $fallbackLoader = null
     ) {
-        $this->searchService = $searchService;
-        $this->recordFactory = $recordFactory;
-        $this->recordCache = $recordCache;
-        $this->fallbackLoader = $fallbackLoader;
     }
 
     /**
@@ -170,7 +140,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
                     $fallbackRecords = [];
                 }
 
-                if (count($fallbackRecords) == 1) {
+                if (count($fallbackRecords) === 1) {
                     return $fallbackRecords[0];
                 }
             }
@@ -213,7 +183,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
             $cachedRecords = $this->recordCache->lookupBatch($ids, $source);
             // Check which records could not be loaded from the record cache
             foreach ($cachedRecords as $cachedRecord) {
-                $list->check($cachedRecord->getUniqueId());
+                $list->check($cachedRecord->getUniqueID());
             }
         }
 
@@ -239,7 +209,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
             }
 
             foreach ($genuineRecords as $genuineRecord) {
-                $list->check($genuineRecord->getUniqueId());
+                $list->check($genuineRecord->getUniqueID());
             }
         }
 
@@ -263,7 +233,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
             }
             foreach ($fallbackRecords as $record) {
                 $retVal[] = $record;
-                if (!$list->check($record->getUniqueId())) {
+                if (!$list->check($record->getUniqueID())) {
                     $list->check($record->tryMethod('getPreviousUniqueId'));
                 }
             }
@@ -364,7 +334,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Set the context to control cache behavior
+     * Set the context to control cache behavior.
      *
      * @param string $context Cache context
      *

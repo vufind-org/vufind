@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class PAIAFactory extends DriverWithDateConverterFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -70,7 +70,7 @@ class PAIAFactory extends DriverWithDateConverterFactory
         return parent::__invoke(
             $container,
             $requestedName,
-            [$container->get(\Laminas\Session\SessionManager::class)]
+            [$container->get(\Laminas\Session\ManagerInterface::class)]
         );
     }
 }

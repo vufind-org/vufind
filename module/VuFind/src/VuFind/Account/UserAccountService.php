@@ -1,7 +1,7 @@
 <?php
 
 /**
- * User account service
+ * User account service.
  *
  * PHP version 8
  *
@@ -38,9 +38,10 @@ use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Favorites\FavoritesService;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * User account service
+ * User account service.
  *
  * @category VuFind
  * @package  Account
@@ -53,10 +54,11 @@ class UserAccountService implements DbServiceAwareInterface
     use DbServiceAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param FavoritesService $favoritesService Favorites service
      */
+    #[Autowire]
     public function __construct(protected FavoritesService $favoritesService)
     {
     }

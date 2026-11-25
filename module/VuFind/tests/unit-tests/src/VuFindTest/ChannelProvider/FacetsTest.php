@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Facets Channel Provider Test Class
+ * Facets Channel Provider Test Class.
  *
  * PHP version 8
  *
@@ -29,14 +29,14 @@
 
 namespace VuFindTest\ChannelProvider;
 
-use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\ChannelProvider\Facets;
+use VuFind\Http\RouteHelper;
 use VuFind\Search\Results\PluginManager;
 use VuFindTest\Feature\SearchObjectsTrait;
 use VuFindTest\RecordDriver\TestHarness;
 
 /**
- * Facets Channel Provider Test Class
+ * Facets Channel Provider Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -57,8 +57,8 @@ class FacetsTest extends \PHPUnit\Framework\TestCase
     {
         $resultsManager = $this->createMock(PluginManager::class);
         $resultsManager->method('get')->willReturn($this->getMockResults());
-        $urlHelper = $this->createMock(Url::class);
-        $facets = new Facets($resultsManager, $urlHelper, ['maxFieldsToSuggest' => 0]);
+        $routeHelper = $this->createMock(RouteHelper::class);
+        $facets = new Facets($resultsManager, $routeHelper, ['maxFieldsToSuggest' => 0]);
         $this->assertEquals(
             [
                 [
@@ -81,7 +81,7 @@ class FacetsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fake record driver
+     * Get a fake record driver.
      *
      * @param array $data Custom record data
      *

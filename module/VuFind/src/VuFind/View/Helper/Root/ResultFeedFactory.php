@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Http\ServerUrlHelper;
 
 /**
  * ResultFeed helper factory.
@@ -47,7 +48,7 @@ use Psr\Container\ContainerInterface;
 class ResultFeedFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -60,17 +61,21 @@ class ResultFeedFactory implements FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(
-        ContainerInterface $container,
-        $requestedName,
-        ?array $options = null
-    ) {
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
+    {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('searches');
-        $settings = ['prioritizeRecordDriverLinks' => $config->RSS->prioritizeRecordDriverLinks ?? false];
-        $helper = new $requestedName($settings);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('searches');
+        $settings = ['prioritizeRecordDriverLinks' => $config['RSS']['prioritizeRecordDriverLinks'] ?? false];
+        $helpers = $container->get('ViewHelperManager');
+        $helper = new $requestedName(
+            $container->get(ServerUrlHelper::class),
+            $helpers->get('currentPath'),
+            $helpers->get('recordLinker'),
+            $helpers->get('record'),
+            $settings
+        );
         $helper->registerExtensions($container);
         return $helper;
     }

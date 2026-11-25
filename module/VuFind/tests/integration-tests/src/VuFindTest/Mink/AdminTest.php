@@ -52,20 +52,18 @@ class AdminTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Admin');
         $page = $session->getPage();
-        $this->assertEquals('The Admin module is currently disabled.', $this->findCssAndGetText($page, 'p.error b'));
+        $this->assertSame('The Admin module is currently disabled.', $this->findCssAndGetText($page, 'p.error b'));
     }
 
     /**
-     * Data provider for testAdminTheme()
+     * Data provider for testAdminTheme().
      *
-     * @return array[]
+     * @return \Iterator<string, array<bool>>
      */
-    public static function adminThemeProvider(): array
+    public static function adminThemeProvider(): \Iterator
     {
-        return [
-            'no admin theme' => [false],
-            'custom admin theme' => [true],
-        ];
+        yield 'no admin theme' => [false];
+        yield 'custom admin theme' => [true];
     }
 
     /**
@@ -86,9 +84,12 @@ class AdminTest extends \VuFindTest\Integration\MinkTestCase
         if ($enabled) {
             $config['Site']['admin_theme'] = 'local_theme_example';
         }
-        $this->changeConfigs(compact('config'));
+        $this->changeConfigs($this->getAdminPermissionConfig() + compact('config'));
         $html = $this->httpGet($this->getVuFindUrl() . '/Admin')->getBody();
-        $assertion = $enabled ? 'assertStringContainsString' : 'assertStringNotContainsString';
-        $this->$assertion('local_theme_example', $html);
+        if ($enabled) {
+            $this->assertStringContainsString('local_theme_example', (string)$html);
+        } else {
+            $this->assertStringNotContainsString('local_theme_example', (string)$html);
+        }
     }
 }

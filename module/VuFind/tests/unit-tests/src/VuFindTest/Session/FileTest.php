@@ -1,7 +1,7 @@
 <?php
 
 /**
- * File Session Handler Test Class
+ * File Session Handler Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Session\File;
 use function function_exists;
 
 /**
- * File Session Handler Test Class
+ * File Session Handler Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,14 +45,14 @@ use function function_exists;
 class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
 {
     /**
-     * Path to session files
+     * Path to session files.
      *
      * @var string
      */
     protected $path;
 
     /**
-     * Generic setup method
+     * Generic setup method.
      *
      * @return void
      */
@@ -64,7 +64,7 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
     }
 
     /**
-     * Generic teardown method
+     * Generic teardown method.
      *
      * @return void
      */
@@ -78,14 +78,14 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testWriteReadAndDestroy()
+    public function testWriteReadAndDestroy(): void
     {
         $handler = $this->getHandler();
         $this->assertTrue($handler->write('foo', 'bar'));
-        $this->assertEquals('bar', $handler->read('foo'));
+        $this->assertSame('bar', $handler->read('foo'));
         $this->setUpDestroyExpectations('foo');
         $this->assertTrue($handler->destroy('foo'));
-        $this->assertEquals('', $handler->read('foo'));
+        $this->assertSame('', $handler->read('foo'));
     }
 
     /**
@@ -93,22 +93,22 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testDisabledWrites()
+    public function testDisabledWrites(): void
     {
         $handler = $this->getHandler();
         $handler->disableWrites();
         $this->assertTrue($handler->write('foo', 'bar'));
-        $this->assertEquals('', $handler->read('foo'));
+        $this->assertSame('', $handler->read('foo'));
 
         // Now test re-enabling writes:
         $handler->enableWrites();
         $this->assertTrue($handler->write('foo', 'bar'));
-        $this->assertEquals('bar', $handler->read('foo'));
+        $this->assertSame('bar', $handler->read('foo'));
 
         // Now clean up after ourselves:
         $this->setUpDestroyExpectations('foo');
         $this->assertTrue($handler->destroy('foo'));
-        $this->assertEquals('', $handler->read('foo'));
+        $this->assertSame('', $handler->read('foo'));
     }
 
     /**
@@ -116,30 +116,28 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testGarbageCollector()
+    public function testGarbageCollector(): void
     {
         $handler = $this->getHandler();
         $this->assertTrue($handler->write('foo', 'bar'));
-        $this->assertEquals('bar', $handler->read('foo'));
+        $this->assertSame('bar', $handler->read('foo'));
         // Use a negative garbage collection age so we can purge everything
         // without having to wait for time to pass in the test!
         $this->assertEquals(1, $handler->gc(-1));
-        $this->assertEquals('', $handler->read('foo'));
+        $this->assertSame('', $handler->read('foo'));
     }
 
     /**
      * Get the session handler to test.
      *
-     * @param \VuFind\Config\Config $config Optional configuration
+     * @param ?array $config Optional configuration
      *
-     * @return Database
+     * @return File
      */
-    protected function getHandler($config = null)
+    protected function getHandler(?array $config = null): File
     {
         if (null === $config) {
-            $config = new \VuFind\Config\Config(
-                ['file_save_path' => $this->path]
-            );
+            $config = ['file_save_path' => $this->path];
         }
         $handler = new File($config);
         $this->injectMockDatabaseDependencies($handler);

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GeoCoords view helper
+ * GeoCoords view helper.
  *
  * PHP version 8
  *
@@ -29,12 +29,13 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Http\RouteHelper;
 use VuFind\Search\Base\Options;
 
 use function is_array;
 
 /**
- * GeoCoords view helper
+ * GeoCoords view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,37 +43,25 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GeoCoords extends \Laminas\View\Helper\AbstractHelper
+class GeoCoords
 {
     /**
-     * Is Map Search enabled?
-     *
-     * @var bool
-     */
-    protected $enabled;
-
-    /**
-     * Default coordinates
-     *
-     * @var string
-     */
-    protected $coords;
-
-    /**
-     * Get geoField variable name
+     * Get geoField variable name.
      *
      * @var string
      */
     protected $geoField = 'long_lat';
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param string $coords Default coordinates
+     * @param string      $coords      Default coordinates
+     * @param RouteHelper $routeHelper Route helper
      */
-    public function __construct($coords)
-    {
-        $this->coords = $coords;
+    public function __construct(
+        protected string $coords,
+        protected RouteHelper $routeHelper,
+    ) {
     }
 
     /**
@@ -112,10 +101,19 @@ class GeoCoords extends \Laminas\View\Helper\AbstractHelper
         if (!$this->recommendationEnabled($options->getRecommendationSettings())) {
             return false;
         }
-        $urlHelper = $this->getView()->plugin('url');
-        $query = http_build_query([
+        $queryParams = [
             'filter' => [$this->geoField . ':Intersects(ENVELOPE(' . $this->coords . '))'],
-        ]);
-        return $urlHelper('search-results') . '?' . $query;
+        ];
+        return $this->routeHelper->getUrlFromRoute('search-results', $queryParams);
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

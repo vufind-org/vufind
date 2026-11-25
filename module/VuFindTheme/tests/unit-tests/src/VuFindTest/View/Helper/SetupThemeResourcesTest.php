@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SetupThemeResources view helper Test Class
+ * SetupThemeResources view helper Test Class.
  *
  * PHP version 8
  *
@@ -31,13 +31,16 @@ namespace VuFindTest\View\Helper;
 
 use Laminas\View\Helper\HeadLink;
 use Laminas\View\Helper\HeadMeta;
-use Laminas\View\Helper\HeadScript;
+use Laminas\View\Renderer\PhpRenderer;
 use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Escaper\Escaper;
 use VuFindTheme\ResourceContainer;
+use VuFindTheme\View\Helper\AssetManager;
+use VuFindTheme\View\Helper\ImageLink;
 use VuFindTheme\View\Helper\SetupThemeResources;
 
 /**
- * SetupThemeResources view helper Test Class
+ * SetupThemeResources view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -56,9 +59,31 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
      */
     public function testHelper()
     {
-        $helper = new SetupThemeResources($this->getResourceContainer());
-        $helper->setView($this->getMockView());
+        $escaper = new Escaper();
+        $renderer = new PhpRenderer();
+        $headMeta = new HeadMeta();
+        $headMeta->setEscaper($escaper);
+        $headMeta->setView($renderer);
+        $headLink = new HeadLink();
+        $headLink->setEscaper($escaper);
+        $headLink->setView($renderer);
+        $helper = new SetupThemeResources(
+            $this->getResourceContainer(),
+            $headMeta,
+            $this->getMockAssetManager(),
+            $headLink,
+            $this->getMockImageLink(),
+        );
         $helper();
+
+        $this->assertSame(
+            <<<EOT
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+                <meta name="Generator" content="fake-generator">
+                EOT,
+            $headMeta->toString()
+        );
+        $this->assertSame('', $headLink->toString());
     }
 
     /**
@@ -94,72 +119,22 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fake view object.
+     * Get a fake AssetManager helper.
      *
-     * @return \Laminas\View\Renderer\PhpRenderer
+     * @return MockObject&AssetManager
      */
-    protected function getMockView()
+    protected function getMockAssetManager(): MockObject&AssetManager
     {
-        $view = new \Laminas\View\Renderer\PhpRenderer();
-        $container = new \VuFindTest\Container\MockViewHelperContainer($this);
-        $container->set('headMeta', $this->getMockHeadMeta());
-        $container->set('headLink', $this->getMockHeadLink());
-        $container->set('headScript', $this->getMockHeadScript());
-        $view->setHelperPluginManager($container);
-        return $view;
+        return $this->createMock(AssetManager::class);
     }
 
     /**
-     * Get a fake HeadMeta helper.
+     * Get a fake ImageLink helper.
      *
-     * @return MockObject&HeadMeta
+     * @return MockObject&ImageLink
      */
-    protected function getMockHeadMeta(): MockObject&HeadMeta
+    protected function getMockImageLink(): MockObject&ImageLink
     {
-        $mock = $this->getMockBuilder(\Laminas\View\Helper\HeadMeta::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['__invoke', '__call'])
-            ->getMock();
-        $mock->expects($this->any())->method('__invoke')->willReturn($mock);
-        $mock->expects($this->exactly(2))
-            ->method('__call')
-            ->willReturnCallback(function ($method, $args) use ($mock) {
-                if ($method === 'prependHttpEquiv') {
-                    $this->assertEquals('Content-Type', $args[0]);
-                    $this->assertEquals('text/html; charset=utf-8', $args[1]);
-                    return $mock;
-                }
-                if ($method === 'appendName') {
-                    $this->assertEquals('Generator', $args[0]);
-                    $this->assertEquals('fake-generator', $args[1]);
-                    return $mock;
-                }
-                return null;
-            });
-        return $mock;
-    }
-
-    /**
-     * Get a fake HeadLink helper.
-     *
-     * @return MockObject&HeadLink
-     */
-    protected function getMockHeadLink(): MockObject&HeadLink
-    {
-        $mock = $this->createMock(HeadLink::class);
-        $mock->expects($this->any())->method('__invoke')->willReturn($mock);
-        return $mock;
-    }
-
-    /**
-     * Get a fake HeadScript helper.
-     *
-     * @return MockObject&HeadScript
-     */
-    protected function getMockHeadScript(): MockObject&HeadScript
-    {
-        $mock = $this->createMock(HeadScript::class);
-        $mock->expects($this->any())->method('__invoke')->willReturn($mock);
-        return $mock;
+        return $this->createMock(ImageLink::class);
     }
 }

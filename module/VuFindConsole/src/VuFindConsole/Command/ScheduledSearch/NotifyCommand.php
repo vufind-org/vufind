@@ -31,24 +31,26 @@ namespace VuFindConsole\Command\ScheduledSearch;
 
 use DateTime;
 use Exception;
-use Laminas\View\Renderer\PhpRenderer;
+use Laminas\I18n\Translator\Translator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFind\Config\Config;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Http\RouteHelper;
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function count;
 use function in_array;
+use function is_callable;
 use function sprintf;
 
 /**
@@ -71,66 +73,60 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\LanguageInitializerTrait;
 
     /**
-     * Output interface
+     * Output interface.
      *
      * @var OutputInterface
      */
     protected $output = null;
 
     /**
-     * Useful date format value
+     * Useful date format value.
      *
      * @var string
      */
     protected $iso8601 = 'Y-m-d\TH:i:s\Z';
 
     /**
-     * URL helper
-     *
-     * @var \Laminas\View\Helper\Url
-     */
-    protected $urlHelper;
-
-    /**
-     * Number of results to retrieve when performing searches
+     * Number of results to retrieve when performing searches.
      *
      * @var int
      */
     protected $limit = 50;
 
     /**
-     * Sort order to use when performing searches
+     * Sort order to use when performing searches.
      *
      * @var string
      */
     protected $sort = 'first_indexed desc';
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param SecretCalculator       $secretCalculator Secret calculator
-     * @param PhpRenderer            $renderer         View renderer
-     * @param ResultsManager         $resultsManager   Search results plugin manager
-     * @param array                  $scheduleOptions  Configured schedule options
-     * @param Config                 $mainConfig       Top-level VuFind configuration
-     * @param Mailer                 $mailer           Mail service
-     * @param SearchServiceInterface $searchService    Search table
-     * @param LocaleSettings         $localeSettings   Locale settings object
-     * @param string|null            $name             The name of the command; passing
+     * @param SecretCalculator          $secretCalculator Secret calculator
+     * @param TemplateRendererInterface $templateRenderer Template renderer
+     * @param ResultsManager            $resultsManager   Search results plugin manager
+     * @param array                     $scheduleOptions  Configured schedule options
+     * @param array                     $mainConfig       Top-level VuFind configuration
+     * @param Mailer                    $mailer           Mail service
+     * @param SearchServiceInterface    $searchService    Search table
+     * @param LocaleSettings            $localeSettings   Locale settings object
+     * @param RouteHelper               $routeHelper      Route helper
+     * @param string|null               $name             The name of the command; passing
      * null means it must be set in configure()
      */
     public function __construct(
         protected SecretCalculator $secretCalculator,
-        protected PhpRenderer $renderer,
+        protected TemplateRendererInterface $templateRenderer,
         protected ResultsManager $resultsManager,
         protected array $scheduleOptions,
-        protected Config $mainConfig,
+        protected array $mainConfig,
         protected Mailer $mailer,
         protected SearchServiceInterface $searchService,
         protected LocaleSettings $localeSettings,
+        protected RouteHelper $routeHelper,
         $name = null
     ) {
-        $this->urlHelper = $renderer->plugin('url');
         parent::__construct($name);
     }
 
@@ -189,9 +185,8 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      * @param OutputInterface $output Output object
      *
      * @return int 0 for success
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
@@ -270,6 +265,9 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         if ($userLang != '' && in_array($userLang, $allLanguages)) {
             $language = $userLang;
         }
+        if (!is_callable([$this->translator, 'setLocale'])) {
+            throw new \Exception('Translator must implement the setLocale method');
+        }
         $this->translator->setLocale($language);
         $this->addLanguageToTranslator(
             $this->translator,
@@ -295,9 +293,11 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         }
         $searchObject = $minSO->deminify($this->resultsManager);
         if (!$searchObject->getOptions()->supportsScheduledSearch()) {
+            $backendId = $searchObject->getBackendId();
+            $searchId = $searchObject->getSearchId();
             $this->err(
-                'Unsupported search backend ' . $searchObject->getBackendId()
-                . ' for search ' . $searchObject->getSearchId()
+                'Unsupported search backend ' . ($backendId ?? '<unknown>')
+                . ' for search ' . ($searchId ?? '<unknown>')
             );
             return false;
         }
@@ -372,14 +372,13 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     protected function buildEmail($s, $user, $searchObject, $newRecords)
     {
         $viewBaseUrl = $searchUrl = $s->getNotificationBaseUrl();
-        $searchUrl .= ($this->urlHelper)(
-            $searchObject->getOptions()->getSearchAction()
-        ) . $searchObject->getUrlQuery()->getParams(false);
+        $searchUrl .= $this->routeHelper->getUrlFromRoute($searchObject->getOptions()->getSearchAction())
+            . $searchObject->getUrlQuery()->getParams(false);
         $secret = $this->secretCalculator->getSearchUnsubscribeSecret($s);
-        $unsubscribeUrl = $s->getNotificationBaseUrl()
-            . ($this->urlHelper)('myresearch-unsubscribe')
-            . "?id={$s->getId()}&key=$secret";
-        $userInstitution = $this->mainConfig->Site->institution;
+        $unsubscribeUrl = $s->getNotificationBaseUrl() . $this->routeHelper->getUrlFromRoute(
+            'searchhistory-unsubscribesearch',
+            queryParams: ['id' => $s->getId(), 'key' => $secret]
+        );
         $params = $searchObject->getParams();
         // Filter function to only pass along selected checkboxes:
         $selectedCheckboxes = function ($data) {
@@ -399,11 +398,10 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
                     $selectedCheckboxes
                 ),
                 'filters' => $params->getFilterList(true),
-                'userInstitution' => $userInstitution,
              ],
         ];
-        return $this->renderer
-            ->render('Email/scheduled-alert.phtml', $viewParams);
+        return $this->templateRenderer
+            ->renderTemplateAsString(template: 'Email/scheduled-alert.phtml', params: $viewParams);
     }
 
     /**
@@ -417,7 +415,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      */
     protected function sendEmail($user, $message)
     {
-        $subject = $this->mainConfig->Site->title
+        $subject = ($this->mainConfig['Site']['title'] ?? '')
             . ': ' . $this->translate('Scheduled Alert Results');
         $from = $this->getEmailSenderAddress($this->mainConfig);
         $to = $user->getEmail();

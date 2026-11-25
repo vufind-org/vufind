@@ -30,6 +30,7 @@
 namespace VuFindTest\Auth;
 
 use VuFind\Auth\Database;
+use VuFind\Validator\EmailAddressValidator;
 
 /**
  * Database authentication test class.
@@ -48,7 +49,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\LiveDetectionTrait;
 
     /**
-     * Object to test
+     * Object to test.
      *
      * @var Database
      */
@@ -76,7 +77,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
             $this->markTestSkipped('Continuous integration not running.');
             return;
         }
-        $this->auth = new Database();
+        $this->auth = new Database(new EmailAddressValidator());
         $this->auth->setDbServiceManager($this->getLiveDbServiceManager());
     }
 

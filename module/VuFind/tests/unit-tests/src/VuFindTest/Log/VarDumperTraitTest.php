@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Var Dumper Trait Test Class
+ * Var Dumper Trait Test Class.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\Log;
 
 /**
- * Var Dumper Trait Test Class
+ * Var Dumper Trait Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,50 +43,48 @@ class VarDumperTraitTest extends \PHPUnit\Framework\TestCase
     use \VuFind\Log\VarDumperTrait;
 
     /**
-     * Test varDump method data provider
+     * Test varDump method data provider.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function varDumpProvider(): array
+    public static function varDumpProvider(): \Iterator
     {
-        return [
-            'boolean' => [
-                true,
-                'true\n',
-            ],
-            'int' => [
-                42,
-                '42\n',
-            ],
-            'string' => [
-                'some_string',
-                '"some_string"\n',
-            ],
-            'array' => [
-                [42, 'string', false],
-                'array:3 \[\n  0 => 42\n  1 => "string"\n  2 => false\n\]\n',
-            ],
-            'object' => [
-                new class (42, 'string', false) {
-                    /**
-                     * Test class constructor
-                     *
-                     * @param int    $number Some number
-                     * @param string $text   Some text
-                     * @param bool   $flag   A flag
-                     */
-                    public function __construct(public int $number, public string $text, public bool $flag)
-                    {
-                    }
-                },
-                'class@anonymous \{#[0-9]+\n  \+number: 42\n  \+text: "string"\n  \+flag: false\n\}\n',
+        yield 'boolean' => [
+            true,
+            'true\n',
+        ];
+        yield 'int' => [
+            42,
+            '42\n',
+        ];
+        yield 'string' => [
+            'some_string',
+            '"some_string"\n',
+        ];
+        yield 'array' => [
+            [42, 'string', false],
+            'array:3 \[\n  0 => 42\n  1 => "string"\n  2 => false\n\]\n',
+        ];
+        yield 'object' => [
+            new class (42, 'string', false) {
+                /**
+                 * Test class constructor.
+                 *
+                 * @param int    $number Some number
+                 * @param string $text   Some text
+                 * @param bool   $flag   A flag
+                 */
+                public function __construct(public int $number, public string $text, public bool $flag)
+                {
+                }
+            },
+            'class@anonymous \{#[0-9]+\n  \+number: 42\n  \+text: "string"\n  \+flag: false\n\}\n',
 
-            ],
         ];
     }
 
     /**
-     * Test varDump method
+     * Test varDump method.
      *
      * @param mixed  $var      Variable to dump
      * @param string $expected Expected dumped string

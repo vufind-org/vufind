@@ -34,8 +34,8 @@ namespace VuFind\Db\Service;
 use DateInterval;
 use DateTime;
 use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
-use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrinePaginatorAdapter;
 use Laminas\Paginator\Paginator;
+use VuFind\Db\DoctrinePaginatorAdapter;
 use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Feature\DateTimeTrait;
 use VuFind\Db\Type\PaymentStatus;
@@ -105,11 +105,12 @@ class PaymentService extends AbstractDbService implements PaymentServiceInterfac
         $parameters = compact('localIdentifier');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
+        $query->setMaxResults(1); // SHOULD be unique, but just in case...
         return $query->getOneOrNullResult();
     }
 
     /**
-     * Get last paid payment for a patron
+     * Get last paid payment for a patron.
      *
      * @param string $catUsername Patron's catalog username
      *
@@ -253,7 +254,7 @@ class PaymentService extends AbstractDbService implements PaymentServiceInterfac
     }
 
     /**
-     * Get a filtered list of payments
+     * Get a filtered list of payments.
      *
      * @param PaymentStatus[] $statuses         Payment statuses (optional filter)
      * @param ?string         $localIdentifier  Local identifier (optional filter)

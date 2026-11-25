@@ -23,18 +23,15 @@
  * @category VuFind
  * @package  Tests
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public
- *           License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
 namespace VuFindTest\Navigation;
 
-use VuFind\Auth\ILSAuthenticator;
-use VuFind\Auth\Manager;
-use VuFind\Config\AccountCapabilities;
-use VuFind\ILS\Connection;
+use VuFind\Exception\BadConfig;
 use VuFind\Navigation\AccountMenu;
+use VuFindTest\Unit\AbstractSectionTestCase;
 
 /**
  * Account menu tests.
@@ -42,22 +39,37 @@ use VuFind\Navigation\AccountMenu;
  * @category VuFind
  * @package  Tests
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public
- *           License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class AccountMenuTest extends \PHPUnit\Framework\TestCase
+class AccountMenuTest extends AbstractSectionTestCase
 {
+    /**
+     * Test that the default configuration file matches the default
+     * configuration returned by the section class.
+     *
+     * @return void
+     */
+    public function testDefaultConfiguration(): void
+    {
+        $container = $this->getContainerWithSectionRelatedServices();
+        $this->assertEquals(
+            $this->getAccountMenu($container)->getSectionConfig(),
+            $this->getAccountMenu($container, AccountMenu::getDefaultMenuConfig())->getSectionConfig()
+        );
+    }
+
     /**
      * Test that the menu is the default menu if configuration is missing.
      *
      * @return void
      */
-    public function testMissingConfiguration()
+    public function testMissingConfiguration(): void
     {
+        $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
-            $this->getAccountMenu()->getMenu(),
-            $this->getAccountMenu(AccountMenu::getDefaultMenuConfig())->getMenu()
+            $this->getAccountMenu($container, [])->getMenu(),
+            $this->getAccountMenu($container, AccountMenu::getDefaultMenuConfig())->getMenu()
         );
     }
 
@@ -66,12 +78,18 @@ class AccountMenuTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultMenuAllCheckMethodsReturnFalse()
+    public function testDefaultMenuAllCheckMethodsReturnFalse(): void
     {
-        $menu = $this->getAccountMenu(
+        $container = $this->getContainerWithSectionRelatedServices();
+        $plugin = $this->getAccountMenu(
+            $container,
             AccountMenu::getDefaultMenuConfig(),
-            $this->getCheckMethods(false)
-        )->getMenu();
+            $this->getAccountMenuCheckMethods(false)
+        );
+        foreach (array_keys($this->getAccountMenuCheckMethods()) as $method) {
+            $this->assertEquals(false, $plugin->{$method}());
+        }
+        $menu = $plugin->getMenu();
         $this->assertCount(1, $menu['Account']['MenuItems']);
         $this->assertEquals('Profile', reset($menu['Account']['MenuItems'])['label']);
     }
@@ -81,66 +99,11 @@ class AccountMenuTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBackwardCompatibilityForOldConfigurations()
+    public function testBackwardCompatibilityForOldConfigurations(): void
     {
-        $menu = $this->getAccountMenu($this->getOldDefaultMenuConfig())->getMenu();
+        $container = $this->getContainerWithSectionRelatedServices();
+        $menu = $this->getAccountMenu($container, $this->getOldDefaultMenuConfig())->getMenu();
         $this->assertCount(12, $menu['Account']['MenuItems']);
-    }
-
-    /**
-     * Get mock AccountMenu.
-     *
-     * @param array $config       Configuration to use
-     * @param array $checkMethods Values to return for specific check methods
-     *
-     * @return AccountMenu
-     */
-    protected function getAccountMenu(
-        array $config = [],
-        array $checkMethods = [],
-    ): AccountMenu {
-        $accountMenu = $this->getMockBuilder(AccountMenu::class)
-            ->setConstructorArgs(
-                [
-                    $config,
-                    $this->createMock(AccountCapabilities::class),
-                    $this->createMock(Manager::class),
-                    $this->createMock(Connection::class),
-                    $this->createMock(ILSAuthenticator::class),
-                    null,
-                ]
-            )
-            ->onlyMethods(array_keys($this->getCheckMethods()))
-            ->getMock();
-        foreach ($this->getCheckMethods() as $checkMethod => $default) {
-            $accountMenu->method($checkMethod)->willReturn($checkMethods[$checkMethod] ?? $default);
-        }
-        return $accountMenu;
-    }
-
-    /**
-     * Get all check methods.
-     *
-     * @param bool $value Value for the check methods to return
-     *
-     * @return array
-     */
-    protected function getCheckMethods(bool $value = true): array
-    {
-        return [
-            'checkFavorites' => $value,
-            'checkCheckedout' => $value,
-            'checkHistoricloans' => $value,
-            'checkHolds' => $value,
-            'checkStorageRetrievalRequests' => $value,
-            'checkILLRequests' => $value,
-            'checkFines' => $value,
-            'checkLibraryCards' => $value,
-            'checkOverdrive' => $value,
-            'checkHistory' => $value,
-            'checkLogout' => $value,
-            'checkUserlistMode' => $value,
-        ];
     }
 
     /**
@@ -155,14 +118,14 @@ class AccountMenuTest extends \PHPUnit\Framework\TestCase
                 [
                     'name' => 'favorites',
                     'label' => 'saved_items',
-                    'route' => 'myresearch-favorites',
+                    'route' => 'lists-allitems',
                     'icon' => 'user-favorites',
                     'checkMethod' => 'checkFavorites',
                 ],
                 [
                     'name' => 'checkedout',
                     'label' => 'Checked Out Items',
-                    'route' => 'myresearch-checkedout',
+                    'route' => 'checkouts-list',
                     'icon' => 'user-checked-out',
                     'status' => true,
                     'checkMethod' => 'checkCheckedout',
@@ -185,7 +148,7 @@ class AccountMenuTest extends \PHPUnit\Framework\TestCase
                 [
                     'name' => 'storageRetrievalRequests',
                     'label' => 'Storage Retrieval Requests',
-                    'route' => 'myresearch-storageretrievalrequests',
+                    'route' => 'storageretrievalrequests-list',
                     'icon' => 'user-storage-retrievals',
                     'status' => true,
                     'checkMethod' => 'checkStorageRetrievalRequests',
@@ -193,7 +156,7 @@ class AccountMenuTest extends \PHPUnit\Framework\TestCase
                 [
                     'name' => 'ILLRequests',
                     'label' => 'Interlibrary Loan Requests',
-                    'route' => 'myresearch-illrequests',
+                    'route' => 'illrequests-list',
                     'icon' => 'user-ill-requests',
                     'status' => true,
                     'checkMethod' => 'checkILLRequests',
@@ -201,7 +164,7 @@ class AccountMenuTest extends \PHPUnit\Framework\TestCase
                 [
                     'name' => 'fines',
                     'label' => 'Fines',
-                    'route' => 'myresearch-fines',
+                    'route' => 'fines-list',
                     'status' => true,
                     'checkMethod' => 'checkFines',
                     'iconMethod' => 'finesIcon',
@@ -209,7 +172,7 @@ class AccountMenuTest extends \PHPUnit\Framework\TestCase
                 [
                     'name' => 'profile',
                     'label' => 'Profile',
-                    'route' => 'myresearch-profile',
+                    'route' => 'account-profile',
                     'icon' => 'profile',
                 ],
                 [
@@ -229,18 +192,69 @@ class AccountMenuTest extends \PHPUnit\Framework\TestCase
                 [
                     'name' => 'history',
                     'label' => 'Search History',
-                    'route' => 'search-history',
+                    'route' => 'searchhistory-list',
                     'icon' => 'search',
                     'checkMethod' => 'checkHistory',
                 ],
                 [
                     'name' => 'logout',
                     'label' => 'Log Out',
-                    'route' => 'myresearch-logout',
+                    'route' => 'account-logout',
                     'icon' => 'sign-out',
                     'checkMethod' => 'checkLogout',
                 ],
             ],
         ];
+    }
+
+    /**
+     * Data provider for testRequiredConfiguration.
+     *
+     * @return \Iterator<string, array>
+     */
+    public static function requiredConfigurationProvider(): \Iterator
+    {
+        yield 'Missing group settings' => [
+            ['Account' => []],
+            BadConfig::class,
+            'Missing required setting: label',
+        ];
+        yield 'Missing menu item settings' => [
+            [
+                'Account' => [
+                    'label' => 'Test menu label',
+                    'MenuItems' => [
+                        [
+                            'label' => 'Test item label',
+                        ],
+                    ],
+                ],
+            ],
+            BadConfig::class,
+            'Missing required setting: route',
+        ];
+    }
+
+    /**
+     * Test required configuration.
+     *
+     * @param array   $config                 Account menu configuration
+     * @param string  $expectedExceptionClass Expected exception class
+     * @param ?string $expectedExceptionMsg   Expected exception message
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('requiredConfigurationProvider')]
+    public function testRequiredConfiguration(
+        array $config,
+        string $expectedExceptionClass,
+        ?string $expectedExceptionMsg = null
+    ): void {
+        $this->expectException($expectedExceptionClass);
+        if ($expectedExceptionMsg) {
+            $this->expectExceptionMessage($expectedExceptionMsg);
+        }
+        $container = $this->getContainerWithSectionRelatedServices();
+        $this->getAccountMenu($container, $config);
     }
 }

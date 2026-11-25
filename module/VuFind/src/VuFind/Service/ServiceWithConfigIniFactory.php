@@ -38,16 +38,17 @@ use Psr\Container\ContainerInterface;
 /**
  * Generic factory to constructor-inject the config.ini settings.
  *
- * @category VuFind
- * @package  Service
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @category   VuFind
+ * @package    Service
+ * @author     Demian Katz <demian.katz@villanova.edu>
+ * @license    http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link       https://vufind.org/wiki/development Wiki
+ * @deprecated This class is deprecated and will be removed in release 13.
  */
 class ServiceWithConfigIniFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

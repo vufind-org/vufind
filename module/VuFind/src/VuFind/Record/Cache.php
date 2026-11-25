@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record Cache
+ * Record Cache.
  *
  * PHP version 8
  *
@@ -31,13 +31,13 @@
 
 namespace VuFind\Record;
 
-use VuFind\Config\Config as Config;
 use VuFind\Db\Entity\RecordEntityInterface;
 use VuFind\Db\Service\RecordServiceInterface;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Record Cache
+ * Record Cache.
  *
  * @category VuFind
  * @package  Record
@@ -62,22 +62,24 @@ class Cache implements \Psr\Log\LoggerAwareInterface
     protected $cachableSources = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RecordFactory          $recordFactoryManager Record driver plugin manager
-     * @param Config                 $cacheConfig          RecordCache.ini contents
+     * @param array                  $cacheConfig          RecordCache.ini contents
      * @param RecordServiceInterface $recordService        Record database service
      */
     public function __construct(
         protected RecordFactory $recordFactoryManager,
-        protected Config $cacheConfig,
+        #[Autowire(config: 'RecordCache')]
+        protected array $cacheConfig,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected RecordServiceInterface $recordService
     ) {
         $this->setContext(Cache::CONTEXT_DEFAULT);
     }
 
     /**
-     * Create a new or update an existing cache entry
+     * Create a new or update an existing cache entry.
      *
      * @param string $recordId Record id
      * @param string $source   Source name
@@ -163,7 +165,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Set the context for controlling cache behaviour
+     * Set the context for controlling cache behaviour.
      *
      * @param string $context Cache context
      *
@@ -177,18 +179,17 @@ class Cache implements \Psr\Log\LoggerAwareInterface
             return;
         }
         $context = ucfirst($context);
-        if (!isset($this->cacheConfig->$context)) {
+        if (!isset($this->cacheConfig[$context])) {
             $context = Cache::CONTEXT_DEFAULT;
         }
-        $this->cachableSources = isset($this->cacheConfig->$context)
-            ? $this->cacheConfig->$context->toArray() : [];
+        $this->cachableSources = $this->cacheConfig[$context] ?? [];
         if (
-            $context != Cache::CONTEXT_DEFAULT
-            && isset($this->cacheConfig->{Cache::CONTEXT_DEFAULT})
+            $context !== Cache::CONTEXT_DEFAULT
+            && isset($this->cacheConfig[Cache::CONTEXT_DEFAULT])
         ) {
             // Inherit settings from Default section
             $this->cachableSources = array_merge(
-                $this->cacheConfig->{Cache::CONTEXT_DEFAULT}->toArray(),
+                $this->cacheConfig[Cache::CONTEXT_DEFAULT],
                 $this->cachableSources
             );
         }
@@ -201,7 +202,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Convenience method for checking if cache is used as primary data data source
+     * Convenience method for checking if cache is used as primary data data source.
      *
      * @param string $source Record source
      *
@@ -215,7 +216,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Convenience method for checking if cache is used as fallback data source
+     * Convenience method for checking if cache is used as fallback data source.
      *
      * @param string $source Record source
      *
@@ -229,7 +230,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Check whether a record source is cacheable
+     * Check whether a record source is cacheable.
      *
      * @param string $source Record source
      *
@@ -243,7 +244,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Helper function to get records from cached source-specific record data
+     * Helper function to get records from cached source-specific record data.
      *
      * @param RecordEntityInterface $cachedRecord Record data
      *

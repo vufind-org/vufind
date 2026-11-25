@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Currency formatter
+ * Currency formatter.
  *
  * PHP version 8
  *
@@ -31,9 +31,10 @@
 namespace VuFind\Service;
 
 use NumberFormatter;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Currency formatter
+ * Currency formatter.
  *
  * @category VuFind
  * @package  Service
@@ -45,13 +46,6 @@ use NumberFormatter;
 class CurrencyFormatter
 {
     /**
-     * Default currency format (ISO 4217) to use.
-     *
-     * @var string
-     */
-    protected $defaultCurrency;
-
-    /**
      * Number formatter.
      *
      * @var NumberFormatter
@@ -59,13 +53,17 @@ class CurrencyFormatter
     protected $formatter;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param string  $defaultCurrency Default currency format (ISO 4217) to use (null for default from system locale)
+     * @param ?string $defaultCurrency Default currency format (ISO 4217) to use (null for default from system locale)
      * @param ?string $locale          Locale to use for number formatting (null for default system locale)
      */
-    public function __construct($defaultCurrency = null, $locale = null)
-    {
+    public function __construct(
+        #[Autowire(config: 'config', path: 'Site/defaultCurrency')]
+        protected ?string $defaultCurrency = null,
+        #[Autowire(config: 'config', path: 'Site/locale')]
+        ?string $locale = null
+    ) {
         // Initialize number formatter (an empty string makes NumberFormatter use the default locale):
         $this->formatter = new NumberFormatter($locale ?? '', NumberFormatter::CURRENCY);
 
@@ -77,7 +75,7 @@ class CurrencyFormatter
     }
 
     /**
-     * Convert currency from float to display format
+     * Convert currency from float to display format.
      *
      * @param float  $number   The number to format
      * @param string $currency Currency format (ISO 4217) to use (null for default)

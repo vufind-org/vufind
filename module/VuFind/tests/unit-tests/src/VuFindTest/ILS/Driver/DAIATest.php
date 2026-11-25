@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Laminas\Http\Response as HttpResponse;
 use VuFind\ILS\Driver\DAIA;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -149,7 +149,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -175,7 +175,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */

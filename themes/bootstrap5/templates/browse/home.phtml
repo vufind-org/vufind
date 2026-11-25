@@ -39,7 +39,7 @@
   <?php if (!empty($this->secondaryList)): ?>
     <div class="browse-list<?php if (!empty($this->resultList)): ?> browse-list__hidden-mobile<?php endif ?>" id="list3">
     <?php foreach ($this->secondaryList as $secondary): ?>
-      <?php $url = $BROWSE_BASE . '?findby=' . urlencode($this->findby)
+      <?php $url = $BROWSE_BASE . '?findby=' . urlencode($this->findby ?? '')
           . '&amp;category=' . urlencode($this->category ?? '')
           . '&amp;query=' . urlencode($secondary['value']);
         if ($this->facetPrefix) {

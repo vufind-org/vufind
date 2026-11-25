@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Session Plugin Manager Test Class
+ * Session Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Session;
 use VuFind\Session\PluginManager;
 
 /**
- * Session Plugin Manager Test Class
+ * Session Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

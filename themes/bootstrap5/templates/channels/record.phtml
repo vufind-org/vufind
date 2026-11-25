@@ -6,6 +6,6 @@
     $this->breadcrumbs()->set($this->translate('Channels'), $this->url('channels-home'))->add($this->driver->getBreadcrumb(), active: true);
 
     // Set up query parameters for channel list:
-    $this->queryParams = 'id=' . urlencode($driver->getUniqueId()) . '&source=' . urlencode($driver->getSourceIdentifier());
+    $queryParams = 'id=' . urlencode($this->driver->getUniqueId()) . '&source=' . urlencode($this->driver->getSourceIdentifier());
 ?>
-<?=$this->render('channels/channelList.phtml')?>
+<?=$this->context($this)->renderInContext('channels/channelList.phtml', compact('queryParams'))?>

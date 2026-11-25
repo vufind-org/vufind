@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract Driver for API-based ILS drivers
+ * Abstract Driver for API-based ILS drivers.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use function in_array;
 use function is_string;
 
 /**
- * Abstract Driver for API-based ILS drivers
+ * Abstract Driver for API-based ILS drivers.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -57,7 +57,7 @@ abstract class AbstractAPI extends AbstractBase implements
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Allow default corrections to all requests
+     * Allow default corrections to all requests.
      *
      * @param \Laminas\Http\Headers $headers the request headers
      * @param array                 $params  the parameters object
@@ -70,7 +70,7 @@ abstract class AbstractAPI extends AbstractBase implements
     }
 
     /**
-     * Function that obscures and logs debug data
+     * Function that obscures and logs debug data.
      *
      * @param string                $method      Request method
      * (GET/POST/PUT/DELETE/etc.)
@@ -124,9 +124,8 @@ abstract class AbstractAPI extends AbstractBase implements
      * @param int      $attemptNumber Counter to keep track of attempts (starts at 1 for the first attempt)
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function shouldRetryAfterUnexpectedStatusCode(Response $response, int $attemptNumber): bool
     {
         // No retries by default.
@@ -134,7 +133,7 @@ abstract class AbstractAPI extends AbstractBase implements
     }
 
     /**
-     * Make requests
+     * Make requests.
      *
      * @param string            $method              GET/POST/PUT/DELETE/etc
      * @param string            $path                API path (with a leading /)
@@ -176,7 +175,7 @@ abstract class AbstractAPI extends AbstractBase implements
         }
 
         // Add params
-        if ($method == 'GET') {
+        if (in_array($method, ['GET', 'DELETE'])) {
             $client->setParameterGet($params);
         } else {
             if (is_string($params)) {
@@ -215,7 +214,7 @@ abstract class AbstractAPI extends AbstractBase implements
                     $attemptNumber + 1
                 );
             } else {
-                throw new ILSException('Unexpected error code.');
+                throw new ILSException("Unexpected error code '$code' returned from $path.");
             }
         }
         if ($jsonLog = ($this->config['API']['json_log_file'] ?? false)) {

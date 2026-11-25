@@ -1,7 +1,7 @@
 <?php
 
 /**
- * InjectTemplateListener Test Class
+ * InjectTemplateListener Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest;
 use VuFindTheme\InjectTemplateListener;
 
 /**
- * InjectTemplateListener Test Class
+ * InjectTemplateListener Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -54,13 +54,13 @@ class ThemeInjectTemplateListenerTest extends \PHPUnit\Framework\TestCase
         $l = new InjectTemplateListener(['VuFind/']);
         // We should strip a registered prefix:
         $this->assertEquals(
-            'search',
-            $l->mapController(\VuFind\Controller\SearchController::class)
+            'index',
+            $l->mapController('VuFind\Controller\IndexController')
         );
         // We should NOT strip an unregistered prefix:
         $this->assertEquals(
             'vufindadmin/admin',
-            $l->mapController(\VuFindAdmin\Controller\AdminController::class)
+            $l->mapController('VuFindAdmin\Controller\AdminController')
         );
     }
 

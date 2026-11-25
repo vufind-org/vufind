@@ -49,7 +49,7 @@ use VuFind\DigitalContent\OverdriveConnector;
 class SolrOverdriveFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -71,8 +71,8 @@ class SolrOverdriveFactory
             throw new \Exception('Unexpected options sent to factory!');
         }
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
-        $config = $configManager->getConfigObject('config');
-        $odConfig = $configManager->getConfigObject('Overdrive');
+        $config = $configManager->getConfigArray('config');
+        $odConfig = $configManager->getConfigArray('Overdrive');
         $connector = $container->get(OverdriveConnector::class);
         return new $requestedName($config, $odConfig, $connector);
     }

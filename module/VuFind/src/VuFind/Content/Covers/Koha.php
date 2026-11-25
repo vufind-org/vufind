@@ -43,7 +43,7 @@ use function in_array;
 class Koha extends \VuFind\Content\AbstractCover
 {
     /**
-     * Base URL for Koha covers
+     * Base URL for Koha covers.
      *
      * @var string
      */
@@ -58,7 +58,7 @@ class Koha extends \VuFind\Content\AbstractCover
     protected $thumbnailSizes = ['small', 'medium'];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $url Base URL for Koha covers
      */
@@ -78,9 +78,8 @@ class Koha extends \VuFind\Content\AbstractCover
      * pointing to an ISBN object and 'issn' pointing to a string)
      *
      * @return string|bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getUrl($key, $size, $ids)
     {
         // We can only do Koha lookups by bib ID:

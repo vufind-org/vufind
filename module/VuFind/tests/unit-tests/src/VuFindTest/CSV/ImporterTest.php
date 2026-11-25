@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CSV Importer Test Class
+ * CSV Importer Test Class.
  *
  * PHP version 8
  *
@@ -30,13 +30,12 @@
 namespace VuFindTest\CSV;
 
 use VuFind\CSV\Importer;
-use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 use VuFindTest\Container\MockContainer;
 
 use function array_slice;
 
 /**
- * CSV Importer Test Class
+ * CSV Importer Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -129,15 +128,15 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     public function testCallbackDependencyInjection(): void
     {
         // Before running the test, there will be no dependencies injected
-        // into the static callback container, and trying to call getConfig
+        // into the static callback container, and trying to call getConfigArray
         // will throw an exception due to the missing dependency.
         $errorMsg = '';
         try {
-            \VuFind\XSLT\Import\VuFind::getConfig();
+            \VuFind\XSLT\Import\VuFind::getConfigArray();
         } catch (\Throwable $t) {
             $errorMsg = $t->getMessage();
         }
-        $this->assertEquals('Call to a member function get() on null', $errorMsg);
+        $this->assertSame('Call to a member function get() on null', $errorMsg);
         $this->runTestModeTest(
             [
                 'ini' => 'test-injection.ini',
@@ -145,11 +144,11 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
         );
         // After running the test, dependencies will have been injected, so
         // we can now call the same method without errors:
-        \VuFind\XSLT\Import\VuFind::getConfig();
+        \VuFind\XSLT\Import\VuFind::getConfigArray();
     }
 
     /**
-     * Test skipping the header row in the CSV
+     * Test skipping the header row in the CSV.
      *
      * @return void
      */
@@ -178,7 +177,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test importing a CSV with extra callbacks using advanced features
+     * Test importing a CSV with extra callbacks using advanced features.
      *
      * @return void
      */
@@ -249,10 +248,9 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
      */
     public function testImportInLiveMode(): void
     {
-        $mockWriter = $this->getMockBuilder(\VuFind\Solr\Writer::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockWriter = $this->createMock(\VuFind\Solr\Writer::class);
         $mockWriter->expects($this->once())->method('save')->with(
-            $this->equalTo('Solr'),
+            'Solr',
             $this->callback(
                 function ($doc) {
                     $expected = file_get_contents($this->csvFixtureDir . 'test.json');
@@ -264,7 +262,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
                     return true;
                 }
             ),
-            $this->equalTo('update')
+            'update'
         );
         $this->container->set(\VuFind\Solr\Writer::class, $mockWriter);
         $importer = $this->getImporter();
@@ -274,7 +272,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
             'Solr',
             false
         );
-        $this->assertEquals('', $result); // no output in non-test mode
+        $this->assertSame('', $result); // no output in non-test mode
     }
 
     /**
@@ -284,16 +282,11 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
      */
     public function testImportInSmallBatches(): void
     {
-        $mockWriter = $this->getMockBuilder(\VuFind\Solr\Writer::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockWriter = $this->createMock(\VuFind\Solr\Writer::class);
         $mockWriter->expects($this->exactly(3))->method('save')->with(
-            $this->equalTo('Solr'),
-            $this->callback(
-                function ($doc) {
-                    return $doc instanceof RawJSONDocument;
-                }
-            ),
-            $this->equalTo('update')
+            'Solr',
+            $this->isInstanceOf(\VuFindSearch\Backend\Solr\Document\RawJSONDocument::class),
+            'update'
         );
         $this->container->set(\VuFind\Solr\Writer::class, $mockWriter);
         $importer = $this->getImporter();
@@ -303,6 +296,6 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
             'Solr',
             false
         );
-        $this->assertEquals('', $result); // no output in non-test mode
+        $this->assertSame('', $result); // no output in non-test mode
     }
 }

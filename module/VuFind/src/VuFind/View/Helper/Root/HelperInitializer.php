@@ -1,7 +1,7 @@
 <?php
 
 /**
- * View Helper Initializer
+ * View Helper Initializer.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\View\Helper\Placeholder\Container\AbstractStandalone;
 use Psr\Container\ContainerInterface;
 
 /**
- * View Helper Initializer
+ * View Helper Initializer.
  *
  * @category VuFind
  * @package  View_Helpers

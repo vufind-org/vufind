@@ -1,5 +1,5 @@
 /**
- * Submit a form to processe a renewal request
+ * Submit a form to process a renewal request
  * @param {jQuery|HTMLElement} link   The button or link that was clicked
  * @param {string}             action The action to perform 
  */

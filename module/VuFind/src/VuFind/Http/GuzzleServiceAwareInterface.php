@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Marker interface for classes that need GuzzleService
+ * Marker interface for classes that need GuzzleService.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Http;
 
 /**
- * Marker interface for classes that need GuzzleService
+ * Marker interface for classes that need GuzzleService.
  *
  * @category VuFind
  * @package  Http
@@ -41,7 +41,7 @@ namespace VuFind\Http;
 interface GuzzleServiceAwareInterface
 {
     /**
-     * Set the GuzzleService
+     * Set the GuzzleService.
      *
      * @param GuzzleService $service GuzzleService
      *
@@ -50,7 +50,7 @@ interface GuzzleServiceAwareInterface
     public function setGuzzleService(GuzzleService $service): void;
 
     /**
-     * Get the GuzzleService
+     * Get the GuzzleService.
      *
      * @return ?GuzzleService
      */

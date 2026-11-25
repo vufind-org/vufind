@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OpenLibrarySubjects Recommendations Module
+ * OpenLibrarySubjects Recommendations Module.
  *
  * PHP version 8
  *
@@ -33,11 +33,10 @@ namespace VuFind\Recommend;
 use VuFind\Connection\OpenLibrary;
 use VuFind\Solr\Utils as SolrUtils;
 
-use function intval;
 use function is_object;
 
 /**
- * OpenLibrarySubjects Recommendations Module
+ * OpenLibrarySubjects Recommendations Module.
  *
  * This class provides recommendations by doing a search of the catalog; useful
  * for displaying catalog recommendations in other modules (i.e. Summon, Web, etc.)
@@ -56,49 +55,49 @@ class OpenLibrarySubjects implements
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Parameter to use for search terms
+     * Parameter to use for search terms.
      *
      * @var string
      */
     protected $requestParam;
 
     /**
-     * Search limit
+     * Search limit.
      *
      * @var int
      */
     protected $limit;
 
     /**
-     * Field to use for date filtering
+     * Field to use for date filtering.
      *
      * @var string
      */
     protected $pubFilter;
 
     /**
-     * Date filter to apply
+     * Date filter to apply.
      *
      * @var string
      */
     protected $publishedIn = '';
 
     /**
-     * Subject to search for
+     * Subject to search for.
      *
      * @var string
      */
     protected $subject;
 
     /**
-     * Subject types to use
+     * Subject types to use.
      *
      * @var array
      */
     protected $subjectTypes;
 
     /**
-     * Result of search (false if none)
+     * Result of search (false if none).
      *
      * @var array|bool
      */
@@ -117,10 +116,10 @@ class OpenLibrarySubjects implements
         $params = explode(':', $settings);
         $this->requestParam = empty($params[0]) ? 'lookfor' : $params[0];
         $this->limit = isset($params[1]) && is_numeric($params[1]) && $params[1] > 0
-            ? intval($params[1]) : 5;
+            ? (int)($params[1]) : 5;
         $this->pubFilter = (!isset($params[2]) || empty($params[2])) ?
             'publishDate' : $params[2];
-        if (strtolower(trim($this->pubFilter)) == 'false') {
+        if (strtolower(trim($this->pubFilter)) === 'false') {
             $this->pubFilter = false;
         }
 
@@ -142,15 +141,15 @@ class OpenLibrarySubjects implements
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // Get and normalise $requestParam
-        $this->subject = $request->get($this->requestParam);
+        $this->subject = $request[$this->requestParam] ?? '';
 
         // Set up the published date range if it has not already been provided:
         if (empty($this->publishedIn) && $this->pubFilter) {
@@ -197,12 +196,12 @@ class OpenLibrarySubjects implements
 
     /**
      * Support function to get publication date range. Return string in the form
-     * "YYYY-YYYY"
+     * "YYYY-YYYY".
      *
      * @param string                     $field   Name of filter field to check for
      * date limits
      * @param \VuFind\Search\Params\Base $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      *                                            request.
      *
      * @return string
@@ -211,8 +210,8 @@ class OpenLibrarySubjects implements
     {
         $range = null;
         // Try to extract range details from request parameters or SearchObject:
-        $from = $request->get($field . 'from');
-        $to = $request->get($field . 'to');
+        $from = $request[$field . 'from'] ?? null;
+        $to = $request[$field . 'to'] ?? null;
         if (null !== $from && null !== $to) {
             $range = ['from' => $from, 'to' => $to];
         } elseif (is_object($params)) {

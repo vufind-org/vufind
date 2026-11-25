@@ -19,12 +19,12 @@
 ?>
 <?php // Data-title attribute is for analytics use.  Do not remove. ?>
 <ul class="full-facet-list facet__list facet-group" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>" data-title="<?=$this->escapeHtmlAttr($this->facetLabel) ?>">
-  <?php if ($this->page > 1 && !$this->inLightbox): ?>
+  <?php if ($this->page > 1 && !$this->globals()['inLightbox']): ?>
     <a<?=$this->htmlAttributes($prevParams)?>><?=$this->transEsc('prev_ellipsis') ?></a>
   <?php endif; ?>
   <?php foreach ($this->data as $item): ?>
     <li class="facet__list__item">
-      <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
+      <?=$this->context($this)->renderInContext('Recommend/SideFacets/single-facet.phtml', [
         'exclude' => $this->exclude,
         'facet' => $item,
         'group' => $this->facet,

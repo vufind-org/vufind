@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MultiAuth Authentication plugin
+ * MultiAuth Authentication plugin.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function call_user_func;
 use function strlen;
 
 /**
- * MultiAuth Authentication plugin
+ * MultiAuth Authentication plugin.
  *
  * This module enables chaining of multiple authentication plugins. Authentication
  * plugins are executed in order, and the first successful authentication is
@@ -71,35 +71,35 @@ use function strlen;
 class MultiAuth extends AbstractBase
 {
     /**
-     * Filter configuration for credentials
+     * Filter configuration for credentials.
      *
      * @var array
      */
     protected $filters = [];
 
     /**
-     * Authentication methods to try
+     * Authentication methods to try.
      *
      * @var array
      */
     protected $methods = [];
 
     /**
-     * Username input
+     * Username input.
      *
      * @var string
      */
     protected $username;
 
     /**
-     * Password input
+     * Password input.
      *
      * @var string
      */
     protected $password;
 
     /**
-     * Plugin manager for obtaining other authentication objects
+     * Plugin manager for obtaining other authentication objects.
      *
      * @var PluginManager
      */
@@ -115,7 +115,7 @@ class MultiAuth extends AbstractBase
      */
     protected function validateConfig()
     {
-        if (empty($this->config->MultiAuth->method_order)) {
+        if (empty($this->config['MultiAuth']['method_order'])) {
             throw new AuthException(
                 'One or more MultiAuth parameters are missing. ' .
                 'Check your config.ini!'
@@ -126,27 +126,24 @@ class MultiAuth extends AbstractBase
     /**
      * Set configuration; throw an exception if it is invalid.
      *
-     * @param \VuFind\Config\Config $config Configuration to set
+     * @param ?array $config Configuration to set
      *
      * @throws AuthException
      * @return void
      */
-    public function setConfig($config)
+    public function setConfig(?array $config): void
     {
         parent::setConfig($config);
-        if (isset($config->MultiAuth->method_order)) {
+        if (isset($config['MultiAuth']['method_order'])) {
             $this->methods = array_map(
                 'trim',
-                explode(',', $config->MultiAuth->method_order)
+                explode(',', $config['MultiAuth']['method_order'])
             );
         }
-        if (
-            isset($config->MultiAuth->filters)
-            && strlen($config->MultiAuth->filters)
-        ) {
+        if (strlen($config['MultiAuth']['filters'] ?? '')) {
             $this->filters = array_map(
                 'trim',
-                explode(',', $config->MultiAuth->filters)
+                explode(',', $config['MultiAuth']['filters'])
             );
         }
     }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Covers content loader plugin manager
+ * Covers content loader plugin manager.
  *
  * PHP version 8
  *
@@ -29,11 +29,11 @@
 
 namespace VuFind\Content\Covers;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
 use VuFind\Content\ObalkyKnihContentFactory;
+use VuFind\ServiceManager\AbstractPluginFactory;
 
 /**
- * Covers content loader plugin manager
+ * Covers content loader plugin manager.
  *
  * @category VuFind
  * @package  Content
@@ -58,6 +58,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'browzine' => BrowZine::class,
         'contentcafe' => ContentCafe::class,
         'demo' => Demo::class,
+        'eds' => EDS::class,
         'google' => Google::class,
         'koha' => Koha::class,
         'librarything' => LibraryThing::class,
@@ -75,22 +76,25 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Bokinfo::class => InvokableFactory::class,
-        BrowZine::class => BrowZineFactory::class,
-        Buchhandel::class => BuchhandelFactory::class,
-        ContentCafe::class => ContentCafeFactory::class,
-        Demo::class => DemoFactory::class,
-        Deprecated::class => InvokableFactory::class,
-        Google::class => GoogleFactory::class,
-        Koha::class => KohaFactory::class,
-        LibraryThing::class => InvokableFactory::class,
-        LocalFile::class => InvokableFactory::class,
         ObalkyKnih::class => ObalkyKnihContentFactory::class,
-        OpenLibrary::class => InvokableFactory::class,
-        Orb::class => OrbFactory::class,
-        Summon::class => InvokableFactory::class,
-        Syndetics::class => SyndeticsFactory::class,
     ];
+
+    /**
+     * Constructor.
+     *
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
+     */
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        parent::__construct($configOrContainerInstance, $v3config);
+        $this->addAbstractFactory(AbstractPluginFactory::class);
+    }
 
     /**
      * Return the name of the base class or interface that plug-ins must conform

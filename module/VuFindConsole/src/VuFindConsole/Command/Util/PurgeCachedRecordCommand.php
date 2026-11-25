@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: purge a record from cache
+ * Console command: purge a record from cache.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Db\Service\RecordServiceInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 
 /**
- * Console command: purge a record from cache
+ * Console command: purge a record from cache.
  *
  * @category VuFind
  * @package  Console
@@ -54,7 +54,7 @@ use VuFind\Db\Service\ResourceServiceInterface;
 class PurgeCachedRecordCommand extends Command
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RecordServiceInterface   $recordService   Record table object
      * @param ResourceServiceInterface $resourceService Resource table object
@@ -94,9 +94,8 @@ class PurgeCachedRecordCommand extends Command
      * @param OutputInterface $output Output object
      *
      * @return int 0 for success
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $source = $input->getArgument('source');

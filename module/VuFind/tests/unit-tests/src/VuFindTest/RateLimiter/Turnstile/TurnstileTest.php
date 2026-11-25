@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Turnstile Test Class
+ * Turnstile Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\RateLimiter\Turnstile\Turnstile;
 use VuFindHttp\HttpService;
 
 /**
- * Turnstile Test Class
+ * Turnstile Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -123,7 +123,7 @@ class TurnstileTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $cache = $this->getMockBuilder(\Laminas\Cache\Storage\StorageInterface::class)->getMock();
+        $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
         $cache->method('getItem')->willReturn($cacheResult);
 
         $turnstile = new Turnstile($config, $cache);

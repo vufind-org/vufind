@@ -1,7 +1,7 @@
 <?php
 
 /**
- * III ILS Driver
+ * III ILS Driver.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function count;
 use function strlen;
 
 /**
- * VuFind Connector for Innovative
+ * VuFind Connector for Innovative.
  *
  * This class uses screen scraping techniques to gather record holdings written
  * by Adam Bryn of the Tri-College consortium.
@@ -69,7 +69,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Make an HTTP request
+     * Make an HTTP request.
      *
      * @param string $url URL to request
      *
@@ -92,7 +92,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Prepare ID
+     * Prepare ID.
      *
      * This function returns the correct record id format as defined
      * in the Innovative.ini file.
@@ -118,7 +118,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -188,7 +188,7 @@ class Innovative extends AbstractBase implements
 
                 // If this is the first row, it is the header row and has the column
                 // names
-                if ($count == 1) {
+                if ($count === 1) {
                     $keys[$i] = $cols[$i];
                 } elseif ($count > 1) { // not the first row, has holding info
                     //look for location column
@@ -240,7 +240,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -262,7 +262,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -276,16 +276,15 @@ class Innovative extends AbstractBase implements
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -294,9 +293,8 @@ class Innovative extends AbstractBase implements
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         // TODO
@@ -304,7 +302,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -314,9 +312,8 @@ class Innovative extends AbstractBase implements
      * @param array  $details Item details from getHoldings return array
      *
      * @return string         URL to ILS's OPAC's place hold screen.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHoldLink($id, $details)
     {
         // Strip ID
@@ -331,7 +328,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -346,7 +343,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -354,7 +351,7 @@ class Innovative extends AbstractBase implements
      * @param string $password The patron's password
      *
      * @throws ILSException
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($username, $password)

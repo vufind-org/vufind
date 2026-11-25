@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Application\UriRegistry;
 
 use function count;
 
@@ -67,7 +68,7 @@ class AssetManagerFactory implements FactoryInterface
                 $parts = array_map('trim', explode(':', $setting));
                 if (APPLICATION_ENV === $parts[0]) {
                     return $parts[1];
-                } elseif (count($parts) == 1) {
+                } elseif (count($parts) === 1) {
                     $default = $parts[0];
                 } elseif ($parts[0] === '*') {
                     $default = $parts[1];
@@ -78,7 +79,7 @@ class AssetManagerFactory implements FactoryInterface
     }
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -101,9 +102,14 @@ class AssetManagerFactory implements FactoryInterface
         }
         $nonceGenerator = $container->get(\VuFind\Security\NonceGenerator::class);
         $nonce = $nonceGenerator->getNonce();
+        $viewHelperManager = $container->get('ViewHelperManager');
         return new $requestedName(
             $container->get(\VuFindTheme\ThemeInfo::class),
             $container->get(\VuFindTheme\AssetPipeline::class),
+            $container->get(UriRegistry::class)->get('BaseUrlPath'),
+            $viewHelperManager->get(\Laminas\View\Helper\HeadLink::class),
+            $viewHelperManager->get(\Laminas\View\Helper\HeadStyle::class),
+            $viewHelperManager->get(\Laminas\View\Helper\InlineScript::class),
             $nonce
         );
     }

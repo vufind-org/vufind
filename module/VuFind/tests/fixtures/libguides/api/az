@@ -1,0 +1,209 @@
+HTTP/1.1 200 OK
+Server: nginx
+Date: Wed, 05 Jul 2023 19:50:05 GMT
+Content-Type: application/json
+
+[
+    {
+        "id": "72242",
+        "name": "Arts and Humanities Citation Index",
+        "description": "Part of Web of Science, this database is an index to articles in the arts and the humanities.",
+        "url": "https://isiknowledge.com/wos",
+        "site_id": "987",
+        "type_id": "10",
+        "owner_id": "2631",
+        "az_vendor_id": "2262",
+        "meta": {
+            "target": "0",
+            "tn_url": "",
+            "tn_height": "",
+            "tn_width": "",
+            "more_info": "Coverage from 1982 to the present. Links to PDFs when available.",
+            "enable_proxy": "1"
+        },
+        "created": "2014-04-30 13:47:54",
+        "updated": "2025-12-03 20:12:02",
+        "slug_id": "0",
+        "enable_hidden": "0",
+        "az_vendor_name": "ISI",
+        "internal_note": null,
+        "library_review": "",
+        "alt_names": "",
+        "enable_new": 0,
+        "enable_trial": 0,
+        "enable_popular": 0,
+        "trial_expiration": null,
+        "new_expiration": null,
+        "az_types": [
+            {
+                "id": 695,
+                "name": "Articles & Journals",
+                "site_id": 987
+            }
+        ]
+    },
+    {
+        "id": "72243",
+        "name": "ARTStor",
+        "description": "<p>Note: ArtSTOR has migrated into JSTOR. ArtSTOR is a database of digital images that may be used for academic purposes only. These collections are interdisciplinary, supporting research and teaching in both the humanities and social sciences.</p>",
+        "url": "https://www.jstor.org/site/artstor/",
+        "site_id": "987",
+        "type_id": "10",
+        "owner_id": "2631",
+        "az_vendor_id": "154115",
+        "meta": {
+            "tn_url": "",
+            "tn_width": "",
+            "tn_height": "",
+            "tn_alt_text": "",
+            "desc_pos": "1",
+            "enable_proxy": "1",
+            "more_info": "<p>ARTstor also contains images and collections relevant to African and African-American Studies, American Studies, Anthropology, Asian Studies, Classics, Costume Design &amp; Fashion, Geography, History, Language &amp; Literature, Latin American Studies, Marketing, Medicine &amp; Natural Sciences, Middle Eastern Studies, Music, Native American Studies, Religious Studies, Theatre &amp; Dance, and Women’s Studies. Through ARTstor, one can search, organize &amp; save, download, or create presentations. Further privileges can be granted to those with instructor status.</p>",
+            "target": "0",
+            "cover_url": ""
+        },
+        "created": "2014-04-30 13:48:13",
+        "updated": "2025-12-03 20:12:03",
+        "slug_id": "0",
+        "enable_hidden": "0",
+        "az_vendor_name": "ArtStor, Inc.",
+        "internal_note": "",
+        "library_review": "",
+        "alt_names": "JSTOR",
+        "enable_new": 0,
+        "enable_trial": 0,
+        "enable_popular": 0,
+        "trial_expiration": "0000-00-00 00:00:00",
+        "new_expiration": "0000-00-00 00:00:00",
+        "az_types": [
+            {
+                "id": 700,
+                "name": "Primary Sources",
+                "site_id": 987
+            }
+        ]
+    },
+    {
+        "id": "72244",
+        "name": "arXiv",
+        "description": "<p>An e-print service in the fields of <strong>physics</strong>, mathematics, computer science, quantitative biology, quantitative finance and statistics.</p>",
+        "url": "https://www.arxiv.org/",
+        "site_id": "987",
+        "type_id": "10",
+        "owner_id": "2631",
+        "az_vendor_id": "2264",
+        "meta": {
+            "tn_url": "",
+            "tn_width": "",
+            "tn_height": "",
+            "tn_alt_text": "",
+            "desc_pos": "1",
+            "enable_proxy": "0",
+            "more_info": "",
+            "target": "0",
+            "cover_url": ""
+        },
+        "created": "2014-04-30 13:48:35",
+        "updated": "2025-12-03 20:12:04",
+        "slug_id": "0",
+        "enable_hidden": "0",
+        "az_vendor_name": "ArXiv.org",
+        "internal_note": "",
+        "library_review": "",
+        "alt_names": "",
+        "enable_new": 0,
+        "enable_trial": 0,
+        "enable_popular": 0,
+        "trial_expiration": "0000-00-00 00:00:00",
+        "new_expiration": "0000-00-00 00:00:00",
+        "az_types": [
+            {
+                "id": 695,
+                "name": "Articles & Journals",
+                "site_id": 987
+            }
+        ]
+    },
+    {
+        "id": "72248",
+        "name": "Atla Religion Database",
+        "description": "<p>Comprehensive database indexing religious and theological subjects from U.S. and international journals. Coverage from 1949 to the present.</p>",
+        "url": "https://search.ebscohost.com/login.aspx?authtype=ip,uid&custid=12345&groupid=main&profile=ehostprofile&defaultdb=reh",
+        "site_id": "987",
+        "type_id": "10",
+        "owner_id": "2631",
+        "az_vendor_id": "2255",
+        "meta": {
+            "tn_url": "",
+            "tn_width": "",
+            "tn_height": "",
+            "tn_alt_text": "",
+            "desc_pos": "1",
+            "enable_proxy": "1",
+            "more_info": "<p>Includes book reviews and indexing of books of collected essays and other multiauthor works. Citations only. List of sources covered can be found under the \"Publications\" link at the top of the search screen.</p>",
+            "target": "0",
+            "cover_url": ""
+        },
+        "created": "2014-04-30 13:49:43",
+        "updated": "2025-12-03 20:12:06",
+        "slug_id": "2944968",
+        "enable_hidden": "0",
+        "az_vendor_name": "EBSCOHost",
+        "internal_note": "",
+        "library_review": "",
+        "alt_names": "Atla DRB",
+        "enable_new": 0,
+        "enable_trial": 0,
+        "enable_popular": 0,
+        "trial_expiration": "0000-00-00 00:00:00",
+        "new_expiration": "0000-00-00 00:00:00",
+        "az_types": [
+            {
+                "id": 695,
+                "name": "Articles & Journals",
+                "site_id": 987
+            }
+        ]
+    },
+    {
+        "id": "72458",
+        "name": "[cancelled] RefWorks",
+        "description": "<p>Web-based tool to manage your references and produce citations and bibliographies from them more easily. Interacts with Word and Google Docs to help you correctly format references and bibliographies. Learn more by consulting the <a href=\"https://libraryguides.lehigh.edu/refworks \" target=\"_blank\">RefWorks guide.</a></p>",
+        "url": "https://refworks.proquest.com/",
+        "site_id": "987",
+        "type_id": "10",
+        "owner_id": "2631",
+        "az_vendor_id": "2250",
+        "meta": {
+            "tn_url": "",
+            "tn_width": "",
+            "tn_height": "",
+            "tn_alt_text": "",
+            "desc_pos": 1,
+            "enable_proxy": false,
+            "more_info": "",
+            "target": 0,
+            "cover_url": ""
+        },
+        "created": "2014-04-30 14:49:52",
+        "updated": "2025-12-09 14:47:30",
+        "slug_id": "0",
+        "enable_hidden": "1",
+        "az_vendor_name": "ProQuest",
+        "internal_note": "This database was cancelled in summer 2025.",
+        "library_review": "",
+        "alt_names": "",
+        "enable_new": 0,
+        "enable_trial": 0,
+        "enable_popular": 0,
+        "trial_expiration": "0000-00-00 00:00:00",
+        "new_expiration": "0000-00-00 00:00:00",
+        "az_types": [
+            {
+                "id": 702,
+                "name": "Research Tool",
+                "site_id": 987
+            }
+        ]
+    }
+]

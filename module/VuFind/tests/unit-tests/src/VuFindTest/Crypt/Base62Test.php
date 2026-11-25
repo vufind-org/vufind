@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Base62 Test Class
+ * Base62 Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Crypt;
 use VuFind\Crypt\Base62;
 
 /**
- * Base62 Test Class
+ * Base62 Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -75,15 +75,13 @@ class Base62Test extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for tests.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function exampleProvider()
+    public static function exampleProvider(): \Iterator
     {
         // format: base 10 number, base 62 number
-        return [
-            ['2', '2'],
-            ['6234', '1cY'],
-            ['1437846', '6234'],
-        ];
+        yield ['2', '2'];
+        yield ['6234', '1cY'];
+        yield ['1437846', '6234'];
     }
 }

@@ -49,7 +49,7 @@ class LibGuidesAZBackendFactory extends LibGuidesBackendFactory
      *
      * @return string
      */
-    protected function getServiceName()
+    protected function getServiceName(): string
     {
         return 'LibGuidesAZ';
     }
@@ -59,7 +59,7 @@ class LibGuidesAZBackendFactory extends LibGuidesBackendFactory
      *
      * @return QueryBuilder
      */
-    protected function createQueryBuilder()
+    protected function createQueryBuilder(): QueryBuilder
     {
         $builder = new QueryBuilder();
 

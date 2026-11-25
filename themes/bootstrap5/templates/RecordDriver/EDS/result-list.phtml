@@ -1,13 +1,10 @@
 <?php
   $this->assetManager()->appendStyleLink('EDS.css');
-  $accessLevel = $this->driver->getAccessLevel();
-  $restrictedView = empty($accessLevel) ? false : true;
   $recordLinker = $this->recordLinker($this->results);
   $largeImage = $this->record($this->driver)->getThumbnail('large');
   $linkAttributes = $largeImage ? ['href' => $largeImage, 'data-lightbox-image' => 'true'] : [];
   $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $linkAttributes);
   $cover = $coverDetails['html'];
-  $edsConfig = $this->config()->get('EDS');
   $supportsRtac = $this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeRtacEnabled();
 ?>
 <?php
@@ -39,29 +36,42 @@
         $formatter = $this->recordDataFormatter($this->driver);
         $items = $formatter->getData($formatter->getDefaults('result-list'));
       ?>
-      <?php if (!empty($items)): ?>
-        <?php foreach ($items as $item): ?>
-          <div class="resultItemLine1">
-            <?php if ('Title' == $item['label']): ?>
-              <h2>
-                <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
-                <?=$item['value']?> </a>
-              </h2>
-            <?php else:?>
-              <p>
-                <b><?=$this->transEsc($item['label'])?>:</b>
-                <?=$item['value']?>
-              </p>
-            <?php endif;?>
-          </div>
-        <?php endforeach; ?>
-      <?php elseif ($restrictedView): ?>
+      <?php
+        // We prefer the title from the items (for highlighting), but sometimes it is missing, so use getTitle() to set a default.
+        $mainTitleHtml = $this->escapeHtml($this->driver->getTitle());
+        foreach ($items as $item) {
+          if ('Title' == $item['label']) {
+            $mainTitleHtml = $item['value'];
+            break;
+          }
+        }
+      ?>
+      <?php if (!empty($mainTitleHtml)): ?>
         <div class="resultItemLine1">
-          <p>
-            <?=$this->transEsc('This result is not displayed to guests')?>
-            <br>
-            <?=$this->render('error/loginForAccess.phtml')?>
-          </p>
+          <h2>
+            <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
+              <?=$mainTitleHtml?> </a>
+          </h2>
+        </div>
+      <?php endif; ?>
+      <?php foreach ($items as $item): ?>
+        <div class="resultItemLine1">
+          <?php if ('Title' != $item['label']): ?>
+            <p>
+              <b><?=$this->transEsc($item['label'])?>:</b>
+              <?=$item['value']?>
+            </p>
+          <?php endif;?>
+        </div>
+      <?php endforeach; ?>
+
+      <?php if ($this->driver->isPlaceholder()): ?>
+        <div class="resultItemLine1">
+          <?=$this->context($this)->renderInContext('error/guestRestriction.phtml')?>
+        </div>
+      <?php elseif ($this->params->getOptions()->showRestrictedViewWarning('result_list_entry') && $this->driver->isRestrictedView()): ?>
+        <div class="resultItemLine1">
+          <?=$this->context($this)->renderInContext('error/restrictedViewWarning.phtml')?>
         </div>
       <?php endif; ?>
 
@@ -128,7 +138,14 @@
       <?=$this->record($this->driver)->renderTemplate('controls/qrcode.phtml', ['driver' => $this->driver, 'context' => 'results'])?>
 
       <?php if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
-        <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br>
+        <?=$this->context($this)->renderInContext('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
+      <?php endif; ?>
+
+      <?php if (count($this->driver->getCitationFormats('search_single')) > 0): ?>
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Cite'))?>" data-lightbox rel="nofollow" class="cite result-link icon-link">
+          <?=$this->icon('cite', 'icon-link__icon')?>
+          <span class="icon-link__label"><?=$this->transEsc('Cite this')?></span>
+        </a>
       <?php endif; ?>
 
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
@@ -161,7 +178,7 @@
         <?php endforeach; ?>
       <?php endif; ?>
 
-      <?=(!$restrictedView && $this->driver->supportsCoinsOpenUrl()) ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
+      <?=(!$this->driver->isRestrictedView() && $this->driver->supportsCoinsOpenUrl()) ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
     </div>
   </div>
   <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>

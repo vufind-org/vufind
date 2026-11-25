@@ -66,7 +66,7 @@ final class PrivateUserTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoRecord(string $query = 'Dewey'): Element
+    protected function goToRecord(string $query = 'Dewey'): Element
     {
         $page = $this->performSearch($query);
         $this->clickCss($page, '.result a.title');
@@ -101,9 +101,9 @@ final class PrivateUserTest extends \VuFindTest\Integration\MinkTestCase
         // Set up configs:
         $this->setUpPrivateUser();
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Comment control should not be present
-        $this->unfindCss($page, '.record-tabs .usercomments a');
+        $this->unFindCss($page, '.record-tabs .usercomments');
     }
 
     /**
@@ -116,9 +116,9 @@ final class PrivateUserTest extends \VuFindTest\Integration\MinkTestCase
         // Set up configs:
         $this->setUpPrivateUser();
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click to add tag
-        $this->unfindCss($page, '.tag-record');
+        $this->unFindCss($page, '.tag-record');
     }
 
     /**
@@ -145,12 +145,12 @@ final class PrivateUserTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Login
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         $this->clickCss($page, '#loginOptions a');
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
         // Check that login link is back
-        $this->assertNotEmpty($this->findCss($page, '#loginOptions a'));
+        $this->findCss($page, '#loginOptions a');
         // Assert that nothing was added to the user database:
         static::failIfDataExists('User data should not have been created in private user mode.');
     }

@@ -29,6 +29,8 @@
 
 namespace VuFind\Content\Covers;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * ContentCafe cover content loader.
  *
@@ -41,28 +43,30 @@ namespace VuFind\Content\Covers;
 class ContentCafe extends \VuFind\Content\AbstractCover
 {
     /**
-     * API password
+     * API password.
      *
      * @var string
      */
     protected $password;
 
     /**
-     * Base URL
+     * Base URL.
      *
      * @var string
      */
     protected $baseURL;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\Config $config Configuration
+     * @param array $config Configuration
      */
-    public function __construct(\VuFind\Config\Config $config)
-    {
-        $this->password = $config->pw;
-        $this->baseURL = $config->url ?? 'http://contentcafe2.btol.com';
+    public function __construct(
+        #[Autowire(config: 'config', path: 'Contentcafe', default: [])]
+        array $config
+    ) {
+        $this->password = $config['pw'];
+        $this->baseURL = $config['url'] ?? 'http://contentcafe2.btol.com';
         $this->supportsUpc = $this->supportsIsbn = $this->cacheAllowed = true;
     }
 

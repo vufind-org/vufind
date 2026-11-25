@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SpellingSuggestions Recommendations Module
+ * SpellingSuggestions Recommendations Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Recommend;
 
 /**
- * SpellingSuggestions Recommendations Module
+ * SpellingSuggestions Recommendations Module.
  *
  * @category VuFind
  * @package  Recommendations

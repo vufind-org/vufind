@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Tag Autocomplete Module
+ * Tag Autocomplete Module.
  *
  * PHP version 8
  *
@@ -29,10 +29,11 @@
 
 namespace VuFind\Autocomplete;
 
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Tags\TagsService;
 
 /**
- * Tag Autocomplete Module
+ * Tag Autocomplete Module.
  *
  * This class provides suggestions by using the local tag database.
  *
@@ -45,10 +46,11 @@ use VuFind\Tags\TagsService;
 class Tag implements AutocompleteInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param TagsService $tagsService Tag database service
      */
+    #[Autowire]
     public function __construct(protected TagsService $tagsService)
     {
     }

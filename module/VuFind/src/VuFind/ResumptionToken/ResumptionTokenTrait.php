@@ -52,7 +52,7 @@ trait ResumptionTokenTrait
     protected OaiResumptionServiceInterface $resumptionService;
 
     /**
-     * Set resumption service
+     * Set resumption service.
      *
      * @param OaiResumptionServiceInterface $resumptionService Resumption service
      *
@@ -64,7 +64,7 @@ trait ResumptionTokenTrait
     }
 
     /**
-     * Generate and return a new resumption token
+     * Generate and return a new resumption token.
      *
      * @param array  $params     Params to be saved for the resumption token
      * @param int    $cursor     Cursor to be saved for the resumption token

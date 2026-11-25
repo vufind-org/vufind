@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Voyager ILS Driver
+ * Voyager ILS Driver.
  *
  * PHP version 8
  *
@@ -37,13 +37,14 @@ use PDO;
 use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Validator\EmailAddressValidator;
 
 use function count;
 use function in_array;
 use function is_callable;
 
 /**
- * Voyager Restful ILS Driver
+ * Voyager Restful ILS Driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -65,127 +66,113 @@ class VoyagerRestful extends Voyager implements
     use \VuFind\I18n\HasSorterTrait;
 
     /**
-     * Web services host
+     * Web services host.
      *
      * @var string
      */
     protected $ws_host;
 
     /**
-     * Web services port
+     * Web services port.
      *
      * @var string
      */
     protected $ws_port;
 
     /**
-     * Web services app
+     * Web services app.
      *
      * @var string
      */
     protected $ws_app;
 
     /**
-     * Web services database key
+     * Web services database key.
      *
      * @var string
      */
     protected $ws_dbKey;
 
     /**
-     * Web services patron home UB ID
+     * Web services patron home UB ID.
      *
      * @var string
      */
     protected $ws_patronHomeUbId;
 
     /**
-     * Legal pickup locations
+     * Legal pickup locations.
      *
      * @var array
      */
     protected $ws_pickUpLocations;
 
     /**
-     * Default pickup location
+     * Default pickup location.
      *
      * @var string
      */
     protected $defaultPickUpLocation;
 
     /**
-     * The maximum number of holds to check at a time (0 = no limit)
+     * The maximum number of holds to check at a time (0 = no limit).
      *
      * @var int
      */
     protected $holdCheckLimit;
 
     /**
-     * The maximum number of call slips to check at a time (0 = no limit)
+     * The maximum number of call slips to check at a time (0 = no limit).
      *
      * @var int
      */
     protected $callSlipCheckLimit;
 
     /**
-     * Holds mode
-     *
-     * @var string
-     */
-    protected $holdsMode;
-
-    /**
-     * Title-level holds mode
-     *
-     * @var string
-     */
-    protected $titleHoldsMode;
-
-    /**
      * Web Services cookies. Required for at least renewals (for JSESSIONID) as
-     * documented at http://www.exlibrisgroup.org/display/VoyagerOI/Renew
+     * documented at http://www.exlibrisgroup.org/display/VoyagerOI/Renew.
      *
      * @var \Laminas\Http\Response\Header\SetCookie[]
      */
     protected $cookies = false;
 
     /**
-     * Whether recalls are enabled
+     * Whether recalls are enabled.
      *
      * @var bool
      */
     protected $recallsEnabled;
 
     /**
-     * Whether item holds are enabled
+     * Whether item holds are enabled.
      *
      * @var bool
      */
     protected $itemHoldsEnabled;
 
     /**
-     * Whether request groups are enabled
+     * Whether request groups are enabled.
      *
      * @var bool
      */
     protected $requestGroupsEnabled;
 
     /**
-     * Default request group
+     * Default request group.
      *
      * @var bool|string
      */
     protected $defaultRequestGroup;
 
     /**
-     * Whether pickup location must belong to the request group
+     * Whether pickup location must belong to the request group.
      *
      * @var bool
      */
     protected $pickupLocationsInRequestGroup;
 
     /**
-     * Whether to check that items exist when placing a hold or recall request
+     * Whether to check that items exist when placing a hold or recall request.
      *
      * @var bool
      */
@@ -193,7 +180,7 @@ class VoyagerRestful extends Voyager implements
 
     /**
      * Whether to check that items are not available when placing a hold or recall
-     * request
+     * request.
      *
      * @var bool
      */
@@ -201,7 +188,7 @@ class VoyagerRestful extends Voyager implements
 
     /**
      * Whether to check that the user doesn't already have the record on loan when
-     * placing a hold or recall request
+     * placing a hold or recall request.
      *
      * @var bool
      */
@@ -216,27 +203,27 @@ class VoyagerRestful extends Voyager implements
 
     /**
      * Whether it is allowed to cancel a request for an item that is available for
-     * pickup
+     * pickup.
      *
      * @var bool
      */
     protected $allowCancelingAvailableRequests;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
+     * @param EmailAddressValidator  $emailValidator Email address validator
      * @param string                 $holdsMode      Holds mode setting
-     * @param string                 $titleHoldsMode Title holds mode setting
+     * @param string                 $titleHoldsMode Title-level holds mode setting
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
-        $holdsMode = 'disabled',
-        $titleHoldsMode = 'disabled'
+        EmailAddressValidator $emailValidator,
+        protected string $holdsMode = 'disabled',
+        protected string $titleHoldsMode = 'disabled',
     ) {
-        parent::__construct($dateConverter);
-        $this->holdsMode = $holdsMode;
-        $this->titleHoldsMode = $titleHoldsMode;
+        parent::__construct($dateConverter, $emailValidator);
     }
 
     /**
@@ -312,14 +299,11 @@ class VoyagerRestful extends Voyager implements
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function getConfig(string $function, array $params = []): array
     {
-        $functionConfig = $this->config[$function] ?? false;
-
-        return $functionConfig;
+        return $this->config[$function] ?? [];
     }
 
     /**
@@ -341,7 +325,7 @@ class VoyagerRestful extends Voyager implements
     /**
      * Support method for VuFind Hold Logic. Take an array of status strings
      * and determines whether or not an item is holdable based on the
-     * valid_hold_statuses settings in configuration file
+     * valid_hold_statuses settings in configuration file.
      *
      * @param array $statusArray The status codes to analyze.
      *
@@ -368,7 +352,7 @@ class VoyagerRestful extends Voyager implements
     /**
      * Support method for VuFind Hold Logic. Takes an item type id
      * and determines whether or not an item is borrowable based on the
-     * non_borrowable settings in configuration file
+     * non_borrowable settings in configuration file.
      *
      * @param string $itemTypeID The item type id to analyze.
      *
@@ -396,7 +380,7 @@ class VoyagerRestful extends Voyager implements
      * Support method for VuFind Storage Retrieval Request (Call Slip) Logic.
      * Take a holdings row array and determine whether or not a call slip is
      * allowed based on the valid_call_slip_locations settings in configuration
-     * file
+     * file.
      *
      * @param array $holdingsRow The holdings row to analyze.
      *
@@ -434,9 +418,8 @@ class VoyagerRestful extends Voyager implements
      * @param array $holdingsRow The holdings row to analyze.
      *
      * @return bool Whether an item is holdable
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function isILLRequestAllowed($holdingsRow)
     {
         return true;
@@ -510,7 +493,7 @@ class VoyagerRestful extends Voyager implements
             if ($is_holdable) {
                 // Hold Type - If we have patron data, we can use it to determine if
                 // a hold link should be shown
-                if ($patron && $this->holdsMode == 'driver') {
+                if ($patron && $this->holdsMode === 'driver') {
                     // This limit is set as the api is slow to return results
                     if ($i < $this->holdCheckLimit && $this->holdCheckLimit != '0') {
                         $holdType = $this->determineHoldType(
@@ -574,7 +557,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Check if request is valid
+     * Check if request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -589,7 +572,7 @@ class VoyagerRestful extends Voyager implements
         $holdType = $data['holdtype'] ?? 'auto';
         $level = $data['level'] ?? 'copy';
         $mode = ('title' == $level) ? $this->titleHoldsMode : $this->holdsMode;
-        if ('driver' == $mode && 'auto' == $holdType) {
+        if ('driver' === $mode && 'auto' == $holdType) {
             $itemID = $data['item_id'] ?? false;
             $result = $this->determineHoldType($patron['id'], $id, $itemID);
             if (!$result) {
@@ -608,7 +591,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Check if storage retrieval request is valid
+     * Check if storage retrieval request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -674,7 +657,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
@@ -692,9 +675,8 @@ class VoyagerRestful extends Voyager implements
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         $pickResponse = [];
@@ -777,7 +759,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in VoyagerRestful.ini
      *
@@ -790,38 +772,35 @@ class VoyagerRestful extends Voyager implements
      *
      * @return false|string      The default pickup location for the patron or false
      * if the user has to choose.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         return $this->defaultPickUpLocation;
     }
 
     /**
-     * Get Default Request Group
+     * Get Default Request Group.
      *
      * Returns the default request group set in VoyagerRestful.ini
      *
-     * @param array $patron      Patron information returned by the patronLogin
-     * method.
-     * @param array $holdDetails Optional array, only passed in when getting a list
+     * @param array  $patron      Patron information returned by the patronLogin method.
+     * @param ?array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
      * placeHold, minus the patron data. May be used to limit the request group
      * options or may be ignored.
      *
      * @return false|string      The default request group for the patron or false if
      * the user has to choose.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getDefaultRequestGroup($patron = false, $holdDetails = null)
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
         return $this->defaultRequestGroup;
     }
 
     /**
-     * Sort function for sorting request groups
+     * Sort function for sorting request groups.
      *
      * @param array $a Request group
      * @param array $b Request group
@@ -847,7 +826,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get request groups
+     * Get request groups.
      *
      * @param int   $bibId       BIB ID
      * @param array $patron      Patron information returned by the patronLogin
@@ -859,9 +838,8 @@ class VoyagerRestful extends Voyager implements
      *
      * @return array False if request groups not in use or an array of
      * associative arrays with id and name keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getRequestGroups($bibId, $patron, $holdDetails = null)
     {
         if (!$this->requestGroupsEnabled) {
@@ -1012,7 +990,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Make Request
+     * Make Request.
      *
      * Makes a request to the Voyager Restful API
      *
@@ -1116,7 +1094,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Encode a string for XML
+     * Encode a string for XML.
      *
      * @param string $string String to be encoded
      *
@@ -1128,7 +1106,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Build Basic XML
+     * Build Basic XML.
      *
      * Builds a simple xml string to send to the API
      *
@@ -1209,7 +1187,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Check Account Blocks
+     * Check Account Blocks.
      *
      * Checks if a user has any blocks against their account which may prevent them
      * performing certain operations
@@ -1239,7 +1217,7 @@ class VoyagerRestful extends Voyager implements
             $blocks = $this->makeRequest($hierarchy, $params);
             if (
                 $blocks
-                && (string)$blocks->{'reply-text'} == 'ok'
+                && (string)$blocks->{'reply-text'} === 'ok'
                 && isset($blocks->blocks->institution->borrowingBlock)
             ) {
                 $blockReason = $this->extractBlockReasons(
@@ -1254,7 +1232,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -1379,7 +1357,7 @@ class VoyagerRestful extends Voyager implements
                     }
                     $renewed = false;
                     foreach ($renewStatus->status as $status) {
-                        if ((string)$status == 'Renewed') {
+                        if ((string)$status === 'Renewed') {
                             $renewed = true;
                         }
                     }
@@ -1419,7 +1397,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Check Item Requests
+     * Check Item Requests.
      *
      * Determines if a user can place a hold or recall on a specific item
      *
@@ -1464,7 +1442,7 @@ class VoyagerRestful extends Voyager implements
                 $reply = (string)$check->$node;
 
                 // Valid Response
-                if ($reply == 'ok') {
+                if ($reply === 'ok') {
                     if ($check->$request) {
                         $requestAttributes = $check->$request->attributes();
                         if ($requestAttributes['allowed'] == 'Y') {
@@ -1478,7 +1456,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Make Item Requests
+     * Make Item Requests.
      *
      * Places a Hold or Recall for a particular title or item
      *
@@ -1587,7 +1565,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Determine Hold Type
+     * Determine Hold Type.
      *
      * Determines if a user can place a hold or recall on a particular item
      *
@@ -1625,7 +1603,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Hold Error
+     * Hold Error.
      *
      * Returns a Hold Error Message
      *
@@ -1704,7 +1682,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Check whether items exist for the given BIB ID
+     * Check whether items exist for the given BIB ID.
      *
      * @param int  $bibId          BIB ID
      * @param ?int $requestGroupId Request group ID or null
@@ -1766,7 +1744,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Check whether there are items available for loan for the given BIB ID
+     * Check whether there are items available for loan for the given BIB ID.
      *
      * @param int  $bibId          BIB ID
      * @param ?int $requestGroupId Request group ID or null
@@ -1891,7 +1869,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1941,7 +1919,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details or throws an exception on failure of support
@@ -2079,7 +2057,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold or recall on a particular item. The
      * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
@@ -2123,13 +2101,13 @@ class VoyagerRestful extends Voyager implements
                 $cancel = $cancel->children();
                 $node = 'reply-text';
                 $reply = (string)$cancel->$node;
-                $count = ($reply == 'ok') ? $count + 1 : $count;
+                $count = ($reply === 'ok') ? $count + 1 : $count;
 
                 $response[$itemId] = [
-                    'success' => $reply == 'ok',
-                    'status' => ($reply == 'ok')
+                    'success' => $reply === 'ok',
+                    'status' => ($reply === 'ok')
                         ? 'hold_cancel_success' : 'hold_cancel_fail',
-                    'sysMessage' => ($reply == 'ok') ? false : $reply,
+                    'sysMessage' => ($reply === 'ok') ? false : $reply,
                 ];
             } else {
                 $response[$itemId] = [
@@ -2142,7 +2120,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Cancel Hold Details
+     * Get Cancel Hold Details.
      *
      * In order to cancel a hold, Voyager requires the patron details an item ID
      * and a recall ID. This function returns the item id and recall id as a string
@@ -2153,9 +2131,8 @@ class VoyagerRestful extends Voyager implements
      * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         if (!$this->allowCancelingAvailableRequests && $holdDetails['available']) {
@@ -2165,12 +2142,9 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
-     * In order to renew an item, Voyager requires the patron details and an item
-     * id. This function returns the item id as a string which is then used
-     * as submitted form data in checkedOut.php. This value is then extracted by
-     * the RenewMyItems function.
+     * This function returns the details required to renew items.
      *
      * @param array $checkOutDetails An array of item data
      *
@@ -2184,7 +2158,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -2230,7 +2204,7 @@ class VoyagerRestful extends Voyager implements
                     if ($this->isLocalInst((string)$institution->attributes()->id)) {
                         // Take only renewability for local loans, other information
                         // we have already
-                        $renewable = (string)$loan->attributes()->canRenew == 'Y';
+                        $renewable = (string)$loan->attributes()->canRenew === 'Y';
 
                         foreach ($transactions as &$transaction) {
                             if (
@@ -2284,7 +2258,7 @@ class VoyagerRestful extends Voyager implements
                         'dueTime' => $dueTime,
                         'dueStatus' => $dueStatus,
                         'title' => (string)$loan->title,
-                        'renewable' => (string)$loan->attributes()->canRenew == 'Y',
+                        'renewable' => (string)$loan->attributes()->canRenew === 'Y',
                         'institution_id' => (string)$institution->attributes()->id,
                         'institution_name' => (string)$loan->dbName,
                         'institution_dbkey' => (string)$loan->dbKey,
@@ -2296,7 +2270,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get patron's local or remote holds from the API
+     * Get patron's local or remote holds from the API.
      *
      * This is responsible for retrieving all local or remote holds by a specific
      * patron.
@@ -2366,7 +2340,7 @@ class VoyagerRestful extends Voyager implements
                             )
                             : '',
                         'position' => (string)$item->queuePosition,
-                        'available' => (string)$item->status == '2',
+                        'available' => (string)$item->status === '2',
                         'reqnum' => (string)$item->holdRecallId,
                         'item_id' => (string)$item->itemId,
                         'volume' => '',
@@ -2449,7 +2423,7 @@ class VoyagerRestful extends Voyager implements
                             )
                             : '',
                         'position' => (string)$item->queuePosition,
-                        'available' => (string)$item->status == '4',
+                        'available' => (string)$item->status === '4',
                         'reqnum' => (string)$item->holdRecallId,
                         'item_id' => (string)$item->itemId,
                         'volume' => '',
@@ -2478,7 +2452,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Place Storage Retrieval Request (Call Slip)
+     * Place Storage Retrieval Request (Call Slip).
      *
      * Attempts to place a call slip request on a particular item and returns
      * an array with result details
@@ -2573,7 +2547,7 @@ class VoyagerRestful extends Voyager implements
 
             // Valid Response
             $response = [];
-            if ($reply == 'ok' && $note == 'Your request was successful.') {
+            if ($reply === 'ok' && $note == 'Your request was successful.') {
                 $response['success'] = true;
                 $response['status'] = 'storage_retrieval_request_place_success';
             } else {
@@ -2587,7 +2561,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Cancel Storage Retrieval Requests (Call Slips)
+     * Cancel Storage Retrieval Requests (Call Slips).
      *
      * Attempts to Cancel a call slip on a particular item. The
      * data in $cancelDetails['details'] is determined by
@@ -2631,14 +2605,14 @@ class VoyagerRestful extends Voyager implements
                 // Process Cancel
                 $cancel = $cancel->children();
                 $reply = (string)$cancel->{'reply-text'};
-                $count = ($reply == 'ok') ? $count + 1 : $count;
+                $count = ($reply === 'ok') ? $count + 1 : $count;
 
                 $response[$itemId] = [
-                    'success' => $reply == 'ok',
-                    'status' => ($reply == 'ok')
+                    'success' => $reply === 'ok',
+                    'status' => ($reply === 'ok')
                         ? 'storage_retrieval_request_cancel_success'
                         : 'storage_retrieval_request_cancel_fail',
-                    'sysMessage' => ($reply == 'ok') ? false : $reply,
+                    'sysMessage' => ($reply === 'ok') ? false : $reply,
                 ];
             } else {
                 $response[$itemId] = [
@@ -2652,7 +2626,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Cancel Storage Retrieval Request (Call Slip) Details
+     * Get Cancel Storage Retrieval Request (Call Slip) Details.
      *
      * In order to cancel a call slip, Voyager requires the item ID and a
      * request ID. This function returns the item id and call slip id as a
@@ -2663,9 +2637,8 @@ class VoyagerRestful extends Voyager implements
      * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelStorageRetrievalRequestDetails($details, $patron)
     {
         $details
@@ -2768,7 +2741,7 @@ class VoyagerRestful extends Voyager implements
         $requestCount = count(
             $response->xpath("//req:requestIdentifier[@requestCode='UB']")
         );
-        if ($requestCount == 0) {
+        if ($requestCount === 0) {
             // UB request not available
             $this->putCachedData($cacheId, false);
             return false;
@@ -2879,7 +2852,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Check if ILL Request is valid
+     * Check if ILL Request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -2929,7 +2902,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get ILL (UB) Pickup Libraries
+     * Get ILL (UB) Pickup Libraries.
      *
      * This is responsible for getting information on the possible pickup libraries
      *
@@ -2955,7 +2928,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get ILL (UB) Pickup Locations
+     * Get ILL (UB) Pickup Locations.
      *
      * This is responsible for getting a list of possible pickup locations for a
      * library
@@ -2966,9 +2939,8 @@ class VoyagerRestful extends Voyager implements
      *
      * @return bool|array False if request not allowed, or an array of
      * locations.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getILLPickupLocations($id, $pickupLib, $patron)
     {
         if (!isset($this->config['ILLRequests'])) {
@@ -3040,7 +3012,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Place ILL (UB) Request
+     * Place ILL (UB) Request.
      *
      * Attempts to place an UB request on a particular item and returns
      * an array with result details or a PEAR error on failure of support classes
@@ -3189,7 +3161,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Patron ILL Requests
+     * Get Patron ILL Requests.
      *
      * This is responsible for retrieving all UB requests by a specific patron.
      *
@@ -3207,7 +3179,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Cancel ILL (UB) Requests
+     * Cancel ILL (UB) Requests.
      *
      * Attempts to Cancel an UB request on a particular item. The
      * data in $cancelDetails['details'] is determined by
@@ -3237,7 +3209,7 @@ class VoyagerRestful extends Voyager implements
                  'circulationActions' => 'requests',
             ];
             // An UB request is
-            if ($type == 'C') {
+            if ($type === 'C') {
                 $hierarchy['callslips'] = $cancelID;
             } else {
                 $hierarchy['holds'] = $cancelID;
@@ -3257,13 +3229,13 @@ class VoyagerRestful extends Voyager implements
                 $cancel = $cancel->children();
                 $node = 'reply-text';
                 $reply = (string)$cancel->$node;
-                $count = ($reply == 'ok') ? $count + 1 : $count;
+                $count = ($reply === 'ok') ? $count + 1 : $count;
 
                 $response[$itemId] = [
-                    'success' => $reply == 'ok',
-                    'status' => ($reply == 'ok')
+                    'success' => $reply === 'ok',
+                    'status' => ($reply === 'ok')
                         ? 'ill_request_cancel_success' : 'ill_request_cancel_fail',
-                    'sysMessage' => ($reply == 'ok') ? false : $reply,
+                    'sysMessage' => ($reply === 'ok') ? false : $reply,
                 ];
             } else {
                 $response[$itemId] = [
@@ -3277,7 +3249,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Cancel ILL (UB) Request Details
+     * Get Cancel ILL (UB) Request Details.
      *
      * In Voyager an UB request is either a call slip (pending delivery) or a hold
      * (pending checkout). In order to cancel an UB request, Voyager requires the
@@ -3289,9 +3261,8 @@ class VoyagerRestful extends Voyager implements
      * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelILLRequestDetails($details, $patron)
     {
         $details = ($details['institution_dbkey'] ?? '')
@@ -3318,7 +3289,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Change Password
+     * Change Password.
      *
      * Attempts to change patron password (PIN code)
      *
@@ -3442,9 +3413,8 @@ class VoyagerRestful extends Voyager implements
      *
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsMethod($method, $params)
     {
         // Special case: change password is only available if properly configured.
