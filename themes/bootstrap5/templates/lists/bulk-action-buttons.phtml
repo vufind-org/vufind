@@ -42,10 +42,8 @@
           )
         ?>
       <?php endif; ?>
-      <?php if (
-        ($this->config()->getArray('config')['Citation']['list_bulk'] ?? false)
-        && ($this->config()->getArray('config')['Citation']['formats'] ?? true)
-      ): ?>
+      <?php $citationConfig = $this->config()->getArray('config')['Citation'] ?? []; ?>
+      <?php if (($citationConfig['list_bulk'] ?? false) && ($citationConfig['formats'] ?? true)): ?>
         <?=
           $this->bulkAction()->button(
               'cite',
