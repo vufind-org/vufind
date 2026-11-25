@@ -38,10 +38,8 @@
             )
           ?>
         <?php endif; ?>
-        <?php if (
-          ($this->config()->getArray('config')['Citation']['book_bag'] ?? false)
-          && ($this->config()->getArray('config')['Citation']['formats'] ?? true)
-        ): ?>
+        <?php $citationConfig = $this->config()->getArray('config')['Citation'] ?? []; ?>
+        <?php if (($citationConfig['book_bag'] ?? false) && ($citationConfig['formats'] ?? true)): ?>
           <?=
             $this->bulkAction()->button(
                 'cite',
