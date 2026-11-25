@@ -230,7 +230,7 @@ class RatingsService extends AbstractDbService implements
                 $this->logError('Rating update failed: ' . $e->getMessage());
                 throw $e;
             }
-            return $updatedRatingId;
+            return $existing;
         }
 
         if (null === $rating) {
