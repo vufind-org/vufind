@@ -21,6 +21,7 @@
     <?php foreach ($formatCitations as $citation): ?>
       <?php
         $elementId = 'citation-' . $this->escapeHtmlAttr($format) . '-' . $i++;
+        $allCitationsId = 'all-citations-' . $this->escapeHtmlAttr($format)
       ?>
       <li>
         <div class="citation copy-to-clipboard-container">
@@ -33,10 +34,10 @@
     <?php endforeach; ?>
   </ul>
   <div class="citation copy-to-clipboard-container">
-    <span id="all-citations" class="hidden">
+    <span id="<?=$allCitationsId?>" class="hidden">
       <?=implode("\n<br>", $formatCitations)?>
     </span>
-    <?=$this->copyToClipboardButton('#all-citations', hideButtonText: false, buttonText: 'copy_all_to_clipboard_button_label')?>
+    <?=$this->copyToClipboardButton('#' . $allCitationsId, hideButtonText: false, buttonText: 'copy_all_to_clipboard_button_label')?>
   </div>
   <div class="text-muted text-center"><?=$this->transEsc('Warning: These citations may not always be 100% accurate')?>.</div>
   <?php
