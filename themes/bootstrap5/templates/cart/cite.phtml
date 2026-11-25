@@ -57,6 +57,6 @@
       ]
   )?>
 <?php else: ?>
-  <h3><?=current($tabs)['description']?>:</h3>
+  <h3><?=$this->escapeHtml(current($tabs)['description'])?>:</h3>
   <?=current($tabs)['content']?>
 <?php endif; ?>
