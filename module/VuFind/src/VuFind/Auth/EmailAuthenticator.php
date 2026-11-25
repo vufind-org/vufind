@@ -30,13 +30,17 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\Request;
-use Laminas\View\Renderer\PhpRenderer;
+use Laminas\Session\ManagerInterface;
 use OTPHP\HOTP;
 use VuFind\Config\Feature\EmailSettingsTrait;
+use VuFind\Crypt\RandomHash;
 use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
+use VuFind\Mailer\Mailer;
 use VuFind\Net\UserIpReader;
-use VuFind\Validator\CsrfInterface;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Class for managing email-based authentication.
@@ -65,19 +69,23 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     /**
      * Constructor.
      *
-     * @param \Laminas\Session\SessionManager $sessionManager  Session Manager
-     * @param CsrfInterface                   $csrf            CSRF Validator
-     * @param \VuFind\Mailer\Mailer           $mailer          Mailer
-     * @param PhpRenderer                     $viewRenderer    View Renderer
-     * @param UserIpReader                    $userIpReader    User IP address reader
-     * @param array                           $config          Configuration
-     * @param AuthHashServiceInterface        $authHashService AuthHash database service
+     * @param ManagerInterface          $sessionManager   Session Manager
+     * @param RandomHash                $randomHash       Random hash generator
+     * @param Mailer                    $mailer           Mailer
+     * @param TemplateRendererInterface $templateRenderer Template Renderer
+     * @param ServerUrlHelper           $serverUrlHelper  Server URL helper
+     * @param RouteHelper               $routeHelper      Route helper
+     * @param UserIpReader              $userIpReader     User IP address reader
+     * @param array                     $config           Configuration
+     * @param AuthHashServiceInterface  $authHashService  AuthHash database service
      */
     public function __construct(
-        protected \Laminas\Session\SessionManager $sessionManager,
-        protected CsrfInterface $csrf,
-        protected \VuFind\Mailer\Mailer $mailer,
-        protected PhpRenderer $viewRenderer,
+        protected ManagerInterface $sessionManager,
+        protected RandomHash $randomHash,
+        protected Mailer $mailer,
+        protected TemplateRendererInterface $templateRenderer,
+        protected ServerUrlHelper $serverUrlHelper,
+        protected RouteHelper $routeHelper,
         protected UserIpReader $userIpReader,
         protected array $config,
         protected AuthHashServiceInterface $authHashService
@@ -123,14 +131,13 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
             throw new AuthException('authentication_error_in_progress');
         }
 
-        $this->csrf->trimTokenList(5);
         $linkData = [
             'timestamp' => time(),
             'data' => $data,
             'email' => $email,
             'ip' => $this->userIpReader->getUserIp(),
         ];
-        $hash = $this->csrf->getHash(true);
+        $hash = $this->randomHash->getHash();
 
         $row = $this->authHashService->getByHashAndType($hash, AuthHashServiceInterface::TYPE_EMAIL);
 
@@ -138,16 +145,14 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
             ->setData(json_encode($linkData));
         $this->authHashService->persistEntity($row);
 
-        $serverHelper = $this->viewRenderer->plugin('serverurl');
-        $urlHelper = $this->viewRenderer->plugin('url');
         $urlParams['hash'] = $hash;
         $viewParams = $linkData + $templateParams;
-        $viewParams['url'] = $serverHelper(
-            $urlHelper($linkRoute, $routeParams, ['query' => $urlParams])
+        $viewParams['url'] = $this->serverUrlHelper->getUrlForPath(
+            $this->routeHelper->getUrlFromRoute($linkRoute, $routeParams, $urlParams)
         );
         $viewParams['title'] = $this->config['Site']['title'] ?? '';
 
-        $message = $this->viewRenderer->render($template, $viewParams);
+        $message = $this->templateRenderer->renderTemplateAsString(template: $template, params: $viewParams);
         $from = $this->getEmailSenderAddress($this->config, $email);
         $subject = $this->translator->translate($subject);
         $subject = str_replace('%%title%%', $viewParams['title'], $subject);
@@ -262,7 +267,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $viewParams['code'] = $otp;
         $viewParams['title'] = $this->config['Site']['title'] ?? '';
 
-        $message = $this->viewRenderer->render($template, $viewParams);
+        $message = $this->templateRenderer->renderTemplateAsString(template: $template, params: $viewParams);
         $from = $this->getEmailSenderAddress($this->config, $email);
         $subject = $this->translator->translate($subject);
         $subject = str_replace('%%title%%', $viewParams['title'], $subject);

@@ -19,7 +19,7 @@
         <div class="home-facet-container">
           <ul class="home-facet-list">
             <?php if ($isHierarchy): ?>
-              <?=$this->render('Recommend/SideFacets/hierarchical-facet-level.phtml', [
+              <?=$this->context($this)->renderInContext('Recommend/SideFacets/hierarchical-facet-level.phtml', [
                 'exclude' => false,
                 'facetList' => $details['list'],
                 'group' => $field,

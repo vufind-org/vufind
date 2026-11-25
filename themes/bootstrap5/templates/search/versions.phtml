@@ -11,7 +11,7 @@
   );
 
   // Call the standard search template:
-  echo $this->render('search/results.phtml');
+  echo $this->context($this)->renderInContext('search/results.phtml');
 
   // Override searchbox:
   $this->globals()['searchbox'] = $this->context($this)->renderInContext(

@@ -1,1 +1,1 @@
-<?=$this->render('Helpers/pagination.phtml', $this->vars()->getArrayCopy() + ['top' => true]);
+<?=$this->context($this)->renderInContext('Helpers/pagination.phtml', ['top' => true]);

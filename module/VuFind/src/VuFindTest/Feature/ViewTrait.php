@@ -31,18 +31,28 @@ namespace VuFindTest\Feature;
 
 use Laminas\Cache\Storage\Adapter\AdapterOptions;
 use Laminas\Cache\Storage\StorageInterface;
+use Laminas\Mvc\View\Http\ViewManager;
 use Laminas\View\Helper\EscapeHtml;
+use Laminas\View\HelperPluginManager;
 use Laminas\View\Renderer\PhpRenderer;
+use Laminas\View\View;
 use Psr\Container\ContainerInterface;
+use VuFind\Application\UriRegistry;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\Escaper\Escaper;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
 use VuFind\Search\Memory;
 use VuFind\Search\Params\PluginManager;
+use VuFind\View\GlobalsContainer;
 use VuFind\View\Helper\Root\CleanHtml;
 use VuFind\View\Helper\Root\CleanHtmlFactory;
 use VuFind\View\Helper\Root\SearchMemory;
-use VuFind\View\Helper\Root\Url;
+use VuFind\View\Renderer\LaminasTemplateRenderer;
+use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindTest\Container\MockContainer;
+use VuFindTheme\InjectTemplateListener;
 use VuFindTheme\View\Helper\AssetManager;
 use VuFindTheme\View\Helper\AssetManagerFactory;
 
@@ -57,30 +67,40 @@ use VuFindTheme\View\Helper\AssetManagerFactory;
  */
 trait ViewTrait
 {
+    use AutowireTrait;
+
     /**
      * Get a working AssetManager helper.
      *
-     * @param PhpRenderer $renderer View for helper
+     * @param HelperPluginManager $helperPluginManager View helper plugin manager
      *
      * @return AssetManager
      */
-    protected function getAssetManager(PhpRenderer $renderer): AssetManager
+    protected function getAssetManager(HelperPluginManager $helperPluginManager): AssetManager
     {
         $container = new MockContainer($this);
         $container->get(\VuFind\Security\NonceGenerator::class)->method('getNonce')->willReturn('');
         $services = [
+            \Laminas\View\Helper\Doctype::class => new \Laminas\View\Helper\Doctype(),
             \Laminas\View\Helper\HeadLink::class => new \Laminas\View\Helper\HeadLink(),
             \Laminas\View\Helper\HeadStyle::class => new \Laminas\View\Helper\HeadStyle(),
             \Laminas\View\Helper\InlineScript::class => new \Laminas\View\Helper\InlineScript(),
             \Laminas\View\Helper\Url::class => new \Laminas\View\Helper\Url(),
         ];
-        $viewHelperManager = $renderer->getHelperPluginManager();
         foreach ($services as $key => $value) {
-            if (!$viewHelperManager->has($key)) {
-                $viewHelperManager->setService($key, $value);
+            if (!$helperPluginManager->has($key)) {
+                $helperPluginManager->setService($key, $value);
             }
         }
-        $container->set(\Laminas\View\HelperPluginManager::class, $viewHelperManager);
+        $mockUriRegistry = $this->createMock(UriRegistry::class);
+        $mockUriRegistry->method('get')
+            ->willReturnCallback(
+                fn ($s) => match ($s) {
+                    'BaseUrlPath' => '/',
+                }
+            );
+        $container->set(UriRegistry::class, $mockUriRegistry);
+        $container->set(HelperPluginManager::class, $helperPluginManager);
         $factory = new AssetManagerFactory();
         $assetManager = $factory($container, AssetManager::class);
 
@@ -88,36 +108,86 @@ trait ViewTrait
     }
 
     /**
+     * Get helper plugin manager.
+     *
+     * @param array               $plugins   Plugins
+     * @param ?ContainerInterface $container Container
+     *
+     * @return HelperPluginManager
+     */
+    protected function getHelperPluginManager(
+        array $plugins = [],
+        ?ContainerInterface $container = null
+    ): HelperPluginManager {
+        $helperPluginManager = new HelperPluginManager($container ?? $this->createMock(ContainerInterface::class), []);
+        foreach ($plugins as $key => $value) {
+            $helperPluginManager->setService($key, $value);
+        }
+        return $helperPluginManager;
+    }
+
+    /**
      * Get a working renderer.
      *
-     * @param array  $plugins Custom VuFind plug-ins to register
-     * @param string $theme   Theme directory to load from
+     * @param ?HelperPluginManager $helperPluginManager Configured helper plugin manager
+     * @param string               $theme               Theme directory to load from
      *
      * @return PhpRenderer
      */
-    protected function getPhpRenderer($plugins = [], $theme = 'bootstrap5')
+    protected function getPhpRenderer(?HelperPluginManager $helperPluginManager = null, $theme = 'bootstrap5')
     {
         $resolver = new \Laminas\View\Resolver\TemplatePathStack();
 
-        // This assumes that all themes will be testing inherit directly
-        // from root with no intermediate themes. Probably safe for most
-        // test situations, though other scenarios are possible.
+        // This assumes that all themes we'll be testing inherit directly from root with no intermediate themes.
+        // Probably safe for most test situations, though other scenarios are possible.
         $resolver->setPaths(
             [
                 $this->getPathForTheme('root'),
                 $this->getPathForTheme($theme),
             ]
         );
+
+        $helperPluginManager ??= $this->getHelperPluginManager();
+        if (!$helperPluginManager->has('assetManager')) {
+            $helperPluginManager->setService('assetManager', $this->getAssetManager($helperPluginManager));
+        }
         $renderer = new PhpRenderer();
         $renderer->setResolver($resolver);
-        $pluginManager = $renderer->getHelperPluginManager();
-        if (!isset($plugins['assetManager'])) {
-            $plugins['assetManager'] = $this->getAssetManager($renderer);
-        }
-        foreach ($plugins as $key => $value) {
-            $pluginManager->setService($key, $value);
-        }
+        $renderer->setHelperPluginManager($helperPluginManager);
         return $renderer;
+    }
+
+    /**
+     * Get a working template renderer.
+     *
+     * @param ?HelperPluginManager $helperPluginManager Configured helper plugin manager
+     * @param string               $theme               Theme directory to load from
+     * @param ?PhpRenderer         $renderer            Laminas PHP renderer
+     *
+     * @return TemplateRendererInterface
+     */
+    protected function getTemplateRenderer(
+        ?HelperPluginManager $helperPluginManager = null,
+        $theme = 'bootstrap5',
+        $renderer = null
+    ): TemplateRendererInterface {
+        $renderer ??= $this->getPhpRenderer($helperPluginManager, $theme);
+        $view = $this->createMock(View::class);
+        $view->method('render')
+            ->willReturnCallback([$renderer, 'render']);
+        $viewManager = $this->createMock(ViewManager::class);
+        $viewManager->method('getView')
+            ->willReturn($view);
+        return new LaminasTemplateRenderer(
+            $this->createMock(ServerUrlHelper::class),
+            $renderer,
+            $viewManager,
+            $this->createMock(InjectTemplateListener::class),
+            false,
+            'error/404.phtml',
+            'error/error.phtml',
+            new GlobalsContainer()
+        );
     }
 
     /**
@@ -136,7 +206,7 @@ trait ViewTrait
      * Get mock SearchMemory view helper.
      *
      * @param ?Memory        $memory       Optional search memory
-     * @param ?Url           $url          URL helper
+     * @param ?RouteHelper   $routeHelper  Route helper
      * @param ?EscapeHtml    $escapeHtml   EscapeHtml helper
      * @param ?PluginManager $searchParams SearchParams helper
      *
@@ -144,7 +214,7 @@ trait ViewTrait
      */
     protected function getSearchMemoryViewHelper(
         ?Memory $memory = null,
-        ?Url $url = null,
+        ?RouteHelper $routeHelper = null,
         ?EscapeHtml $escapeHtml = null,
         ?PluginManager $searchParams = null
     ): SearchMemory {
@@ -152,10 +222,10 @@ trait ViewTrait
             $memory = $this->createMock(Memory::class);
             $memory->method('getLastSearchId')->willReturn(-123);
         }
-        $url ??= $this->createMock(Url::class);
-        $escapeHtml ??= $this->createMock(EscapeHtml::class);
+        $routeHelper ??= $this->createMock(RouteHelper::class);
+        $escapeHtml ??= new EscapeHtml(new Escaper());
         $searchParams ??= $this->createMock(PluginManager::class);
-        return new SearchMemory($memory, $url, $escapeHtml, $searchParams);
+        return new SearchMemory($memory, $routeHelper, $escapeHtml, $searchParams);
     }
 
     /**

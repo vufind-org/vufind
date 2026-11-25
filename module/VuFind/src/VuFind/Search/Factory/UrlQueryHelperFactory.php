@@ -123,7 +123,7 @@ class UrlQueryHelperFactory
         if ($view && $view != $this->extractCallableValue($config['defaults']['view'])) {
             $urlParams['view'] = $view;
         }
-        if ($params->getPage() != 1) {
+        if ($params->getPage() !== 1) {
             $urlParams['page'] = $params->getPage();
         }
         if ($filters = $params->getFiltersAsQueryParams()) {
@@ -137,7 +137,7 @@ class UrlQueryHelperFactory
             sort($shards);
             $defaultShards = $this->extractCallableValue(['defaults']['selectedShards']);
             sort($defaultShards);
-            if (implode(':::', $shards) != implode(':::', $defaultShards)) {
+            if (implode(':::', $shards) !== implode(':::', $defaultShards)) {
                 $urlParams['shard'] = $shards;
             }
         }

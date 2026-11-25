@@ -50,6 +50,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Mailer\Mailer;
 use VuFind\Record\Loader as RecordLoader;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Helper\FollowupHelper;
 
 use function count;
@@ -82,6 +83,7 @@ class EmailAction extends AbstractCartAction implements TranslatorAwareInterface
      * @param CaptchaService      $captchaService      Captcha service
      * @param ServerUrlHelper     $serverUrlHelper     Server URL helper
      */
+    #[Autowire]
     public function __construct(
         Export $export,
         Cart $cart,

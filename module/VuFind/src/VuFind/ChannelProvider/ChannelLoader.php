@@ -158,9 +158,8 @@ class ChannelLoader
      * @param string $source        Backend to use
      *
      * @return Results
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function performChannelSearch($searchRequest, $providers, $source)
     {
         // Perform search and configure providers:
@@ -209,8 +208,10 @@ class ChannelLoader
     protected function getChannelProviders($source, $configSection, $activeId = null)
     {
         $providerIds = $this->config["source.$source"][$configSection] ?? [];
-        $finalIds = (!empty($activeId) && in_array($activeId, $providerIds))
-            ? [$activeId] : $providerIds;
+        // If an active ID is set, find that ID or return nothing; otherwise, return all available providers.
+        $finalIds = !empty($activeId)
+            ? (in_array($activeId, $providerIds) ? [$activeId] : [])
+            : $providerIds;
         return array_map([$this, 'getChannelProvider'], $finalIds);
     }
 
@@ -321,6 +322,7 @@ class ChannelLoader
         // Collect details:
         $channels = [];
         foreach ($providers as $provider) {
+            $provider->applyPaginationFromRequest($this->request);
             $channels = array_merge(
                 $channels,
                 $provider->getFromRecord($driver, $token, $context)
@@ -328,7 +330,7 @@ class ChannelLoader
         }
 
         // Return context array:
-        return $this->addConfigToContext(compact('driver', 'channels', 'token'));
+        return $this->addConfigToContext(compact('driver', 'channels', 'token', 'configSections'));
     }
 
     /**

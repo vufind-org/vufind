@@ -31,7 +31,6 @@
 
 namespace VuFind\Action\Account;
 
-use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
@@ -99,6 +98,6 @@ class LoginAction extends AbstractTemplateRenderingAction
             }
         }
 
-        return $this->renderTemplate($request, $response, ['request' => new Parameters($postParams)]);
+        return $this->renderTemplate($request, $response, ['request' => $postParams]);
     }
 }

@@ -22,15 +22,15 @@
 
   $attrs = $this->htmlAttributes($this->attributes ?? []);
   if (null !== ($id = $this->id ?? null)) {
-    $attrs->add('id', $id);
+    $attrs['id'] = $id;
   }
-  $attrs->add('name', $this->name);
+  $attrs['name'] = $this->name;
   $class = trim(($this->class ?? '') . ($this->message ? ' is-invalid' : ''));
   if ($class) {
     $attrs->add('class', $class);
   }
   if ($this->required) {
-    $attrs->add('required', null);
+    $attrs['required'] = null;
   }
   $placeholder = $this->placeholder ?? null;
   switch ($this->type) {
@@ -38,12 +38,12 @@
     case 'date':
     case 'email':
     case 'url':
-      $attrs->add('type', $this->type);
+      $attrs['type'] = $this->type;
       if (null !== ($value = $this->value ?? null)) {
-        $attrs->add('value', $value);
+        $attrs['value'] = $value;
       }
       if (null !== $placeholder) {
-        $attrs->add('placeholder', $this->translate($placeholder));
+        $attrs['placeholder'] = $this->translate($placeholder);
       }
       $attrs->add('class', 'form-control');
       echo "<input$attrs>";
@@ -51,7 +51,7 @@
       break;
     case 'textarea':
       if (null !== $placeholder) {
-        $attrs->add('placeholder', $placeholder);
+        $attrs['placeholder'] = $placeholder;
       }
       $attrs->add('class', 'form-control');
       echo "<textarea$attrs>" . $this->escapeHtml($this->value ?? '') . '</textarea>';
@@ -127,7 +127,7 @@
         'class' => 'btn btn-primary',
       ]);
       if (null !== ($value = $this->value ?? null)) {
-        $attrs->add('value', $value);
+        $attrs['value'] = $value;
       }
       echo "<input$attrs>";
       break;

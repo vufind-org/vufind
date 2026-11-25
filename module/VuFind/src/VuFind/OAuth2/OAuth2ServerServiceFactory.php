@@ -133,7 +133,7 @@ class OAuth2ServerServiceFactory implements FactoryInterface
 
         $session = new \Laminas\Session\Container(
             OAuth2ServerService::SESSION_NAME,
-            $container->get(\Laminas\Session\SessionManager::class)
+            $container->get(\Laminas\Session\ManagerInterface::class)
         );
         $dbPluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         $serverUrlHelper = $container->get(ServerUrlHelper::class);

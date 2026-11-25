@@ -4,4 +4,4 @@
     // Get rid of the feedback tab since this uses the same variables
     $this->globals()['feedbacktab'] = false;
 ?>
-<?=$this->render('feedback/form.phtml');?>
+<?=$this->context($this)->renderInContext('feedback/form.phtml');?>

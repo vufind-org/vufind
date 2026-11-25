@@ -145,9 +145,8 @@ class Unicorn extends AbstractBase implements
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConfig(string $function, array $params = []): array
     {
         return $this->config[$function] ?? [];
@@ -172,9 +171,8 @@ class Unicorn extends AbstractBase implements
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         $params = ['query' => 'libraries'];
@@ -206,9 +204,8 @@ class Unicorn extends AbstractBase implements
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         if ($patron && isset($patron['library'])) {
@@ -269,7 +266,7 @@ class Unicorn extends AbstractBase implements
             preg_match('/\^MN([0-9][0-9][0-9])/', $result, $matches);
             if (isset($matches[1])) {
                 $status = $matches[1];
-                if ($status == '214') {
+                if ($status === '214') {
                     $results[$chargeKey]['success'] = true;
                 } else {
                     $results[$chargeKey]['success'] = false;
@@ -386,9 +383,8 @@ class Unicorn extends AbstractBase implements
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         // TODO
@@ -410,9 +406,8 @@ class Unicorn extends AbstractBase implements
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
@@ -469,7 +464,7 @@ class Unicorn extends AbstractBase implements
         preg_match('/\^MN([0-9][0-9][0-9])/', $response, $matches);
         if (isset($matches[1])) {
             $status = $matches[1];
-            if ($status == '209') {
+            if ($status === '209') {
                 return ['success' => true];
             } else {
                 return [
@@ -510,7 +505,7 @@ class Unicorn extends AbstractBase implements
 
         [$last, $first] = $this->getLastAndFirstName($name);
 
-        if ($expiry != '0') {
+        if ($expiry !== '0') {
             $expiry = $this->parseDateTime(trim($expiry));
         }
         $expired = ($expiry == '0') ? false : $expiry < time();
@@ -670,7 +665,7 @@ class Unicorn extends AbstractBase implements
             $items[] = [
                 'id' => $catkey,
                 'reqnum' => $holdkey,
-                'available' => $available == 'Y',
+                'available' => $available === 'Y',
                 'expire' => $this->formatDateTime($date_expires),
                 'create' => $this->formatDateTime($date_created),
                 'type' => $type,
@@ -695,9 +690,8 @@ class Unicorn extends AbstractBase implements
      * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['item_id'];
@@ -825,7 +819,7 @@ class Unicorn extends AbstractBase implements
                 'charge_key' => $charge_key,
                 'item_id' => $charge_key,
                 'callnum' => $callnum,
-                'dueStatus' => $overdue == 'Y' ? 'overdue' : '',
+                'dueStatus' => $overdue === 'Y' ? 'overdue' : '',
             ];
         }
 
@@ -861,7 +855,7 @@ class Unicorn extends AbstractBase implements
 
         foreach ($course_lines as $course) {
             [$id, $code, $name] = explode('|', $course);
-            $name = ($code == $name) ? $name : $code . ' - ' . $name;
+            $name = ($code === $name) ? $name : $code . ' - ' . $name;
             $courses[$id] = $name;
         }
         $this->getSorter()->asort($courses);
@@ -1063,7 +1057,7 @@ class Unicorn extends AbstractBase implements
             'number' => $itemkey3, // copy number
             'duedate' => $this->formatDateTime($duedate),
             'callnumber' => $callnum,
-            'reserve' => ($reserve == '0') ? 'N' : 'Y',
+            'reserve' => ($reserve === '0') ? 'N' : 'Y',
             'location_code' => $location_code,
             'location' => $location,
             'home_location_code' => $location_code,

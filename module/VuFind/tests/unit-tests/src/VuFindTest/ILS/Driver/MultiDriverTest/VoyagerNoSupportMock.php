@@ -53,6 +53,7 @@ class VoyagerNoSupportMock extends \VuFind\ILS\Driver\Voyager
      *
      * @return bool
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsMethod(...$args)
     {
         return false;

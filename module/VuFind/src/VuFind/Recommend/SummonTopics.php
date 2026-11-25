@@ -58,7 +58,7 @@ class SummonTopics extends AbstractSummonRecommend
     public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         parent::init($params, $request);
-        if ($params->getSearchClassId() == 'Summon') {
+        if ($params->getSearchClassId() === 'Summon') {
             $params->getOptions()->setMaxTopicRecommendations(1);
         }
     }

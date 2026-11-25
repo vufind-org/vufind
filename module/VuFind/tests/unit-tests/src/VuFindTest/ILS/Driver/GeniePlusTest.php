@@ -135,9 +135,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
             APPLICATION_PATH . '/config/vufind/GeniePlus.ini',
             true
         );
-        $sessionFactory = function ($i) {
-            return $this->createMock(Container::class);
-        };
+        $sessionFactory = fn () => $this->createMock(Container::class);
         $this->driver = $this->getMockBuilder(GeniePlus::class)
             ->setConstructorArgs([$sessionFactory])
             ->onlyMethods(['makeRequest'])

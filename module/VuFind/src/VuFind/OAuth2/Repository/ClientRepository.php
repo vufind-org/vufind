@@ -80,9 +80,8 @@ class ClientRepository implements ClientRepositoryInterface
      * @param ?string $grantType        The type of grant the client is using (if sent)
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function validateClient($clientIdentifier, $clientSecret, $grantType): bool
     {
         if (!($config = $this->oauth2Config['Clients'][$clientIdentifier] ?? null)) {

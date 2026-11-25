@@ -38,8 +38,6 @@ namespace VuFind\Security;
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
- *
- * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 class NonceGenerator
 {

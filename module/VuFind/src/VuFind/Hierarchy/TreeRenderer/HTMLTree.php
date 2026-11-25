@@ -122,9 +122,8 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
      * @param array   $options     Additional options
      *
      * @return mixed The desired hierarchy tree output (or false on error)
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function render(
         string $context,
         string $mode,
@@ -178,9 +177,8 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
      * @param string $context Record or Collection
      *
      * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getContextualUrl($node, $context)
     {
         $type = $node->type;

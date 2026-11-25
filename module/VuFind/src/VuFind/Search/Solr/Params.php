@@ -268,7 +268,7 @@ class Params extends \VuFind\Search\Base\Params
             $facetSet['limit'] = $this->facetLimit;
             foreach (array_keys($this->facetConfig) as $facetField) {
                 $fieldLimit = $this->getFacetLimitForField($facetField);
-                if ($fieldLimit != $this->facetLimit) {
+                if ($fieldLimit !== $this->facetLimit) {
                     $facetSet["f.{$facetField}.facet.limit"] = $fieldLimit;
                 }
                 $fieldPrefix = $this->getFacetPrefixForField($facetField);
@@ -291,7 +291,7 @@ class Params extends \VuFind\Search\Base\Params
                     $facetSet["f.{$facetField}.facet.range.gap"] = '+1YEAR';
                     $facetSet['range'][] = $facetField;
                 } else {
-                    if ($this->getFacetOperator($facetField) == 'OR') {
+                    if ($this->getFacetOperator($facetField) === 'OR') {
                         $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
                     }
                     $facetSet['field'][] = $facetField;
@@ -719,8 +719,8 @@ class Params extends \VuFind\Search\Base\Params
             // Case insensitive case: [x TO y] OR [X TO Y]; convert
             // only if values in both ranges match up!
             if (
-                strtolower($matches[3]) == strtolower($matches[1])
-                && strtolower($matches[4]) == strtolower($matches[2])
+                strtolower($matches[3]) === strtolower($matches[1])
+                && strtolower($matches[4]) === strtolower($matches[2])
             ) {
                 $filter['displayText'] = $matches[1] . ' - ' . $matches[2];
             }

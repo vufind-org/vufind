@@ -1,14 +1,15 @@
 <?php
-  if (isset($this->iconMethod) && !isset($this->icon)) {
-    $this->icon = $this->sectionPlugin->{$this->iconMethod}();
+  $icon = $this->icon ?? null;
+  if (isset($this->iconMethod) && null === $icon) {
+    $icon = $this->sectionPlugin->{$this->iconMethod}();
   }
 
   $url = $this->url ?: $this->url($this->route, $this->routeParams ?? []);
 ?>
 <li>
   <a href="<?=$url?>" class="<?=$this->name?> nav-link icon-link<?=$this->active == $this->name ? ' active' : ''?>">
-    <?php if (isset($this->icon)): ?>
-      <?=$this->icon($this->icon, 'icon-link__icon') ?>
+    <?php if ($icon): ?>
+      <?=$this->icon($icon, 'icon-link__icon') ?>
     <?php endif; ?>
     <span class="icon-link__label"><?=$this->transEsc($this->label)?></span>
     <?php if (($this->status ?? false) && $this->auth()->getManager()->ajaxEnabled()): ?>

@@ -119,7 +119,7 @@ class OpenLibrarySubjects implements
             ? (int)($params[1]) : 5;
         $this->pubFilter = (!isset($params[2]) || empty($params[2])) ?
             'publishDate' : $params[2];
-        if (strtolower(trim($this->pubFilter)) == 'false') {
+        if (strtolower(trim($this->pubFilter)) === 'false') {
             $this->pubFilter = false;
         }
 

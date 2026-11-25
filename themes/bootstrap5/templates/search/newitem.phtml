@@ -10,7 +10,7 @@
 ?>
 <?=$this->component('page-title', ['title' => $this->translate('Find New Items'), 'headTitle' => $this->translate('New Item Search')]);?>
 <?php if ($offlineMode == 'ils-offline'): ?>
-  <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message'])?>
+  <?=$this->context($this)->renderInContext('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message'])?>
 <?php endif; ?>
 <form method="get" class="form-search-newitem">
   <?php if (!empty($this->defaultSort)): ?>
@@ -46,7 +46,7 @@
       <?php endforeach; ?>
     </div>
   </div>
-  <?=$this->render('search/advanced/solr-facets.phtml')?>
+  <?=$this->context($this)->renderInContext('search/advanced/solr-facets.phtml')?>
   <div class="adv-submit">
     <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Find')?>">
     <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEscAttr('Clear')?>">

@@ -255,9 +255,8 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
      *
      * @return array of recipients, each consisting of an array with
      * name, email or null if not configured
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getRecipient(?array $postParams = null): array
     {
         $recipient = $this->formConfig['recipient'] ?? [null];
@@ -338,6 +337,18 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
         return !empty($this->formConfig['response'])
             ? $this->formConfig['response']
             : 'feedback_response';
+    }
+
+    /**
+     * Return response that is shown after unsuccessful form submit.
+     *
+     * @return string
+     */
+    public function getSubmitFailureResponse(): string
+    {
+        return !empty($this->formConfig['failureResponse'])
+            ? $this->formConfig['failureResponse']
+            : 'could_not_process_feedback';
     }
 
     /**
@@ -1011,6 +1022,7 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
             'reportReferrer',
             'reportUserAgent',
             'response',
+            'failureResponse',
             'senderEmailRequired',
             'senderInfoRequired',
             'senderNameRequired',

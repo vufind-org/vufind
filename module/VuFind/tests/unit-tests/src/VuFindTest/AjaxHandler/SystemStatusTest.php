@@ -29,7 +29,7 @@
 
 namespace VuFindTest\AjaxHandler;
 
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use VuFind\AjaxHandler\SystemStatus;
 use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\ILS\Connection;
@@ -53,7 +53,7 @@ class SystemStatusTest extends AjaxHandlerTestCase
     /**
      * Get SystemStatus Ajax handler.
      *
-     * @param ?SessionManager          $sessionManager Session manager
+     * @param ?ManagerInterface        $sessionManager Session manager
      * @param ?ResultsManager          $resultsManager Results plugin manager
      * @param array                    $config         Config
      * @param ?SessionServiceInterface $sessionService Session service
@@ -64,7 +64,7 @@ class SystemStatusTest extends AjaxHandlerTestCase
      * @return SystemStatus
      */
     protected function getHandler(
-        ?SessionManager $sessionManager = null,
+        ?ManagerInterface $sessionManager = null,
         ?ResultsManager $resultsManager = null,
         array $config = [],
         ?SessionServiceInterface $sessionService = null,
@@ -72,7 +72,7 @@ class SystemStatusTest extends AjaxHandlerTestCase
         ?Connection $ilsConnection = null,
         bool $accessGranted = true
     ): SystemStatus {
-        $sessionManager ??= $this->createMock(SessionManager::class);
+        $sessionManager ??= $this->createMock(ManagerInterface::class);
         $resultsManager ??= $this->createMock(ResultsManager::class);
         $sessionService ??= $this->createMock(SessionServiceInterface::class);
         $searchService ??= $this->createMock(SearchService::class);
@@ -202,7 +202,7 @@ class SystemStatusTest extends AjaxHandlerTestCase
      */
     public function testSuccessfulResponse(): void
     {
-        $sessionManager = $this->createMock(SessionManager::class);
+        $sessionManager = $this->createMock(ManagerInterface::class);
         $sessionManager->expects($this->exactly(2))->method('destroy');
         $resultsManager = $this->createMock(ResultsManager::class);
 

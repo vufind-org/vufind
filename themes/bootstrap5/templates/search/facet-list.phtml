@@ -12,7 +12,7 @@
     $this->sort = 'default';
     $this->sortOptions = [ 'default' => 'default' ];
   }
-  $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams(false) . "&$facetLightboxParams";
+  $urlBase = $this->url($facetLightbox) . $this->results->getUrlQuery()->getParams(false) . "&$facetLightboxParams";
   $searchAction ??= $this->url($options->getSearchAction());
   if (!empty($this->baseUriExtra)) {
     $searchAction .= urlencode($this->baseUriExtra);
@@ -65,7 +65,7 @@
     </div>
   </form>
   <?php if (($this->multiFacetsSelection ?? 'false') !== 'false'): ?>
-    <?=$this->render('Recommend/SideFacets/multiFacetsSelection.phtml') ?>
+    <?=$this->context($this)->renderInContext('Recommend/SideFacets/multiFacetsSelection.phtml') ?>
   <?php endif; ?>
 
   <div id="facet-info-result" class="lightbox-scroll full-facets">
@@ -74,14 +74,14 @@
       $params = $this->delegateParams;
       $params['urlBase'] = $urlBase;
       $params['searchAction'] = $searchAction;
-      $params['inLightbox'] = $this->inLightbox;
+      $params['inLightbox'] = $this->globals()['inLightbox'] ?? false;
     ?>
-    <?=$this->render('search/facet-list-content.phtml', $params) ?>
+    <?=$this->context($this)->renderInContext('search/facet-list-content.phtml', $params) ?>
   </div>
   <button class="btn btn-default lightbox-only" data-bs-dismiss="modal"><?=$this->translate('close') ?></button>
 </div>
 
 <?=$this->assetManager()->outputInlineScriptString('VuFind.facetList.setup();')?>
-<?php if ($this->inLightbox): ?>
+<?php if ($this->globals()['inLightbox']): ?>
   <?=$this->assetManager()->outputInlineScriptString('VuFind.lightbox_facets.setup();')?>
 <?php endif; ?>

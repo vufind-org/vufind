@@ -13,5 +13,5 @@
       <div class="alert alert-danger"><?=$this->transEsc($msg)?></div>
     <?php endif; ?>
   </p>
-  <?=$this->render('error/contact.phtml')?>
+  <?=$this->context($this)->renderInContext('error/contact.phtml')?>
 </div>

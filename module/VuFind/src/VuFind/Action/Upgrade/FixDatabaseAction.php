@@ -33,7 +33,7 @@ namespace VuFind\Action\Upgrade;
 
 use Doctrine\ORM\EntityManager;
 use Exception;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -89,7 +89,7 @@ class FixDatabaseAction extends AbstractUpgradeAction
      * @param UserCardServiceInterface     $userCardService     User card database service
      * @param array                        $config              VuFind configuration
      * @param CookieManager                $cookieManager       Cookie manager
-     * @param SessionManager               $sessionManager      Session manager
+     * @param ManagerInterface             $sessionManager      Session manager
      * @param EntityManager                $entityManager       Database entity manager
      * @param MigrationManager             $migrationManager    Database migration manager
      * @param ResourceServiceInterface     $resourceService     Resource database service
@@ -110,7 +110,7 @@ class FixDatabaseAction extends AbstractUpgradeAction
         #[Autowire(config: 'config')]
         array $config,
         CookieManager $cookieManager,
-        SessionManager $sessionManager,
+        ManagerInterface $sessionManager,
         EntityManager $entityManager,
         protected MigrationManager $migrationManager,
         #[Autowire(container: DbServicePluginManager::class)]

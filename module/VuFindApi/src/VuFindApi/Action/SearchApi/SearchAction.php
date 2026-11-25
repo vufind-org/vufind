@@ -227,6 +227,7 @@ class SearchAction extends AbstractApiSearchAndRecordAction
      *               - resultCount: Total result count
      *               - facets: array containing facets for the result
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function doDefaultSearch(array $request): array
     {
         if (
@@ -301,6 +302,7 @@ class SearchAction extends AbstractApiSearchAndRecordAction
      *               - resumptionToken: Array containing info about resumption token
      *                  - token
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function doCursorSearch(array $request): array
     {
         unset($request['page']);

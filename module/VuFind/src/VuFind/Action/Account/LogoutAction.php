@@ -35,6 +35,16 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\ContextHelper;
 use VuFind\ActionHelper\RedirectHelper;
+use VuFind\Auth\EmailAuthenticator;
+use VuFind\Auth\Manager as AuthManager;
+use VuFind\Auth\UserSessionPersistenceInterface;
+use VuFind\Db\Service\AuditEventServiceInterface;
+use VuFind\Db\Service\PluginManager as DbServicePluginManager;
+use VuFind\Http\ServerUrlHelper;
+use VuFind\ILS\Connection;
+use VuFind\Mailer\Mailer;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\Helper\FollowupHelper;
 
 /**
  * Logout action.
@@ -48,6 +58,49 @@ use VuFind\ActionHelper\RedirectHelper;
  */
 class LogoutAction extends AbstractAccountAction
 {
+    /**
+     * Constructor.
+     *
+     * @param AuthManager                     $authManager        Authentication manager
+     * @param FollowupHelper                  $followupHelper     Followup helper
+     * @param EmailAuthenticator              $emailAuthenticator Email authenticator
+     * @param UserSessionPersistenceInterface $userSessionService User session database service
+     * @param AuditEventServiceInterface      $auditEventService  Audit event service
+     * @param string                          $absoluteBaseUrl    Absolute base URL
+     * @param Mailer                          $mailer             Mailer
+     * @param Connection                      $ilsConnection      ILS connection
+     * @param array                           $config             VuFind configuration
+     * @param ServerUrlHelper                 $serverUrlHelper    ServerUrlHelper
+     */
+    public function __construct(
+        AuthManager $authManager,
+        FollowupHelper $followupHelper,
+        EmailAuthenticator $emailAuthenticator,
+        #[Autowire(container: DbServicePluginManager::class)]
+        UserSessionPersistenceInterface $userSessionService,
+        #[Autowire(container: DbServicePluginManager::class)]
+        AuditEventServiceInterface $auditEventService,
+        #[Autowire(container: \VuFind\Application\UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        string $absoluteBaseUrl,
+        Mailer $mailer,
+        Connection $ilsConnection,
+        #[Autowire(config: 'config')]
+        array $config,
+        protected ServerUrlHelper $serverUrlHelper,
+    ) {
+        parent::__construct(
+            $authManager,
+            $followupHelper,
+            $emailAuthenticator,
+            $userSessionService,
+            $auditEventService,
+            $absoluteBaseUrl,
+            $mailer,
+            $ilsConnection,
+            $config
+        );
+    }
+
     /**
      * Log out with appropriate redirect(s).
      *
@@ -63,9 +116,8 @@ class LogoutAction extends AbstractAccountAction
         if ($logoutRoute = $this->config['Site']['logOutRoute'] ?? null) {
             $logoutTarget = $this->serverUrlHelper->getUrlForPath($this->routeHelper->getUrlFromRoute($logoutRoute));
         } else {
-            $homeUrl = $this->serverUrlHelper->getUrlForPath($this->getRouteHelper()->getUrlFromRoute('home'));
             if (!($logoutTarget = $this->getHelper(ContextHelper::class)->getReferrer($request))) {
-                $logoutTarget = $homeUrl;
+                $logoutTarget = $this->absoluteBaseUrl;
             }
 
             // If there is an auth_method parameter in the query, we should strip it out. Otherwise, the user may get
@@ -81,7 +133,7 @@ class LogoutAction extends AbstractAccountAction
                 $this->getRouteHelper()->getUrlFromRoute('account-home')
             );
             if ($logoutTarget === $accountHomeUrl) {
-                $logoutTarget = $homeUrl;
+                $logoutTarget = $this->absoluteBaseUrl;
             }
         }
         $redirectUrl = $this->authManager->getLogoutRedirectUrl($logoutTarget);

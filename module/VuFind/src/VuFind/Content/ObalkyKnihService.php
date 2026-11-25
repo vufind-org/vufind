@@ -29,6 +29,8 @@
 
 namespace VuFind\Content;
 
+use PHPMD\Attribute\SuppressWarnings;
+use PHPMD\Rule\UnusedLocalVariable;
 use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
@@ -185,9 +187,8 @@ class ObalkyKnihService implements
      *
      * @return \stdClass|null
      * @throws \Exception
-     *
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
+    #[SuppressWarnings(UnusedLocalVariable::class)]
     protected function getFromService(array $ids): ?\stdClass
     {
         $param = 'multi';

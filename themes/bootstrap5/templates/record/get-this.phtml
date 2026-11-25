@@ -17,7 +17,7 @@ foreach ($templates as $template) {
     if ($commentTemplateName) {
         echo '<!-- Get-This: ' . $template . ' -->';
     }
-    echo $this->context()->renderInContext(
+    echo $this->context($this)->renderInContext(
         'record/get-this/' . $template . '.phtml',
         ['getThisParams' => $this->getThisLoader->getSubTemplateParams($template)]
     );

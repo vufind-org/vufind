@@ -230,11 +230,11 @@ class Slot
     public function end($method = self::SET)
     {
         $method = strtoupper($method);
-        if ($method == self::SET) {
+        if ($method === self::SET) {
             $ret = $this->set(ob_get_contents());
-        } elseif ($method == self::PREPEND) {
+        } elseif ($method === self::PREPEND) {
             $ret = $this->prepend(ob_get_contents());
-        } elseif ($method == self::APPEND) {
+        } elseif ($method === self::APPEND) {
             $ret = $this->append(ob_get_contents());
         } else {
             throw new \Exception("Undefined Slot method: $method");

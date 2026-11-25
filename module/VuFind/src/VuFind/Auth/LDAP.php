@@ -111,7 +111,7 @@ class LDAP extends AbstractBase
     {
         $username = trim($request->getPost()->get('username', ''));
         $password = trim($request->getPost()->get('password', ''));
-        if ($username == '' || $password == '') {
+        if ($username === '' || $password === '') {
             throw new AuthException('authentication_error_blank');
         }
         return $this->checkLdap($username, $password);
@@ -306,7 +306,7 @@ class LDAP extends AbstractBase
                             $value = $value[0];
                         }
 
-                        if ($field != 'cat_password') {
+                        if ($field !== 'cat_password') {
                             $this->setUserValueByField($user, $field, $value ?? '');
                         } else {
                             $catPassword = $value;
