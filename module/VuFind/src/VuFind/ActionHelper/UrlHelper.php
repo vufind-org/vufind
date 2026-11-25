@@ -30,7 +30,6 @@
 namespace VuFind\ActionHelper;
 
 use VuFind\Http\RouteHelper;
-use VuFind\Http\ServerUrlHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -61,13 +60,14 @@ class UrlHelper implements HelperInterface
     /**
      * Constructor.
      *
-     * @param RouteHelper     $routeHelper     Route helper
-     * @param ServerUrlHelper $serverUrlHelper Server URL helper
+     * @param RouteHelper $routeHelper     Route helper
+     * @param string      $absoluteBaseUrl Absolute base URL
      */
     #[Autowire]
     public function __construct(
         protected RouteHelper $routeHelper,
-        protected ServerUrlHelper $serverUrlHelper,
+        #[Autowire(container: \VuFind\Application\UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        protected string $absoluteBaseUrl,
     ) {
     }
 
@@ -110,11 +110,7 @@ class UrlHelper implements HelperInterface
     protected function getNormalizedBaseUrl(): string
     {
         if (null === $this->normalizedBaseUrl) {
-            $this->normalizedBaseUrl = $this->normalizeUrlForComparison(
-                $this->serverUrlHelper->getUrlForPath(
-                    $this->routeHelper->getUrlFromRoute('home')
-                )
-            );
+            $this->normalizedBaseUrl = $this->normalizeUrlForComparison($this->absoluteBaseUrl);
         }
         return $this->normalizedBaseUrl;
     }

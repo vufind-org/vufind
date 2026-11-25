@@ -29,8 +29,9 @@
 
 namespace VuFindTest;
 
-use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Export;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
 
 /**
  * Export Support Test Class.
@@ -43,8 +44,6 @@ use VuFind\Export;
  */
 class ExportTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\WithConsecutiveTrait;
-
     /**
      * Test options using legacy (deprecated) configuration.
      *
@@ -298,19 +297,17 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetBulkUrl(): void
     {
-        $url = $this->createMock(\Laminas\View\Helper\Url::class);
-        $url->expects($this->once())->method('__invoke')
+        $routeHelper = $this->createMock(RouteHelper::class);
+        $routeHelper->expects($this->once())->method('getUrlFromRoute')
             ->with('cart-doexport')
             ->willReturn('/cart/doExport');
-        $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
-        $serverUrl->expects($this->once())->method('__invoke')
+        $serverUrlHelper = $this->createMock(ServerUrlHelper::class);
+        $serverUrlHelper->expects($this->once())->method('getUrlForPath')
             ->with('/cart/doExport')
             ->willReturn('http://localhost/cart/doExport');
-        $renderer = $this->createMock(PhpRenderer::class);
-        $this->expectConsecutiveCalls($renderer, 'plugin', [['serverurl'], ['url']], [$serverUrl, $url]);
         $this->assertEquals(
             'http://localhost/cart/doExport?f=foo&i%5B%5D=1&i%5B%5D=2&i%5B%5D=3',
-            $this->getExport(renderer: $renderer)->getBulkUrl('foo', [1, 2, 3])
+            $this->getExport(serverUrlHelper: $serverUrlHelper, routeHelper: $routeHelper)->getBulkUrl('foo', [1, 2, 3])
         );
     }
 
@@ -360,14 +357,24 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a configured Export object.
      *
-     * @param array        $main     Main config
-     * @param array        $export   Export config
-     * @param ?PhpRenderer $renderer Preconfigured view renderer
+     * @param array            $main            Main config
+     * @param array            $export          Export config
+     * @param ?ServerUrlHelper $serverUrlHelper Server URL helper
+     * @param ?RouteHelper     $routeHelper     Route helper
      *
      * @return Export
      */
-    protected function getExport($main = [], $export = [], $renderer = null)
-    {
-        return new Export($main, $export, $renderer ?? $this->createStub(PhpRenderer::class));
+    protected function getExport(
+        array $main = [],
+        array $export = [],
+        ?ServerUrlHelper $serverUrlHelper = null,
+        ?RouteHelper $routeHelper = null
+    ) {
+        return new Export(
+            $main,
+            $export,
+            $serverUrlHelper ?? $this->createStub(ServerUrlHelper::class),
+            $routeHelper ?? $this->createStub(RouteHelper::class)
+        );
     }
 }

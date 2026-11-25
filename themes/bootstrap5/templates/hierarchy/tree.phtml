@@ -17,7 +17,15 @@
   // Function for rendering a tree level. Optimized to avoid extra objects or
   // template calls and defined as array to avoid interfering with the plugin __call
   // magic.
-  $this->renderTreeLevel = [function ($nodes, $context, $hierarchyID, $driver, $selectedID, $parentNodeId = '') {
+  $funcContainer = [];
+  $funcContainer['renderTreeLevel'] = function (
+      $nodes,
+      $context,
+      $hierarchyID,
+      $driver,
+      $selectedID,
+      $parentNodeId = ''
+  ) use (&$funcContainer) {
     $nodeId = 0;
     $icons = [
       'hierarchy-collection' => $this->icon('hierarchy-collection'),
@@ -81,7 +89,7 @@
 
         echo " $itemHtml ";
         echo '<ul id="' . $childUlIdEsc . '" class="hierarchy-tree__children" role="group">';
-        ($this->renderTreeLevel[0])($node->children, $context, $hierarchyID, $driver, $selectedID, "{$parentNodeId}_$nodeId");
+        ($funcContainer['renderTreeLevel'])($node->children, $context, $hierarchyID, $driver, $selectedID, "{$parentNodeId}_$nodeId");
         echo '</ul></li>';
       } else {
         echo '<li' . ($liClasses ? ' class="' . implode(' ', $liClasses) . '"' : '') . '>'
@@ -90,8 +98,8 @@
         echo '</li>';
       }
     }
-  }];
+  };
 ?>
 <ul<?=$treeAttrs?>>
-  <?php ($this->renderTreeLevel[0])($nodes, $context, $hierarchyID, $driver, $selectedID); ?>
+  <?php ($funcContainer['renderTreeLevel'])($nodes, $context, $hierarchyID, $driver, $selectedID); ?>
 </ul>

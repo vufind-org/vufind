@@ -120,7 +120,7 @@
       </label>
     </div>
   <?php endif; ?>
-  <?=$this->render('cart/contents.phtml')?>
+  <?=$this->context($this)->renderInContext('cart/contents.phtml')?>
 </form>
 
 <?php

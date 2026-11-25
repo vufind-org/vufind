@@ -32,6 +32,7 @@ namespace VuFindTest\View\Helper\Root;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use VuFind\View\Helper\Root\Citation;
+use VuFindTest\Feature\ViewTrait;
 
 /**
  * CitationBuilder Test Class.
@@ -44,7 +45,7 @@ use VuFind\View\Helper\Root\Citation;
  */
 class CitationTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ViewTrait;
+    use ViewTrait;
 
     /**
      * Data provider returning raw data and expected citations.
@@ -372,10 +373,10 @@ class CitationTest extends \PHPUnit\Framework\TestCase
      */
     protected function getHelper(array $raw): Citation
     {
-        $view = $this->getPhpRenderer();
+        $helperPluginManager = $this->getHelperPluginManager();
         $citation = new Citation(
             new \VuFind\Date\Converter(),
-            $view->plugin('partial')
+            $this->getTemplateRenderer($helperPluginManager)
         );
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         $driver->setRawData($raw);

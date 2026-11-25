@@ -4,8 +4,7 @@
   $this->assetManager()->appendScriptLink('facets.js');
 
   // Save results/options to $this so they are available to sub-templates:
-  $this->results = $results = $this->recommend->getResults();
-  $this->options = $options = $results->getOptions();
+  $results = $this->recommend->getResults();
   $collapsedFacets = $this->recommend->getCollapsedFacets();
   $forceUncollapsedFacets = [];
 
@@ -37,7 +36,7 @@
 <?php if ($results->getResultTotal() > 0 || $hasVisibleCheckboxes): ?>
   <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Refine Results')) ?></h2>
   <?php if (($this->multiFacetsSelection ?? 'false') !== 'false' && $globals['sideFacetsInstanceCounter'] === 1): ?>
-    <?= $this->render('Recommend/SideFacets/multiFacetsSelection.phtml'); ?>
+    <?= $this->context($this)->renderInContext('Recommend/SideFacets/multiFacetsSelection.phtml'); ?>
   <?php endif; ?>
   <span class="visually-hidden"><?=$this->transEsc('page_reload_on_select_hint') ?></span>
 <?php endif; ?>

@@ -29,8 +29,9 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\View\Renderer\PhpRenderer;
+use VuFind\View\GlobalsContainer;
 use VuFind\View\Helper\Root\Component;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Component Test Class.
@@ -50,10 +51,10 @@ class ComponentTest extends \PHPUnit\Framework\TestCase
      */
     protected function getHelper()
     {
-        $view = $this->createMock(PhpRenderer::class);
-        $view->method('render')->willReturnArgument(0);
+        $renderer = $this->createMock(TemplateRendererInterface::class);
+        $renderer->method('renderTemplateAsString')->willReturnArgument(1);
 
-        $helper = new Component($view);
+        $helper = new Component($renderer, $this->createMock(GlobalsContainer::class));
 
         return $helper;
     }

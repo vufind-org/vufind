@@ -44,7 +44,6 @@ use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
-use VuFind\Http\ServerUrlHelper;
 use VuFind\ILS\Connection;
 use VuFind\Mailer\Mailer;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -71,7 +70,7 @@ class DeleteAccountAction extends AbstractAccountAction
      * @param EmailAuthenticator              $emailAuthenticator Email authenticator
      * @param UserSessionPersistenceInterface $userSessionService User session database service
      * @param AuditEventServiceInterface      $auditEventService  Audit event service
-     * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
+     * @param string                          $absoluteBaseUrl    Absolute base URL
      * @param Mailer                          $mailer             Mailer
      * @param Connection                      $ilsConnection      ILS connection
      * @param array                           $config             VuFind configuration
@@ -86,7 +85,8 @@ class DeleteAccountAction extends AbstractAccountAction
         UserSessionPersistenceInterface $userSessionService,
         #[Autowire(container: DbServicePluginManager::class)]
         AuditEventServiceInterface $auditEventService,
-        ServerUrlHelper $serverUrlHelper,
+        #[Autowire(container: \VuFind\Application\UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        string $absoluteBaseUrl,
         Mailer $mailer,
         Connection $ilsConnection,
         #[Autowire(config: 'config')]
@@ -100,7 +100,7 @@ class DeleteAccountAction extends AbstractAccountAction
             $emailAuthenticator,
             $userSessionService,
             $auditEventService,
-            $serverUrlHelper,
+            $absoluteBaseUrl,
             $mailer,
             $ilsConnection,
             $config
@@ -152,9 +152,7 @@ class DeleteAccountAction extends AbstractAccountAction
                 $this->config['Authentication']['delete_ratings_with_user'] ?? true
             );
             $templateParams['accountDeleted'] = true;
-            $templateParams['redirectUrl'] = $this->authManager->getLogoutRedirectUrl(
-                $this->serverUrlHelper->getUrlForPath($this->getRouteHelper()->getUrlFromRoute('home'))
-            );
+            $templateParams['redirectUrl'] = $this->authManager->getLogoutRedirectUrl($this->absoluteBaseUrl);
             $this->authManager->clearLoginState();
         } elseif ($formHelper->formWasSubmitted($request, 'reset')) {
             return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'account-profile');

@@ -29,16 +29,14 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Mvc\Application;
 use Laminas\Router\Http\TreeRouteStack;
 use Laminas\View\Helper\EscapeJs;
 use Laminas\View\Helper\HeadTitle;
-use Laminas\View\Helper\ViewModel;
-use Laminas\View\Renderer\PhpRenderer;
-use Laminas\View\Renderer\RendererInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriverBase;
 use VuFind\Search\Base\Results;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\GlobalsContainer;
 use VuFindTheme\View\Helper\AssetManager;
 
 use function intval;
@@ -123,29 +121,26 @@ class Matomo
     /**
      * Constructor.
      *
-     * @param array             $config        VuFind configuration
-     * @param TreeRouteStack    $router        Router
-     * @param Request           $request       Request
-     * @param RendererInterface $viewRenderer  View renderer
-     * @param AssetManager      $assetManager  AssetManager view helper
-     * @param ViewModel         $viewModel     ViewModel view helper
-     * @param EscapeJs          $escapejs      EscapeJs view helper
-     * @param CookieConsent     $cookieConsent CookieConsent view helper
-     * @param Translate         $translate     Translate view helper
-     * @param HeadTitle         $headTitle     HeadTitle view helper
+     * @param array            $config           VuFind configuration
+     * @param TreeRouteStack   $router           Router
+     * @param Application      $application      Application
+     * @param GlobalsContainer $globalsContainer Globals container
+     * @param AssetManager     $assetManager     AssetManager view helper
+     * @param EscapeJs         $escapejs         EscapeJs view helper
+     * @param CookieConsent    $cookieConsent    CookieConsent view helper
+     * @param Translate        $translate        Translate view helper
+     * @param HeadTitle        $headTitle        HeadTitle view helper
      */
     public function __construct(
         #[Autowire(config: 'config', configType: 'array')]
         array $config,
-        #[Autowire(service: 'Router')]
+        #[Autowire(service: 'HttpRouter')]
         protected TreeRouteStack $router,
-        #[Autowire(service: 'Request')]
-        protected Request $request,
-        protected RendererInterface $viewRenderer,
+        #[Autowire(service: 'Application')]
+        protected Application $application,
+        protected GlobalsContainer $globalsContainer,
         #[Autowire(container: 'ViewHelperManager')]
         protected AssetManager $assetManager,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected ViewModel $viewModel,
         #[Autowire(container: 'ViewHelperManager')]
         protected EscapeJs $escapejs,
         #[Autowire(container: 'ViewHelperManager')]
@@ -297,18 +292,15 @@ class Matomo
      */
     protected function getSearchResults(): ?Results
     {
-        $current = $this->viewModel->getCurrent();
-        if (null === $current || 'layout/lightbox' === $current->getTemplate()) {
+        $viewModel = $this->globalsContainer['viewModel'] ?? null;
+        if (null === $viewModel || 'layout/lightbox' === $viewModel->getTemplate()) {
             return null;
         }
-        $children = $current->getChildren();
-        if (isset($children[0])) {
-            $template = $children[0]->getTemplate();
-            if (!strstr($template, '/home') && !strstr($template, 'facet-list')) {
-                $results = $children[0]->getVariable('results');
-                if ($results instanceof Results) {
-                    return $results;
-                }
+        $template = $viewModel->getTemplate();
+        if (!strstr($template, '/home') && !strstr($template, 'facet-list')) {
+            $results = $viewModel->getVariable('results');
+            if ($results instanceof Results) {
+                return $results;
             }
         }
         return null;
@@ -322,16 +314,13 @@ class Matomo
      */
     protected function getCombinedSearchResults(): ?array
     {
-        $current = $this->viewModel->getCurrent();
-        if (null === $current) {
+        $viewModel = $this->globalsContainer['viewModel'] ?? null;
+        if (null === $viewModel) {
             return null;
         }
-        $children = $current->getChildren();
-        if (isset($children[0])) {
-            $results = $children[0]->getVariable('combinedResults');
-            if (is_array($results)) {
-                return $results;
-            }
+        $results = $viewModel->getVariable('combinedResults');
+        if (is_array($results)) {
+            return $results;
         }
         return null;
     }
@@ -343,22 +332,13 @@ class Matomo
      */
     protected function getRecordDriver(): ?RecordDriverBase
     {
-        $current = $this->viewModel->getCurrent();
-        if (null === $current) {
-            if ($this->viewRenderer instanceof PhpRenderer) {
-                $driver = $this->viewRenderer->vars('driver');
-                if ($driver instanceof RecordDriverBase) {
-                    return $driver;
-                }
-            }
+        $viewModel = $this->globalsContainer['viewModel'] ?? null;
+        if (null === $viewModel) {
             return null;
         }
-        $children = $current->getChildren();
-        if (isset($children[0])) {
-            $driver = $children[0]->getVariable('driver');
-            if ($driver instanceof RecordDriverBase) {
-                return $driver;
-            }
+        $driver = $viewModel->getVariable('driver');
+        if ($driver instanceof RecordDriverBase) {
+            return $driver;
         }
         return null;
     }
@@ -511,12 +491,16 @@ class Matomo
      */
     protected function getPageUrl(): string
     {
-        $path = $this->request->getUri()->toString();
+        $request = $this->application->getRequest();
+        if (!($request instanceof \Laminas\Http\PhpEnvironment\Request)) {
+            return '';
+        }
+        $path = $request->getUri()->toString();
         // Replace 'AjaxTab' with tab name in record page URLs:
-        $routeMatch = $this->router->match($this->request);
+        $routeMatch = $this->router->match($request);
         if (
             $routeMatch
-            && ($tab = $this->request->getPost('tab'))
+            && ($tab = $request->getPost('tab'))
             && str_ends_with($routeMatch->getMatchedRouteName(), '-ajaxtab')
             && null !== ($pos = strrpos($path, '/AjaxTab'))
         ) {

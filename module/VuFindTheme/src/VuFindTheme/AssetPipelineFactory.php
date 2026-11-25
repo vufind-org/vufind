@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Application\UriRegistry;
 
 use function count;
 
@@ -102,7 +103,7 @@ class AssetPipelineFactory implements FactoryInterface
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         return new $requestedName(
             $container->get(\VuFindTheme\ThemeInfo::class),
-            $container->get('ViewHelperManager')->get('url'),
+            $container->get(UriRegistry::class)->get('BaseUrlPath'),
             $this->getPipelineConfig($config),
             $config['Site']['asset_pipeline_max_css_import_size'] ?? null
         );

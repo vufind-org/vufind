@@ -30,6 +30,8 @@
 
 namespace VuFind\Content\Covers;
 
+use VuFind\Application\UriRegistry;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindTheme\ThemeInfo;
 
 use function count;
@@ -52,8 +54,11 @@ class Demo extends \VuFind\Content\AbstractCover
      * @param ThemeInfo $themeInfo Theme info
      * @param string    $baseUrl   VuFind's base URL
      */
-    public function __construct(protected ThemeInfo $themeInfo, protected string $baseUrl)
-    {
+    public function __construct(
+        protected ThemeInfo $themeInfo,
+        #[Autowire(container: UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        protected string $baseUrl
+    ) {
         $this->directUrls = true;
         $this->mandatoryBacklinkLocations = ['core'];
     }

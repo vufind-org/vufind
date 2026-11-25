@@ -71,7 +71,7 @@
 
     <?php if ($recordTotal > 0): ?>
       <div class="float-end">
-        <?=$this->render('search/controls/sort.phtml')?>
+        <?=$this->context($this)->renderInContext('search/controls/sort.phtml')?>
       </div>
     <?php endif; ?>
   </div>
