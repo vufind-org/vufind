@@ -26,8 +26,24 @@
               )
             ?>
           <?php endif; ?>
-          <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
-          <?php if (count($exportOptions) > 0): ?>
+          <?php $citationConfig = $this->config()->getArray('config')['Citation'] ?? []; ?>
+          <?php if (($citationConfig['search_bulk'] ?? false) && ($citationConfig['formats'] ?? true)): ?>
+            <?=
+              $this->bulkAction()->button(
+                  'cite',
+                  'cite',
+                  'Cite this',
+                  array_merge(
+                      [
+                        'id' => $idPrefix . 'ribbon-cite',
+                        'title' => $this->translate('bulk_cite_search'),
+                      ],
+                      $this->formAttr ? ['form' => $this->formAttr] : []
+                  )
+              )
+            ?>
+          <?php endif; ?>
+          <?php if (count($this->export()->getActiveFormats('bulk')) > 0): ?>
             <?=
               $this->bulkAction()->button(
                   'export',

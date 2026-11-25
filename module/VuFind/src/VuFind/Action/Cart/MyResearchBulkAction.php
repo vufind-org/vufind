@@ -80,6 +80,8 @@ class MyResearchBulkAction extends AbstractCartAction
             $action = 'cart/home';
         } elseif ('' !== $this->getPostParam('export', '')) {
             $action = 'cart/export';
+        } elseif ('' !== $this->getPostParam('cite', '')) {
+            $action = 'cart/cite';
         } else {
             if (!($action = $this->followupHelper->retrieveAndClear('cartAction', null))) {
                 throw new \Exception('Unrecognized bulk action.');
