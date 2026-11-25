@@ -1,0 +1,1292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="5.22.2@d768d914152dbbf3486c36398802f74e80cfde48">
+  <file src="config/application.php">
+    <UnusedVariable>
+      <code><![CDATA[$loader]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetItemStatuses.php">
+    <InvalidParamDefault>
+      <code><![CDATA[string]]></code>
+    </InvalidParamDefault>
+    <UnusedVariable>
+      <code><![CDATA[$recordNumber]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Auth/AlmaDatabase.php">
+    <UnusedVariable>
+      <code><![CDATA[$user]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Auth/Email.php">
+    <UnevaluatedCode>
+      <code><![CDATA[throw new AuthException('authentication_error_invalid');]]></code>
+    </UnevaluatedCode>
+  </file>
+  <file src="module/VuFind/src/VuFind/Auth/ShibbolethFactory.php">
+    <UnusedVariable>
+      <code><![CDATA[$loader]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Bootstrapper.php">
+    <UnusedClosureParam>
+      <code><![CDATA[$event]]></code>
+      <code><![CDATA[$event]]></code>
+    </UnusedClosureParam>
+  </file>
+  <file src="module/VuFind/src/VuFind/Config/PluginManager.php">
+    <MissingTemplateParam>
+      <code><![CDATA[PluginManager]]></code>
+    </MissingTemplateParam>
+  </file>
+  <file src="module/VuFind/src/VuFind/Config/Upgrade.php">
+    <UnsupportedPropertyReferenceUsage>
+      <code><![CDATA[$cfg = & $this->newConfigs[$ini]['General']]]></code>
+      <code><![CDATA[$cfg = & $this->newConfigs[$ini]['TopRecommendations']]]></code>
+      <code><![CDATA[$cfg = & $this->newConfigs['Summon.ini']['Advanced_Facet_Settings']]]></code>
+      <code><![CDATA[$config = & $this->newConfigs['Primo.ini']]]></code>
+      <code><![CDATA[$config = & $this->newConfigs['Primo.ini']]]></code>
+      <code><![CDATA[$config = & $this->newConfigs['Summon.ini']]]></code>
+      <code><![CDATA[$config = & $this->newConfigs['config.ini']]]></code>
+      <code><![CDATA[$newConfig = & $this->newConfigs['WorldCat.ini']]]></code>
+      <code><![CDATA[$newConfig = & $this->newConfigs['config.ini']]]></code>
+      <code><![CDATA[$newConfig = & $this->newConfigs['searches.ini']]]></code>
+      <code><![CDATA[$permissions = & $this->newConfigs['permissions.ini']]]></code>
+      <code><![CDATA[$permissions = & $this->newConfigs['permissions.ini']]]></code>
+      <code><![CDATA[$permissions = & $this->newConfigs['permissions.ini']]]></code>
+    </UnsupportedPropertyReferenceUsage>
+  </file>
+  <file src="module/VuFind/src/VuFind/Connection/OpenLibrary.php">
+    <UnusedVariable>
+      <code><![CDATA[$subjectType]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Connection/Oracle.php">
+    <UnusedFunctionCall>
+      <code><![CDATA[oci_close]]></code>
+    </UnusedFunctionCall>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/AuthorNotes/PluginManager.php">
+    <UndefinedClass>
+      <code><![CDATA[SyndeticsPlus]]></code>
+      <code><![CDATA[SyndeticsPlus]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/Covers/PluginManager.php">
+    <UndefinedClass>
+      <code><![CDATA[Amazon]]></code>
+      <code><![CDATA[Amazon]]></code>
+      <code><![CDATA[AmazonFactory]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/Excerpts/PluginManager.php">
+    <UndefinedClass>
+      <code><![CDATA[SyndeticsPlus]]></code>
+      <code><![CDATA[SyndeticsPlus]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/ObalkyKnihService.php">
+    <UnusedVariable>
+      <code><![CDATA[$isbn]]></code>
+      <code><![CDATA[$ismn]]></code>
+      <code><![CDATA[$nbn]]></code>
+      <code><![CDATA[$oclc]]></code>
+      <code><![CDATA[$uuid]]></code>
+      <code><![CDATA[$uuid]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/Reviews/PluginManager.php">
+    <UndefinedClass>
+      <code><![CDATA[Amazon]]></code>
+      <code><![CDATA[AmazonEditorial]]></code>
+      <code><![CDATA[SyndeticsPlus]]></code>
+      <code><![CDATA[SyndeticsPlus]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/Summaries/PluginManager.php">
+    <UndefinedClass>
+      <code><![CDATA[SyndeticsPlus]]></code>
+      <code><![CDATA[SyndeticsPlus]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/TOC/PluginManager.php">
+    <UndefinedClass>
+      <code><![CDATA[SyndeticsPlus]]></code>
+      <code><![CDATA[SyndeticsPlus]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/TOC/Syndetics.php">
+    <UnusedVariable>
+      <code><![CDATA[$i]]></code>
+      <code><![CDATA[$i]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/AbstractSearch.php">
+    <InvalidParamDefault>
+      <code><![CDATA[object]]></code>
+      <code><![CDATA[object]]></code>
+      <code><![CDATA[object]]></code>
+      <code><![CDATA[object]]></code>
+      <code><![CDATA[object]]></code>
+      <code><![CDATA[object]]></code>
+      <code><![CDATA[object]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/AbstractSolrSearch.php">
+    <InvalidParamDefault>
+      <code><![CDATA[object]]></code>
+      <code><![CDATA[object]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/AlmaController.php">
+    <UnevaluatedCode>
+      <code><![CDATA[break;]]></code>
+      <code><![CDATA[break;]]></code>
+      <code><![CDATA[break;]]></code>
+    </UnevaluatedCode>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/EdsController.php">
+    <InvalidParamDefault>
+      <code><![CDATA[object]]></code>
+      <code><![CDATA[object]]></code>
+      <code><![CDATA[object]]></code>
+      <code><![CDATA[object]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/FeedbackController.php">
+    <UnusedVariable>
+      <code><![CDATA[$form]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/HierarchyController.php">
+    <UnusedVariable>
+      <code><![CDATA[$resultIDs]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/LibraryCardsController.php">
+    <UnusedVariable>
+      <code><![CDATA[$user]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/OverdriveController.php">
+    <UnusedVariable>
+      <code><![CDATA[$format]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/Pazpar2recordController.php">
+    <UnevaluatedCode>
+      <code><![CDATA[$this->sourceId = 'Pazpar2';]]></code>
+      <code><![CDATA[parent::__construct($sm);]]></code>
+    </UnevaluatedCode>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/Plugin/DbUpgrade.php">
+    <UnevaluatedCode>
+      <code><![CDATA[break;]]></code>
+    </UnevaluatedCode>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/PrimoController.php">
+    <UnusedClosureParam>
+      <code><![CDATA[$searchId]]></code>
+    </UnusedClosureParam>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/SearchController.php">
+    <UnusedVariable>
+      <code><![CDATA[$query]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/SummonController.php">
+    <InvalidParamDefault>
+      <code><![CDATA[object]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Cover/CachingProxy.php">
+    <NoValue>
+      <code><![CDATA[$response]]></code>
+    </NoValue>
+  </file>
+  <file src="module/VuFind/src/VuFind/Cover/Layer/AbstractTextLayer.php">
+    <InvalidParamDefault>
+      <code><![CDATA[int]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Cover/Loader.php">
+    <InvalidParamDefault>
+      <code><![CDATA[string]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Row/Search.php">
+    <NoValue>
+      <code><![CDATA[$this->search_object]]></code>
+    </NoValue>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/ResourceTags.php">
+    <InvalidParamDefault>
+      <code><![CDATA[string]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/DigitalContent/OverdriveConnector.php">
+    <UnusedVariable>
+      <code><![CDATA[$patronTokenData]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Form/Form.php">
+    <UnusedClosureParam>
+      <code><![CDATA[$context]]></code>
+    </UnusedClosureParam>
+    <UnusedVariable>
+      <code><![CDATA[$attributes]]></code>
+      <code><![CDATA[$config]]></code>
+      <code><![CDATA[$localConfig]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/GeoFeatures/MapSelectionConfig.php">
+    <UnusedVariable>
+      <code><![CDATA[$options]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/GeoFeatures/MapTabConfig.php">
+    <UnusedVariable>
+      <code><![CDATA[$options]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Hierarchy/Driver/PluginManager.php">
+    <UndefinedClass>
+      <code><![CDATA[HierarchyDefault]]></code>
+      <code><![CDATA[HierarchyDefault]]></code>
+      <code><![CDATA[HierarchyFlat]]></code>
+      <code><![CDATA[HierarchyFlat]]></code>
+      <code><![CDATA[HierarchySearch2]]></code>
+      <code><![CDATA[HierarchySearch2]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Hierarchy/TreeRenderer/AbstractBase.php">
+    <InvalidParamDefault>
+      <code><![CDATA[string]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Hierarchy/TreeRenderer/HTMLTree.php">
+    <InvalidParamDefault>
+      <code><![CDATA[string]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Hierarchy/TreeRenderer/HTMLTreeFactory.php">
+    <UnusedVariable>
+      <code><![CDATA[$config]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/I18n/Sorter.php">
+    <UnusedForeachValue>
+      <code><![CDATA[$item]]></code>
+    </UnusedForeachValue>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Aleph.php">
+    <UnusedVariable>
+      <code><![CDATA[$duedate]]></code>
+      <code><![CDATA[$id]]></code>
+      <code><![CDATA[$recordList]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Alma.php">
+    <UnusedVariable>
+      <code><![CDATA[$renewal]]></code>
+      <code><![CDATA[$response]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$returnValue]]></code>
+      <code><![CDATA[$statusCode]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Amicus.php">
+    <UnusedVariable>
+      <code><![CDATA[$diferencia]]></code>
+      <code><![CDATA[$prestados]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/ComposedDriver.php">
+    <InvalidParamDefault>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+    </InvalidParamDefault>
+    <NoValue>
+      <code><![CDATA[$driverName]]></code>
+      <code><![CDATA[$driverName]]></code>
+      <code><![CDATA[$driverName]]></code>
+    </NoValue>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Demo.php">
+    <InvalidParamDefault>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Horizon.php">
+    <UnusedVariable>
+      <code><![CDATA[$expire]]></code>
+      <code><![CDATA[$user]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/HorizonXMLAPI.php">
+    <InvalidParamDefault>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Koha.php">
+    <UnusedVariable>
+      <code><![CDATA[$id]]></code>
+      <code><![CDATA[$id]]></code>
+      <code><![CDATA[$id]]></code>
+      <code><![CDATA[$id]]></code>
+      <code><![CDATA[$id]]></code>
+      <code><![CDATA[$inum]]></code>
+      <code><![CDATA[$loc]]></code>
+      <code><![CDATA[$patron]]></code>
+      <code><![CDATA[$profile]]></code>
+      <code><![CDATA[$row]]></code>
+      <code><![CDATA[$row]]></code>
+      <code><![CDATA[$row]]></code>
+      <code><![CDATA[$row]]></code>
+      <code><![CDATA[$row]]></code>
+      <code><![CDATA[$row]]></code>
+      <code><![CDATA[$shelf]]></code>
+      <code><![CDATA[$sql]]></code>
+      <code><![CDATA[$sql]]></code>
+      <code><![CDATA[$sql]]></code>
+      <code><![CDATA[$sql]]></code>
+      <code><![CDATA[$sql]]></code>
+      <code><![CDATA[$sqlStmt]]></code>
+      <code><![CDATA[$sqlStmt]]></code>
+      <code><![CDATA[$sqlStmt]]></code>
+      <code><![CDATA[$sqlStmt]]></code>
+      <code><![CDATA[$sqlStmt]]></code>
+      <code><![CDATA[$stored_hash]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/KohaILSDI.php">
+    <InvalidParamDefault>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+    </InvalidParamDefault>
+    <UnusedVariable>
+      <code><![CDATA[$available]]></code>
+      <code><![CDATA[$duedate]]></code>
+      <code><![CDATA[$id]]></code>
+      <code><![CDATA[$id]]></code>
+      <code><![CDATA[$loc]]></code>
+      <code><![CDATA[$profile]]></code>
+      <code><![CDATA[$returnValue]]></code>
+      <code><![CDATA[$row]]></code>
+      <code><![CDATA[$row]]></code>
+      <code><![CDATA[$sql]]></code>
+      <code><![CDATA[$sql]]></code>
+      <code><![CDATA[$sqlStmt]]></code>
+      <code><![CDATA[$sqlStmt]]></code>
+      <code><![CDATA[$status]]></code>
+      <code><![CDATA[$transferfrom]]></code>
+      <code><![CDATA[$transferto]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/KohaRest.php">
+    <InvalidParamDefault>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/MultiBackend.php">
+    <InvalidParamDefault>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+    </InvalidParamDefault>
+    <NoValue>
+      <code><![CDATA[$params]]></code>
+    </NoValue>
+    <UnusedVariable>
+      <code><![CDATA[$source]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/NewGenLib.php">
+    <NoValue>
+      <code><![CDATA[return $status;]]></code>
+    </NoValue>
+    <UnusedVariable>
+      <code><![CDATA[$id]]></code>
+      <code><![CDATA[$paidamt]]></code>
+      <code><![CDATA[$reserve]]></code>
+      <code><![CDATA[$retVal]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/PAIA.php">
+    <UndefinedClass>
+      <code><![CDATA[$session->access_token]]></code>
+      <code><![CDATA[$session->expires]]></code>
+      <code><![CDATA[$session->patron]]></code>
+      <code><![CDATA[$session->scope]]></code>
+    </UndefinedClass>
+    <UnusedVariable>
+      <code><![CDATA[$details]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Polaris.php">
+    <InvalidParamDefault>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/SierraRest.php">
+    <InvalidParamDefault>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+    </InvalidParamDefault>
+    <UnusedFunctionCall>
+      <code><![CDATA[pg_prepare]]></code>
+      <code><![CDATA[pg_prepare]]></code>
+    </UnusedFunctionCall>
+    <UnusedVariable>
+      <code><![CDATA[$id]]></code>
+      <code><![CDATA[$postUrl]]></code>
+      <code><![CDATA[$volume]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Symphony.php">
+    <InvalidParamDefault>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Unicorn.php">
+    <InvalidParamDefault>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Virtua.php">
+    <InvalidParamDefault>
+      <code><![CDATA[string]]></code>
+      <code><![CDATA[string]]></code>
+    </InvalidParamDefault>
+    <UnevaluatedCode>
+      <code><![CDATA[break;]]></code>
+      <code><![CDATA[break;]]></code>
+      <code><![CDATA[break;]]></code>
+      <code><![CDATA[break;]]></code>
+      <code><![CDATA[break;]]></code>
+      <code><![CDATA[break;]]></code>
+      <code><![CDATA[break;]]></code>
+      <code><![CDATA[break;]]></code>
+      <code><![CDATA[break;]]></code>
+    </UnevaluatedCode>
+    <UnusedVariable>
+      <code><![CDATA[$result]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Voyager.php">
+    <InvalidParamDefault>
+      <code><![CDATA[array]]></code>
+    </InvalidParamDefault>
+    <UnusedVariable>
+      <code><![CDATA[$returnList]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/VoyagerRestful.php">
+    <InvalidParamDefault>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[string]]></code>
+      <code><![CDATA[string]]></code>
+      <code><![CDATA[string]]></code>
+    </InvalidParamDefault>
+    <UnusedForeachValue>
+      <code><![CDATA[$message]]></code>
+      <code><![CDATA[$message]]></code>
+    </UnusedForeachValue>
+    <UnusedVariable>
+      <code><![CDATA[$dbKey]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Logic/Holds.php">
+    <NoValue>
+      <code><![CDATA[return $holdings;]]></code>
+      <code><![CDATA[return $holdings;]]></code>
+    </NoValue>
+  </file>
+  <file src="module/VuFind/src/VuFind/Log/LoggerFactory.php">
+    <UnusedClosureParam>
+      <code><![CDATA[$proxy]]></code>
+    </UnusedClosureParam>
+  </file>
+  <file src="module/VuFind/src/VuFind/OAI/Server.php">
+    <UnusedVariable>
+      <code><![CDATA[$xml]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/Databases.php">
+    <UndefinedClass>
+      <code><![CDATA[$nameToDatabase]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/OpenLibrarySubjects.php">
+    <UnusedVariable>
+      <code><![CDATA[$result]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/DefaultRecord.php">
+    <InvalidParamDefault>
+      <code><![CDATA[string]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/EDS.php">
+    <UnusedVariable>
+      <code><![CDATA[$placeParts]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/EIT.php">
+    <UnsupportedPropertyReferenceUsage>
+      <code><![CDATA[$this->controlInfo = & $this->fields['fields']['header']['controlInfo']]]></code>
+    </UnsupportedPropertyReferenceUsage>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/Feature/HierarchyAwareTrait.php">
+    <InvalidParamDefault>
+      <code><![CDATA[string]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/Feature/MarcAdvancedTrait.php">
+    <UnusedVariable>
+      <code><![CDATA[$matches]]></code>
+      <code><![CDATA[$source]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/SolrOverdrive.php">
+    <UnusedVariable>
+      <code><![CDATA[$key]]></code>
+      <code><![CDATA[$result]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Resolver/Driver/Sfx.php">
+    <UnsupportedPropertyReferenceUsage>
+      <code><![CDATA[$coverageText = & $target->coverage->coverage_text]]></code>
+    </UnsupportedPropertyReferenceUsage>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Base/HierarchicalFacetHelperInterface.php">
+    <InvalidParamDefault>
+      <code><![CDATA[UrlHelper]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Base/Params.php">
+    <UnusedVariable>
+      <code><![CDATA[$num]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Combined/Options.php">
+    <UnusedForeachValue>
+      <code><![CDATA[$settings]]></code>
+    </UnusedForeachValue>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/EDS/Options.php">
+    <UnsupportedPropertyReferenceUsage>
+      <code><![CDATA[$availCriteria = & $this->apiInfo['AvailableSearchCriteria']]]></code>
+    </UnsupportedPropertyReferenceUsage>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/EDS/QueryAdapter.php">
+    <UnusedVariable>
+      <code><![CDATA[$output]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/EPF/Options.php">
+    <UnusedVariable>
+      <code><![CDATA[$facetConf]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Params/ParamsFactory.php">
+    <UnusedVariable>
+      <code><![CDATA[$optionsObj]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Params/PluginFactory.php">
+    <UnusedVariable>
+      <code><![CDATA[$options]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Solr/HierarchicalFacetHelper.php">
+    <InvalidParamDefault>
+      <code><![CDATA[UrlHelper]]></code>
+    </InvalidParamDefault>
+    <UnusedVariable>
+      <code><![CDATA[$match]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Solr/Params.php">
+    <UnusedVariable>
+      <code><![CDATA[$shards]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Service/Feature/RetryTrait.php">
+    <InvalidThrow>
+      <code><![CDATA[throw $firstException;]]></code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ServiceManager/AbstractPluginManager.php">
+    <MissingTemplateParam>
+      <code><![CDATA[AbstractPluginManager]]></code>
+    </MissingTemplateParam>
+  </file>
+  <file src="module/VuFind/src/VuFind/Session/Memcache.php">
+    <UnusedVariable>
+      <code><![CDATA[$extraParams]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Sitemap/Generator.php">
+    <UnusedVariable>
+      <code><![CDATA[$count]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Sitemap/Sitemap.php">
+    <UnusedVariable>
+      <code><![CDATA[$locs]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/GoogleAnalytics.php">
+    <InvalidParamDefault>
+      <code><![CDATA[string]]></code>
+      <code><![CDATA[string]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/Printms.php">
+    <NoValue>
+      <code><![CDATA[return $ms;]]></code>
+    </NoValue>
+    <UnusedVariable>
+      <code><![CDATA[$ms]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/Record.php">
+    <InvalidParamDefault>
+      <code><![CDATA[\VuFind\Db\Row\User]]></code>
+      <code><![CDATA[string]]></code>
+      <code><![CDATA[string]]></code>
+      <code><![CDATA[string]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/RecordDataFormatter.php">
+    <InvalidParamDefault>
+      <code><![CDATA[array]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/XSLT/Processor.php">
+    <InvalidParamDefault>
+      <code><![CDATA[string]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFindTest/Container/MockViewHelperContainer.php">
+    <MissingTemplateParam>
+      <code><![CDATA[MockViewHelperContainer]]></code>
+    </MissingTemplateParam>
+  </file>
+  <file src="module/VuFind/src/VuFindTest/Feature/ReflectionTrait.php">
+    <UnusedMethodCall>
+      <code><![CDATA[setAccessible]]></code>
+      <code><![CDATA[setAccessible]]></code>
+      <code><![CDATA[setAccessible]]></code>
+    </UnusedMethodCall>
+  </file>
+  <file src="module/VuFind/src/VuFindTest/Integration/MinkTestCase.php">
+    <UndefinedFunction>
+      <code><![CDATA['getHtml']]></code>
+      <code><![CDATA['getValue']]></code>
+    </UndefinedFunction>
+    <UnevaluatedCode>
+      <code><![CDATA[return;]]></code>
+    </UnevaluatedCode>
+  </file>
+  <file src="module/VuFind/tests/bootstrap.php">
+    <UnusedVariable>
+      <code><![CDATA[$loader]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/integration-tests/src/VuFindTest/Auth/DatabaseTest.php">
+    <UnevaluatedCode>
+      <code><![CDATA[return;]]></code>
+    </UnevaluatedCode>
+  </file>
+  <file src="module/VuFind/tests/integration-tests/src/VuFindTest/Auth/ILSTest.php">
+    <UnevaluatedCode>
+      <code><![CDATA[return;]]></code>
+    </UnevaluatedCode>
+  </file>
+  <file src="module/VuFind/tests/integration-tests/src/VuFindTest/Auth/ShibbolethTest.php">
+    <UnevaluatedCode>
+      <code><![CDATA[return;]]></code>
+    </UnevaluatedCode>
+    <UnusedVariable>
+      <code><![CDATA[$loader]]></code>
+      <code><![CDATA[$user]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/integration-tests/src/VuFindTest/Connection/SolrAuthTest.php">
+    <UnevaluatedCode>
+      <code><![CDATA[return;]]></code>
+    </UnevaluatedCode>
+  </file>
+  <file src="module/VuFind/tests/integration-tests/src/VuFindTest/Connection/SolrTest.php">
+    <UnevaluatedCode>
+      <code><![CDATA[return;]]></code>
+    </UnevaluatedCode>
+    <UnusedForeachValue>
+      <code><![CDATA[$value]]></code>
+    </UnusedForeachValue>
+  </file>
+  <file src="module/VuFind/tests/integration-tests/src/VuFindTest/Db/Table/ChangeTrackerTest.php">
+    <UnevaluatedCode>
+      <code><![CDATA[return;]]></code>
+    </UnevaluatedCode>
+  </file>
+  <file src="module/VuFind/tests/integration-tests/src/VuFindTest/Mink/AccountMenuTest.php">
+    <UnusedForeachValue>
+      <code><![CDATA[$value]]></code>
+    </UnusedForeachValue>
+  </file>
+  <file src="module/VuFind/tests/integration-tests/src/VuFindTest/Mink/CartTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$elements]]></code>
+      <code><![CDATA[$elements]]></code>
+      <code><![CDATA[$elements]]></code>
+      <code><![CDATA[$elements]]></code>
+      <code><![CDATA[$elements]]></code>
+      <code><![CDATA[$elements]]></code>
+      <code><![CDATA[$elements]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/integration-tests/src/VuFindTest/Mink/ChoiceAuthTest.php">
+    <UnusedParam>
+      <code><![CDATA[$bibId]]></code>
+    </UnusedParam>
+  </file>
+  <file src="module/VuFind/tests/integration-tests/src/VuFindTest/Mink/HoldsTest.php">
+    <UnusedParam>
+      <code><![CDATA[$type]]></code>
+    </UnusedParam>
+  </file>
+  <file src="module/VuFind/tests/integration-tests/src/VuFindTest/Mink/IlsActionsTest.php">
+    <UnusedParam>
+      <code><![CDATA[$type]]></code>
+      <code><![CDATA[$type]]></code>
+    </UnusedParam>
+  </file>
+  <file src="module/VuFind/tests/integration-tests/src/VuFindTest/Mink/RecordActionsTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$optionElement]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/integration-tests/src/VuFindTest/Mink/SavedSearchesTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$base]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/integration-tests/src/VuFindTest/View/Helper/Root/ResultFeedTest.php">
+    <UnevaluatedCode>
+      <code><![CDATA[return;]]></code>
+    </UnevaluatedCode>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Auth/ManagerTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$user]]></code>
+      <code><![CDATA[$user]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Controller/InstallControllerTest.php">
+    <UnusedMethodCall>
+      <code><![CDATA[setAccessible]]></code>
+    </UnusedMethodCall>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Cookie/ContainerTest.php">
+    <UnusedForeachValue>
+      <code><![CDATA[$v]]></code>
+    </UnusedForeachValue>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Db/Table/UserListTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$list]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Hierarchy/TreeDataFormatter/JsonTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$result]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/I18n/Translator/Loader/ExtendedIniTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$result]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/ILS/Driver/AbstractMultiDriverTestCase.php">
+    <InvalidParamDefault>
+      <code><![CDATA[object]]></code>
+    </InvalidParamDefault>
+    <UnusedVariable>
+      <code><![CDATA[$mock]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/ILS/Driver/FolioTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$result]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/ILS/Driver/GeniePlusTest.php">
+    <UnusedClosureParam>
+      <code><![CDATA[$i]]></code>
+    </UnusedClosureParam>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/ILS/Driver/KohaILSDITest.php">
+    <UnusedMethodCall>
+      <code><![CDATA[setAccessible]]></code>
+    </UnusedMethodCall>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/ILS/Driver/MultiBackendTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/ILS/Driver/MultiDriverTest/ILSMockTrait.php">
+    <InvalidParamDefault>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/ILS/Driver/XCNCIP2Test.php">
+    <UnusedMethodCall>
+      <code><![CDATA[setAccessible]]></code>
+      <code><![CDATA[setAccessible]]></code>
+      <code><![CDATA[setAccessible]]></code>
+      <code><![CDATA[setAccessible]]></code>
+      <code><![CDATA[setAccessible]]></code>
+      <code><![CDATA[setAccessible]]></code>
+      <code><![CDATA[setAccessible]]></code>
+      <code><![CDATA[setAccessible]]></code>
+    </UnusedMethodCall>
+    <UnusedVariable>
+      <code><![CDATA[$renew]]></code>
+      <code><![CDATA[$request]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Mailer/MailerTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$fromString]]></code>
+      <code><![CDATA[$fromString]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Recommend/DatabasesTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$module]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Recommend/SummonResultsTest.php">
+    <UnusedMethodCall>
+      <code><![CDATA[setAccessible]]></code>
+    </UnusedMethodCall>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Recommend/SummonTopicsTest.php">
+    <UnusedMethodCall>
+      <code><![CDATA[setAccessible]]></code>
+    </UnusedMethodCall>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Recommend/WebResultsTest.php">
+    <UnusedMethodCall>
+      <code><![CDATA[setAccessible]]></code>
+    </UnusedMethodCall>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Record/CacheTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$cache]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/RecordDriver/EDSTest.php">
+    <NullReference>
+      <code><![CDATA[getAccessLevel]]></code>
+      <code><![CDATA[getCleanDOI]]></code>
+      <code><![CDATA[getCleanDOI]]></code>
+      <code><![CDATA[getContainerEndPage]]></code>
+      <code><![CDATA[getContainerEndPage]]></code>
+      <code><![CDATA[getContainerIssue]]></code>
+      <code><![CDATA[getContainerIssue]]></code>
+      <code><![CDATA[getContainerStartPage]]></code>
+      <code><![CDATA[getContainerTitle]]></code>
+      <code><![CDATA[getContainerTitle]]></code>
+      <code><![CDATA[getContainerVolume]]></code>
+      <code><![CDATA[getContainerVolume]]></code>
+      <code><![CDATA[getCustomLinks]]></code>
+      <code><![CDATA[getDbLabel]]></code>
+      <code><![CDATA[getEbookLink]]></code>
+      <code><![CDATA[getEpubLink]]></code>
+      <code><![CDATA[getFTCustomLinks]]></code>
+      <code><![CDATA[getFormats]]></code>
+      <code><![CDATA[getFormats]]></code>
+      <code><![CDATA[getFormats]]></code>
+      <code><![CDATA[getFormats]]></code>
+      <code><![CDATA[getHTMLFullText]]></code>
+      <code><![CDATA[getISBNs]]></code>
+      <code><![CDATA[getISSNs]]></code>
+      <code><![CDATA[getItems]]></code>
+      <code><![CDATA[getItems]]></code>
+      <code><![CDATA[getItems]]></code>
+      <code><![CDATA[getItems]]></code>
+      <code><![CDATA[getItems]]></code>
+      <code><![CDATA[getItemsAbstract]]></code>
+      <code><![CDATA[getItemsAuthors]]></code>
+      <code><![CDATA[getItemsSubjects]]></code>
+      <code><![CDATA[getItemsTitle]]></code>
+      <code><![CDATA[getItemsTitleSource]]></code>
+      <code><![CDATA[getLanguages]]></code>
+      <code><![CDATA[getLinkedFullTextLink]]></code>
+      <code><![CDATA[getPLink]]></code>
+      <code><![CDATA[getPdfLink]]></code>
+      <code><![CDATA[getPlacesOfPublication]]></code>
+      <code><![CDATA[getPrimaryAuthors]]></code>
+      <code><![CDATA[getPubType]]></code>
+      <code><![CDATA[getPubTypeId]]></code>
+      <code><![CDATA[getPublicationDates]]></code>
+      <code><![CDATA[getPublicationDetails]]></code>
+      <code><![CDATA[getPublicationDetails]]></code>
+      <code><![CDATA[getPublicationDetails]]></code>
+      <code><![CDATA[getPublicationDetails]]></code>
+      <code><![CDATA[getPublishers]]></code>
+      <code><![CDATA[getShortTitle]]></code>
+      <code><![CDATA[getShortTitle]]></code>
+      <code><![CDATA[getSubtitle]]></code>
+      <code><![CDATA[getSubtitle]]></code>
+      <code><![CDATA[getThumbnail]]></code>
+      <code><![CDATA[getThumbnail]]></code>
+      <code><![CDATA[getTitle]]></code>
+      <code><![CDATA[getUniqueID]]></code>
+      <code><![CDATA[hasEpubAvailable]]></code>
+      <code><![CDATA[hasHTMLFullTextAvailable]]></code>
+      <code><![CDATA[hasLinkedFullTextAvailable]]></code>
+      <code><![CDATA[hasPdfAvailable]]></code>
+      <code><![CDATA[hasPdfAvailable]]></code>
+      <code><![CDATA[linkUrls]]></code>
+    </NullReference>
+    <UnusedVariable>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+      <code><![CDATA[$driver]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/RecordDriver/SolrMarcTest.php">
+    <UnusedMethodCall>
+      <code><![CDATA[setAccessible]]></code>
+      <code><![CDATA[setAccessible]]></code>
+    </UnusedMethodCall>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Search/Solr/ResultsTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$searchService]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Sitemap/Plugin/Index/TermsIdFetcherTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$context1]]></code>
+      <code><![CDATA[$context2]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/View/Helper/Root/CspTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$headers]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/View/Helper/Root/PermissionTest.php">
+    <InvalidParamDefault>
+      <code><![CDATA[array]]></code>
+      <code><![CDATA[array]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFindAdmin/tests/unit-tests/src/VuFindTest/Controller/SocialstatsControllerTest.php">
+    <UnusedClosureParam>
+      <code><![CDATA[$input]]></code>
+    </UnusedClosureParam>
+  </file>
+  <file src="module/VuFindApi/src/VuFindApi/Controller/SearchApiController.php">
+    <UnusedClosureParam>
+      <code><![CDATA[$searchId]]></code>
+    </UnusedClosureParam>
+  </file>
+  <file src="module/VuFindApi/src/VuFindApi/Formatter/FacetFormatter.php">
+    <InvalidParamDefault>
+      <code><![CDATA[array]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Language/AddUsingTemplateCommand.php">
+    <UnusedVariable>
+      <code><![CDATA[$domain]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Util/IndexReservesCommand.php">
+    <UnusedVariable>
+      <code><![CDATA[$id]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Util/SwitchDbHashCommand.php">
+    <UnusedVariable>
+      <code><![CDATA[$pass]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Generator/GeneratorTools.php">
+    <UnusedMethodCall>
+      <code><![CDATA[setAccessible]]></code>
+      <code><![CDATA[setAccessible]]></code>
+      <code><![CDATA[setAccessible]]></code>
+    </UnusedMethodCall>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Backend/Blender/Backend.php">
+    <UnusedVariable>
+      <code><![CDATA[$collectionOffsets]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Backend/EDS/ApiException.php">
+    <NoValue>
+      <code><![CDATA[$apiErrorMessage]]></code>
+    </NoValue>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Backend/Pazpar2/Connector.php">
+    <InvalidParamDefault>
+      <code><![CDATA[string]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Backend/SRU/Connector.php">
+    <InvalidParamDefault>
+      <code><![CDATA[string]]></code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Backend/Solr/Response/Json/NamedList.php">
+    <MissingTemplateParam>
+      <code><![CDATA[Iterator]]></code>
+    </MissingTemplateParam>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Backend/Solr/Response/Json/Spellcheck.php">
+    <MissingTemplateParam>
+      <code><![CDATA[IteratorAggregate]]></code>
+    </MissingTemplateParam>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Backend/Solr/Response/Json/Terms.php">
+    <MissingTemplateParam>
+      <code><![CDATA[IteratorAggregate]]></code>
+    </MissingTemplateParam>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Response/RecordCollectionInterface.php">
+    <MissingTemplateParam>
+      <code><![CDATA[\Iterator]]></code>
+    </MissingTemplateParam>
+  </file>
+  <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Backend/Blender/BackendTest.php">
+    <UnusedClosureParam>
+      <code><![CDATA[$cacheable]]></code>
+      <code><![CDATA[$messageFormat]]></code>
+    </UnusedClosureParam>
+  </file>
+  <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Backend/BrowZine/Response/RecordCollectionFactoryTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$coll]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Backend/EDS/Response/RecordCollectionFactoryTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$factory]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Backend/EIT/Response/XML/RecordCollectionFactoryTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$coll]]></code>
+      <code><![CDATA[$factory]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Backend/LibGuides/Response/RecordCollectionFactoryTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$coll]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Backend/Primo/Response/RecordCollectionFactoryTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$coll]]></code>
+      <code><![CDATA[$factory]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Backend/Solr/BackendTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$rec]]></code>
+      <code><![CDATA[$terms]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Backend/Solr/ConnectorTest.php">
+    <UnusedFunctionCall>
+      <code><![CDATA[json_decode]]></code>
+      <code><![CDATA[json_decode]]></code>
+      <code><![CDATA[json_decode]]></code>
+    </UnusedFunctionCall>
+    <UnusedVariable>
+      <code><![CDATA[$resp]]></code>
+      <code><![CDATA[$resp]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Backend/Solr/Response/Json/NamedListTest.php">
+    <UnusedForeachValue>
+      <code><![CDATA[$value]]></code>
+    </UnusedForeachValue>
+  </file>
+  <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Backend/Solr/Response/Json/RecordCollectionFactoryTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$coll]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Backend/Summon/Response/RecordCollectionFactoryTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$factory]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Backend/WorldCat/Response/XML/RecordCollectionFactoryTest.php">
+    <UndefinedFunction>
+      <code><![CDATA['bad']]></code>
+    </UndefinedFunction>
+    <UnusedVariable>
+      <code><![CDATA[$x]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Command/SearchCommandTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$backendId]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/Initializer.php">
+    <UnusedVariable>
+      <code><![CDATA[$key]]></code>
+      <code><![CDATA[$key]]></code>
+      <code><![CDATA[$lessActive]]></code>
+      <code><![CDATA[$lessActive]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/ThemeInfo.php">
+    <EmptyArrayAccess>
+      <code><![CDATA[$this->allThemeInfo[$currentTheme]]]></code>
+    </EmptyArrayAccess>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/View/Helper/HeadLink.php">
+    <UndefinedClass>
+      <code><![CDATA[{]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/View/Helper/HeadScript.php">
+    <UndefinedClass>
+      <code><![CDATA[$item->attributes]]></code>
+      <code><![CDATA[$item->attributes]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/View/Helper/Slot.php">
+    <UnusedVariable>
+      <code><![CDATA[$ret]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="module/VuFindTheme/tests/unit-tests/src/VuFindTest/View/Helper/SlotTest.php">
+    <UnusedVariable>
+      <code><![CDATA[$ret]]></code>
+      <code><![CDATA[$ret]]></code>
+      <code><![CDATA[$ret]]></code>
+      <code><![CDATA[$ret]]></code>
+    </UnusedVariable>
+  </file>
+</files>

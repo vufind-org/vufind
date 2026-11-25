@@ -10,7 +10,7 @@
     "license": "GPL-2.0-only",
     "config": {
         "platform": {
-            "php": "8.2"
+            "php": "8.2.27"
         },
         "process-timeout": 0,
         "allow-plugins": {
@@ -132,7 +132,8 @@
         "phpunit/phpunit": "11.5.56",
         "pietercolpaert/hardf": "0.6.3",
         "rector/rector": "2.8.5",
-        "squizlabs/php_codesniffer": "4.0.4"
+        "squizlabs/php_codesniffer": "4.0.4",
+        "vimeo/psalm": "^7"
     },
     "extra": {
         "merge-plugin": {
