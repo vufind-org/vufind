@@ -31,11 +31,9 @@ namespace VuFind\Db\Service;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\Session\SessionManager;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Db\PersistenceManager;
 use VuFind\Session\SessionHandlerTrait;
 
 /**
@@ -47,7 +45,7 @@ use VuFind\Session\SessionHandlerTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class AbstractSessionRelatedDataServiceFactory implements FactoryInterface
+class AbstractSessionRelatedDataServiceFactory extends AbstractDbServiceFactory
 {
     use SessionHandlerTrait;
 
@@ -70,13 +68,13 @@ class AbstractSessionRelatedDataServiceFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        return new $requestedName(
-            $container->get('doctrine.entitymanager.orm_vufind'),
-            $container->get(\VuFind\Db\Entity\PluginManager::class),
-            $container->get(PersistenceManager::class),
-            $container->get(SessionManager::class),
-            $this->getHandler($container),
-            ...($options ?? [])
+        return parent::__invoke(
+            $container,
+            $requestedName,
+            [
+                $container->get(SessionManager::class),
+                $this->getHandler($container),
+            ]
         );
     }
 }
