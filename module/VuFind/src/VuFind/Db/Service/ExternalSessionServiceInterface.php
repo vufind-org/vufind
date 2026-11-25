@@ -70,13 +70,4 @@ interface ExternalSessionServiceInterface extends SessionRelatedDataServiceInter
      * @return ExternalSessionEntityInterface[]
      */
     public function getAllByExternalSessionId(string $sid): array;
-
-    /**
-     * Destroy data for the given session ID.
-     *
-     * @param string $sid Session ID to erase
-     *
-     * @return void
-     */
-    public function destroySession(string $sid): void;
 }
