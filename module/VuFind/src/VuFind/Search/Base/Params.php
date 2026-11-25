@@ -682,7 +682,7 @@ class Params
      *
      * @return ?int
      */
-    public function getSetLimit(): ?int
+    public function getActiveLimitSetting(): ?int
     {
         return $this->limit;
     }

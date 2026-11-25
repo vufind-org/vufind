@@ -114,7 +114,7 @@ class UrlQueryHelperFactory
         if (null !== $sort && $sort != $this->extractCallableValue($config['defaults']['sort'])) {
             $urlParams['sort'] = $sort;
         }
-        $limit = $params->getSetLimit();
+        $limit = $params->getActiveLimitSetting();
         if (null !== $limit && $limit != $this->extractCallableValue($config['defaults']['limit'])) {
             $urlParams['limit'] = $limit;
         }
