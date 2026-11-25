@@ -31,12 +31,12 @@ namespace VuFind\Search\Factory;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFind\Search\Primo\PrimoPermissionHandler;
+use VuFind\Service\AuthorizationServiceInterface;
 use VuFindSearch\Backend\Primo\Backend;
 use VuFindSearch\Backend\Primo\ConnectorInterface;
 use VuFindSearch\Backend\Primo\QueryBuilder;
@@ -135,9 +135,8 @@ class PrimoBackendFactory extends AbstractBackendFactory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
@@ -216,7 +215,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
 
         $session = new \Laminas\Session\Container(
             'Primo',
-            $this->getService(\Laminas\Session\SessionManager::class)
+            $this->getService(\Laminas\Session\ManagerInterface::class)
         );
 
         // Create connector:
@@ -295,9 +294,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
             $permHandler = new PrimoPermissionHandler(
                 $this->primoConfig['Institutions']
             );
-            $permHandler->setAuthorizationService(
-                $this->getService(AuthorizationService::class)
-            );
+            $permHandler->setAuthorizationService($this->getService(AuthorizationServiceInterface::class));
             return $permHandler;
         }
 
@@ -311,9 +308,8 @@ class PrimoBackendFactory extends AbstractBackendFactory
      * @param string $url URL being requested
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getHttpOptions(string $url): array
     {
         return [];

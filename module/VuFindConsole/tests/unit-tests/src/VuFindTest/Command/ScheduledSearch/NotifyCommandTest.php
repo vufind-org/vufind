@@ -35,9 +35,12 @@ use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Http\RouteHelper;
+use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindConsole\Command\ScheduledSearch\NotifyCommand;
 use VuFindTest\Container\MockContainer;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
+use VuFindTest\Feature\TranslatorTrait;
 
 use function array_key_exists;
 
@@ -53,6 +56,7 @@ use function array_key_exists;
 class NotifyCommandTest extends \PHPUnit\Framework\TestCase
 {
     use ConfigRelatedServicesTrait;
+    use TranslatorTrait;
 
     /**
      * Container for building mocks.
@@ -277,20 +281,17 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             'records' => [$record],
             'info' => [
                 'baseUrl' => 'http://foo',
-                'description' => null,
+                'description' => '',
                 'recordCount' => 1,
-                'url' => 'http://foo',
-                'unsubscribeUrl' => 'http://foo?id=1&key=',
+                'url' => 'http://foo/',
+                'unsubscribeUrl' => 'http://foo/searchhistory-unsubscribesearch?id=1&key=topsecret',
                 'checkboxFilters' => [],
                 'filters' => [],
             ],
         ];
-        $renderer = $this->container->createMock(
-            \Laminas\View\Renderer\PhpRenderer::class,
-            ['render']
-        );
-        $renderer->expects($this->once())->method('render')
-            ->with('Email/scheduled-alert.phtml', $expectedViewParams)
+        $renderer = $this->container->createMock(TemplateRendererInterface::class);
+        $renderer->expects($this->once())->method('renderTemplateAsString')
+            ->with(null, 'Email/scheduled-alert.phtml', $expectedViewParams)
             ->willReturn($message);
         $mailer = $this->container->createMock(\VuFind\Mailer\Mailer::class);
         $mailer->expects($this->once())->method('send')
@@ -300,10 +301,13 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                 'My Site: translated text',
                 $message
             );
-        $translator = $this->container->createMock(\Laminas\Mvc\I18n\Translator::class);
-        $translator->expects($this->once())->method('translate')
-            ->with('Scheduled Alert Results')
-            ->willReturn('translated text');
+        $translator = $this->getMockTranslator(
+            [
+                'default' => [
+                    'Scheduled Alert Results' => 'translated text',
+                ],
+            ]
+        );
         $command = $this->getCommand(
             [
                 'mailer' => $mailer,
@@ -484,12 +488,17 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     protected function getCommand(array $options = []): NotifyCommand
     {
         $renderer = $options['renderer']
-            ?? $this->container->createMock(\Laminas\View\Renderer\PhpRenderer::class);
-        $container = new \VuFindTest\Container\MockViewHelperContainer($this);
-        $container->set('url', $this->container->createMock(\Laminas\View\Helper\Url::class));
-        $renderer->setHelperPluginManager($container);
+            ?? $this->container->createMock(TemplateRendererInterface::class);
+        $secretCalculator = $this->container->createMock(\VuFind\Crypt\SecretCalculator::class);
+        $secretCalculator->method('getSearchUnsubscribeSecret')
+            ->willReturn('topsecret');
+        $routeHelper = $this->createMock(RouteHelper::class);
+        $routeHelper->method('getUrlFromRoute')
+            ->willReturnCallback(function (string $name, array $params, array $queryParams): string {
+                return "/$name" . ($queryParams ? '?' . http_build_query($queryParams) : '');
+            });
         $command = new NotifyCommand(
-            $this->container->createMock(\VuFind\Crypt\SecretCalculator::class),
+            $secretCalculator,
             $renderer,
             $this->getMockResultsManager(),
             $options['scheduleOptions'] ?? [1 => 'Daily', 7 => 'Weekly'],
@@ -501,10 +510,11 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             ],
             $options['mailer'] ?? $this->createStub(\VuFind\Mailer\Mailer::class),
             $options['searchService'] ?? $this->createStub(SearchServiceInterface::class),
-            $options['localeSettings'] ?? $this->createStub(\VuFind\I18n\Locale\LocaleSettings::class)
+            $options['localeSettings'] ?? $this->createStub(\VuFind\I18n\Locale\LocaleSettings::class),
+            $routeHelper
         );
         $command->setTranslator(
-            $options['translator'] ?? $this->createStub(\Laminas\Mvc\I18n\Translator::class)
+            $options['translator'] ?? $this->createStub(\Laminas\Translator\TranslatorInterface::class)
         );
         $command->setPathResolver($this->getPathResolver());
         return $command;

@@ -23,7 +23,7 @@
           'recordTotal' => $results->getResultTotal(),
           'lookfor' => '',
         ];
-        echo $this->render('search/controls/showing.phtml', $params);
+        echo $this->context($this)->renderInContext('search/controls/showing.phtml', $params);
       ?>
     </li>
     <?php if (isset($this->next)): ?>

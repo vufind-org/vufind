@@ -31,7 +31,7 @@
 
 namespace VuFind\Action\Checkouts;
 
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -70,7 +70,7 @@ class ListAction extends AbstractCheckoutsAction
      *
      * @param array                      $config            VuFind configuration
      * @param CsrfInterface              $csrf              CSRF validator
-     * @param SessionManager             $sessionManager    Session manager
+     * @param ManagerInterface           $sessionManager    Session manager
      * @param PaginationHelper           $paginationHelper  Pagination helper
      * @param Connection                 $ilsConnection     ILS connection
      * @param RecordsHelper              $ilsRecordsHelper  ILS records helper
@@ -82,7 +82,7 @@ class ListAction extends AbstractCheckoutsAction
         #[Autowire(config: 'config')]
         array $config,
         CsrfInterface $csrf,
-        SessionManager $sessionManager,
+        ManagerInterface $sessionManager,
         PaginationHelper $paginationHelper,
         Connection $ilsConnection,
         RecordsHelper $ilsRecordsHelper,

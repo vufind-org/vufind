@@ -153,7 +153,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
         $params = $this->getSolrParams();
         $query = $this->unserializeFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
-        $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
+        $request = [];
 
         $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
@@ -197,7 +197,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
         // Use Solr since some Base components are abstract:
         $query = $this->unserializeFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
-        $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
+        $request = [];
 
         $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
@@ -240,7 +240,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
         $params = $results->getParams();
         $query = $this->unserializeFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
-        $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
+        $request = [];
 
         $results = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
         $results->expects($this->once())->method('getRecords')

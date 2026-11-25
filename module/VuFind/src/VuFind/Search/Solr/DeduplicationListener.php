@@ -292,9 +292,8 @@ class DeduplicationListener
      * @param EventInterface $event Event
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getActiveRecordSources(EventInterface $event): array
     {
         return $this->explodeListSetting($this->searchConfig['Records']['sources'] ?? '');
@@ -311,9 +310,8 @@ class DeduplicationListener
      * @param array $sourcePriority  Array of source priorities keyed by source id
      *
      * @return array Local record data
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function appendDedupRecordFields(
         array $localRecordData,
         array $dedupRecordData,

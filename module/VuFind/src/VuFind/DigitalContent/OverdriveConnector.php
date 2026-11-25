@@ -33,14 +33,14 @@ use Exception;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Http\Client;
 use Laminas\Session\Container;
-use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
-use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Cache\KeyGeneratorTrait;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\Service\AuthorizationServiceAwareInterface;
+use VuFind\Service\AuthorizationServiceAwareTrait;
 use VuFindHttp\HttpServiceAwareInterface;
 use VuFindHttp\HttpServiceAwareTrait;
 
@@ -1106,7 +1106,7 @@ class OverdriveConnector implements
             $checkouts = $result->data;
             foreach ($checkouts as $checkout) {
                 if (
-                    strtolower($checkout->reserveId) == strtolower(
+                    strtolower($checkout->reserveId) === strtolower(
                         $overDriveId
                     )
                 ) {
@@ -1138,7 +1138,7 @@ class OverdriveConnector implements
         if ($result->status) {
             $holds = $result->data;
             foreach ($holds as $hold) {
-                if (strtolower($hold->reserveId) == strtolower($overDriveId)) {
+                if (strtolower($hold->reserveId) === strtolower($overDriveId)) {
                     return $hold;
                 }
             }

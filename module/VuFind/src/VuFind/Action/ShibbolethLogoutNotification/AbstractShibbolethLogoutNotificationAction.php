@@ -29,7 +29,7 @@
 
 namespace VuFind\Action\ShibbolethLogoutNotification;
 
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractAction;
 use VuFind\Db\Service\ExternalSessionServiceInterface;
@@ -50,11 +50,11 @@ abstract class AbstractShibbolethLogoutNotificationAction extends AbstractAction
     /**
      * Constructor.
      *
-     * @param SessionManager                  $sessionManager         Session manager
+     * @param ManagerInterface                $sessionManager         Session manager
      * @param ExternalSessionServiceInterface $externalSessionService External session database service
      */
     public function __construct(
-        protected SessionManager $sessionManager,
+        protected ManagerInterface $sessionManager,
         #[Autowire(container: DbServicePluginManager::class)]
         protected ExternalSessionServiceInterface $externalSessionService,
     ) {

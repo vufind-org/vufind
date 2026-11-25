@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Primo;
 
-use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
+use VuFind\Service\AuthorizationServiceAwareTrait;
 
 use function in_array;
 use function is_array;

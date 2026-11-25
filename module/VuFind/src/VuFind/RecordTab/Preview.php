@@ -29,6 +29,12 @@
 
 namespace VuFind\RecordTab;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
+use function in_array;
+use function is_bool;
+use function strlen;
+
 /**
  * Embedded Preview tab.
  *
@@ -50,11 +56,33 @@ class Preview extends AbstractBase
     /**
      * Constructor.
      *
-     * @param bool $active Is this tab active?
+     * @param array|bool $configOrActive Boolean to set the active status explicitly, or config array to detect it
+     * from configuration.
      */
-    public function __construct($active)
-    {
-        $this->active = $active;
+    public function __construct(
+        #[Autowire(config: 'config')]
+        array|bool $configOrActive = false
+    ) {
+        if (is_bool($configOrActive)) {
+            $this->active = $configOrActive;
+        } else {
+            $cfg = $configOrActive;
+
+            // only active if config [content] [previews] contains google and googleoptions[tab] is not empty.
+            $this->active = false;
+            if (isset($cfg['Content']['previews'])) {
+                $previews = array_map(
+                    'trim',
+                    explode(',', strtolower($cfg['Content']['previews']))
+                );
+                if (
+                    in_array('google', $previews)
+                    && strlen(trim($cfg['Content']['GoogleOptions']['tab'] ?? '')) > 0
+                ) {
+                    $this->active = true;
+                }
+            }
+        }
     }
 
     /**

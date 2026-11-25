@@ -424,6 +424,8 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
                 return count($session->getWindowNames());
             }
         );
+        // Switch back to main window:
+        $session->switchToWindow(null);
 
         // Check contents of HTML version of the receipt (the PDF version can't be loaded in chrome-headless-shell):
         $url = $this->getVuFindUrl(
@@ -516,9 +518,12 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     {
         $demoConfig = $this->getDemoIniOverrides() + $this->getDemoIniOverridesForPayment(['receipt' => false]);
         $demoConfig['Failure_Probabilities']['registerPayment'] = 100;
+        $config = $this->getConfigIniOverrides(false);
+        // Disable logging of known exception:
+        $configs['config']['Logging']['file'] = null;
         $this->changeConfigs(
             [
-                'config' => $this->getConfigIniOverrides(false),
+                'config' => $config,
                 'Demo' => $demoConfig,
             ]
         );

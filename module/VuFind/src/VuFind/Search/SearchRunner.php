@@ -31,7 +31,6 @@ namespace VuFind\Search;
 
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
-use Laminas\Stdlib\Parameters;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\Solr\ErrorListener;
 
@@ -88,7 +87,7 @@ class SearchRunner
     /**
      * Run the search.
      *
-     * @param array   $requestArray  Incoming parameters for search
+     * @param array   $request       Incoming parameters for search
      * @param string  $searchClassId Type of search to perform
      * @param mixed   $setupCallback Optional callback for setting up params
      * and attaching listeners; if provided, will be passed three parameters:
@@ -102,7 +101,7 @@ class SearchRunner
      * @throws \VuFindSearch\Backend\Exception\BackendException
      */
     public function run(
-        array $requestArray,
+        array $request,
         string $searchClassId = 'Solr',
         $setupCallback = null,
         ?string $lastView = null
@@ -118,8 +117,7 @@ class SearchRunner
         $results = $this->resultsManager->get($searchClassId);
         $params = $results->getParams();
         $params->setLastView($lastView);
-        $params->initFromRequest($requestArray);
-        $request = new Parameters($requestArray);
+        $params->initFromRequest($request);
 
         if (is_callable($setupCallback)) {
             $setupCallback($this, $params, $runningSearchId, $results);

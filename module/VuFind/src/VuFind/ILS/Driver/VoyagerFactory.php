@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for GetSideFacets AJAX handler.
+ * Factory for Voyager ILS driver.
  *
  * PHP version 8
  *
@@ -21,32 +21,29 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  AJAX
+ * @package  ILS_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\AjaxHandler;
+namespace VuFind\ILS\Driver;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
- * Factory for GetSideFacets AJAX handler.
+ * Factory for Voyager ILS driver.
  *
  * @category VuFind
- * @package  AJAX
+ * @package  ILS_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetSideFacetsFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class VoyagerFactory extends DriverWithDateConverterFactory
 {
     /**
      * Create an object.
@@ -61,23 +58,18 @@ class GetSideFacetsFactory implements \Laminas\ServiceManager\Factory\FactoryInt
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
         ?array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
-        }
-        $result = new $requestedName(
-            $container->get(\VuFind\Session\Settings::class),
-            $container->get(\VuFind\Recommend\PluginManager::class),
-            $container->get(\VuFind\Search\SearchRunner::class),
-            $container->get(TemplateRendererInterface::class)
+        $driver = parent::__invoke(
+            $container,
+            $requestedName,
+            [$container->get(\VuFind\Validator\EmailAddressValidator::class)]
         );
-        return $result;
+        return $driver;
     }
 }

@@ -49,7 +49,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @var string
      */
-    protected $base = 'https://api.thirdiron.com/public/v1/';
+    protected $base = 'https://public-api.thirdiron.com/public/v1/';
 
     /**
      * The HTTP Request client used for API transactions.

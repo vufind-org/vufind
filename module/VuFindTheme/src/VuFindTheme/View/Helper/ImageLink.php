@@ -29,7 +29,7 @@
 
 namespace VuFindTheme\View\Helper;
 
-use Laminas\View\Helper\Url;
+use VuFind\Application\UriRegistry;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -48,13 +48,13 @@ class ImageLink
     /**
      * Constructor.
      *
-     * @param \VuFindTheme\ThemeInfo $themeInfo Theme information service
-     * @param Url                    $urlHelper Url view helper
+     * @param \VuFindTheme\ThemeInfo $themeInfo   Theme information service
+     * @param string                 $baseUrlPath Path part of base URL
      */
     public function __construct(
         protected \VuFindTheme\ThemeInfo $themeInfo,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected Url $urlHelper
+        #[Autowire(container: UriRegistry::class, service: 'BaseUrlPath')]
+        protected string $baseUrlPath,
     ) {
     }
 
@@ -84,7 +84,7 @@ class ImageLink
 
         $parts = explode('/', $relPath);
         $encodedRelPath = implode('/', array_map('rawurlencode', $parts));
-        $url = ($this->urlHelper)('home') . "themes/{$details['theme']}/" . $encodedRelPath;
+        $url = $this->baseUrlPath . "themes/{$details['theme']}/" . $encodedRelPath;
         $url .= strstr($url, '?') ? '&_=' : '?_=';
         $url .= filemtime($details['path']);
 

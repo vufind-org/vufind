@@ -30,11 +30,11 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\Partial;
 use VuFind\Date\Converter;
 use VuFind\Date\DateException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function count;
 use function function_exists;
@@ -103,13 +103,13 @@ class Citation implements TranslatorAwareInterface
     /**
      * Constructor.
      *
-     * @param Converter $dateConverter Date converter
-     * @param Partial   $partial       Partial view helper
+     * @param Converter                 $dateConverter    Date converter
+     * @param TemplateRendererInterface $templateRenderer Template renderer
      */
+    #[Autowire]
     public function __construct(
         protected Converter $dateConverter,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected Partial $partial
+        protected TemplateRendererInterface $templateRenderer,
     ) {
     }
 
@@ -240,7 +240,7 @@ class Citation implements TranslatorAwareInterface
                 // If we have exactly two parts, we should trim any trailing
                 // punctuation from the second part (this reduces the odds of
                 // accidentally trimming a "Jr." or "Sr."):
-                if (count($parts) == 2) {
+                if (count($parts) === 2) {
                     $parts[1] = rtrim($parts[1], '.');
                 }
                 // Put the parts back together; eliminate stray commas:
@@ -311,7 +311,7 @@ class Citation implements TranslatorAwareInterface
         if (empty($this->details['journal'])) {
             $apa['publisher'] = $this->getPublisher(false);
             $apa['year'] = $this->getYear();
-            return ($this->partial)('Citation/apa.phtml', $apa);
+            return $this->templateRenderer->renderTemplateAsString(template: 'Citation/apa.phtml', params: $apa);
         }
 
         // If we got this far, it's the default article case:
@@ -319,7 +319,7 @@ class Citation implements TranslatorAwareInterface
             = $this->getAPANumbersAndDate();
         $apa['journal'] = $this->details['journal'];
         $apa['pageRange'] = $this->getPageRange();
-        return ($this->partial)('Citation/apa-article.phtml', $apa);
+        return $this->templateRenderer->renderTemplateAsString(template: 'Citation/apa-article.phtml', params: $apa);
     }
 
     /**
@@ -399,7 +399,7 @@ class Citation implements TranslatorAwareInterface
             $mla['publisher'] = $this->getPublisher($includePubPlace);
             $mla['year'] = $this->getYear();
             $mla['edition'] = $this->getEdition();
-            return ($this->partial)('Citation/mla.phtml', $mla);
+            return $this->templateRenderer->renderTemplateAsString(template: 'Citation/mla.phtml', params: $mla);
         }
         // If we got this far, we should add other journal-specific details:
         $mla['doiArticleComma'] = $doiArticleComma;
@@ -410,7 +410,7 @@ class Citation implements TranslatorAwareInterface
             $volPrefix,
             $yearFormat
         );
-        return ($this->partial)('Citation/mla-article.phtml', $mla);
+        return $this->templateRenderer->renderTemplateAsString(template: 'Citation/mla-article.phtml', params: $mla);
     }
 
     /**
@@ -604,7 +604,7 @@ class Citation implements TranslatorAwareInterface
     {
         // Fix abbreviated letters.
         if (
-            strlen($str) == 1
+            strlen($str) === 1
             || preg_match('/\s[a-zA-Z]/', substr($str, -2))
         ) {
             return $str . '.';
@@ -782,7 +782,7 @@ class Citation implements TranslatorAwareInterface
                 // Do not abbreviate corporate authors:
                 $author = in_array($author, $this->details['corporateAuthors'])
                     ? $author : $this->abbreviateName($author);
-                if (($i + 1 == $authorCount) && ($i > 0)) { // Last
+                if (($i + 1 === $authorCount) && ($i > 0)) { // Last
                     // Do we already have periods of ellipsis?  If not, we need
                     // an ampersand:
                     $authorStr .= $ellipsis ? ' ' : '& ';
@@ -798,7 +798,7 @@ class Citation implements TranslatorAwareInterface
                     // any commas yet, we can skip the comma. Otherwise, add one to
                     // the list. Useful for two-item lists including corporate
                     // authors as the first entry.
-                    $skipComma = ($i + 2 == $authorCount)
+                    $skipComma = ($i + 2 === $authorCount)
                         && (!str_contains($authorStr . $author, ','));
                     $authorStr .= $author . ($skipComma ? ' ' : ', ');
                 } else { // First and only
@@ -907,7 +907,7 @@ class Citation implements TranslatorAwareInterface
             } else {
                 foreach ($this->details['authors'] as $rawAuthor) {
                     $author = $this->formatPrimaryMLAAuthor($rawAuthor);
-                    if (($i + 1 == count($this->details['authors'])) && ($i > 0)) {
+                    if (($i + 1 === count($this->details['authors'])) && ($i > 0)) {
                         // Last
                         // Only add a comma if there are commas already in the
                         // preceding text. This helps, for example, with cases where

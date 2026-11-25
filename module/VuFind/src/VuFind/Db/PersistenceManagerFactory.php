@@ -83,6 +83,6 @@ class PersistenceManagerFactory implements FactoryInterface
      */
     protected function getEntityManager(ContainerInterface $container): EntityManagerInterface
     {
-        return $container->get('doctrine.entitymanager.orm_vufind');
+        return $container->get(EntityManagerInterface::class);
     }
 }

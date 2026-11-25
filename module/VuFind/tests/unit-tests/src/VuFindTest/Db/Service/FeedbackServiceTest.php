@@ -76,7 +76,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
         $feedbackService = $mocks['feedbackService'];
         $queryStmt = "SELECT f.id, f.status FROM VuFind\Db\Entity\FeedbackEntityInterface f "
             . 'ORDER BY f.status';
-        $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
+        $query = $this->getMockBuilder(\Doctrine\ORM\Query::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getResult', 'getSQL', '_doExecute'])
             ->getMock();
@@ -100,7 +100,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
         $feedbackService = $mocks['feedbackService'];
         $queryStmt = "DELETE FROM VuFind\Db\Entity\FeedbackEntityInterface fb WHERE fb.id IN (:ids)";
 
-        $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
+        $query = $this->getMockBuilder(\Doctrine\ORM\Query::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['execute', 'setParameters', 'getSQL', '_doExecute'])
             ->getMock();

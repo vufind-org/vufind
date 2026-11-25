@@ -64,6 +64,13 @@ abstract class AbstractActionTestCase extends TestCase
     protected ?string $capturedTemplate = null;
 
     /**
+     * Request captured from the renderTemplate() call in getCapturingRenderer().
+     *
+     * @var ServerRequestInterface
+     */
+    protected ServerRequestInterface $capturedRequest;
+
+    /**
      * Template parameters captured from the renderTemplate() call in getCapturingRenderer().
      *
      * @var array
@@ -172,6 +179,7 @@ abstract class AbstractActionTestCase extends TestCase
                 array $params
             ): ResponseInterface {
                 $this->renderTemplateCallCount++;
+                $this->capturedRequest = $request;
                 $this->capturedTemplate = $template;
                 $this->capturedTemplateParams = $params;
                 return $response;

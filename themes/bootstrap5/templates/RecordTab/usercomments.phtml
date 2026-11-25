@@ -4,7 +4,7 @@
 ?>
 
 <div class="comment-list">
-  <?=$this->render('record/comments-list.phtml')?>
+  <?=$this->context($this)->renderInContext('record/comments-list.phtml')?>
 </div>
 <form class="comment-form" name="commentRecord" method="post"<?php if ($this->driver->isRatingAllowed()): ?> data-rating-removal="<?=$this->accountCapabilities()->isRatingRemovalAllowed() ? 'true' : 'false'?>"<?php endif; ?>>
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">

@@ -5,7 +5,7 @@
 <?php $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('account-home'))); ?>
 <?php if (!$sessionInitiator): // display default login form if no login URL provided ?>
   <?php
-    $currentTarget = $this->request->get('target');
+    $currentTarget = $this->request['target'] ?? '';
     $loginTargets = $this->auth()->getManager()->getLoginTargets();
     if (!$currentTarget || !in_array($currentTarget, $loginTargets)) {
       $currentTarget = $this->auth()->getManager()->getDefaultLoginTarget();
@@ -16,7 +16,7 @@
     <?php if ($account->supportsPersistentLogin()) : ?>
       <div class="form-group">
         <label>
-          <input type="checkbox" name="remember_me"<?=$this->request->get('remember_me') ? ' checked' : ''?>>
+          <input type="checkbox" name="remember_me"<?=($this->request['remember_me'] ?? false) ? ' checked' : ''?>>
           <?=$this->transEsc('remember_me', ['%%days%%' => $account->getPersistentLoginLifetime()])?>
         </label>
       </div>

@@ -31,6 +31,7 @@ namespace VuFind\UrlShortener;
 
 use Exception;
 use Psr\Container\ContainerInterface;
+use VuFind\Application\UriRegistry;
 use VuFind\Db\Service\ShortlinksServiceInterface;
 
 /**
@@ -61,9 +62,7 @@ class DatabaseFactory
         if (!empty($options)) {
             throw new Exception('Unexpected options passed to factory.');
         }
-        $router = $container->get('HttpRouter');
-        $serverUrl = $container->get('ViewRenderer')->plugin('serverurl');
-        $baseUrl = $serverUrl($router->assemble([], ['name' => 'home']));
+        $baseUrl = $container->get(UriRegistry::class)->get('AbsoluteBaseUrl');
         $service = $container->get(\VuFind\Db\Service\PluginManager::class)
             ->get(ShortlinksServiceInterface::class);
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');

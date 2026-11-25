@@ -31,6 +31,8 @@ namespace VuFind\ServiceManager;
 
 use Laminas\ServiceManager\AbstractPluginManager as Base;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
+use PHPMD\Attribute\SuppressWarnings;
+use PHPMD\Rule\Design\NumberOfChildren;
 
 /**
  * VuFind Plugin Manager.
@@ -40,9 +42,8 @@ use Laminas\ServiceManager\Exception\InvalidServiceException;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
- *
- * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
+#[SuppressWarnings(NumberOfChildren::class)]
 abstract class AbstractPluginManager extends Base
 {
     use LowerCaseServiceNameTrait;
@@ -61,9 +62,7 @@ abstract class AbstractPluginManager extends Base
         array $v3config = []
     ) {
         parent::__construct($configOrContainerInstance, $v3config);
-        $this->addInitializer(
-            \VuFind\ServiceManager\ServiceInitializer::class
-        );
+        $this->addInitializer(\VuFind\ServiceManager\ServiceInitializer::class);
     }
 
     /**

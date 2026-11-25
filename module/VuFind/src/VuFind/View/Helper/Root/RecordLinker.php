@@ -32,6 +32,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtml;
+use VuFind\Http\RouteHelper;
 use VuFind\Record\Router;
 use VuFind\RecordDriver\AbstractBase as AbstractRecord;
 use VuFind\Search\Memory;
@@ -72,7 +73,7 @@ class RecordLinker
      *
      * @param Router        $router               Record router
      * @param Memory        $memory               Search memory service
-     * @param Url           $url                  Url helper
+     * @param RouteHelper   $routeHelper          Route helper
      * @param PluginManager $searchOptionsManager SearchOptions helper
      * @param Translate     $translate            Translate helper
      * @param Truncate      $truncate             Truncate helper
@@ -81,8 +82,7 @@ class RecordLinker
     public function __construct(
         protected Router $router,
         protected Memory $memory,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected Url $url,
+        protected RouteHelper $routeHelper,
         protected PluginManager $searchOptionsManager,
         #[Autowire(container: 'ViewHelperManager')]
         protected Translate $translate,
@@ -131,7 +131,7 @@ class RecordLinker
      */
     public function related($link, $source = DEFAULT_SEARCH_BACKEND)
     {
-        $baseUrl = ($this->url)($this->getSearchActionForSource($source));
+        $baseUrl = $this->routeHelper->getUrlFromRoute($this->getSearchActionForSource($source));
         switch ($link['type']) {
             case 'bib':
                 return $baseUrl
@@ -181,15 +181,11 @@ class RecordLinker
     ) {
         // Build the URL:
         $details = $this->router->getActionRouteDetails($driver, $action);
-        return ($this->url)(
+        return $this->routeHelper->getUrlFromRoute(
             $details['route'],
             $details['params'] ?: [],
-            [
-                'query' => $this->getRecordUrlParams($options) + $query,
-                'fragment' => $anchor ? ltrim($anchor, '#') : '',
-                'normalize_path' => false, // required to keep slashes encoded
-            ]
-        );
+            $this->getRecordUrlParams($options) + $query
+        ) . ($anchor ? '#' . urlencode(ltrim($anchor, '#')) : '');
     }
 
     /**
@@ -248,13 +244,10 @@ class RecordLinker
         if (!isset($this->cachedDriverUrls[$cacheKey])) {
             // Build the URL:
             $details = $this->router->getTabRouteDetails($driver, $tab, $query);
-            $this->cachedDriverUrls[$cacheKey] = ($this->url)(
+            $this->cachedDriverUrls[$cacheKey] = $this->routeHelper->getUrlFromRoute(
                 $details['route'],
                 $details['params'],
-                array_merge_recursive(
-                    $details['options'] ?? [],
-                    ['query' => $recordUrlParams]
-                )
+                ($details['options']['query'] ?? []) + $recordUrlParams
             );
         }
         return $this->cachedDriverUrls[$cacheKey];
@@ -302,10 +295,13 @@ class RecordLinker
     public function getChildRecordSearchUrl($driver)
     {
         $route = $this->getSearchActionForSource($driver->getSourceIdentifier());
-        return ($this->url)($route)
-            . '?lookfor='
-            . urlencode(addcslashes($driver->getUniqueID(), '"'))
-            . '&type=ParentID';
+        return $this->routeHelper->getUrlFromRoute(
+            $route,
+            queryParams: [
+                'lookfor' => addcslashes($driver->getUniqueID(), '"'),
+                'type' => 'ParentID',
+            ]
+        );
     }
 
     /**
@@ -327,7 +323,7 @@ class RecordLinker
             'search' => 'versions',
         ];
 
-        return ($this->url)($route, [], ['query' => $urlParams]);
+        return $this->routeHelper->getUrlFromRoute($route, queryParams: $urlParams);
     }
 
     /**
