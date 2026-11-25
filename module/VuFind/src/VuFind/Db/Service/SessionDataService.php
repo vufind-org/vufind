@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\EntityInterface;
 use VuFind\Db\Entity\SessionDataEntityInterface;
 
 /**
@@ -60,6 +61,21 @@ class SessionDataService extends AbstractSessionRelatedDataService implements Se
     public function createEntity(): SessionDataEntityInterface
     {
         return $this->entityPluginManager->get(SessionDataEntityInterface::class);
+    }
+
+    /**
+     * Persist an entity.
+     *
+     * @param EntityInterface $entity Entity to persist.
+     *
+     * @return void
+     */
+    public function persistEntity(EntityInterface $entity): void
+    {
+        if ($entity instanceof SessionDataEntityInterface && !$entity->getSessionId()) {
+            $entity->setSessionId($this->sessionManager->getId());
+        }
+        $this->persistenceManager->persistEntity($entity);
     }
 
     /**

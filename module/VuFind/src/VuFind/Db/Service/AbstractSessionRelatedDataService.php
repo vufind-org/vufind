@@ -83,21 +83,6 @@ abstract class AbstractSessionRelatedDataService extends AbstractDbService imple
     abstract protected function getEntityClass(): string;
 
     /**
-     * Persist an entity.
-     *
-     * @param EntityInterface $entity Entity to persist.
-     *
-     * @return void
-     */
-    public function persistEntity(EntityInterface $entity): void
-    {
-        if (!$entity->getSessionId()) {
-            $entity->setSessionId($this->sessionManager->getId());
-        }
-        $this->persistenceManager->persistEntity($entity);
-    }
-
-    /**
      * Destroy data for a given session.
      *
      * @param string $sessionId Session ID.
