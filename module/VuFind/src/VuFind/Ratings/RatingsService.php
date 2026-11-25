@@ -29,6 +29,7 @@
 
 namespace VuFind\Ratings;
 
+use VuFind\Db\Entity\RatingsEntityInterface;
 use VuFind\Db\Service\RatingsServiceInterface;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
@@ -121,9 +122,9 @@ class RatingsService
      * @param ?int         $rating The user-provided rating, or null to clear any existing
      * rating
      *
-     * @return ?RatingsServiceInterface Entity of rating added, deleted or updated (or null if nothing was done)
+     * @return ?RatingsEntityInterface Entity of rating added, deleted or updated (or null if nothing was done)
      */
-    public function saveRating(RecordDriver $driver, int $userId, ?int $rating): ?RatingsServiceInterface
+    public function saveRating(RecordDriver $driver, int $userId, ?int $rating): ?RatingsEntityInterface
     {
         // Clear rating cache:
         $this->ratingCache = [];
