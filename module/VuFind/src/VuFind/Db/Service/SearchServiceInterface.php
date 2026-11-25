@@ -70,7 +70,7 @@ interface SearchServiceInterface extends SessionRelatedDataServiceInterface
      *
      * @return void
      */
-    public function deleteUnsaved(string $sessionId, UserEntityInterface|int|null $userOrId = null): void
+    public function deleteUnsaved(string $sessionId, UserEntityInterface|int|null $userOrId = null): void;
 
     /**
      * Get a SearchEntityInterface object by ID.

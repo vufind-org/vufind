@@ -88,8 +88,10 @@ class ExpireSessionsCommandTest extends AbstractExpireCommandTestCase
     protected function getExtraExpectedLines(): array
     {
         $lines = [];
+        $i = 0;
         foreach (array_keys($this->getSessionDatabaseServices()) as $serviceName) {
-            $lines[] = "Total 0 {$serviceName} deleted.";
+            $lines[] = "Total {$i} {$serviceName} deleted.";
+            $i++;
         }
         return $lines;
     }
@@ -102,10 +104,13 @@ class ExpireSessionsCommandTest extends AbstractExpireCommandTestCase
     protected function getExtraCommandConstructorArgs(): array
     {
         $serviceManager = new \VuFindTest\Container\MockDbServicePluginManager($this);
+        $i = 0;
         foreach ($this->getSessionDatabaseServices() as $databaseService) {
             $serviceMock = $this->createMock($databaseService);
             $serviceMock
-                ->method('deleteRowsWithoutSession');
+                ->expects($this->any())
+                ->method('deleteRowsWithoutSession')
+                ->willReturn($i++);
             $serviceManager->set($databaseService, $serviceMock);
         }
 
