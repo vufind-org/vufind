@@ -85,13 +85,17 @@ class ActionDispatcher
     /**
      * Dispatch a request.
      *
-     * @param ServerRequestInterface $request  Request
-     * @param ResponseInterface      $response Response
+     * @param ServerRequestInterface $request           Request
+     * @param ResponseInterface      $response          Response
+     * @param callable               $exceptionCallback Callback to call on exception
      *
      * @return ResponseInterface
      */
-    public function dispatch(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
-    {
+    public function dispatch(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        callable $exceptionCallback,
+    ): ResponseInterface {
         if ($redirectResponse = $this->getRedirectResponse($request, $response)) {
             return $redirectResponse;
         }
@@ -113,6 +117,10 @@ class ActionDispatcher
         try {
             return $action($request, $response);
         } catch (Throwable $ex) {
+            $result = $exceptionCallback($request, $response, $ex);
+            if ($result instanceof ResponseInterface) {
+                return $result;
+            }
             return $this->getExceptionResponse($request, $response, $ex);
         }
     }

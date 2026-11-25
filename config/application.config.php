@@ -25,9 +25,6 @@ if (PHP_SAPI === 'cli' && APPLICATION_ENV !== 'testing') {
     $modules[] = 'VuFindConsole';
 }
 if (APPLICATION_ENV === 'development' || APPLICATION_ENV === 'testing') {
-    if (!isset($_SERVER['HTTP_X_VUFIND_DISABLE_WHOOPS'])) {
-        $modules[] = 'WhoopsErrorHandler';
-    }
     $modules[] = 'VuFindDevTools';
 }
 if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {

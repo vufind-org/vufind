@@ -38,6 +38,7 @@ use Laminas\View\Model\ViewModel;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 use VuFind\Action\ActionDispatcher;
 use VuFind\EventManager\Event;
 use VuFind\EventManager\EventInterface;
@@ -99,56 +100,86 @@ class Application
      */
     public function run(): void
     {
-        $this->request = $this->requestHelper->createServerRequest();
-        $this->response = $this->responseHelper->createResponse();
-
-        // Trigger bootstrap event:
-        $event = (new Event())
-            ->setRequest($this->request)
-            ->setResponse($this->response);
-        $result = $this->triggerEvent($event, Event::EVENT_BOOTSTRAP)->last();
-        // Update with any changes from event listeners:
-        if ($result instanceof ResponseInterface) {
-            $this->response = $result;
+        // Enable Whoops as required:
+        $whoops = null;
+        if (
+            'cli' !== PHP_SAPI
+            && !($_SERVER['HTTP_X_VUFIND_DISABLE_WHOOPS'] ?? false)
+            && (APPLICATION_ENV === 'development' || APPLICATION_ENV === 'testing')
+        ) {
+            $whoops = new \Whoops\Run();
+            $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
+            $whoops->register();
         }
 
-        // Try to find a route match for the request:
-        $basePath = $this->requestHelper->getBasePath();
-        $routeMatch = $this->container->get('HttpRouter')->match($this->request, strlen($basePath));
+        try {
+            $this->request = $this->requestHelper->createServerRequest();
+            $this->response = $this->responseHelper->createResponse();
 
-        // Trigger route event:
-        $event->setRouteMatch($routeMatch);
-        $result = $this->triggerEvent($event, Event::EVENT_ROUTE)->last();
-        if ($result instanceof HttpRouteMatch) {
-            $routeMatch = $result;
+            // Trigger bootstrap event:
+            $event = (new Event())
+                ->setRequest($this->request)
+                ->setResponse($this->response);
+            $result = $this->triggerEvent($event, Event::EVENT_BOOTSTRAP)->last();
+            // Update with any changes from event listeners:
+            if ($result instanceof ResponseInterface) {
+                $this->response = $result;
+            }
+
+            // Try to find a route match for the request:
+            $basePath = $this->requestHelper->getBasePath();
+            $routeMatch = $this->container->get('HttpRouter')->match($this->request, strlen($basePath));
+
+            // Trigger route event:
+            $event->setRouteMatch($routeMatch);
+            $result = $this->triggerEvent($event, Event::EVENT_ROUTE)->last();
+            if ($result instanceof HttpRouteMatch) {
+                $routeMatch = $result;
+            }
+
+            $this->request = $this->request
+                ->withAttribute('route-match', $routeMatch)
+                ->withAttribute('view-model', $this->createViewModel());
+
+            // Trigger dispatch or dispatch error event:
+            $event->setRequest($this->request);
+            $result = $this->triggerEvent($event, $routeMatch ? Event::EVENT_DISPATCH : Event::EVENT_DISPATCH_ERROR)
+                ->last();
+            // Update with any changes from event listeners (if the result is a response, the actual action won't be
+            // dispatched):
+            if ($result instanceof ResponseInterface) {
+                $this->response = $result;
+            } else {
+                $this->response = $event->getResponse();
+                $this->response = $this->actionDispatcher->dispatch(
+                    $this->request,
+                    $this->response,
+                    function (
+                        ServerRequestInterface $request,
+                        ResponseInterface $response,
+                        Throwable $exception
+                    ) use ($whoops): ?ResponseInterface {
+                        $whoops->handleException($exception);
+                        return null;
+                    }
+                );
+            }
+
+            // Trigger finish event:
+            $event->setResponse($this->response);
+            $result = $this->eventManager->trigger(Event::EVENT_FINISH)->last();
+            // Update with any changes from event listeners:
+            if ($result instanceof ResponseInterface) {
+                $this->response = $result;
+            }
+
+            $this->responseHelper->outputResponse($this->response);
+        } catch (\Exception $e) {
+            if ($whoops) {
+                $whoops->handleException($e);
+            }
+            throw $e;
         }
-
-        $this->request = $this->request
-            ->withAttribute('route-match', $routeMatch)
-            ->withAttribute('view-model', $this->createViewModel());
-
-        // Trigger dispatch or dispatch error event:
-        $event->setRequest($this->request);
-        $result = $this->triggerEvent($event, $routeMatch ? Event::EVENT_DISPATCH : Event::EVENT_DISPATCH_ERROR)
-            ->last();
-        // Update with any changes from event listeners (if the result is a response, the actual action won't be
-        // dispatched):
-        if ($result instanceof ResponseInterface) {
-            $this->response = $result;
-        } else {
-            $this->response = $event->getResponse();
-            $this->response = $this->actionDispatcher->dispatch($this->request, $this->response);
-        }
-
-        // Trigger finish event:
-        $event->setResponse($this->response);
-        $result = $this->eventManager->trigger(Event::EVENT_FINISH)->last();
-        // Update with any changes from event listeners:
-        if ($result instanceof ResponseInterface) {
-            $this->response = $result;
-        }
-
-        $this->responseHelper->outputResponse($this->response);
     }
 
     /**

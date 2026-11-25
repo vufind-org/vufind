@@ -220,25 +220,21 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
 
         $this->init();
 
-        try {
-            $this->configureDefaultAccessPermission();
+        $this->configureDefaultAccessPermission();
 
-            if ($actionConfigResponse = $this->validateActionConfig($request, $response)) {
-                return $actionConfigResponse;
-            }
-
-            if ($accessDeniedResponse = $this->validateAccessPermission()) {
-                return $accessDeniedResponse;
-            }
-
-            if ($preprocessResponse = $this->preprocessRequest($request, $response)) {
-                return $preprocessResponse;
-            }
-
-            return $this->action($request, $response);
-        } catch (Throwable $exception) {
-            return $this->handleException($exception);
+        if ($actionConfigResponse = $this->validateActionConfig($request, $response)) {
+            return $actionConfigResponse;
         }
+
+        if ($accessDeniedResponse = $this->validateAccessPermission()) {
+            return $accessDeniedResponse;
+        }
+
+        if ($preprocessResponse = $this->preprocessRequest($request, $response)) {
+            return $preprocessResponse;
+        }
+
+        return $this->action($request, $response);
     }
 
     /**
