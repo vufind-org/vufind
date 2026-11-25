@@ -32,7 +32,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\HelperPluginManager;
+use Laminas\View\HelperPluginManagerInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -49,11 +49,11 @@ class HtmlSafeJsonEncode
     /**
      * Constructor.
      *
-     * @param HelperPluginManager $viewHelperManager View Helper Manager
+     * @param HelperPluginManagerInterface $viewHelperManager View Helper Manager
      */
+    #[Autowire]
     public function __construct(
-        #[Autowire(service: 'ViewHelperManager')]
-        protected HelperPluginManager $viewHelperManager
+        protected HelperPluginManagerInterface $viewHelperManager
     ) {
     }
 

@@ -48,7 +48,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
+    protected array $aliases = [
         'database' => Database::class,
         'file' => File::class,
         'memcache' => Memcache::class,
@@ -64,7 +64,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var string[][]|\Laminas\ServiceManager\Factory\DelegatorFactoryInterface[][]
      */
-    protected $delegators = [
+    protected array $delegators = [
         Database::class => [SecureDelegatorFactory::class],
         File::class => [SecureDelegatorFactory::class],
         Memcache::class => [SecureDelegatorFactory::class],

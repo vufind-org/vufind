@@ -99,13 +99,7 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
         $mockRecordHelper = $this->createMock(\VuFind\View\Helper\Root\Record::class);
         $mockTranslator = $this->createMock(TranslatorInterface::class);
         $mockTranslator->method('translate')
-            ->willReturnCallback(
-                function ($s) {
-                    return $s instanceof TranslatableString
-                        ? $s->getDisplayString()
-                        : (string)$s;
-                }
-            );
+            ->willReturnArgument(0);
 
         $formatter = new RecordFormatter(
             $mockRecordLinker,

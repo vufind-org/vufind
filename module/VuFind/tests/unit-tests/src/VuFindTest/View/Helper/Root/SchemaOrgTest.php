@@ -30,6 +30,7 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\HtmlAttributes;
+use VuFind\Escaper\Escaper;
 use VuFind\View\Helper\Root\SchemaOrg;
 use VuFindTest\RecordDriver\TestHarness;
 
@@ -53,7 +54,7 @@ class SchemaOrgTest extends \PHPUnit\Framework\TestCase
      */
     public function getHelper(bool $enabled): SchemaOrg
     {
-        return new SchemaOrg(new HtmlAttributes(), $enabled);
+        return new SchemaOrg(new HtmlAttributes(new Escaper()), $enabled);
     }
 
     /**
@@ -67,11 +68,11 @@ class SchemaOrgTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(' foo="bar"', $helper->getAttributes(['foo' => 'bar']));
         $this->assertSame('<foo bar="baz">', $helper->getTag('foo', ['bar' => 'baz']));
         $this->assertSame(
-            '<link href="http&#x3A;&#x2F;&#x2F;foo" property="bar" baz="xyzzy">',
+            '<link baz="xyzzy" href="http://foo" property="bar">',
             $helper->getLink('http://foo', 'bar', ['baz' => 'xyzzy'])
         );
         $this->assertSame(
-            '<meta property="foo" content="bar" baz="xyzzy">',
+            '<meta baz="xyzzy" content="bar" property="foo">',
             $helper->getMeta('foo', 'bar', ['baz' => 'xyzzy'])
         );
     }

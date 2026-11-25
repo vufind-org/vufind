@@ -47,7 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
+    protected array $aliases = [
         'channels' => Channels::class,
         'facetlist' => FacetList::class,
         'ilsstatusmonitor' => IlsStatusMonitor::class,

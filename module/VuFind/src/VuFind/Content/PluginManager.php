@@ -45,7 +45,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $factories = [
+    protected array $factories = [
         'authornotes' => Factory::class,
         'excerpts' => Factory::class,
         'reviews' => Factory::class,

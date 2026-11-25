@@ -62,9 +62,9 @@ class AbstractRouteCommandFactory extends AbstractCommandFactory
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         $generator = new RouteGenerator();
         return parent::__invoke(
             $container,

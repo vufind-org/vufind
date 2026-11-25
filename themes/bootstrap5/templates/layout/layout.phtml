@@ -1,9 +1,4 @@
 <?php
-  if (($children = $this->layout()->getChildren()) && $children[0]?->getTemplate() === 'laminas_whoops/simple_error') {
-    // Whoops error is a complete page, so just output it and nothing else:
-    echo $this->layout()->content;
-    return;
-  }
   echo $this->doctype();
 ?>
 <?php
@@ -30,19 +25,15 @@
     <?php
       // Format the page title using the translation system:
       $siteConfig = $this->config()->getArray('config')['Site'];
-      // Disabled escaping of title temporarily so that we get it unescaped first:
-      $this->headTitle()->setAutoEscape(false);
       $fullTitle = $this->translate(
           'title_wrapper',
           [
-            '%%pageTitle%%' => $this->headTitle()->renderTitle(),
+            '%%pageTitle%%' => $this->headTitle()->renderUnescapedTitle(),
             '%%siteTitle%%' => $siteConfig['title'],
             '%%titleSeparator%%' => $siteConfig['titleSeparator'] ?? '::',
           ]
       );
-      // Enable escaping again for proper output:
-      $this->headTitle()->setAutoEscape(true);
-      echo $this->headTitle($fullTitle, \Laminas\View\Helper\Placeholder\Container\AbstractContainer::SET);
+      echo '<title>' . $this->escapeHtml($fullTitle) . '</title>';
 
       // Set up OpenSearch link:
       $this->headLink(

@@ -135,7 +135,7 @@ class AbstractPluginFactory implements AbstractFactoryInterface
      * @return bool
      */
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
-    public function canCreate(ContainerInterface $container, $requestedName)
+    public function canCreate(ContainerInterface $container, string $requestedName): bool
     {
         $className = $this->getClassName($requestedName);
         return class_exists($className) && null !== $this->getFactoryForClass($className);
@@ -152,9 +152,9 @@ class AbstractPluginFactory implements AbstractFactoryInterface
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         $class = $this->getClassName($requestedName);
         $factoryName = $this->getFactoryForClass($class);
         if (!$factoryName) {

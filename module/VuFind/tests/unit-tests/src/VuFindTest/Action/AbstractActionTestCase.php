@@ -30,7 +30,7 @@
 namespace VuFindTest\Action;
 
 use Laminas\Diactoros\ServerRequest;
-use Laminas\Router\RouteMatch;
+use Laminas\Router\Http\HttpRouteMatch;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -152,10 +152,7 @@ abstract class AbstractActionTestCase extends TestCase
         array $headers = [],
         array $serverParams = []
     ): ServerRequestInterface {
-        $routeMatch = new RouteMatch($routeParams);
-        if (null !== $matchedRouteName) {
-            $routeMatch->setMatchedRouteName($matchedRouteName);
-        }
+        $routeMatch = new HttpRouteMatch($routeParams, $matchedRouteName ?? '');
         return (new ServerRequest(serverParams: $serverParams, headers: $headers))
             ->withQueryParams($queryParams)
             ->withParsedBody($parsedBody)

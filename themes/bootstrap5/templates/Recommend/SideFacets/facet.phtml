@@ -8,7 +8,7 @@
 ?>
 <?php if (isset($rangeFacets[$facet])): // special display for ranges ?>
   <?=
-    $this->context($this)->renderInContext(
+    $this->render(
         'Recommend/SideFacets/range-slider.phtml',
         [
           'title' => $facet,
@@ -50,7 +50,7 @@
   <?php endif; ?>
   <?php if (!$isHierarchical || $noJsSupport): // do we need regular display? ?>
     <?=
-      $this->context($this)->renderInContext(
+      $this->render(
           'Recommend/SideFacets/cluster-list.phtml',
           [
               'facet' => $facet,

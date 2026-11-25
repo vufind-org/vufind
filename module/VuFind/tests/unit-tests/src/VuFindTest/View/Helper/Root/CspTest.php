@@ -66,20 +66,13 @@ class CspTest extends \PHPUnit\Framework\TestCase
         $cspHeaderGenerator
             = new \VuFind\Security\CspHeaderGenerator($config, $nonceGenerator);
 
-        $response = new \Laminas\Http\Response();
-        $headers = $response->getHeaders();
         $header = $cspHeaderGenerator->getCspHeader();
-        $this->assertInstanceOf(
-            \Laminas\Http\Header\ContentSecurityPolicy::class,
-            $header
-        );
-        $headers->addHeader($header);
-        $added = $headers->get('Content-Security-Policy');
-        $this->assertEquals(1, $added->count());
+        $this->assertIsArray($header);
+        $this->assertSame('Content-Security-Policy', $header['name'] ?? null);
 
-        $csp = new \VuFind\View\Helper\Root\Csp($response, $nonceGenerator);
+        $csp = new \VuFind\View\Helper\Root\Csp($cspHeaderGenerator, $nonceGenerator);
         $csp->disablePolicy();
-        $this->assertFalse($headers->get('Content-Security-Policy'));
+        $this->assertNull($cspHeaderGenerator->getCspHeader());
     }
 
     /**
@@ -103,23 +96,17 @@ class CspTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $nonceGenerator = new \VuFind\Security\NonceGenerator();
-        $cspHeaderGenerator
-            = new \VuFind\Security\CspHeaderGenerator($config, $nonceGenerator);
+        $cspHeaderGenerator = new \VuFind\Security\CspHeaderGenerator($config, $nonceGenerator);
 
         $response = new \Laminas\Http\Response();
         $headers = $response->getHeaders();
         $header = $cspHeaderGenerator->getCspHeader();
-        $this->assertInstanceOf(
-            \Laminas\Http\Header\ContentSecurityPolicyReportOnly::class,
-            $header
-        );
-        $headers->addHeader($header);
-        $added = $headers->get('Content-Security-Policy-Report-Only');
-        $this->assertIsNotIterable($added);
+        $this->assertIsArray($header);
+        $this->assertSame('Content-Security-Policy-Report-Only', $header['name'] ?? null);
 
-        $csp = new \VuFind\View\Helper\Root\Csp($response, $nonceGenerator);
+        $csp = new \VuFind\View\Helper\Root\Csp($cspHeaderGenerator, $nonceGenerator);
         $csp->disablePolicy();
-        $this->assertFalse($headers->get('Content-Security-Policy-Report-Only'));
+        $this->assertNull($cspHeaderGenerator->getCspHeader());
     }
 
     /**
@@ -145,14 +132,12 @@ class CspTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $nonceGenerator = new \VuFind\Security\NonceGenerator();
-        $cspHeaderGenerator
-            = new \VuFind\Security\CspHeaderGenerator($config, $nonceGenerator);
+        $cspHeaderGenerator = new \VuFind\Security\CspHeaderGenerator($config, $nonceGenerator);
 
-        $response = new \Laminas\Http\Response();
         $header = $cspHeaderGenerator->getCspHeader();
         $this->assertNull($header);
 
-        $csp = new \VuFind\View\Helper\Root\Csp($response, $nonceGenerator);
+        $csp = new \VuFind\View\Helper\Root\Csp($cspHeaderGenerator, $nonceGenerator);
         $csp->disablePolicy();
     }
 }

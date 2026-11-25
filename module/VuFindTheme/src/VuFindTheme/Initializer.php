@@ -29,11 +29,12 @@
 
 namespace VuFindTheme;
 
-use Laminas\Mvc\MvcEvent;
-use Laminas\Stdlib\RequestInterface as Request;
 use Laminas\View\Resolver\TemplatePathStack;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Application;
 use VuFind\Cookie\CookieManager;
+use VuFind\EventManager\EventInterface;
 use VuFind\View\GlobalsContainer;
 
 use function is_callable;
@@ -55,20 +56,6 @@ class Initializer
      * @var ?array
      */
     protected $themeMap =  null;
-
-    /**
-     * Laminas MVC Event.
-     *
-     * @var MvcEvent
-     */
-    protected $event;
-
-    /**
-     * Top-level service container.
-     *
-     * @var ContainerInterface
-     */
-    protected $serviceManager;
 
     /**
      * Theme tools object.
@@ -101,8 +88,7 @@ class Initializer
     /**
      * Constructor.
      *
-     * @param array                       $config           Configuration array
-     * containing these keys:
+     * @param array              $config         Configuration array containing these keys:
      * <ul>
      *   <li>theme - the name of the default theme for non-mobile devices</li>
      *   <li>mobile_theme - the name of the default theme for mobile devices
@@ -117,24 +103,14 @@ class Initializer
      *   <li>generator - a Generator value to display in the HTML header
      * (optional)</li>
      * </ul>
-     * @param MvcEvent|ContainerInterface $eventOrContainer Laminas MVC Event object
-     * OR service container object
+     * @param ContainerInterface $serviceManager Service manager
+     * @param ?EventInterface    $event          Event, if any
      */
-    public function __construct(protected array $config, $eventOrContainer)
-    {
-        if ($eventOrContainer instanceof MvcEvent) {
-            $this->event = $eventOrContainer;
-            $this->serviceManager = $this->event->getApplication()
-                ->getServiceManager();
-        } elseif ($eventOrContainer instanceof ContainerInterface) {
-            $this->event = null;
-            $this->serviceManager = $eventOrContainer;
-        } else {
-            throw new \Exception(
-                'Illegal type for $eventOrContainer: ' . $eventOrContainer::class
-            );
-        }
-
+    public function __construct(
+        protected array $config,
+        protected ContainerInterface $serviceManager,
+        protected ?EventInterface $event = null,
+    ) {
         // Get the cookie manager from the service manager:
         $this->cookieManager = $this->serviceManager->get(CookieManager::class);
 
@@ -164,7 +140,7 @@ class Initializer
         $themes = $this->getThemeAliasMap();
         $selectedUI = $this->getSelectedUI(
             $themes,
-            $this->event?->getRequest()
+            $this->serviceManager->get(Application::class)->getRequest()
         );
         $currentTheme = $themes[$selectedUI];
 
@@ -224,14 +200,13 @@ class Initializer
     /**
      * Support method for init() -- figure out which theme option is active.
      *
-     * @param array   $themes  Data on all available themes (must include at
-     * minimum a 'standard' key)
-     * @param Request $request Request object (for obtaining user parameters);
-     * set to null if no request context is available.
+     * @param array                  $themes  Data on all available themes (must include at minimum a 'standard' key)
+     * @param ServerRequestInterface $request Request object (for obtaining user parameters); set to null if no request
+     * context is available.
      *
      * @return string
      */
-    protected function getSelectedUI(array $themes, ?Request $request): string
+    protected function getSelectedUI(array $themes, ?ServerRequestInterface $request): string
     {
         // The admin theme should always be picked if
         // - the Admin module is enabled AND
@@ -239,8 +214,7 @@ class Initializer
         // - an admin route is requested (route configuration has an
         //   'admin_route' => true default parameter).
         if (
-            isset($this->event)
-            && ($routeMatch = $this->event->getRouteMatch())
+            ($routeMatch = $this->event?->getRouteMatch())
             && $routeMatch->getParam('admin_route')
             && ($this->config['admin_enabled'] ?? false)
             && isset($themes['admin'])
@@ -256,9 +230,9 @@ class Initializer
         // Find out if the user has a saved preference in the POST, URL or cookies:
         $selectedUI = null;
         if (isset($request)) {
-            $selectedUI = $request->getPost()->get('ui')
-                ?? $request->getQuery()->get('ui')
-                ?? $request->getCookie()->ui
+            $selectedUI = ($request->getParsedBody()['ui'] ?? null)
+                ?? ($request->getQueryParams()['ui'] ?? null)
+                ?? ($request->getCookieParams()['ui'] ?? null)
                 ?? null;
         }
         if (empty($selectedUI)) {
@@ -346,8 +320,7 @@ class Initializer
         $loader = $this->serviceManager->get('ViewHelperManager');
 
         // Register all the helpers:
-        $config = new \Laminas\ServiceManager\Config($helpers);
-        $config->configureServiceManager($loader);
+        $loader->configure($helpers);
     }
 
     /**

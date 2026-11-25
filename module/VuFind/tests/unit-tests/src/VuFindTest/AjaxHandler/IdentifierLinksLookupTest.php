@@ -29,6 +29,7 @@
 
 namespace VuFindTest\AjaxHandler;
 
+use Laminas\View\HelperPluginManagerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\AjaxHandler\IdentifierLinksLookup;
 use VuFind\Http\RouteHelper;
@@ -149,7 +150,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
                 return "($icon)";
             });
 
-        $viewHelperManager = $this->container->get('ViewHelperManager');
+        $viewHelperManager = $this->container->get(HelperPluginManagerInterface::class);
         $viewHelperManager->method('get')
             ->with(Icon::class)
             ->willReturn($iconHelper);
@@ -171,7 +172,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
             );
 
         $this->container->set(TemplateRendererInterface::class, $mockRenderer);
-        $this->container->set('ViewHelperManager', $viewHelperManager);
+        $this->container->set(HelperPluginManagerInterface::class, $viewHelperManager);
 
         $handler = $this->getAutowiredObject(IdentifierLinksLookup::class, $this->container);
         $request = $this->getRequest(content: json_encode($requested));

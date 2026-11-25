@@ -29,6 +29,8 @@
 
 namespace VuFindTest\View\Helper;
 
+use Laminas\Stdlib\SplStack;
+use VuFindTest\View\Resolver\TestHarness\TemplatePathStack;
 use VuFindTheme\View\Helper\ParentTemplate;
 
 /**
@@ -72,9 +74,9 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
     protected function getHelper($stack)
     {
         // Get mock TemplateStack
-        $stackMock = $this->createMock(\Laminas\View\Resolver\TemplatePathStack::class);
+        $stackMock = $this->createMock(TemplatePathStack::class);
 
-        $return = new \SplStack();
+        $return = new SplStack();
         foreach ($stack as $layer) {
             $return->push("{$this->fixturePath}/{$layer}/templates/");
         }

@@ -121,9 +121,6 @@ class GeneratorTools
         if ($pmClass === 'VuFind\Controller\PluginManager') {
             return 'ControllerManager';
         }
-        if ($pmClass === 'VuFind\Controller\Plugin\PluginManager') {
-            return \Laminas\Mvc\Controller\PluginManager::class;
-        }
         // Special case: no such service; check other modules:
         if (!class_exists($pmClass)) {
             foreach ($this->getVuFindExtendedModules() as $module) {
@@ -164,16 +161,6 @@ class GeneratorTools
      */
     protected function getExpectedInterfaceFromPluginManager($pm)
     {
-        // Special case: controllers
-        if ($pm instanceof \Laminas\Mvc\Controller\ControllerManager) {
-            return \VuFind\Controller\AbstractBase::class;
-        }
-
-        // Special case: controller plugins:
-        if ($pm instanceof \Laminas\Mvc\Controller\PluginManager) {
-            return \Laminas\Mvc\Controller\Plugin\AbstractPlugin::class;
-        }
-
         // Default case: look it up:
         if (!method_exists($pm, 'getExpectedInterface')) {
             return null;
@@ -194,12 +181,8 @@ class GeneratorTools
      */
     protected function getConfigPathForClass($class)
     {
-        // Special case: controller
-        if ($class === \Laminas\Mvc\Controller\ControllerManager::class) {
-            return ['controllers'];
-        } elseif ($class == \Laminas\Mvc\Controller\PluginManager::class) {
-            return ['controller_plugins'];
-        } elseif ($class == \Laminas\ServiceManager\ServiceManager::class) {
+        // Special case: Service Manager
+        if ($class == \Laminas\ServiceManager\ServiceManager::class) {
             return ['service_manager'];
         }
         // Default case: VuFind internal plugin manager

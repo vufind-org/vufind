@@ -29,6 +29,7 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use VuFind\Escaper\Escaper;
 use VuFind\View\Helper\Root\SafeMoneyFormat;
 
 /**
@@ -52,7 +53,7 @@ class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
         // test default currency in en_US locale
         $smf = new SafeMoneyFormat(
             new \VuFind\Service\CurrencyFormatter(null, 'en_US'),
-            new \Laminas\View\Helper\EscapeHtml()
+            new \Laminas\View\Helper\EscapeHtml(new Escaper())
         );
         $this->assertSame('$3.00', $smf(3));
         $this->assertSame('€3.00', $smf(3, 'EUR'));
@@ -60,7 +61,7 @@ class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
         // test override default currency
         $smf = new SafeMoneyFormat(
             new \VuFind\Service\CurrencyFormatter('EUR', 'en_US'),
-            new \Laminas\View\Helper\EscapeHtml()
+            new \Laminas\View\Helper\EscapeHtml(new Escaper())
         );
         $this->assertSame('€3.00', $smf(3));
         $this->assertSame('$3.00', $smf(3, 'USD'));

@@ -30,7 +30,6 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\View\Helper\EscapeHtml;
-use Laminas\View\Helper\PaginationControl;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Cart;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -42,6 +41,7 @@ use VuFind\Search\ResultScroller;
 use VuFind\Search\SearchNormalizer;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\LocalizedNumber;
+use VuFind\View\Helper\Root\PaginationControl;
 use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function call_user_func;

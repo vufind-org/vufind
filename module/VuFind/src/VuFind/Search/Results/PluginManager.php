@@ -45,7 +45,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
+    protected array $aliases = [
         'blender' => \VuFind\Search\Blender\Results::class,
         'blender2' => \VuFind\Search\Blender2\Results::class,
         'browzine' => \VuFind\Search\BrowZine\Results::class,

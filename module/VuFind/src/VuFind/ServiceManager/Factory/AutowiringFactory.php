@@ -81,9 +81,9 @@ class AutowiringFactory implements FactoryInterface
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
@@ -222,6 +222,10 @@ class AutowiringFactory implements FactoryInterface
         $containerToUse = ($containerName = $autowireArgs['container'] ?? null)
             ? $container->get($containerName)
             : $container;
+        // Special case for ContainerInterface; return the container itself:
+        if ((string)$name === ContainerInterface::class) {
+            return $containerToUse;
+        }
         return $containerToUse->get((string)$name);
     }
 

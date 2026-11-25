@@ -34,13 +34,11 @@
 namespace VuFind\Cache;
 
 use Laminas\Cache\Service\StorageAdapterFactory;
-use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\StorageInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerAwareInterface;
-use stdClass;
 use VuFind\Log\LoggerAwareTrait;
 
 use function dirname;
@@ -492,24 +490,8 @@ class Manager implements ContainerInterface, LoggerAwareInterface
         if ('vufind' === strtolower($adapter)) {
             $this->logWarning('Using standard cache instead of in-memory cache -- for testing only!');
             $laminasCache = $this->getCache('object', $storageConfig['options']['namespace']);
-            // Fake the capabilities to include static TTL support:
-            $eventManager = $laminasCache->getEventManager();
-            $eventManager->attach(
-                'getCapabilities.post',
-                function ($event) use ($laminasCache): void {
-                    $oldCapacities = $event->getResult();
-                    $newCapacities = new Capabilities(
-                        $laminasCache,
-                        new stdClass(),
-                        ['staticTtl' => true],
-                        $oldCapacities
-                    );
-                    $event->setResult($newCapacities);
-                }
-            );
-            if ($ttl = ($storageConfig['options']['ttl'] ?? null)) {
-                $laminasCache->getOptions()->setTtl($ttl);
-            }
+            $ttl = (int)($storageConfig['options']['ttl'] ?? 60);
+            $laminasCache->getOptions()->setTtl($ttl);
             return $laminasCache;
         }
 

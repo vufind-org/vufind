@@ -30,17 +30,20 @@
 namespace VuFind\View\Renderer;
 
 use InvalidArgumentException;
-use Laminas\Mvc\View\Http\ViewManager;
 use Laminas\Uri\Http;
+use Laminas\View\Helper\ViewModel as ViewModelHelper;
+use Laminas\View\HelperPluginManagerInterface;
 use Laminas\View\Model\ModelInterface;
 use Laminas\View\Model\ViewModel;
-use Laminas\View\Renderer\PhpRenderer;
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
+use Laminas\View\ViewInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Http\ServerUrlHelper;
+use VuFind\ModuleManager\ModuleManagerInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\GlobalsContainer;
-use VuFindTheme\InjectTemplateListener;
 
 use function strlen;
 
@@ -56,31 +59,47 @@ use function strlen;
 class LaminasTemplateRenderer implements TemplateRendererInterface
 {
     /**
+     * Parsed theme prefixes.
+     *
+     * @var ?array
+     */
+    protected ?array $parsedThemePrefixes = null;
+
+    /**
      * Constructor.
      *
-     * @param ServerUrlHelper        $serverUrlHelper        Server URL helper
-     * @param PhpRenderer            $viewRenderer           View renderer
-     * @param ViewManager            $viewManager            View manager
-     * @param InjectTemplateListener $injectTemplateListener Template injection listener (for prefixes)
-     * @param bool                   $displayExceptions      Display exceptions?
-     * @param string                 $notFoundTemplate       Template for 404 errors
-     * @param string                 $errorTemplate          Template for errors
-     * @param GlobalsContainer       $globalsContainer       Global data container
+     * @param ServerUrlHelper              $serverUrlHelper       Server URL helper
+     * @param RendererInterface            $viewRenderer          View renderer
+     * @param ViewInterface                $view                  View
+     * @param ResolverInterface            $templateResolver      Template resolver
+     * @param HelperPluginManagerInterface $helperPluginManager   View helper plugin manager
+     * @param bool                         $displayExceptions     Display exceptions?
+     * @param string                       $notFoundTemplate      Template for 404 errors
+     * @param string                       $errorTemplate         Template for errors
+     * @param array                        $extraThemePrefixes    Extra theme prefixes
+     * @param array                        $excludedThemePrefixes Excluded theme prefixes
+     * @param GlobalsContainer             $globalsContainer      Global data container
+     * @param ModuleManagerInterface       $moduleManager         Module manager
      */
     public function __construct(
         protected ServerUrlHelper $serverUrlHelper,
         #[Autowire(service: 'ViewRenderer')]
-        protected PhpRenderer $viewRenderer,
-        #[Autowire(service: 'ViewManager')]
-        protected ViewManager $viewManager,
-        protected InjectTemplateListener $injectTemplateListener,
+        protected RendererInterface $viewRenderer,
+        protected ViewInterface $view,
+        protected ResolverInterface $templateResolver,
+        protected HelperPluginManagerInterface $helperPluginManager,
         #[Autowire(service: 'config', path: 'view_manager/display_exceptions', default: false)]
         protected bool $displayExceptions,
         #[Autowire(service: 'config', path: 'view_manager/not_found_template', default: 'error/404')]
         protected string $notFoundTemplate,
         #[Autowire(service: 'config', path: 'view_manager/exception_template', default: 'error/index')]
         protected string $errorTemplate,
+        #[Autowire(service: 'config', path: 'vufind/extra_theme_prefixes', default: [])]
+        protected array $extraThemePrefixes,
+        #[Autowire(service: 'config', path: 'vufind/excluded_theme_prefixes', default: [])]
+        protected array $excludedThemePrefixes,
         protected GlobalsContainer $globalsContainer,
+        protected ModuleManagerInterface $moduleManager,
     ) {
     }
 
@@ -173,44 +192,35 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         bool $useLayout = false,
         bool $rootContext = false,
     ): string {
-        $viewModelHelper = $this->viewRenderer->plugin('view_model');
+        $viewModelHelper = $this->helperPluginManager->get(ViewModelHelper::class);
         // Save current model so that we can restore it when done:
         $saveCurrentModel = $viewModelHelper?->getCurrent();
         try {
             if ($rootContext && ($rootViewModel = $this->globalsContainer['viewModel'] ?? null)) {
                 $params += $rootViewModel->getVariables();
             }
-            $view = $this->viewManager->getView();
             $viewModel = $this->createViewModel($request, $params, $template);
             foreach ($childTemplates as $current) {
                 $viewModel->addChild($this->createViewModel($request, $current['params'] ?? [], $current['template']));
             }
             if (!$useLayout) {
-                // Force renderer to return the result:
-                $viewModel->setOption('has_parent', true);
-                return $view->render($viewModel);
+                return $this->view->render($viewModel, enableLayout: false);
             }
 
             // Prepare layout and render:
             if (null === $request) {
                 throw new InvalidArgumentException('Request is required for rendering with layout');
             }
-            $layout = $this->getLayout($request);
-
             $templateParts = explode('/', $viewModel->getTemplate());
             $this->globalsContainer['templateDir'] = $templateParts[0];
             $this->globalsContainer['templateName'] = $templateParts[1] ?? null;
             $this->globalsContainer['viewModel'] = $viewModel;
-            $this->setupRenderingInLightbox($request, $layout);
 
-            // Clear any previous children (e.g. when rendering an error):
-            if ($layout instanceof ViewModel) {
-                $layout->clearChildren();
-            }
-            $layout->addChild($viewModel);
-            // Force renderer to return the result:
-            $layout->setOption('has_parent', true);
-            return $view->render($layout);
+            $layoutModel = new ViewModel([], 'layout/layout');
+            $this->setupRenderingInLightbox($request, $layoutModel);
+            $layoutModel->addChild($viewModel);
+
+            return $this->view->renderLayout($layoutModel);
         } finally {
             // Restore the previous "current" model:
             if ($saveCurrentModel) {
@@ -228,7 +238,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
      */
     public function resolveTemplateFilename(string $template): ?string
     {
-        return $this->viewRenderer->resolver($template);
+        return $this->templateResolver->resolve($template) ?: null;
     }
 
     /**
@@ -310,14 +320,49 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
      *
      * @return string
      */
-    protected function inflectName($name)
+    protected function inflectName(string $name): string
     {
-        foreach ($this->injectTemplateListener->getPrefixes() as $prefix) {
+        foreach ($this->getThemePrefixes() as $prefix) {
             if (str_starts_with($name, $prefix)) {
                 return strtolower(substr($name, strlen($prefix)));
             }
         }
         return strtolower($name);
+    }
+
+    /**
+     * Get template prefixes.
+     *
+     * @return array
+     */
+    protected function getThemePrefixes(): array
+    {
+        if (null === $this->parsedThemePrefixes) {
+            // We assume that - by default - modules try loading templates from their own namespace, thus all loaded
+            // modules are included for inflection:
+            $modules = array_map(
+                function ($module) {
+                    return str_replace('\\', '/', $module) . '/';
+                },
+                $this->moduleManager->getModules()
+            );
+            $this->parsedThemePrefixes = array_values(
+                array_unique(
+                    array_filter(
+                        [...$this->extraThemePrefixes, ...$modules],
+                        function ($prefix) {
+                            foreach ($this->excludedThemePrefixes as $current) {
+                                if (str_starts_with($prefix, $current)) {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        }
+                    )
+                )
+            );
+        }
+        return $this->parsedThemePrefixes;
     }
 
     /**

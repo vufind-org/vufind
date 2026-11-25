@@ -32,6 +32,7 @@ namespace VuFind\I18n\Translator;
 use Laminas\I18n\Translator\Translator;
 use VuFind\Config\PathResolver;
 use VuFind\I18n\Locale\LocaleSettings;
+use VuFind\I18n\Translator\TranslationCollector\DynamicFileListCollector;
 
 use function get_class;
 
@@ -101,14 +102,14 @@ trait LanguageInitializerTrait
     /**
      * Configure a translator to support the requested language.
      *
-     * @param Translator     $translator Translator
-     * @param LocaleSettings $settings   Locale settings
-     * @param string         $language   Language to set up
+     * @param DynamicFileListCollector $collector Translation collector
+     * @param LocaleSettings           $settings  Locale settings
+     * @param string                   $language  Language to set up
      *
      * @return void
      */
-    protected function addLanguageToTranslator(
-        Translator $translator,
+    protected function addLanguageToTranslationCollector(
+        DynamicFileListCollector $collector,
         LocaleSettings $settings,
         string $language
     ): void {
@@ -119,12 +120,12 @@ trait LanguageInitializerTrait
         $settings->markLocaleInitialized($language);
 
         // If we got this far, we need to set everything up:
-        $translator->addTranslationFile('ExtendedIni', null, 'default', $language);
+        $collector->addTranslationFile('ExtendedIni', '', 'default', $language);
         foreach ($this->getTextDomains() as $domain) {
             // Set up text domains using the domain name as the filename;
             // this will help the ExtendedIni loader dynamically locate
             // the appropriate files.
-            $translator->addTranslationFile(
+            $collector->addTranslationFile(
                 'ExtendedIni',
                 $domain,
                 $domain,
@@ -132,6 +133,6 @@ trait LanguageInitializerTrait
             );
         }
         // Enable translation of native language names:
-        $translator->addTranslationFile('ExtendedIni', null, 'default', 'native');
+        $collector->addTranslationFile('ExtendedIni', '', 'default', 'native');
     }
 }

@@ -72,9 +72,9 @@ class ZoteroServiceFactory implements FactoryInterface
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         $sessionContainer = new Container(
             'zotero_oauth',
             $container->get(ManagerInterface::class)

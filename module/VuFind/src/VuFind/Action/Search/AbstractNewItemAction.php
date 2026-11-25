@@ -32,6 +32,7 @@
 namespace VuFind\Action\Search;
 
 use Laminas\Session\ManagerInterface;
+use Laminas\View\HelperPluginManagerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\ConfigManager;
@@ -105,7 +106,7 @@ abstract class AbstractNewItemAction extends AbstractSearchAndResultsFacetingAct
         SearchServiceInterface $searchService,
         AuthManager $authManager,
         SearchNormalizer $searchNormalizer,
-        #[Autowire(container: 'ViewHelperManager')]
+        #[Autowire(container: HelperPluginManagerInterface::class)]
         ResultFeed $resultFeedHelper,
         ThemeInfo $themeInfo,
         SearchHistory $searchHistory,
@@ -113,7 +114,7 @@ abstract class AbstractNewItemAction extends AbstractSearchAndResultsFacetingAct
         FacetCachePluginManager $facetCachePluginManager,
         HierarchicalFacetHelper $hierarchicalFacetHelper,
         protected NewItemsHelper $newItemsHelper,
-        #[Autowire(container: 'ViewHelperManager')]
+        #[Autowire(container: HelperPluginManagerInterface::class)]
         protected SearchTabs $searchTabsHelper,
     ) {
         parent::__construct(

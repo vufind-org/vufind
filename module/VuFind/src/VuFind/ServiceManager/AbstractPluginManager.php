@@ -71,18 +71,17 @@ abstract class AbstractPluginManager extends Base
      * Checks that the filter loaded is either a valid callback or an instance
      * of FilterInterface.
      *
-     * @param mixed $plugin Plugin to validate
+     * @param mixed $instance Plugin to validate
      *
      * @throws InvalidServiceException if invalid
      * @return void
      */
-    public function validate($plugin)
+    public function validate(mixed $instance): void
     {
         $expectedInterface = $this->getExpectedInterface();
-        if (!$plugin instanceof $expectedInterface) {
+        if (!$instance instanceof $expectedInterface) {
             throw new InvalidServiceException(
-                'Plugin ' . $plugin::class . ' does not belong to '
-                . $expectedInterface
+                'Plugin ' . $instance::class . ' does not belong to ' . $expectedInterface
             );
         }
     }

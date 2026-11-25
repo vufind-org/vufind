@@ -84,9 +84,9 @@ class BrowZineBackendFactory extends AbstractBackendFactory
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         $this->setup($container);
         $this->browzineConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
             ->getConfigArray('BrowZine');

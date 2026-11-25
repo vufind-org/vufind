@@ -29,16 +29,20 @@
 
 namespace VuFind;
 
-use Laminas\Http\Header\Location;
+use GuzzleHttp\Psr7\Message;
+use Laminas\EventManager\EventManagerInterface;
 use Laminas\Http\Response;
-use Laminas\Mvc\MvcEvent;
-use Laminas\Psr7Bridge\Psr7ServerRequest;
-use Laminas\Router\Http\RouteMatch;
+use Laminas\Router\Http\HttpRouteMatch;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
 use VuFind\Cookie\CookieManager;
+use VuFind\EventManager\Event;
+use VuFind\EventManager\EventInterface;
+use VuFind\Http\ServerUrlHelper;
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\RateLimiter\RateLimiterManager;
 use VuFind\View\GlobalsContainer;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * VuFind Bootstrapper.
@@ -52,45 +56,19 @@ use VuFind\View\GlobalsContainer;
 class Bootstrapper
 {
     /**
-     * Main VuFind configuration.
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Service manager.
-     *
-     * @var ContainerInterface
-     */
-    protected $container;
-
-    /**
-     * Current MVC event.
-     *
-     * @var MvcEvent
-     */
-    protected $event;
-
-    /**
-     * Event manager.
-     *
-     * @var \Laminas\EventManager\EventManagerInterface
-     */
-    protected $events;
-
-    /**
      * Constructor.
      *
-     * @param MvcEvent $event Laminas MVC Event object
+     * @param EventInterface        $event     Event
+     * @param ContainerInterface    $container Service manager
+     * @param EventManagerInterface $events    Event manager
+     * @param array                 $config    VuFind configuration
      */
-    public function __construct(MvcEvent $event)
-    {
-        $this->event = $event;
-        $app = $event->getApplication();
-        $this->events = $app->getEventManager();
-        $this->container = $app->getServiceManager();
-        $this->config = $this->container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+    public function __construct(
+        protected EventInterface $event,
+        protected ContainerInterface $container,
+        protected EventManagerInterface $events,
+        protected array $config,
+    ) {
     }
 
     /**
@@ -150,15 +128,14 @@ class Bootstrapper
         // If the system is unavailable and we're not in the console, forward to the
         // unavailable page.
         if (PHP_SAPI !== 'cli' && !($this->config['System']['available'] ?? true)) {
-            $callback = function ($e): void {
-                $routeMatch = new RouteMatch(
+            $callback = function ($e): mixed {
+                $routeMatch = new HttpRouteMatch(
                     ['controller' => 'Error', 'action' => 'Unavailable'],
-                    1
+                    'error-unavailable'
                 );
-                $routeMatch->setMatchedRouteName('error-unavailable');
-                $e->setRouteMatch($routeMatch);
+                return $routeMatch;
             };
-            $this->events->attach('route', $callback);
+            $this->events->attach(Event::EVENT_ROUTE, $callback);
         }
     }
 
@@ -173,31 +150,6 @@ class Bootstrapper
     }
 
     /**
-     * Set view variables representing the current context.
-     *
-     * @return void
-     */
-    protected function initContext(): void
-    {
-        $callback = function (/*$event*/): void {
-            if (PHP_SAPI !== 'cli') {
-                $viewModel = $this->container->get('ViewManager')->getViewModel();
-
-                // Grab the template name from the first child -- we can use this to
-                // figure out the current template context.
-                $children = $viewModel->getChildren();
-                if (!empty($children)) {
-                    $parts = explode('/', $children[0]->getTemplate());
-                    $globals = $this->container->get(GlobalsContainer::class);
-                    $globals['templateDir'] = $parts[0];
-                    $globals['templateName'] = $parts[1] ?? null;
-                }
-            }
-        };
-        $this->events->attach('dispatch', $callback);
-    }
-
-    /**
      * Detect locale and update language in user account, as needed.
      *
      * @return void
@@ -209,7 +161,7 @@ class Bootstrapper
             // Detect language:
             $settings = $this->container->get(LocaleSettings::class);
             $language = $settings->detectLocale(
-                PHP_SAPI !== 'cli' ? Psr7ServerRequest::fromLaminas($event->getRequest()) : null
+                PHP_SAPI !== 'cli' ? $event->getRequest() : null
             );
             // Update cookie:
             $cookies = $this->container->get(CookieManager::class);
@@ -231,8 +183,8 @@ class Bootstrapper
             $globals['allLangs'] = $settings->getEnabledLocales();
             $globals['rtl'] = $settings->isRightToLeftLocale($language);
         };
-        $this->events->attach('dispatch.error', $callback, 15000);
-        $this->events->attach('dispatch', $callback, 15000);
+        $this->events->attach(Event::EVENT_DISPATCH, $callback, 15000);
+        $this->events->attach(Event::EVENT_DISPATCH_ERROR, $callback, 15000);
     }
 
     /**
@@ -244,22 +196,28 @@ class Bootstrapper
     {
         // Attach remaining theme configuration to the dispatch event at high priority:
         $siteConfig = $this->config['Site'];
-        $callback = function (MvcEvent $event) use ($siteConfig): void {
-            $theme = new \VuFindTheme\Initializer($siteConfig, $event);
+        $callback = function (Event $event) use ($siteConfig): mixed {
+            $theme = new \VuFindTheme\Initializer($siteConfig, $this->container, $event);
             try {
                 $theme->init();
+                return null;
             } catch (\Exception $e) {
                 // Try to display an error page if the theme fails to initialize:
-                $appConfig = $this->container->get('config');
-                $model = $event->getViewModel();
-                $model->setTemplate('error/index');
-                // Note: display_exceptions is also used by Laminas, so we need to use the view model for it!
-                $model->setVariable('display_exceptions', $appConfig['view_manager']['display_exceptions'] ?? false);
-                $model->exception = $e;
+                $response = $event->getResponse()
+                    ->withStatus(500)
+                    ->withHeader('Content-Type', 'text/plain');
+                $body = $response->getBody();
+                $body->write('An error has occurred.');
+                $appConfig = $this->container->get('Config');
+                if ($appConfig['view_manager']['display_exceptions'] ?? false) {
+                    $body->write("\n" . (string)$e);
+                }
+                $event->stopPropagation();
+                return $response;
             }
         };
-        $this->events->attach('dispatch.error', $callback, 9000);
-        $this->events->attach('dispatch', $callback, 9000);
+        $this->events->attach(Event::EVENT_DISPATCH_ERROR, $callback, 9000);
+        $this->events->attach(Event::EVENT_DISPATCH, $callback, 9000);
     }
 
     /**
@@ -276,9 +234,9 @@ class Bootstrapper
         $finishCallback = function (): void {
             $this->container->get(\VuFind\Auth\LoginTokenManager::class)->requestIsFinished();
         };
-        $this->events->attach('dispatch.error', $dispatchCallback, 8000);
-        $this->events->attach('dispatch', $dispatchCallback, 8000);
-        $this->events->attach('finish', $finishCallback, 8000);
+        $this->events->attach(Event::EVENT_DISPATCH_ERROR, $dispatchCallback, 8000);
+        $this->events->attach(Event::EVENT_DISPATCH, $dispatchCallback, 8000);
+        $this->events->attach(Event::EVENT_FINISH, $finishCallback, 8000);
     }
 
     /**
@@ -304,7 +262,7 @@ class Bootstrapper
                 $response->setStatusCode($exception->getHttpStatus());
             }
         };
-        $this->events->attach('dispatch.error', $callback);
+        $this->events->attach(Event::EVENT_DISPATCH_ERROR, $callback);
     }
 
     /**
@@ -339,32 +297,14 @@ class Bootstrapper
                     // so use a dummy in that case.
                     $server = (PHP_SAPI === 'cli')
                         ? ['env' => 'console']
-                        : $event->getRequest()->getServer()->toArray();
+                        : Message::toString($event->getRequest());
                     if (!empty($exception)) {
                         $log->logException($exception, $server);
                     }
                 }
             }
         };
-        $this->events->attach('dispatch.error', $callback);
-        $this->events->attach('render.error', $callback);
-    }
-
-    /**
-     * Set up handling for rendering problems.
-     *
-     * @return void
-     */
-    protected function initRenderErrorEvent(): void
-    {
-        // When a render.error is triggered, as a high priority, set a flag in the
-        // globals that can be used to suppress actions in the layout templates that
-        // might trigger exceptions -- this will greatly increase the odds of showing
-        // a user-friendly message instead of a fatal error.
-        $callback = function (/*$event*/): void {
-            $this->container->get(GlobalsContainer::class)['renderingError'] = true;
-        };
-        $this->events->attach('render.error', $callback, 10000);
+        $this->events->attach(Event::EVENT_DISPATCH_ERROR, $callback);
     }
 
     /**
@@ -376,19 +316,25 @@ class Bootstrapper
     {
         // When a render is triggered, check the response status code and switch to a simple redirect template for
         // 302 redirects.
-        $callback = function ($event): void {
+        $callback = function ($event): ?ResponseInterface {
             $response = $event->getResponse();
-            if ($response instanceof Response && $response->getStatusCode() === 302) {
-                $viewModel = $this->container->get('ViewManager')->getViewModel();
-                if ($viewModel->getTemplate() === 'layout/layout') {
-                    $viewModel->setTemplate('layout/redirect');
-                    $location = $response->getHeaders()->get('Location');
-                    // Note: redirectUrl is used as a view variable, not a global!
-                    $viewModel->setVariable('redirectUrl', $location instanceof Location ? $location->getUri() : null);
+            if ($response instanceof ResponseInterface && $response->getStatusCode() === 302) {
+                $body = $response->getBody();
+                if ($body->getSize() === 0) {
+                    $redirectUrl = $response->getHeader('Location')[0] ?? null;
+                    $templateRenderer = $this->container->get(TemplateRendererInterface::class);
+                    $body->write(
+                        $templateRenderer->renderTemplateAsString(
+                            template: 'layout/redirect',
+                            params: compact('redirectUrl')
+                        )
+                    );
+                    return $response;
                 }
             }
+            return null;
         };
-        $this->events->attach('render', $callback, 10000);
+        $this->events->attach(Event::EVENT_FINISH, $callback, 10000);
     }
 
     /**
@@ -401,12 +347,16 @@ class Bootstrapper
         if (PHP_SAPI === 'cli') {
             return;
         }
-        $headers = $this->event->getResponse()->getHeaders();
-        $cspHeaderGenerator = $this->container
-            ->get(\VuFind\Security\CspHeaderGenerator::class);
-        foreach ($cspHeaderGenerator->getHeaders() as $cspHeader) {
-            $headers->addHeader($cspHeader);
-        }
+
+        $callback = function ($event): void {
+            $response = $event->getResponse();
+            $cspHeaderGenerator = $this->container->get(\VuFind\Security\CspHeaderGenerator::class);
+            foreach ($cspHeaderGenerator->getHeaders() as $header) {
+                $response = $response->withHeader($header['name'], $header['value']);
+            }
+            $event->setResponse($response);
+        };
+        $this->events->attach(Event::EVENT_FINISH, $callback);
     }
 
     /**
@@ -419,55 +369,55 @@ class Bootstrapper
         if (PHP_SAPI === 'cli') {
             return;
         }
-        $callback = function ($event) {
+        $callback = function ($event): ?ResponseInterface {
             // Create rate limiter manager here so that we don't e.g. initialize the session too early:
             $rateLimiterManager = $this->container->get(RateLimiterManager::class);
             if (!$rateLimiterManager->isEnabled()) {
-                return;
+                return null;
             }
             $result = $rateLimiterManager->check($event);
             if (!$result['allow']) {
-                $response = $event->getResponse();
                 if ($result['presentTurnstileChallenge'] ?? false) {
-                    $this->presentTurnstileChallenge($rateLimiterManager, $event, $response);
+                    return $this->presentTurnstileChallenge($rateLimiterManager, $event);
                 } else {
-                    $response->setStatusCode(429);
-                    $response->setContent($result['message']);
+                    $response = $event->getResponse();
+                    $response = $response->withStatus(429);
+                    $response->getBody()->write($result['message']);
+                    return $response;
                 }
-                $event->stopPropagation(true);
-                return $response;
             }
+            return null;
         };
-        $this->events->attach('dispatch', $callback, 11000);
+        $this->events->attach(Event::EVENT_DISPATCH, $callback, 11000);
     }
 
     /**
      * Present a Cloudflare Turnstile challenge to the user.
      *
-     * @param RateLimiterManager               $rateLimiterManager The RateLimiterManager
-     * @param MvcEvent                         $event              The current Laminas event
-     * @param Laminas\Stdlib\ResponseInterface $response           Response object to modify to present the challenge
+     * @param RateLimiterManager $rateLimiterManager The RateLimiterManager
+     * @param EventInterface     $event              The current event
      *
-     * @return void
+     * @return ResponseInterface
      */
     protected function presentTurnstileChallenge(
         RateLimiterManager $rateLimiterManager,
-        MvcEvent $event,
-        \Laminas\Stdlib\ResponseInterface $response
-    ): void {
-        // Although the challenge could be displayed at the current URL, redirecting
-        // to a simple URL (combined with a policy that blocks the referrer URL) may
-        // hide search or result data from being accessible to Turnstile.
-        $response->setStatusCode(307);
+        EventInterface $event
+    ): ResponseInterface {
+        // Although the challenge could be displayed at the current URL, redirecting to a simple URL (combined with a
+        // policy that blocks the referrer URL) may hide search or result data from being accessible to Turnstile.
+        $response = $event->getResponse();
+        $response = $response->withStatus(307);
         $policyId = $rateLimiterManager->getPolicyIdForEvent($event);
         // base64_encoding the destination URL is just further obfuscation
         $context = base64_encode(json_encode([
             'policyId' => $policyId,
-            'destination' => $event->getRequest()->getRequestUri(),
+            'destination' => (string)$event->getRequest()->getUri(),
         ]));
-        $response->getHeaders()->addHeaderLine(
+        $serverUrlHelper = $this->container->get(ServerUrlHelper::class);
+        $response = $response->withHeader(
             'Location',
-            $event->getRequest()->getBaseUrl() . '/Turnstile/Challenge?context=' . $context
+            $serverUrlHelper->getBaseUrl() . '/Turnstile/Challenge?context=' . $context
         );
+        return $response;
     }
 }

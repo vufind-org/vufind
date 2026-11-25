@@ -901,8 +901,6 @@ class Manager implements LoggerAwareInterface
                     $this->logWarning('Invalid CSRF token passed to login');
                     throw new AuthException('authentication_error_technical');
                 }
-                // After successful token verification, clear list to shrink session:
-                $this->csrf->trimTokenList(0);
             }
 
             // Perform authentication:

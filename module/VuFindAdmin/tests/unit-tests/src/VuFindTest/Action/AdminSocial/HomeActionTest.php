@@ -91,7 +91,7 @@ class HomeActionTest extends \PHPUnit\Framework\TestCase
         $permissionHelper = $this->createMock(PermissionHelper::class);
         $helperManager = $this->createMock(HelperPluginManager::class);
         $helperManager->method('get')->willReturnCallback(
-            fn ($name) => match ($name) {
+            fn (string $name): mixed => match ($name) {
                 PermissionHelper::class => $permissionHelper,
                 default => throw new \Exception("Unexpected helper requested: $name"),
             }

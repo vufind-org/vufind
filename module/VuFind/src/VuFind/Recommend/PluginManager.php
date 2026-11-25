@@ -45,7 +45,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
+    protected array $aliases = [
         'alphabrowselink' => AlphaBrowseLink::class,
         'authorfacets' => AuthorFacets::class,
         'authorinfo' => AuthorInfo::class,

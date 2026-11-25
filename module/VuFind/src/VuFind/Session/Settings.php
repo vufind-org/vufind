@@ -83,7 +83,7 @@ class Settings
                 $saveHandler->disableWrites();
             }
             // Close the session:
-            $this->manager->writeClose();
+            //$this->manager->writeClose();
         }
     }
 

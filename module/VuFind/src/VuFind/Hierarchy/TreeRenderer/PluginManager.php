@@ -47,7 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
+    protected array $aliases = [
         'htmltree' => HTMLTree::class,
         // Keep jstree as an alias for legacy back-compatibility:
         'jstree' => 'htmltree',

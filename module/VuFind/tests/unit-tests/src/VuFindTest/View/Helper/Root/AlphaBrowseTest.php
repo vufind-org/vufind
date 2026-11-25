@@ -32,6 +32,7 @@ namespace VuFindTest\View\Helper\Root;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Http\RouteHelper;
 use VuFind\View\Helper\Root\AlphaBrowse;
+use VuFind\View\Helper\Root\Url;
 
 /**
  * AlphaBrowse view helper Test Class.

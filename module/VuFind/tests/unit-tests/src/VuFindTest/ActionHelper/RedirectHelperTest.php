@@ -29,14 +29,15 @@
 
 namespace VuFindTest\ActionHelper;
 
-use Closure;
 use Generator;
 use InvalidArgumentException;
 use Laminas\Diactoros\Response;
+use Laminas\Router\AssembledUrl;
+use Laminas\Router\RouteStackInterface;
 use PHPUnit\Framework\TestCase;
 use VuFind\ActionHelper\RedirectHelper;
+use VuFind\Http\RequestHelper;
 use VuFind\Http\RouteHelper;
-use VuFind\View\Helper\Root\Url;
 
 /**
  * RedirectHelper test class.
@@ -115,25 +116,26 @@ class RedirectHelperTest extends TestCase
      */
     protected function getRouteHelper(array $expectedRouteParams, array $expectedQueryParams): RouteHelper
     {
-        $expectedOptions = ['normalize_path' => false];
+        $expectedOptions = [
+            'normalize_path' => false,
+            'name' => 'some-route',
+        ];
         if ($expectedQueryParams) {
             $expectedOptions['query'] = $expectedQueryParams;
         }
-        $urlHelper = $this->createMock(Url::class);
-        $urlHelper->expects($this->once())
-            ->method('__invoke')
+        $router = $this->createMock(RouteStackInterface::class);
+        $router->expects($this->once())
+            ->method('assemble')
             ->willReturnCallback(
-                function ($route, $params, $options) use ($expectedRouteParams, $expectedOptions) {
-                    if ('some-route' !== $route) {
+                function (array $params, array $options) use ($expectedRouteParams, $expectedOptions) {
+                    if ('some-route' !== ($options['name'] ?? null)) {
                         throw new InvalidArgumentException('Unknown route');
                     }
                     $this->assertSame($expectedRouteParams, $params);
                     $this->assertSame($expectedOptions, $options);
-                    return '/some/route';
+                    return new AssembledUrl('/some/route');
                 }
             );
-        return new RouteHelper(
-            Closure::fromCallable(fn () => $urlHelper)
-        );
+        return new RouteHelper(new RequestHelper(), $router);
     }
 }

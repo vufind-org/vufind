@@ -30,6 +30,7 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtml;
+use VuFind\Escaper\Escaper;
 use VuFind\View\FlashMessenger\FlashMessenger;
 use VuFind\View\GlobalsContainer;
 use VuFind\View\Helper\Root\Flashmessages;
@@ -257,7 +258,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
         $translator = $this->getMockTranslator($translations);
         $translate = new Translate();
         $translate->setTranslator($translator);
-        $escapeHtml = new EscapeHtml();
+        $escapeHtml = new EscapeHtml(new Escaper());
         $transEsc = new TransEsc($translate, $escapeHtml);
         return compact('translate', 'escapeHtml', 'transEsc');
     }

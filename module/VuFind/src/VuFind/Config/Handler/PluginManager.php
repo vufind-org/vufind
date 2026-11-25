@@ -48,7 +48,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
+    protected array $aliases = [
         'file' => GenericFile::class,
         'env_var' => Env::class,
         'ini' => Ini::class,

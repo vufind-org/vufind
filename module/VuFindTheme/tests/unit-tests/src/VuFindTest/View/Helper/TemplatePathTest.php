@@ -29,6 +29,8 @@
 
 namespace VuFindTest\View\Helper;
 
+use Laminas\Stdlib\SplStack;
+use VuFindTest\View\Resolver\TestHarness\TemplatePathStack;
 use VuFindTheme\View\Helper\TemplatePath;
 
 /**
@@ -58,8 +60,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp(): void
     {
-        $this->fixturePath
-            = realpath($this->getFixtureDir('VuFindTheme') . 'themes');
+        $this->fixturePath = realpath($this->getFixtureDir('VuFindTheme') . 'themes');
     }
 
     /**
@@ -70,9 +71,9 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     protected function getHelper()
     {
         // Get mock TemplateStack
-        $stackMock = $this->createMock(\Laminas\View\Resolver\TemplatePathStack::class);
+        $stackMock = $this->createMock(TemplatePathStack::class);
 
-        $return = new \SplStack();
+        $return = new SplStack();
         $return->push("{$this->fixturePath}/asdf/templates/");
         $return->rewind();
 

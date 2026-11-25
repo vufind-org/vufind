@@ -37,6 +37,7 @@ use Psr\Container\ContainerInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Http\RouteHelper;
+use VuFind\I18n\Translator\TranslationCollector\DynamicFileListCollector;
 use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
@@ -66,9 +67,9 @@ class NotifyCommandFactory implements FactoryInterface
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         $scheduleOptions = $container
             ->get(\VuFind\Search\History::class)
             ->getScheduleOptions();
@@ -88,6 +89,7 @@ class NotifyCommandFactory implements FactoryInterface
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get(\VuFind\Db\Service\PluginManager::class)->get(SearchServiceInterface::class),
             $container->get(\VuFind\I18n\Locale\LocaleSettings::class),
+            $container->get(DynamicFileListCollector::class),
             $container->get(RouteHelper::class),
             ...($options ?? [])
         );

@@ -171,7 +171,7 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
         // Make sure that author links do not have inappropriate hidden filters:
         $authorLink = $this->findAndAssertLink($page, 'Shakespeare, William 1564 - 1616');
         $this->assertStringEndsWith(
-            '/Author/Home?author=Shakespeare,%20William%201564%20-%201616',
+            '/Author/Home?author=Shakespeare%2C+William+1564+-+1616',
             $authorLink->getAttribute('href')
         );
 
@@ -190,7 +190,7 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertSame($title, $this->findCssAndGetText($page, 'h1'));
         $recordAuthorLink = $this->findAndAssertLink($page, 'Shakespeare, William 1564 - 1616');
         $this->assertStringEndsWith(
-            '/Author/Home?author=Shakespeare,%20William%201564%20-%201616',
+            '/Author/Home?author=Shakespeare%2C+William+1564+-+1616',
             $recordAuthorLink->getAttribute('href')
         );
 

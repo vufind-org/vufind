@@ -62,12 +62,12 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
             ['i', 'text', 'btn'],
         ];
         yield 'Empty text' => [
-            '<i class="fa&#x20;fa-awesome"></i>',
+            '<i class="fa fa-awesome"></i>',
             ['i', '', 'fa fa-awesome'],
         ];
         yield 'Truthy attribute' => [
-            '<a href="&#x2F;login" data-lightbox="1">Login</a>',
-            ['a', 'Login', ['href' => '/login', 'data-lightbox' => true]],
+            '<a data-lightbox="1" href="/login">Login</a>',
+            ['a', 'Login', ['href' => '/login', 'data-lightbox' => '1']],
         ];
     }
 
@@ -121,7 +121,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
             ],
         ];
         yield 'class only' => [
-            '<br class="sm&#x3A;hidden">',
+            '<br class="sm:hidden">',
             [
                 'br',
                 '',

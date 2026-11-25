@@ -416,7 +416,8 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         $this->checkForMissingDevTools($page);
 
         $session = $this->getMinkSession();
-        $windowCount = count($session->getWindowNames());
+        $originalWindowNames = $session->getWindowNames();
+        $windowCount = count($originalWindowNames);
         $this->clickCss($page, '.last-payment-information a');
         $this->assertSameWithTimeout(
             $windowCount + 1,

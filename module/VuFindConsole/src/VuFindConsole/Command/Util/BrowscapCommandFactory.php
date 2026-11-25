@@ -62,9 +62,9 @@ class BrowscapCommandFactory implements FactoryInterface
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         return new $requestedName(
             $container->get(\VuFind\Cache\Manager::class),
             $container->get(\VuFind\Http\GuzzleService::class),

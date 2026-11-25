@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Action;
 
-use Laminas\Router\RouteMatch;
+use Laminas\Router\Http\HttpRouteMatch;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -147,10 +147,7 @@ class ActionConfigManagerTest extends TestCase
     ): void {
         $globals = new GlobalsContainer();
         $action = $this->getActionMock(ActionConfigInterface::class);
-        $routeMatch = new RouteMatch($routeParams);
-        if (null !== $routeName) {
-            $routeMatch->setMatchedRouteName($routeName);
-        }
+        $routeMatch = new HttpRouteMatch($routeParams, $routeName ?? '');
         $manager = $this->buildManager([['actionIds' => [$expectedId], 'poweredBy' => 'EDS']], globals: $globals);
 
         $manager->applyActionConfig($action, $routeMatch);

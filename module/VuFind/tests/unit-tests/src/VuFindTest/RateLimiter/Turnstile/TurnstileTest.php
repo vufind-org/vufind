@@ -30,8 +30,8 @@
 namespace VuFindTest\RateLimiter\Turnstile;
 
 use Laminas\Http\Response;
-use Laminas\Mvc\MvcEvent;
-use Laminas\Router\Http\RouteMatch;
+use Laminas\Router\Http\HttpRouteMatch;
+use VuFind\EventManager\Event;
 use VuFind\RateLimiter\Turnstile\Turnstile;
 use VuFindHttp\HttpService;
 
@@ -54,24 +54,24 @@ class TurnstileTest extends \PHPUnit\Framework\TestCase
      */
     public function testIsChallengeAllowed()
     {
-        $event = new MvcEvent();
+        $event = new Event();
         $turnstile = $this->buildTurnstile();
 
         // Configured to skip the challenge in the default config
-        $event->setRouteMatch(new RouteMatch(['controller' => 'AJAX']));
+        $event->setRouteMatch(new HttpRouteMatch(['controller' => 'AJAX'], ''));
         $this->assertFalse($turnstile->isChallengeAllowed($event));
 
-        $event->setRouteMatch(new RouteMatch(['controller' => 'SearchApi']));
+        $event->setRouteMatch(new HttpRouteMatch(['controller' => 'SearchApi'], ''));
         $this->assertFalse($turnstile->isChallengeAllowed($event));
 
-        $event->setRouteMatch(new RouteMatch(['controller' => 'Cover']));
+        $event->setRouteMatch(new HttpRouteMatch(['controller' => 'Cover'], ''));
         $this->assertFalse($turnstile->isChallengeAllowed($event));
 
         // Other example routes
-        $event->setRouteMatch(new RouteMatch(['controller' => 'Search']));
+        $event->setRouteMatch(new HttpRouteMatch(['controller' => 'Search'], ''));
         $this->assertTrue($turnstile->isChallengeAllowed($event));
 
-        $event->setRouteMatch(new RouteMatch(['controller' => 'Record']));
+        $event->setRouteMatch(new HttpRouteMatch(['controller' => 'Record'], ''));
         $this->assertTrue($turnstile->isChallengeAllowed($event));
     }
 

@@ -29,6 +29,7 @@
 
 namespace VuFind\Escaper;
 
+use Laminas\Escaper\EscaperInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -40,8 +41,15 @@ use VuFind\ServiceManager\Factory\Autowire;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Escaper extends \Laminas\Escaper\Escaper
+class Escaper implements EscaperInterface
 {
+    /**
+     * Wrapped escaper.
+     *
+     * @var \Laminas\Escaper\Escaper
+     */
+    protected \Laminas\Escaper\Escaper $escaper;
+
     /**
      * Constructor.
      *
@@ -49,9 +57,21 @@ class Escaper extends \Laminas\Escaper\Escaper
      */
     public function __construct(
         #[Autowire(config: 'config', path: 'Site/extendedHtmlAttributeEscaping', default: false)]
-        protected bool $extendedHtmlAttrEscaping = false
+        protected bool $extendedHtmlAttrEscaping = false,
     ) {
-        parent::__construct();
+        $this->escaper = new \Laminas\Escaper\Escaper();
+    }
+
+    /**
+     * Escape a string for HTML.
+     *
+     * @param string $string String to escape
+     *
+     * @return string
+     */
+    public function escapeHtml(string $string)
+    {
+        return $this->escaper->escapeHtml($string);
     }
 
     /**
@@ -64,7 +84,43 @@ class Escaper extends \Laminas\Escaper\Escaper
     public function escapeHtmlAttr(string $string)
     {
         return $this->extendedHtmlAttrEscaping
-            ? parent::escapeHtmlAttr($string)
-            : parent::escapeHtml($string);
+            ? $this->escaper->escapeHtmlAttr($string)
+            : $this->escaper->escapeHtml($string);
+    }
+
+    /**
+     * Escape a string for JS.
+     *
+     * @param string $string String to escape
+     *
+     * @return string
+     */
+    public function escapeJs(string $string)
+    {
+        return $this->escaper->escapeJs($string);
+    }
+
+    /**
+     * Escape a string for URL.
+     *
+     * @param string $string String to escape
+     *
+     * @return string
+     */
+    public function escapeUrl(string $string)
+    {
+        return $this->escaper->escapeUrl($string);
+    }
+
+    /**
+     * Escape a string for CSS.
+     *
+     * @param string $string String to escape
+     *
+     * @return string
+     */
+    public function escapeCss(string $string)
+    {
+        return $this->escaper->escapeCss($string);
     }
 }

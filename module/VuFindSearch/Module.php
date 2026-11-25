@@ -29,6 +29,9 @@
 
 namespace VuFindSearch;
 
+use Psr\Container\ContainerInterface;
+use VuFind\ModuleManager\ModuleInterface;
+
 /**
  * Code module containing the VuFind search service.
  *
@@ -55,6 +58,26 @@ namespace VuFindSearch;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Module
+class Module implements ModuleInterface
 {
+    /**
+     * Return generic configuration.
+     *
+     * @return array
+     */
+    public function getConfig(): array
+    {
+        return [];
+    }
+
+    /**
+     * Initialize the module.
+     *
+     * @param ContainerInterface $container Service manager
+     *
+     * @return void
+     */
+    public function initialize(ContainerInterface $container): void
+    {
+    }
 }

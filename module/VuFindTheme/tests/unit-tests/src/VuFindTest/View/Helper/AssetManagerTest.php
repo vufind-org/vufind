@@ -29,11 +29,11 @@
 
 namespace VuFindTest\View\Helper;
 
-use Laminas\View\Helper\HeadLink;
+use Laminas\View\Helper\Doctype;
 use Laminas\View\Helper\HeadStyle;
 use Laminas\View\Helper\InlineScript;
-use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Escaper\Escaper;
+use VuFind\View\Helper\Root\HeadLink;
 use VuFindTheme\AssetPipeline;
 use VuFindTheme\ThemeInfo;
 use VuFindTheme\View\Helper\AssetManager;
@@ -58,15 +58,15 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
     {
         yield 'default settings' => [
             [],
-            '<script type="text/javascript" src="foo.js"></script>',
+            '<script src="foo.js"></script>',
         ];
         yield 'arbitrary attribute' => [
             ['data-foo' => 'bar'],
-            '<script type="text/javascript" data-foo="bar" src="foo.js"></script>',
+            '<script data-foo="bar" src="foo.js"></script>',
         ];
         yield 'arbitrary MIME type' => [
             ['type' => 'mime/type'],
-            '<script type="mime/type" src="foo.js"></script>',
+            '<script src="foo.js" type="mime/type"></script>',
         ];
     }
 
@@ -96,20 +96,16 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
         yield 'default settings' => [
             [],
             <<<EOT
-                <script type="text/javascript">
-                    //<!--
-                    foo
-                    //-->
+                <script>
+                foo
                 </script>
                 EOT,
         ];
         yield 'arbitrary attribute' => [
             ['data-foo' => 'bar'],
             <<<EOT
-                <script type="text/javascript" data-foo="bar">
-                    //<!--
-                    foo
-                    //-->
+                <script data-foo="bar">
+                foo
                 </script>
                 EOT,
         ];
@@ -117,9 +113,7 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
             ['type' => 'mime/type'],
             <<<EOT
                 <script type="mime/type">
-                    //<!--
-                    foo
-                    //-->
+                foo
                 </script>
                 EOT,
         ];
@@ -155,14 +149,16 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
             return $scripts;
         });
 
+        $escaper = new Escaper();
+        $doctype = new Doctype();
         $manager = $this->getMockBuilder(AssetManager::class)
             ->setConstructorArgs([
                 $themeInfo,
                 $pipeline,
                 '/',
-                new \Laminas\View\Helper\HeadLink(),
-                new HeadStyle(),
-                new InlineScript(),
+                new HeadLink(new \Laminas\View\Helper\HeadLink($escaper, $doctype)),
+                new HeadStyle($escaper, $doctype),
+                new InlineScript($escaper, $doctype),
             ])
             ->onlyMethods(['outputInlineScriptLink', 'outputInlineScriptString', 'outputStyleAssets'])
             ->getMock();
@@ -212,14 +208,16 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
             return $styles;
         });
 
+        $escaper = new Escaper();
+        $doctype = new Doctype();
         $manager = $this->getMockBuilder(AssetManager::class)
             ->setConstructorArgs([
                 $themeInfo,
                 $pipeline,
                 '/',
-                $this->getHeadLink(),
-                $this->getHeadStyle(),
-                $this->getInlineScript(),
+                new HeadLink(new \Laminas\View\Helper\HeadLink($escaper, $doctype)),
+                new HeadStyle($escaper, $doctype),
+                new InlineScript($escaper, $doctype),
             ])
             ->onlyMethods(['outputScriptAssets'])
             ->getMock();
@@ -231,7 +229,7 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
             <<<EOT
                 <link href="bar.css" media="screen" rel="stylesheet" type="text/css">
                 <link href="foo.css" media="screen" rel="stylesheet" type="text/css">
-                <style type="text/css" media="screen">
+                <style>
                 foo
                 </style>
                 EOT,
@@ -246,11 +244,11 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
                 <link href="bar.css" media="screen" rel="stylesheet" type="text/css">
                 <link href="foo.css" media="screen" rel="stylesheet" type="text/css">
                 <link href="pre.css" media="odd" rel="stylesheet" type="text/css" z="5">
-                <link href="xyzzy.css" media="print" rel="stylesheet" type="text/css" a="1" b="2">
-                <style type="text/css" media="screen">
+                <link a="1" b="2" href="xyzzy.css" media="print" rel="stylesheet" type="text/css">
+                <style>
                 foo
                 </style>
-                <style type="text/css" media="screen">
+                <style c="3" d="4">
                 baz
                 </style>
                 EOT,
@@ -265,12 +263,7 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getHeadLink(): HeadLink
     {
-        $escaper = new Escaper();
-        $renderer = new PhpRenderer();
-        $headLink = new HeadLink();
-        $headLink->setEscaper($escaper);
-        $headLink->setView($renderer);
-        return $headLink;
+        return new HeadLink(new \Laminas\View\Helper\HeadLink(new Escaper(), new Doctype()));
     }
 
     /**
@@ -280,12 +273,7 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getHeadStyle(): HeadStyle
     {
-        $escaper = new Escaper();
-        $renderer = new PhpRenderer();
-        $headStyle = new HeadStyle();
-        $headStyle->setEscaper($escaper);
-        $headStyle->setView($renderer);
-        return $headStyle;
+        return new HeadStyle(new Escaper(), new Doctype());
     }
 
     /**
@@ -295,12 +283,7 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getInlineScript(): InlineScript
     {
-        $escaper = new Escaper();
-        $renderer = new PhpRenderer();
-        $inlineScript = new InlineScript();
-        $inlineScript->setEscaper($escaper);
-        $inlineScript->setView($renderer);
-        return $inlineScript;
+        return new InlineScript(new Escaper(), new Doctype());
     }
 
     /**

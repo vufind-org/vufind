@@ -214,10 +214,10 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
     protected function getSessionContainer(?string $method = null): MockObject&Container
     {
         $mock = $this->getMockBuilder(Container::class)
-            ->onlyMethods(['__get', '__isset', '__set', '__unset'])
+            ->onlyMethods(['__get', 'offsetExists', '__set', 'offsetUnset'])
             ->disableOriginalConstructor()->getMock();
         if ($method) {
-            $mock->method('__isset')
+            $mock->method('offsetExists')
                 ->with('auth_method')
                 ->willReturn(true);
             $mock->method('__get')

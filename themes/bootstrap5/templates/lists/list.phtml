@@ -108,7 +108,7 @@
       </ul>
       <?=$this->context($this)->renderInContext('lists/bulk-action-buttons.phtml', ['isBottom' => true, 'list' => $list ?? null, 'account' => $this->account])?>
     </form>
-    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'Helpers/pagination.phtml', ['params' => ['results' => $this->results]])?>
+    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'Helpers/pagination.phtml', ['results' => $this->results])?>
   <?php else: ?>
     <p><?=$this->transEsc('You do not have any saved resources')?></p>
   <?php endif; ?>

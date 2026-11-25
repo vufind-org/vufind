@@ -29,10 +29,10 @@
 
 namespace VuFindTheme\View\Helper;
 
-use Laminas\View\Helper\HeadLink;
-use Laminas\View\Helper\HeadScript;
 use Laminas\View\Helper\HeadStyle;
 use Laminas\View\Helper\InlineScript;
+use VuFind\View\Helper\Root\HeadLink;
+use VuFind\View\Helper\Root\Url;
 use VuFindTheme\AssetPipeline;
 use VuFindTheme\ThemeInfo;
 
@@ -69,13 +69,6 @@ class AssetManager
      * @var array
      */
     protected $stylesheets;
-
-    /**
-     * Should we allow arbitrary attributes on scripts by default?
-     *
-     * @var bool
-     */
-    protected bool $allowArbitraryScriptAttributesByDefault = true;
 
     /**
      * Constructor.
@@ -176,27 +169,6 @@ class AssetManager
         $this->styles = [];
         $this->stylesheets = [];
         return $this;
-    }
-
-    /**
-     * Apply the appropriate arbitraryAttributesAllowed value to the provided view helper, using global
-     * default and any override options. If the value was changed, return the original value that should be
-     * restored after processing.
-     *
-     * @param HeadScript $helper  View helper to configure (note that InlineScript is a child of HeadScript)
-     * @param array      $options Options array to evaluate
-     *
-     * @return ?bool
-     */
-    protected function applyArbitraryScriptAttributesOption(HeadScript $helper, array $options): ?bool
-    {
-        $newValue = $this->allowArbitraryScriptAttributesByDefault;
-        $resetValue = null;
-        if ($helper->arbitraryAttributesAllowed() !== $newValue) {
-            $helper->setAllowArbitraryAttributes($newValue);
-            $resetValue = !$newValue;
-        }
-        return $resetValue;
     }
 
     /**
@@ -329,17 +301,16 @@ class AssetManager
         $output = [];
         $processedScripts = $this->pipeline->process($this->scripts[$position], 'js');
         foreach ($processedScripts as $script) {
-            $options = $script['options'] ?? [];
             // Every $script will have either a script attribute (inline JS) or a src attribute (file):
             if (isset($script['script'])) {
-                $output[] = $this->outputInlineScriptString($script['script'], $script['attrs'], $options);
+                $output[] = $this->outputInlineScriptString($script['script'], $script['attrs']);
             } else {
                 if ($this->isRelativePath($script['src'])) {
                     if ($themePath = $this->applyThemeToRelativePath('js/' . $script['src'])) {
                         $script['src'] = $themePath;
                     }
                 }
-                $output[] = $this->outputInlineScriptLink($script['src'], $script['attrs'], $options);
+                $output[] = $this->outputInlineScriptLink($script['src'], $script['attrs']);
             }
         }
         return implode("\n", $output);
@@ -360,20 +331,18 @@ class AssetManager
                     $sheet['href'] = $themePath;
                 }
             }
-
-            $this->headLink->appendStylesheet(
-                $sheet['href'],
-                $sheet['media'],
-                '',
-                $sheet['extras']
-            );
+            $attributes = $sheet['extras'];
+            if ($media = $sheet['media'] ?? null) {
+                $attributes['media'] = $media;
+            }
+            $this->headLink->appendStylesheet($sheet['href'], $attributes);
         }
 
         foreach ($this->styles as $style) {
             $this->headStyle->appendStyle($style['css'], $style['attributes']);
         }
 
-        return ($this->headLink)() . "\n" . ($this->headStyle)();
+        return $this->headLink->toString() . "\n" . ($this->headStyle)();
     }
 
     /**
@@ -389,44 +358,34 @@ class AssetManager
     /**
      * Output an inline script.
      *
-     * @param string $script  Script code
-     * @param array  $attrs   Additional attributes for the script tag
-     * @param array  $options Additional options (none supported at the moment)
+     * @param string $script Script code
+     * @param array  $attrs  Additional attributes for the script tag
      *
      * @return string
      */
     public function outputInlineScriptString(
         string $script,
-        array $attrs = [],
-        array $options = []
+        array $attrs = []
     ): string {
         if (!empty($this->cspNonce)) {
             $attrs['nonce'] = $this->cspNonce;
         }
-        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($this->inlineScript, $options);
-        $type = $attrs['type'] ?? 'text/javascript';
-        unset($attrs['type']);
-        $this->inlineScript->setScript($script, $type, $attrs);
+        $this->inlineScript->setScript($script, $attrs);
         $result = (string)($this->inlineScript)();
-        if ($resetArbitraryAttributes !== null) {
-            $this->inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
-        }
         return $result;
     }
 
     /**
      * Output an inline script file.
      *
-     * @param string $src     Script src
-     * @param array  $attrs   Additional attributes for the script tag
-     * @param array  $options Additional options (none supported at the moment)
+     * @param string $src   Script src
+     * @param array  $attrs Additional attributes for the script tag
      *
      * @return string
      */
     public function outputInlineScriptLink(
         string $src,
-        array $attrs = [],
-        array $options = []
+        array $attrs = []
     ): string {
         if (!empty($this->cspNonce)) {
             $attrs['nonce'] = $this->cspNonce;
@@ -434,14 +393,8 @@ class AssetManager
         if ($this->isRelativePath($src)) {
             $src = $this->applyThemeToRelativePath('js/' . $src) ?? $src;
         }
-        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($this->inlineScript, $options);
-        $type = $attrs['type'] ?? 'text/javascript';
-        unset($attrs['type']);
-        $this->inlineScript->setFile($src, $type, $attrs);
+        $this->inlineScript->setFile($src, $attrs);
         $result = (string)($this->inlineScript)();
-        if ($resetArbitraryAttributes !== null) {
-            $this->inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
-        }
         return $result;
     }
 

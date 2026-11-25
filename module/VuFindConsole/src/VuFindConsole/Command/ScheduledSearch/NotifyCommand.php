@@ -31,7 +31,6 @@ namespace VuFindConsole\Command\ScheduledSearch;
 
 use DateTime;
 use Exception;
-use Laminas\I18n\Translator\Translator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -43,6 +42,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Http\RouteHelper;
 use VuFind\I18n\Locale\LocaleSettings;
+use VuFind\I18n\Translator\TranslationCollector\DynamicFileListCollector;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\Results\PluginManager as ResultsManager;
@@ -103,17 +103,18 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     /**
      * Constructor.
      *
-     * @param SecretCalculator          $secretCalculator Secret calculator
-     * @param TemplateRendererInterface $templateRenderer Template renderer
-     * @param ResultsManager            $resultsManager   Search results plugin manager
-     * @param array                     $scheduleOptions  Configured schedule options
-     * @param array                     $mainConfig       Top-level VuFind configuration
-     * @param Mailer                    $mailer           Mail service
-     * @param SearchServiceInterface    $searchService    Search table
-     * @param LocaleSettings            $localeSettings   Locale settings object
-     * @param RouteHelper               $routeHelper      Route helper
-     * @param string|null               $name             The name of the command; passing
-     * null means it must be set in configure()
+     * @param SecretCalculator          $secretCalculator     Secret calculator
+     * @param TemplateRendererInterface $templateRenderer     Template renderer
+     * @param ResultsManager            $resultsManager       Search results plugin manager
+     * @param array                     $scheduleOptions      Configured schedule options
+     * @param array                     $mainConfig           Top-level VuFind configuration
+     * @param Mailer                    $mailer               Mail service
+     * @param SearchServiceInterface    $searchService        Search table
+     * @param LocaleSettings            $localeSettings       Locale settings object
+     * @param DynamicFileListCollector  $translationCollector Translation collector
+     * @param RouteHelper               $routeHelper          Route helper
+     * @param string|null               $name                 The name of the command; passing null means it must be set
+     * in configure()
      */
     public function __construct(
         protected SecretCalculator $secretCalculator,
@@ -124,6 +125,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         protected Mailer $mailer,
         protected SearchServiceInterface $searchService,
         protected LocaleSettings $localeSettings,
+        protected DynamicFileListCollector $translationCollector,
         protected RouteHelper $routeHelper,
         $name = null
     ) {
@@ -269,8 +271,8 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
             throw new \Exception('Translator must implement the setLocale method');
         }
         $this->translator->setLocale($language);
-        $this->addLanguageToTranslator(
-            $this->translator,
+        $this->addLanguageToTranslationCollector(
+            $this->translationCollector,
             $this->localeSettings,
             $language
         );

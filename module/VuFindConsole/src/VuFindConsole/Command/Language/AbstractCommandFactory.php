@@ -65,9 +65,9 @@ class AbstractCommandFactory implements FactoryInterface
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         return new $requestedName(
             new ExtendedIniNormalizer(),
             new ExtendedIniReader(),

@@ -45,7 +45,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
+    protected array $aliases = [
         'default' => HierarchyDefault::class,
         'flat' => HierarchyFlat::class,
         'search2' => HierarchySearch2::class,
@@ -56,7 +56,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $factories = [
+    protected array $factories = [
         HierarchyDefault::class => ConfigurationBasedFactory::class,
         HierarchyFlat::class => ConfigurationBasedFactory::class,
         HierarchySearch2::class => ConfigurationBasedFactory::class,

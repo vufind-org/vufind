@@ -100,20 +100,20 @@ class ResultFeed implements TranslatorAwareInterface
      */
     public function registerExtensions(ContainerInterface $container)
     {
-        $manager = new \Laminas\Feed\Writer\ExtensionPluginManager($container);
-        $manager->setInvokableClass(
+        $manager = new \VuFind\Feed\Writer\ExtensionPluginManager();
+        $manager->add(
             'DublinCore\Renderer\Entry',
             \VuFind\Feed\Writer\Extension\DublinCore\Renderer\Entry::class
         );
-        $manager->setInvokableClass(
+        $manager->add(
             'DublinCore\Entry',
             \VuFind\Feed\Writer\Extension\DublinCore\Entry::class
         );
-        $manager->setInvokableClass(
+        $manager->add(
             'OpenSearch\Renderer\Feed',
             \VuFind\Feed\Writer\Extension\OpenSearch\Renderer\Feed::class
         );
-        $manager->setInvokableClass(
+        $manager->add(
             'OpenSearch\Feed',
             \VuFind\Feed\Writer\Extension\OpenSearch\Feed::class
         );

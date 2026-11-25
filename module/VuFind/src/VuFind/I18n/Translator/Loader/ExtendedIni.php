@@ -90,7 +90,7 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @var array
      */
-    protected $aliases = [];
+    protected array $aliases = [];
 
     /**
      * List of loaded alias configuration files.
@@ -148,10 +148,10 @@ class ExtendedIni implements FileLoaderInterface
      * @return TextDomain
      * @throws InvalidArgumentException
      */
-    public function load($locale, $filename)
+    public function load(string $locale, string $filename): TextDomain
     {
-        if ($locale == 'debug') {
-            return null;
+        if ($locale === 'debug') {
+            return new TextDomain();
         }
 
         // Reset loaded aliases:

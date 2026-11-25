@@ -8,17 +8,15 @@ if (!empty($vufindProfiler)) {
 }
 
 // Run the application!
-$app = include __DIR__ . '/../config/application.php';
+$serviceManager = require __DIR__ . '/../config/container.php';
 if (PHP_SAPI === 'cli') {
-    return $app->getServiceManager()
-        ->get(\VuFindConsole\ConsoleRunner::class)->run();
+    return $serviceManager->get(\VuFindConsole\ConsoleRunner::class)->run();
 } else {
     // Setup remote code coverage if enabled:
     if (getenv('VUFIND_CODE_COVERAGE')) {
-        $modules = $app->getServiceManager()
-            ->get(\Laminas\ModuleManager\ModuleManager::class)->getModules();
+        $modules = $serviceManager->get(\VuFind\ModuleManager\ModuleManager::class)->getModules();
         include __DIR__ . '/../module/VuFind/functions/codecoverage.php';
         setupVuFindRemoteCodeCoverage($modules);
     }
-    $app->run();
+    $serviceManager->get(\VuFind\Application::class)->run();
 }

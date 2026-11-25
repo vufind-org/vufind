@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Escaper\Escaper;
+use Laminas\Escaper\EscaperInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\String\PropertyStringInterface;
 
@@ -54,12 +55,12 @@ class EscapeOrCleanHtml
     /**
      * Constructor.
      *
-     * @param Escaper   $escaper   Escaper
-     * @param CleanHtml $cleanHtml Clean HTML helper
-     * @param array     $config    VuFind configuration
+     * @param EscaperInterface $escaper   Escaper
+     * @param CleanHtml        $cleanHtml Clean HTML helper
+     * @param array            $config    VuFind configuration
      */
     public function __construct(
-        protected Escaper $escaper,
+        protected EscaperInterface $escaper,
         #[Autowire(container: 'ViewHelperManager')]
         protected CleanHtml $cleanHtml,
         #[Autowire(config: 'config')]

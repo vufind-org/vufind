@@ -29,8 +29,10 @@
 
 namespace VuFindTest\Http;
 
+use Laminas\Router\AssembledUrl;
+use Laminas\Router\RouteStackInterface;
+use VuFind\Http\RequestHelper;
 use VuFind\Http\RouteHelper;
-use VuFind\View\Helper\Root\Url as UrlHelper;
 
 /**
  * RouteHelper Test Class.
@@ -54,13 +56,14 @@ class RouteHelperTest extends \PHPUnit\Framework\TestCase
         $routeParams = ['record' => 1];
         $queryParams = ['foo' => 'bar'];
         $routeResult = '/some/route/1?foo=bar';
+        $assembledRouteResult = new AssembledUrl($routeResult);
 
-        $urlHelper = $this->createMock(UrlHelper::class);
-        $urlHelper->expects($this->once())
-            ->method('__invoke')
-            ->with($routeName, $routeParams, ['query' => $queryParams, 'normalize_path' => false])
-            ->willReturn($routeResult);
-        $routeHelper = new RouteHelper(fn () => $urlHelper);
+        $router = $this->createMock(RouteStackInterface::class);
+        $router->expects($this->once())
+            ->method('assemble')
+            ->with($routeParams, ['name' => $routeName, 'query' => $queryParams, 'normalize_path' => false])
+            ->willReturn($assembledRouteResult);
+        $routeHelper = new RouteHelper(new RequestHelper(), $router);
 
         $url = $routeHelper->getUrlFromRoute($routeName, $routeParams, $queryParams);
         $this->assertSame($routeResult, $url);

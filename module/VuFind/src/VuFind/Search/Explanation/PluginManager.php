@@ -51,7 +51,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
+    protected array $aliases = [
         'solr' => \VuFind\Search\Solr\Explanation::class,
         'search2' => \VuFind\Search\Search2\Explanation::class,
     ];
@@ -61,7 +61,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $factories = [
+    protected array $factories = [
         \VuFind\Search\Solr\Explanation::class => ExplanationFactory::class,
         \VuFind\Search\Search2\Explanation::class => ExplanationFactory::class,
     ];

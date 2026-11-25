@@ -158,7 +158,6 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
         // Configure the stub
         $this->driver->setConfig($config ?? $this->defaultDriverConfig);
         $cache = new \Laminas\Cache\Storage\Adapter\Memory();
-        $cache->setOptions(['memory_limit' => -1]);
         $this->driver->setCacheStorage($cache);
         $this->driver->method('makeRequest')->willReturnCallback([$this, 'mockMakeRequest']);
         $this->driver->init();

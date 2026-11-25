@@ -51,16 +51,14 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
      */
     public function testBasicSetup(): void
     {
-        $expectedUrl = 'https&#x3A;&#x2F;&#x2F;www.googletagmanager.com&#x2F;gtag&#x2F;js&#x3F;id&#x3D;myfakekey';
+        $expectedUrl = 'https://www.googletagmanager.com/gtag/js?id=myfakekey';
         $expected = <<<JS
-            <script type="text&#x2F;javascript" async="async" src="$expectedUrl"></script>
-            <script type="text&#x2F;javascript">
-                //<!--
-                window.dataLayer = window.dataLayer || [];
+            <script async="async" src="$expectedUrl"></script>
+            <script>
+            window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', 'myfakekey', {});
-                //-->
             </script>
             JS;
         $this->assertSame($expected, $this->renderGA('myfakekey'));
@@ -77,16 +75,14 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
         $options = [
             'create_options_js' => $createJs,
         ];
-        $expectedUrl = 'https&#x3A;&#x2F;&#x2F;www.googletagmanager.com&#x2F;gtag&#x2F;js&#x3F;id&#x3D;myfakekey';
+        $expectedUrl = 'https://www.googletagmanager.com/gtag/js?id=myfakekey';
         $expected = <<<JS
-            <script type="text&#x2F;javascript" async="async" src="$expectedUrl"></script>
-            <script type="text&#x2F;javascript">
-                //<!--
-                window.dataLayer = window.dataLayer || [];
+            <script async="async" src="$expectedUrl"></script>
+            <script>
+            window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', 'myfakekey', {cookie_flags: 'max-age=7200;secure;samesite=none'});
-                //-->
             </script>
             JS;
         $this->assertSame($expected, $this->renderGA('myfakekey', $options));
