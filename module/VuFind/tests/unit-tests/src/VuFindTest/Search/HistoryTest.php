@@ -139,7 +139,7 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
     public function testPurgeHistory(): void
     {
         $service = $this->createMock(SearchServiceInterface::class);
-        $service->expects($this->once())->method('destroySession')->with('foosession', 1234);
+        $service->expects($this->once())->method('deleteUnsaved')->with('foosession', 1234);
         $history = $this->getHistory($service);
         $history->purgeSearchHistory(1234);
     }

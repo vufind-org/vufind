@@ -70,7 +70,7 @@ class History
      */
     public function purgeSearchHistory($userId = null)
     {
-        $this->searchService->destroySession($this->sessionId, $userId);
+        $this->searchService->deleteUnsaved($this->sessionId, $userId);
     }
 
     /**

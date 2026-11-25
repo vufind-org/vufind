@@ -111,7 +111,7 @@ class SearchService extends AbstractSessionRelatedDataService implements
      *
      * @return void
      */
-    public function destroySession(string $sessionId, UserEntityInterface|int|null $userOrId = null): void
+    public function deleteUnsaved(string $sessionId, UserEntityInterface|int|null $userOrId = null): void
     {
         $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
         $parameters = ['saved' => false, 'sessionId' => $sessionId];

@@ -63,6 +63,16 @@ interface SearchServiceInterface extends SessionRelatedDataServiceInterface
     public function createAndPersistEntityWithChecksum(int $checksum): SearchEntityInterface;
 
     /**
+     * Destroy unsaved searches belonging to the specified session/user.
+     *
+     * @param string                       $sessionId Session ID of current user.
+     * @param UserEntityInterface|int|null $userOrId  User entity or ID of current user (optional).
+     *
+     * @return void
+     */
+    public function deleteUnsaved(string $sessionId, UserEntityInterface|int|null $userOrId = null): void
+
+    /**
      * Get a SearchEntityInterface object by ID.
      *
      * @param int $id Search identifier
