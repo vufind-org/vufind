@@ -75,7 +75,6 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
             $this->markTestSkipped('Continuous integration not running.');
-            return;
         }
         $this->auth = new Database(new EmailAddressValidator());
         $this->auth->setDbServiceManager($this->getLiveDbServiceManager());
