@@ -233,10 +233,7 @@ class FlashMessenger implements FlashMessengerInterface
         $container = $this->getContainer();
         // We have to use an iterator, because getArrayCopy() doesn't work if the container was written with an older
         // laminas-session version that used Laminas\StdLib\ArrayObject:
-        $namespaces = [];
-        foreach ($container->getIterator() as $key => $value) {
-            $namespaces[$key] = $value;
-        }
+        $namespaces = iterator_to_array($container->getIterator());
         foreach (array_keys($namespaces) as $namespace) {
             unset($container->{$namespace});
         }
