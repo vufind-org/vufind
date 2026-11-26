@@ -134,7 +134,7 @@ class UrlQueryHelperFactory
         $shards = $params->getSelectedShards();
         if (!empty($shards)) {
             sort($shards);
-            $defaultShards = $this->extractCallableValue(['defaults']['selectedShards']);
+            $defaultShards = $this->extractCallableValue($config['defaults']['selectedShards']);
             sort($defaultShards);
             if (implode(':::', $shards) !== implode(':::', $defaultShards)) {
                 $urlParams['shard'] = $shards;
