@@ -128,7 +128,6 @@ class HomeAction extends AbstractAccountAction
         // external login provider):
         if (
             $this->getPostParam('processLogin')
-            || $this->authManager->hasSessionInitiator()
             || $this->getPostOrQueryParam('auth_method')
         ) {
             $loginHelper = $this->getHelper(LoginHelper::class);
