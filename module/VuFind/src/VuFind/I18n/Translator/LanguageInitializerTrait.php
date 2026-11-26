@@ -29,7 +29,6 @@
 
 namespace VuFind\I18n\Translator;
 
-use Laminas\I18n\Translator\Translator;
 use VuFind\Config\PathResolver;
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\TranslationCollector\DynamicFileListCollector;
@@ -122,9 +121,8 @@ trait LanguageInitializerTrait
         // If we got this far, we need to set everything up:
         $collector->addTranslationFile('ExtendedIni', '', 'default', $language);
         foreach ($this->getTextDomains() as $domain) {
-            // Set up text domains using the domain name as the filename;
-            // this will help the ExtendedIni loader dynamically locate
-            // the appropriate files.
+            // Set up text domains using the domain name as the filename; this will help the ExtendedIni loader
+            // dynamically locate the appropriate files.
             $collector->addTranslationFile(
                 'ExtendedIni',
                 $domain,
