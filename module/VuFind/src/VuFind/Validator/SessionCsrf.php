@@ -65,7 +65,7 @@ class SessionCsrf implements CsrfInterface
      *
      * @param array $options Options to pass to CSRF validator
      */
-    public function __construct(protected array $options = [])
+    public function __construct(array $options = [])
     {
         if (!isset($options['session'])) {
             throw new InvalidArgumentException('Options must include session');
