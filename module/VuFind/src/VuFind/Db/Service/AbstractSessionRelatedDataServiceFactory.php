@@ -74,6 +74,7 @@ class AbstractSessionRelatedDataServiceFactory extends AbstractDbServiceFactory
             [
                 $container->get(SessionManager::class),
                 $this->getHandler($container),
+                ...$options,
             ]
         );
     }
