@@ -59,7 +59,7 @@ class EventManagerFactory implements FactoryInterface
     {
         $shared = $container->has('SharedEventManager') ? $container->get('SharedEventManager') : null;
 
-        $result = new EventManager($shared);
+        $result = new $requestedName($shared);
         $result->setEventPrototype(new Event());
         return $result;
     }
