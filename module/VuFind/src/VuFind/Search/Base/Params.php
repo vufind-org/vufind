@@ -475,17 +475,6 @@ class Params
      */
     protected function initSearch(array $request): void
     {
-        $handler = $request['type'] ?? null;
-
-        // Flatten type arrays for backward compatibility with legacy URLs:
-        if (is_array($handler)) {
-            $handler = $handler[0];
-        }
-        if ($handler && preg_match('/^label:(.*)$/', $handler, $matches)) {
-            $handler = $this->getOptions()->getHandlerForLabel($matches[1]);
-        }
-        $request['type'] = $handler;
-
         // Try to initialize a basic search; if that fails, try for an advanced
         // search next!
         if (!$this->initBasicSearch($request)) {
@@ -526,8 +515,12 @@ class Params
             $handler = $handler[0];
         }
 
+        if ($handler && preg_match('/^label:(.*)$/', $handler, $matches)) {
+            $handler = $this->getOptions()->getHandlerForLabel($matches[1]);
+        }
+
         // Set the search:
-        $this->setBasicSearch($lookfor, $request['type'] ?? null);
+        $this->setBasicSearch($lookfor, $handler);
         return true;
     }
 
