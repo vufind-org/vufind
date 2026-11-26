@@ -104,6 +104,8 @@
         "stripe/stripe-php": "v21.3.1",
         "swagger-api/swagger-ui": "5.34.0",
         "symfony/console": "6.4.25",
+        "symfony/deprecation-contracts": "^3.8",
+        "symfony/error-handler": "^7.4",
         "symfony/mailer": "^7.4",
         "symfony/rate-limiter": "^7.4",
         "symfony/var-dumper": "^7.4",
