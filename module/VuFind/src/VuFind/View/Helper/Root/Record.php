@@ -544,13 +544,14 @@ class Record implements DbServiceAwareInterface
     /**
      * Render a search result for the specified view mode.
      *
-     * @param string $view View mode to use.
+     * @param string $view    View mode to use
+     * @param array  $context Rendering context
      *
      * @return string
      */
-    public function getSearchResult($view)
+    public function getSearchResult($view, array $context = [])
     {
-        return $this->renderTemplate('result-' . $view . '.phtml');
+        return $this->renderTemplate('result-' . $view . '.phtml', $context);
     }
 
     /**
