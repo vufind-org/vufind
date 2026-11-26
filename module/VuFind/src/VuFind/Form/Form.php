@@ -106,7 +106,6 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * @param array                        $feedbackFormConfig Feedback form config
      */
     public function __construct(
-        #[Autowire(service: HelperPluginManagerInterface::class)]
         protected HelperPluginManagerInterface $viewHelperManager,
         protected HandlerManager $handlerManager,
         protected DateConverter $dateConverter,
