@@ -167,6 +167,9 @@ class ExtendedIni implements FileLoaderInterface
         $data = $this->loadLanguageLocale($locale, $filename, $this->useAliases);
 
         // Set up a reference to the current domain for use in alias processing:
+        // We need to include both locale and current domain to avoid collisions
+        // when multiple locales are loaded during a single session -- e.g. the special
+        // purpose native domain.
         $this->aliasDomains[$locale][$currentDomain] = $data;
 
         // Apply aliases:
