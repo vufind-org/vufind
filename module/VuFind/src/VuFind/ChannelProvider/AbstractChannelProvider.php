@@ -73,9 +73,8 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
      * @param HttpRequest $request Current HTTP request
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function applyPaginationFromRequest(HttpRequest $request): void
     {
         // No action necessary by default; see override in BatchTrait.

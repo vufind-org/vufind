@@ -58,11 +58,8 @@ class ModuleManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     *
-     * @psalm-suppress UndefinedDocblockClass
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         string $requestedName,
