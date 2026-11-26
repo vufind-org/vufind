@@ -22,11 +22,12 @@
   <li class="nav-item" id="loginOptions">
     <?php
       $hasSessionInitiator = $this->auth()->hasSessionInitiator();
+      $redirectToAccount = $this->config()->getArray('config')['Site']['logInToAccount'] ?? false;
       $loginLinkAttributes = [
-        'href' => $this->url('account-userlogin'),
+        'href' => $this->url('account-userlogin') . ($redirectToAccount ? '?set_referrer=0' : ''),
         'class' => 'nav-link icon-link',
       ];
-      if (!$hasSessionInitiator) {
+      if (!$redirectToAccount && !$hasSessionInitiator) {
         $loginLinkAttributes['data-lightbox'] = true;
       }
     ?>

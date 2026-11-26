@@ -66,11 +66,11 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test changing a password.
+     * Test creating an account.
      *
      * @return void
      */
-    public function testChangePassword(): void
+    public function testCreateAccount(): void
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
@@ -84,11 +84,82 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
+    }
 
+    /**
+     * Data provider for testLogin().
+     *
+     * @return \Iterator
+     */
+    public static function loginTestProvider(): \Iterator
+    {
+        yield 'defaults' => [];
+        yield 'send to account' => [true];
+    }
+
+    /**
+     * Test login.
+     *
+     * @param bool $sendUserToAccount Send user to account after login
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testCreateAccount')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('loginTestProvider')]
+    public function testLogin(bool $sendUserToAccount = false): void
+    {
+        if ($sendUserToAccount) {
+            $this->changeConfigs(
+                [
+                    'config' => [
+                        'Site' => ['logInToAccount' => true],
+                    ],
+                ]
+            );
+        }
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Record/testsample1');
+        $page = $session->getPage();
+
+        // Log in
+        $this->clickCss($page, '#loginOptions a');
+        $this->fillInLoginForm($page, 'username1', 'test', !$sendUserToAccount);
+        $this->submitLoginForm($page, !$sendUserToAccount);
+        $this->waitForPageLoad($page);
+
+        $currentUrl = $session->getCurrentUrl();
+        if ($sendUserToAccount) {
+            // Check that user is sent to account
+            $this->assertStringContainsString('Account/Home', $currentUrl);
+            $this->assertSame('Saved Items', $page->find('css', '.mainbody h1')->getText());
+        } else {
+            // Check that user is sent back to referrer.
+            $this->assertStringContainsString('/Record/testsample1', $currentUrl);
+            $this->assertStringContainsString(
+                'Journal of rational emotive therapy',
+                $page->find('css', '.mainbody h1')->getText()
+            );
+        }
+
+        // Log out
+        $this->clickCss($page, '.logoutOptions a.logout');
+    }
+
+    /**
+     * Test changing a password.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testLogin')]
+    public function testChangePassword(): void
+    {
         // Go to profile page:
+        $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl('/Account/Profile'));
+        $page = $session->getPage();
 
-        // Log back in
+        // Log in
         $this->clickCss($page, '#loginOptions a');
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
