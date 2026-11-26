@@ -30,7 +30,6 @@
 namespace VuFindTest;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\View\Helper\Root\Url;
 use VuFindTheme\AssetPipeline;
 use VuFindTheme\ThemeInfo;
 
