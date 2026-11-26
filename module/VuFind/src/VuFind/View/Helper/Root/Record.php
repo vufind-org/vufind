@@ -157,10 +157,12 @@ class Record implements DbServiceAwareInterface
     {
         $template = 'RecordDriver/%s/' . $name;
         $className = get_class($this->driver);
+        $context ??= [];
+        $context['driver'] ??= $this->driver;
         return $this->renderClassTemplate(
             $template,
             $className,
-            $context ?? ['driver' => $this->driver],
+            $context,
             $throw
         );
     }
