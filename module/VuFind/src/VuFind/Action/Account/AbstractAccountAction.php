@@ -88,7 +88,7 @@ abstract class AbstractAccountAction extends AbstractTemplateRenderingAction imp
         protected UserSessionPersistenceInterface $userSessionService,
         #[Autowire(container: DbServicePluginManager::class)]
         protected AuditEventServiceInterface $auditEventService,
-        #[Autowire(container: \VuFind\Application\UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        #[Autowire(container: \VuFind\Application\CurrentContext::class, service: 'AbsoluteBaseUrl')]
         protected string $absoluteBaseUrl,
         protected Mailer $mailer,
         protected Connection $ilsConnection,

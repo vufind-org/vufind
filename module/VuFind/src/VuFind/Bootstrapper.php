@@ -35,6 +35,7 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Laminas\Router\Http\RouteMatch;
 use Psr\Container\ContainerInterface;
+use VuFind\Application\CurrentContext;
 use VuFind\Cookie\CookieManager;
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\RateLimiter\RateLimiterManager;
@@ -217,9 +218,8 @@ class Bootstrapper
                 $cookies->set('language', $language);
             }
             // Store last selected language in user account, if applicable:
-            $authManager = $this->container->get(\VuFind\Auth\Manager::class);
             if (
-                ($user = $authManager->getUserObject())
+                ($user = $this->container->get(CurrentContext::class)->get('CurrentUser'))
                 && $user->getLastLanguage() != $language
             ) {
                 $user->setLastLanguage($language);

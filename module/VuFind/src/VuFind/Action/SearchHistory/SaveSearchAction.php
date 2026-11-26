@@ -39,7 +39,7 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -72,7 +72,7 @@ class SaveSearchAction extends AbstractSearchHistoryAction
      * Constructor.
      *
      * @param array                      $config                     VuFind configuration
-     * @param AuthManager                $authManager                Authentication manager
+     * @param ?UserEntityInterface       $currentUser                Current user
      * @param AuditEventServiceInterface $auditEventService          Audit event service
      * @param ManagerInterface           $sessionManager             Session manager
      * @param AccountCapabilities        $accountCapabilities        Account capabilities
@@ -87,7 +87,8 @@ class SaveSearchAction extends AbstractSearchHistoryAction
     public function __construct(
         #[Autowire(config: 'config')]
         array $config,
-        AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        ?UserEntityInterface $currentUser,
         #[Autowire(container: DbServicePluginManager::class)]
         AuditEventServiceInterface $auditEventService,
         ManagerInterface $sessionManager,
@@ -99,12 +100,12 @@ class SaveSearchAction extends AbstractSearchHistoryAction
         SearchNormalizer $searchNormalizer,
         SearchResultsPluginManager $searchResultsPluginManager,
         SecretCalculator $secretCalculator,
-        #[Autowire(container: \VuFind\Application\UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        #[Autowire(container: \VuFind\Application\CurrentContext::class, service: 'AbsoluteBaseUrl')]
         protected string $absoluteBaseUrl,
     ) {
         parent::__construct(
             $config,
-            $authManager,
+            $currentUser,
             $auditEventService,
             $sessionManager,
             $accountCapabilities,
@@ -134,7 +135,7 @@ class SaveSearchAction extends AbstractSearchHistoryAction
             throw new ForbiddenException('Saved searches disabled.');
         }
         // Not logged in?  Force user to log in:
-        if (!($user = $this->authManager->getIdentity())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 
@@ -142,7 +143,7 @@ class SaveSearchAction extends AbstractSearchHistoryAction
         $schedule = $this->getQueryParam('schedule');
         $sid = $this->getQueryParam('searchid');
         if (null !== $schedule && null !== $sid) {
-            $this->scheduleSearch($user, $schedule, $sid);
+            $this->scheduleSearch($this->currentUser, $schedule, $sid);
             return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'searchhistory-list');
         }
 
@@ -152,16 +153,16 @@ class SaveSearchAction extends AbstractSearchHistoryAction
             // duplicate. (This can happen if the user clicks "save" before logging in, then logs in during the save
             // process, but has the same search already saved in their account).
             $sessionId = $this->sessionManager->getId();
-            $rowToCheck = $this->searchService->getSearchByIdAndOwner($id, $sessionId, $user);
-            if ($duplicateId = $rowToCheck ? $this->isDuplicateOfSavedSearch($rowToCheck, $user) : null) {
+            $rowToCheck = $this->searchService->getSearchByIdAndOwner($id, $sessionId, $this->currentUser);
+            if ($duplicateId = $rowToCheck ? $this->isDuplicateOfSavedSearch($rowToCheck, $this->currentUser) : null) {
                 $this->searchService->deleteSearch($rowToCheck);
                 $id = $duplicateId;
             } else {
-                $this->setSavedFlagSecurely($id, true, $user);
+                $this->setSavedFlagSecurely($id, true, $this->currentUser);
             }
             $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage('search_save_success');
         } elseif (null !== ($id = $this->getQueryParam('delete'))) {
-            $this->setSavedFlagSecurely($id, false, $user);
+            $this->setSavedFlagSecurely($id, false, $this->currentUser);
             $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage('search_unsave_success');
         } else {
             throw new BadRequestException('Missing save and delete parameters.');

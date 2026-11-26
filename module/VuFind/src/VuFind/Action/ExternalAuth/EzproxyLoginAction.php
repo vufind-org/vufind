@@ -36,7 +36,8 @@ use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Service\AuthorizationServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
@@ -61,12 +62,13 @@ class EzproxyLoginAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param AuthManager                   $authManager          Authentication manager
+     * @param ?UserEntityInterface          $currentUser          Current user
      * @param AuthorizationServiceInterface $authorizationService Authorization service
      * @param array                         $config               VuFind configuration
      */
     public function __construct(
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         protected AuthorizationServiceInterface $authorizationService,
         #[Autowire(config: 'config')]
         protected array $config,
@@ -91,27 +93,25 @@ class EzproxyLoginAction extends AbstractTemplateRenderingAction
             throw new \Exception('EZproxy host not defined in configuration');
         }
 
-        $user = $this->authManager->getUserObject();
-
         if ($this->authorizationService->isGranted($this->ezproxyRequiredPermission)) {
             // Access granted, redirect to EZproxy
             if (!($ezproxyConfig['disable_ticket_auth_logging'] ?? false)) {
                 $this->log(
                     LogLevel::INFO,
-                    "EZproxy login to '" . $ezproxyHost . "' for '" . ($user ? $user->getUsername() : 'anonymous')
+                    "EZproxy login to '" . $ezproxyHost . "' for '" . ($this->currentUser->getUsername() ?? 'anonymous')
                     . "' from IP address " . $request->getServerParams()['REMOTE_ADDR'] ?? '<unknown>',
                     prependClass: true
                 );
             }
             $url = $this->getPostOrQueryParam('url');
-            $username = (($ezproxyConfig['anonymous_ticket'] ?? false) || !$user)
+            $username = (($ezproxyConfig['anonymous_ticket'] ?? false) || !$this->currentUser)
                 ? 'anonymous'
-                : $user->getUsername();
+                : $this->currentUser->getUsername();
             return $this->getHelper(RedirectHelper::class)
                 ->redirectToUrl($response, $this->createEzproxyTicketUrl($username, $url));
         }
 
-        if ($user) {
+        if ($this->currentUser) {
             // User already logged in; inform that the current login does not allow access.
             $this->getHelper(FlashMessagesHelper::class)->addErrorMessage('external_auth_unauthorized');
             return $this->renderTemplate($request, $response, ['unauthorized' => true]);

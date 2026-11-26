@@ -66,7 +66,7 @@ class UrlHelper implements HelperInterface
     #[Autowire]
     public function __construct(
         protected RouteHelper $routeHelper,
-        #[Autowire(container: \VuFind\Application\UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        #[Autowire(container: \VuFind\Application\CurrentContext::class, service: 'AbsoluteBaseUrl')]
         protected string $absoluteBaseUrl,
     ) {
     }

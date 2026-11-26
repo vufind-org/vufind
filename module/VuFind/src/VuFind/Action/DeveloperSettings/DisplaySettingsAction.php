@@ -60,13 +60,13 @@ class DisplaySettingsAction extends AbstractDeveloperSettingsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        if (!$user = $this->authManager->getUserObject()) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
         if (!$this->developerSettingsService->apiKeysEnabled()) {
             throw new ForbiddenException('Developer settings disabled.');
         }
-        $apiKeys = $this->developerSettingsService->getApiKeysForUser($user);
+        $apiKeys = $this->developerSettingsService->getApiKeysForUser($this->currentUser);
         $createAllowed = !$this->developerSettingsService->apiKeysBlocked($apiKeys);
         return $this->renderTemplate(
             $request,

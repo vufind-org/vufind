@@ -38,7 +38,6 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\UserContentHelper;
-use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Search\RecommendListener;
@@ -75,7 +74,7 @@ class ListAction extends AbstractListsAction
 
         // Check for "delete item" request; parameter may be in GET or POST depending on calling context.
         if ($deleteId = $this->getPostOrQueryParam('delete')) {
-            if (!($user = $this->authManager->getUserObject())) {
+            if (!$this->currentUser) {
                 return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
             }
 
@@ -86,7 +85,7 @@ class ListAction extends AbstractListsAction
             $listID = $listID ? (int)$listID : null;
             // If the user already confirmed the operation, perform the delete now; otherwise prompt for confirmation:
             if ($this->getPostOrQueryParam('confirm')) {
-                $this->performDeleteFavorite($user, $listID, $deleteId, $deleteSource);
+                $this->performDeleteFavorite($listID, $deleteId, $deleteSource);
             } else {
                 return $this->confirmDeleteFavorite($listID, $deleteId, $deleteSource);
             }
@@ -130,7 +129,7 @@ class ListAction extends AbstractListsAction
                 ]
             );
         } catch (ListPermissionException $e) {
-            if (!$this->authManager->getUserObject()) {
+            if (!$this->currentUser) {
                 return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
             }
             throw $e;
@@ -140,14 +139,13 @@ class ListAction extends AbstractListsAction
     /**
      * Delete a record from favorites.
      *
-     * @param UserEntityInterface $user   User
-     * @param ?int                $listID List ID, or null
-     * @param string              $id     ID of record to delete
-     * @param string              $source Source of record to delete
+     * @param ?int   $listID List ID, or null
+     * @param string $id     ID of record to delete
+     * @param string $source Source of record to delete
      *
      * @return void
      */
-    public function performDeleteFavorite(UserEntityInterface $user, ?int $listID, string $id, string $source): void
+    public function performDeleteFavorite(?int $listID, string $id, string $source): void
     {
         // Check id parameter:
         if ('' === $id) {
@@ -158,11 +156,11 @@ class ListAction extends AbstractListsAction
         if (null !== $listID) {
             // ...Specific List
             $list = $this->userListService->getUserListById($listID);
-            $this->favoritesService->removeListResourcesById($list, $user, [$id], $source);
+            $this->favoritesService->removeListResourcesById($list, $this->currentUser, [$id], $source);
             $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage('Item removed from list');
         } else {
             // ...All Saved Items
-            $this->favoritesService->removeUserResourcesById($user, [$id], $source);
+            $this->favoritesService->removeUserResourcesById($this->currentUser, [$id], $source);
             $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage('Item removed from favorites');
         }
     }

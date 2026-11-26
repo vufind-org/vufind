@@ -37,10 +37,11 @@ use VuFind\ActionHelper\ContextHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\IllRequestsHelper;
 use VuFind\ActionHelper\LoginHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\ConfigManager;
 use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Date\Converter as DateConverter;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventService;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
@@ -76,23 +77,24 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
     /**
      * Constructor.
      *
-     * @param SearchMemory      $searchMemory      Search memory
-     * @param TabManager        $tabManager        Tab manager
-     * @param AuthManager       $authManager       Authentication manager
-     * @param ConfigManager     $configManager     Configuration manager
-     * @param RecordLoader      $recordLoader      Record loader
-     * @param RecordRouter      $recordRouter      Record router
-     * @param ResultScroller    $resultScroller    Result scroller
-     * @param array             $config            VuFind configuration
-     * @param Connection        $ilsConnection     ILS connection
-     * @param AuditEventService $auditEventService Audit event service
-     * @param DateConverter     $dateConverter     Date converter
-     * @param Session           $sessionViewHelper Session view helper
+     * @param SearchMemory         $searchMemory      Search memory
+     * @param TabManager           $tabManager        Tab manager
+     * @param ?UserEntityInterface $currentUser       Current user
+     * @param ConfigManager        $configManager     Configuration manager
+     * @param RecordLoader         $recordLoader      Record loader
+     * @param RecordRouter         $recordRouter      Record router
+     * @param ResultScroller       $resultScroller    Result scroller
+     * @param array                $config            VuFind configuration
+     * @param Connection           $ilsConnection     ILS connection
+     * @param AuditEventService    $auditEventService Audit event service
+     * @param DateConverter        $dateConverter     Date converter
+     * @param Session              $sessionViewHelper Session view helper
      */
     public function __construct(
         SearchMemory $searchMemory,
         TabManager $tabManager,
-        AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        ?UserEntityInterface $currentUser,
         ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
@@ -108,7 +110,7 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
         parent::__construct(
             $searchMemory,
             $tabManager,
-            $authManager,
+            $currentUser,
             $configManager,
             $recordLoader,
             $recordRouter,
@@ -201,7 +203,7 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
                 $this->auditEventService->addEvent(
                     AuditEventType::ILS,
                     AuditEventSubtype::PlaceILLRequest,
-                    $this->getUser(),
+                    $this->currentUser,
                     data: [
                         'username' => $patron['cat_username'],
                         'details' => $details,
@@ -243,7 +245,7 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
         }
 
         $homeLibrary = ($this->config['Account']['set_home_library'] ?? true)
-            ? $this->getUser()->getHomeLibrary() : '';
+            ? $this->currentUser->getHomeLibrary() : '';
         // helpText is only for backward compatibility with legacy code:
         $helpText = $helpTextHtml = $checkRequests['helpText'];
 

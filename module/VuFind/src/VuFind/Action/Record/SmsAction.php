@@ -35,10 +35,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Captcha\Service\CaptchaService;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Config\ConfigManager;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Record\Loader as RecordLoader;
@@ -65,23 +66,24 @@ class SmsAction extends AbstractRecordAction
     /**
      * Constructor.
      *
-     * @param SearchMemory        $searchMemory        Search memory
-     * @param TabManager          $tabManager          Tab manager
-     * @param AuthManager         $authManager         Authentication manager
-     * @param ConfigManager       $configManager       Configuration manager
-     * @param RecordLoader        $recordLoader        Record loader
-     * @param RecordRouter        $recordRouter        Record router
-     * @param ResultScroller      $resultScroller      Result scroller
-     * @param array               $config              VuFind configuration
-     * @param AccountCapabilities $accountCapabilities Account capabilities helper
-     * @param SMSInterface        $smsService          SMS service
-     * @param CaptchaService      $captchaService      Captcha service
-     * @param SessionCsrf         $sessionCsrf         Session CSRF service
+     * @param SearchMemory         $searchMemory        Search memory
+     * @param TabManager           $tabManager          Tab manager
+     * @param ?UserEntityInterface $currentUser         Current user
+     * @param ConfigManager        $configManager       Configuration manager
+     * @param RecordLoader         $recordLoader        Record loader
+     * @param RecordRouter         $recordRouter        Record router
+     * @param ResultScroller       $resultScroller      Result scroller
+     * @param array                $config              VuFind configuration
+     * @param AccountCapabilities  $accountCapabilities Account capabilities helper
+     * @param SMSInterface         $smsService          SMS service
+     * @param CaptchaService       $captchaService      Captcha service
+     * @param SessionCsrf          $sessionCsrf         Session CSRF service
      */
     public function __construct(
         SearchMemory $searchMemory,
         TabManager $tabManager,
-        AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        ?UserEntityInterface $currentUser,
         ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
@@ -96,7 +98,7 @@ class SmsAction extends AbstractRecordAction
         parent::__construct(
             $searchMemory,
             $tabManager,
-            $authManager,
+            $currentUser,
             $configManager,
             $recordLoader,
             $recordRouter,

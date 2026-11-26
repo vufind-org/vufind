@@ -29,7 +29,7 @@
 
 namespace VuFindTheme\View\Helper;
 
-use VuFind\Application\UriRegistry;
+use VuFind\Application\CurrentContext;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -53,7 +53,7 @@ class ImageLink
      */
     public function __construct(
         protected \VuFindTheme\ThemeInfo $themeInfo,
-        #[Autowire(container: UriRegistry::class, service: 'BaseUrlPath')]
+        #[Autowire(container: CurrentContext::class, service: 'BaseUrlPath')]
         protected string $baseUrlPath,
     ) {
     }

@@ -87,7 +87,7 @@ class FixBasicConfigAction extends AbstractInstallAction
         HttpService $httpService,
         #[Autowire(container: DbServicePluginManager::class)]
         TagServiceInterface $tagService,
-        #[Autowire(container: \VuFind\Application\UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        #[Autowire(container: \VuFind\Application\CurrentContext::class, service: 'AbsoluteBaseUrl')]
         protected string $absoluteBaseUrl,
     ) {
         parent::__construct(

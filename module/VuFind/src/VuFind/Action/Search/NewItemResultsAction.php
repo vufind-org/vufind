@@ -33,8 +33,6 @@ namespace VuFind\Action\Search;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Search\Base\Results;
-use VuFind\Search\History;
 
 /**
  * New item results action.

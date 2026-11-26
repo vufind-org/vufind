@@ -38,9 +38,10 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
+use VuFind\Application\CurrentContext;
 use VuFind\Auth\EmailAuthenticator;
-use VuFind\Auth\Manager as AuthManager;
 use VuFind\Auth\UserSessionPersistenceInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\UserCardServiceInterface;
@@ -64,7 +65,7 @@ class VerifyOtpAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param AuthManager                     $authManager        Authentication manager
+     * @param ?UserEntityInterface            $currentUser        Current user
      * @param UserCardServiceInterface        $userCardService    User card database service
      * @param AuditEventServiceInterface      $auditEventService  Audit event service
      * @param EmailAuthenticator              $emailAuthenticator Email authenticator
@@ -72,7 +73,8 @@ class VerifyOtpAction extends AbstractTemplateRenderingAction
      * @param CsrfInterface                   $csrf               CSRF validator
      */
     public function __construct(
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         #[Autowire(container: DbServicePluginManager::class)]
         protected UserCardServiceInterface $userCardService,
         #[Autowire(container: DbServicePluginManager::class)]
@@ -98,7 +100,7 @@ class VerifyOtpAction extends AbstractTemplateRenderingAction
         ResponseInterface $response,
     ): ResponseInterface {
         // Force login:
-        if (!($user = $this->authManager->getUserObject())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 
@@ -122,7 +124,7 @@ class VerifyOtpAction extends AbstractTemplateRenderingAction
                 && ($cardId = $cardData['cardID'] ?? null)
             ) {
                 $this->userCardService->persistLibraryCardData(
-                    $user,
+                    $this->currentUser,
                     'NEW' === $cardId ? null : $cardId,
                     $cardData['cardName'],
                     $cardData['cat_username'],
@@ -131,7 +133,7 @@ class VerifyOtpAction extends AbstractTemplateRenderingAction
                 $this->auditEventService->addEvent(
                     AuditEventType::User,
                     AuditEventSubtype::ConnectCardByEmail,
-                    $user,
+                    $this->currentUser,
                     data: $cardData
                 );
                 $this->userSession->setLibraryCardAuthenticationData(null);

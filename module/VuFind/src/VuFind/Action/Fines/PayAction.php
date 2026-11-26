@@ -40,7 +40,8 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PaymentServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
@@ -75,7 +76,7 @@ class PayAction extends AbstractFinesAction implements LoggerAwareInterface
     /**
      * Constructor.
      *
-     * @param AuthManager                $authManager          Authentication manager
+     * @param ?UserEntityInterface       $currentUser          Current user
      * @param Connection                 $ilsConnection        ILS connection
      * @param RecordsHelper              $ilsRecordsHelper     ILS records helper
      * @param CurrencyFormatter          $currencyFormatter    Currency formatter
@@ -87,7 +88,8 @@ class PayAction extends AbstractFinesAction implements LoggerAwareInterface
      * @param ServerUrlHelper            $serverUrlHelper      Server URL helper
      */
     public function __construct(
-        AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        ?UserEntityInterface $currentUser,
         Connection $ilsConnection,
         RecordsHelper $ilsRecordsHelper,
         CurrencyFormatter $currencyFormatter,
@@ -102,7 +104,7 @@ class PayAction extends AbstractFinesAction implements LoggerAwareInterface
         protected ServerUrlHelper $serverUrlHelper,
     ) {
         parent::__construct(
-            $authManager,
+            $currentUser,
             $ilsConnection,
             $ilsRecordsHelper,
             $currencyFormatter,
@@ -165,8 +167,8 @@ class PayAction extends AbstractFinesAction implements LoggerAwareInterface
         array $patron,
         array $templateParams
     ): ?ResponseInterface {
-        if (!($user = $this->authManager->getUserObject())) {
-            throw new Exception('Could not get user');
+        if (!$this->currentUser) {
+            throw new Exception('Current user unavailable');
         }
 
         $flashMessages = $this->getHelper(FlashMessagesHelper::class);
@@ -212,7 +214,7 @@ class PayAction extends AbstractFinesAction implements LoggerAwareInterface
                 $response = $this->onlinePaymentManager->startPayment(
                     $returnUrl,
                     $notifyUrl,
-                    $user,
+                    $this->currentUser,
                     $patron,
                     $templateParams['selectedAmount'],
                     $templateParams['selectedFines'],

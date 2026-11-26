@@ -32,8 +32,9 @@
 namespace VuFind\Action\Lists;
 
 use VuFind\Action\AbstractTemplateRenderingAction;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\Feature\EmailSettingsTrait;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
@@ -65,7 +66,7 @@ abstract class AbstractListsAction extends AbstractTemplateRenderingAction imple
     /**
      * Constructor.
      *
-     * @param AuthManager                  $authManager            Authentication manager
+     * @param ?UserEntityInterface         $currentUser            Current user
      * @param UserListServiceInterface     $userListService        User list database service
      * @param UserResourceServiceInterface $userResourceService    User resource database service
      * @param FavoritesService             $favoritesService       Favorites service
@@ -76,7 +77,8 @@ abstract class AbstractListsAction extends AbstractTemplateRenderingAction imple
      * @param RecommendPluginManager       $recommendPluginManager Recommendation plugin manager
      */
     public function __construct(
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         #[Autowire(container: DbServicePluginManager::class)]
         protected UserListServiceInterface $userListService,
         #[Autowire(container: DbServicePluginManager::class)]

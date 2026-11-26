@@ -36,7 +36,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\IllRequestsHelper;
 use VuFind\ActionHelper\LoginHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Type\AuditEventSubtype;
@@ -62,13 +63,14 @@ class ListAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param AuthManager                $authManager       Authentication manager
+     * @param ?UserEntityInterface       $currentUser       Current user
      * @param AuditEventServiceInterface $auditEventService Audit event service
      * @param Connection                 $ilsConnection     ILS connection
      * @param RecordsHelper              $ilsRecordsHelper  ILS records helper
      */
     public function __construct(
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         #[Autowire(container: DbServicePluginManager::class)]
         protected AuditEventServiceInterface $auditEventService,
         protected Connection $ilsConnection,
@@ -111,7 +113,7 @@ class ListAction extends AbstractTemplateRenderingAction
             $this->auditEventService->addEvent(
                 AuditEventType::ILS,
                 AuditEventSubtype::CancelILLRequests,
-                $this->authManager->getUserObject(),
+                $this->currentUser,
                 data: [
                     'username' => $patron['cat_username'],
                     'results' => $cancelResults,

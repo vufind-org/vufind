@@ -81,7 +81,7 @@ class ChangePasswordAction extends AbstractAccountAction
         UserSessionPersistenceInterface $userSessionService,
         #[Autowire(container: DbServicePluginManager::class)]
         AuditEventServiceInterface $auditEventService,
-        #[Autowire(container: \VuFind\Application\UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        #[Autowire(container: \VuFind\Application\CurrentContext::class, service: 'AbsoluteBaseUrl')]
         string $absoluteBaseUrl,
         Mailer $mailer,
         Connection $ilsConnection,

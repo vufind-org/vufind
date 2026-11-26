@@ -36,7 +36,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\LoginHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Type\AuditEventSubtype;
@@ -75,7 +76,7 @@ class ListAction extends AbstractCheckoutsAction
      * @param Connection                 $ilsConnection     ILS connection
      * @param RecordsHelper              $ilsRecordsHelper  ILS records helper
      * @param RenewalsHelper             $ilsRenewalsHelper ILS Renewals helper
-     * @param AuthManager                $authManager       Authentication manager
+     * @param ?UserEntityInterface       $currentUser       Current user
      * @param AuditEventServiceInterface $auditEventService Audit event service
      */
     public function __construct(
@@ -87,7 +88,8 @@ class ListAction extends AbstractCheckoutsAction
         Connection $ilsConnection,
         RecordsHelper $ilsRecordsHelper,
         protected RenewalsHelper $ilsRenewalsHelper,
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         #[Autowire(container: DbServicePluginManager::class)]
         protected AuditEventServiceInterface $auditEventService,
     ) {
@@ -133,7 +135,7 @@ class ListAction extends AbstractCheckoutsAction
             $this->auditEventService->addEvent(
                 AuditEventType::ILS,
                 AuditEventSubtype::RenewLoans,
-                $this->authManager->getUserObject(),
+                $this->currentUser,
                 data: [
                     'username' => $patron['cat_username'],
                     'result' => $renewResult,

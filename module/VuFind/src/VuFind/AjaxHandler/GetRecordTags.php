@@ -30,7 +30,9 @@
 namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Application\CurrentContext;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Tags\TagsService;
 use VuFind\View\Renderer\TemplateRendererInterface;
 
@@ -54,6 +56,7 @@ class GetRecordTags extends AbstractBase
      */
     public function __construct(
         protected TagsService $tagsService,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
         protected ?UserEntityInterface $user,
         protected TemplateRendererInterface $renderer,
     ) {

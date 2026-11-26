@@ -38,9 +38,10 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
+use VuFind\Application\CurrentContext;
 use VuFind\Auth\EmailAuthenticator;
-use VuFind\Auth\Manager as AuthManager;
 use VuFind\Auth\UserSessionPersistenceInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\UserCardServiceInterface;
@@ -64,7 +65,7 @@ class DeleteCardAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param AuthManager                     $authManager        Authentication manager
+     * @param ?UserEntityInterface            $currentUser        Current user
      * @param UserCardServiceInterface        $userCardService    User card database service
      * @param Connection                      $ilsConnection      ILS connection
      * @param AuditEventServiceInterface      $auditEventService  Audit event service
@@ -72,7 +73,8 @@ class DeleteCardAction extends AbstractTemplateRenderingAction
      * @param UserSessionPersistenceInterface $userSession        User session
      */
     public function __construct(
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         #[Autowire(container: DbServicePluginManager::class)]
         protected UserCardServiceInterface $userCardService,
         protected Connection $ilsConnection,
@@ -98,7 +100,7 @@ class DeleteCardAction extends AbstractTemplateRenderingAction
         ResponseInterface $response,
     ): ResponseInterface {
         // Force login:
-        if (!($user = $this->authManager->getUserObject())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 
@@ -109,12 +111,12 @@ class DeleteCardAction extends AbstractTemplateRenderingAction
 
         // Have we confirmed this?
         if ($this->getPostOrQueryParam('confirm')) {
-            $this->userCardService->deleteLibraryCard($user, $cardID);
+            $this->userCardService->deleteLibraryCard($this->currentUser, $cardID);
 
             $this->auditEventService->addEvent(
                 AuditEventType::User,
                 AuditEventSubtype::DeleteCard,
-                $user,
+                $this->currentUser,
                 data: [
                     'card_id' => $cardID,
                 ]

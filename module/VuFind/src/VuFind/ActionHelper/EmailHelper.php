@@ -30,8 +30,9 @@
 namespace VuFind\ActionHelper;
 
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\Feature\EmailSettingsTrait;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Validator\EmailAddressValidator;
 
@@ -53,12 +54,13 @@ class EmailHelper implements HelperInterface
     /**
      * Constructor.
      *
-     * @param AuthManager           $authManager    Authentication manager
+     * @param ?UserEntityInterface  $currentUser    Current user
      * @param EmailAddressValidator $emailValidator Email address validator
      * @param array                 $config         VuFind configuration
      */
     public function __construct(
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         protected EmailAddressValidator $emailValidator,
         #[Autowire(config: 'config')]
         protected array $config,
@@ -83,7 +85,6 @@ class EmailHelper implements HelperInterface
         $params['disableFrom'] = (bool)($this->config['Mail']['disable_from'] ?? false);
         $params['editableSubject'] = (bool)($this->config['Mail']['user_editable_subjects'] ?? false);
         $params['maxRecipients'] = intval($this->config['Mail']['maximum_recipients'] ?? 1);
-        $user = $this->authManager->getUserObject();
 
         // Send parameters back to view so form can be re-populated:
         if ($request->getMethod() === 'POST') {
@@ -99,13 +100,13 @@ class EmailHelper implements HelperInterface
         }
 
         // Set default values if applicable:
-        if (empty($params['to']) && $user && ($this->config['Mail']['user_email_in_to'] ?? false)) {
-            $params['to'] = $user->getEmail();
+        if (empty($params['to']) && $this->currentUser && ($this->config['Mail']['user_email_in_to'] ?? false)) {
+            $params['to'] = $this->currentUser->getEmail();
         }
         if (empty($params['from'])) {
-            if ($user && ($this->config['Mail']['user_email_in_from'] ?? false)) {
+            if ($this->currentUser && ($this->config['Mail']['user_email_in_from'] ?? false)) {
                 $params['userEmailInFrom'] = true;
-                $params['from'] = $user->getEmail();
+                $params['from'] = $this->currentUser->getEmail();
             } elseif ($this->config['Mail']['default_from'] ?? false) {
                 $params['from'] = $this->config['Mail']['default_from'];
             }

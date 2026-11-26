@@ -34,9 +34,10 @@ namespace VuFind\Action\Search;
 use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\ConfigManager;
 use VuFind\ContentBlock\BlockLoader;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\ILS\Connection;
@@ -79,7 +80,7 @@ class ReservesSearchAction extends AbstractSearchAndResultsAction
      * @param RecordRouter               $recordRouter               Record router
      * @param ManagerInterface           $sessionManager             Session manager
      * @param SearchServiceInterface     $searchService              Search service
-     * @param AuthManager                $authManager                Authentication manager
+     * @param ?UserEntityInterface       $currentUser                Current user
      * @param SearchNormalizer           $searchNormalizer           Search normalize
      * @param ResultFeed                 $resultFeedHelper           Result feed view helper
      * @param ThemeInfo                  $themeInfo                  Theme info
@@ -100,7 +101,8 @@ class ReservesSearchAction extends AbstractSearchAndResultsAction
         ManagerInterface $sessionManager,
         #[Autowire(container: DbServicePluginManager::class)]
         SearchServiceInterface $searchService,
-        AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        ?UserEntityInterface $currentUser,
         SearchNormalizer $searchNormalizer,
         #[Autowire(container: 'ViewHelperManager')]
         ResultFeed $resultFeedHelper,
@@ -121,7 +123,7 @@ class ReservesSearchAction extends AbstractSearchAndResultsAction
             $recordRouter,
             $sessionManager,
             $searchService,
-            $authManager,
+            $currentUser,
             $searchNormalizer,
             $resultFeedHelper,
             $themeInfo,

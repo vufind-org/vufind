@@ -41,7 +41,7 @@ use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Db\Connection;
@@ -157,7 +157,7 @@ class LoggerFactory implements FactoryInterface
     /**
      * Configure Office365 writers.
      *
-     * @param Logger             $logger    Logger object
+     * @param MonologLogger      $logger    Logger object
      * @param array              $config    Configuration
      * @param ContainerInterface $container Service manager
      *
@@ -326,8 +326,7 @@ class LoggerFactory implements FactoryInterface
 
         if (in_array('username', $referenceIds)) {
             try {
-                $authManager = $container->get(AuthManager::class);
-                if ($user = $authManager->getUserObject()) {
+                if ($user = $container->get(CurrentContext::class)->get('CurrentUser')) {
                     $monologLogger->pushProcessor(function (LogRecord $record) use ($user) {
                         $record['extra'] = array_merge($record['extra'], [
                             'username' => $user->getUsername(),
@@ -336,7 +335,7 @@ class LoggerFactory implements FactoryInterface
                     });
                 }
             } catch (ServiceNotFoundException | ServiceNotCreatedException $e) {
-                error_log('VuFind Log: Could not get AuthManager for ReferenceId processor: ' . $e->getMessage());
+                error_log('VuFind Log: Could not get current user for ReferenceId processor: ' . $e->getMessage());
             }
         }
         if (in_array('ip', $referenceIds)) {

@@ -30,7 +30,7 @@
 
 namespace VuFind\Content\Covers;
 
-use VuFind\Application\UriRegistry;
+use VuFind\Application\CurrentContext;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFindTheme\ThemeInfo;
 
@@ -56,7 +56,7 @@ class Demo extends \VuFind\Content\AbstractCover
      */
     public function __construct(
         protected ThemeInfo $themeInfo,
-        #[Autowire(container: UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        #[Autowire(container: CurrentContext::class, service: 'AbsoluteBaseUrl')]
         protected string $baseUrl
     ) {
         $this->directUrls = true;

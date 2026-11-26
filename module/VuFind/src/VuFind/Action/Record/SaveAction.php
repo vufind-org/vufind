@@ -40,7 +40,7 @@ use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\PermissionHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\ActionHelper\UserContentHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\ConfigManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
@@ -79,7 +79,7 @@ class SaveAction extends AbstractRecordAction implements TranslatorAwareInterfac
      *
      * @param SearchMemory                 $searchMemory        Search memory
      * @param TabManager                   $tabManager          Tab manager
-     * @param AuthManager                  $authManager         Authentication manager
+     * @param ?UserEntityInterface         $currentUser         Current user
      * @param ConfigManager                $configManager       Configuration manager
      * @param RecordLoader                 $recordLoader        Record loader
      * @param RecordRouter                 $recordRouter        Record router
@@ -93,7 +93,8 @@ class SaveAction extends AbstractRecordAction implements TranslatorAwareInterfac
     public function __construct(
         SearchMemory $searchMemory,
         TabManager $tabManager,
-        AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        ?UserEntityInterface $currentUser,
         ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
@@ -110,7 +111,7 @@ class SaveAction extends AbstractRecordAction implements TranslatorAwareInterfac
         parent::__construct(
             $searchMemory,
             $tabManager,
-            $authManager,
+            $currentUser,
             $configManager,
             $recordLoader,
             $recordRouter,
@@ -144,13 +145,13 @@ class SaveAction extends AbstractRecordAction implements TranslatorAwareInterfac
         }
 
         // Retrieve user object and force login if necessary:
-        if (!($user = $this->getUser())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 
         // Process form submission:
         if ($this->getHelper(FormHelper::class)->formWasSubmitted($request)) {
-            return $this->processSave($request, $response, $user);
+            return $this->processSave($request, $response, $this->currentUser);
         }
 
         // If we got this far, we should save the referrer for later use by the
@@ -180,7 +181,7 @@ class SaveAction extends AbstractRecordAction implements TranslatorAwareInterfac
             $driver->getUniqueID(),
             $driver->getSourceIdentifier(),
             null,
-            $user
+            $this->currentUser
         );
         foreach ($resources as $userResource) {
             if ($currentList = $userResource->getUserList()) {
@@ -190,7 +191,7 @@ class SaveAction extends AbstractRecordAction implements TranslatorAwareInterfac
 
         // Loop through all user lists and sort out containing/non-containing lists
         $containingLists = $nonContainingLists = [];
-        foreach ($this->userListService->getUserListsByUser($user) as $list) {
+        foreach ($this->userListService->getUserListsByUser($this->currentUser) as $list) {
             // Assign list to appropriate array based on whether or not we found
             // it earlier in the list of lists containing the selected record.
             if (in_array($list->getId(), $listIds)) {

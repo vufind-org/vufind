@@ -34,7 +34,7 @@ namespace VuFind\Action\SearchHistory;
 use Exception;
 use Laminas\Session\ManagerInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\SearchEntityInterface;
@@ -65,7 +65,7 @@ abstract class AbstractSearchHistoryAction extends AbstractTemplateRenderingActi
      * Constructor.
      *
      * @param array                      $config                     VuFind configuration
-     * @param AuthManager                $authManager                Authentication manager
+     * @param ?UserEntityInterface       $currentUser                Current user
      * @param AuditEventServiceInterface $auditEventService          Audit event service
      * @param ManagerInterface           $sessionManager             Session manager
      * @param AccountCapabilities        $accountCapabilities        Account capabilities
@@ -79,7 +79,8 @@ abstract class AbstractSearchHistoryAction extends AbstractTemplateRenderingActi
     public function __construct(
         #[Autowire(config: 'config')]
         protected array $config,
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         #[Autowire(container: DbServicePluginManager::class)]
         protected AuditEventServiceInterface $auditEventService,
         protected ManagerInterface $sessionManager,

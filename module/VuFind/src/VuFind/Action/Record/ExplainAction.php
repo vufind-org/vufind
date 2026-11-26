@@ -33,8 +33,9 @@ namespace VuFind\Action\Record;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\ConfigManager;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordTab\TabManager;
@@ -60,7 +61,7 @@ class ExplainAction extends AbstractRecordAction
      *
      * @param SearchMemory             $searchMemory             Search memory
      * @param TabManager               $tabManager               Tab manager
-     * @param AuthManager              $authManager              Authentication manager
+     * @param ?UserEntityInterface     $currentUser              Current user
      * @param ConfigManager            $configManager            Configuration manager
      * @param RecordLoader             $recordLoader             Record loader
      * @param RecordRouter             $recordRouter             Record router
@@ -71,7 +72,8 @@ class ExplainAction extends AbstractRecordAction
     public function __construct(
         SearchMemory $searchMemory,
         TabManager $tabManager,
-        AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        ?UserEntityInterface $currentUser,
         ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
@@ -83,7 +85,7 @@ class ExplainAction extends AbstractRecordAction
         parent::__construct(
             $searchMemory,
             $tabManager,
-            $authManager,
+            $currentUser,
             $configManager,
             $recordLoader,
             $recordRouter,

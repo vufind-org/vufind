@@ -34,7 +34,8 @@ use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\ContextHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Export\Zotero\ZoteroService;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -57,15 +58,16 @@ abstract class AbstractZoteroAction extends AbstractTemplateRenderingAction impl
     /**
      * Constructor.
      *
-     * @param ManagerInterface $sessionManager   Session manager
-     * @param AuthManager      $authManager      Authentication manager
-     * @param ZoteroService    $zoteroService    Zotero service
-     * @param Container        $sessionContainer Session container
+     * @param ManagerInterface     $sessionManager   Session manager
+     * @param ?UserEntityInterface $currentUser      Current user
+     * @param ZoteroService        $zoteroService    Zotero service
+     * @param Container            $sessionContainer Session container
      */
     #[Autowire]
     public function __construct(
         protected ManagerInterface $sessionManager,
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         protected ZoteroService $zoteroService,
         #[Autowire(container: SessionContainerRegistry::class, service: 'zotero')]
         protected Container $sessionContainer,

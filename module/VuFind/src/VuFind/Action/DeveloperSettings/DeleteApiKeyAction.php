@@ -63,7 +63,7 @@ class DeleteApiKeyAction extends AbstractDeveloperSettingsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        if (!$user = $this->authManager->getUserObject()) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
         if (
@@ -76,7 +76,7 @@ class DeleteApiKeyAction extends AbstractDeveloperSettingsAction
         if ($this->getPostOrQueryParam('confirm') === '1') {
             $flashMessagesHelper = $this->getHelper(FlashMessagesHelper::class);
             $id = $this->getPostOrQueryParam('id');
-            if ($id && $this->developerSettingsService->deleteApiKeyForUser($user, $id)) {
+            if ($id && $this->developerSettingsService->deleteApiKeyForUser($this->currentUser, $id)) {
                 $flashMessagesHelper->addSuccessMessage('Developer::api_key_deletion_success');
             } else {
                 $flashMessagesHelper->addErrorMessage('An error has occurred');

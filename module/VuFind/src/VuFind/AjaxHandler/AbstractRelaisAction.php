@@ -29,9 +29,11 @@
 
 namespace VuFind\AjaxHandler;
 
+use VuFind\Application\CurrentContext;
 use VuFind\Connection\Relais;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
@@ -52,12 +54,13 @@ abstract class AbstractRelaisAction extends AbstractBase implements TranslatorAw
      *
      * @param SessionSettings      $ss     Session settings
      * @param Relais               $relais Relais connector
-     * @param ?UserEntityInterface $user   Logged in user (or null if none)
+     * @param ?UserEntityInterface $user   Logged in user (or null)
      */
     public function __construct(
         SessionSettings $ss,
         protected Relais $relais,
-        protected ?UserEntityInterface $user
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $user,
     ) {
         parent::__construct($ss);
     }

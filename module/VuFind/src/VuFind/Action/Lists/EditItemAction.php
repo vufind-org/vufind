@@ -37,7 +37,6 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
-use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\RecordDriver\AbstractBase as AbstractDriver;
 
@@ -68,7 +67,7 @@ class EditItemAction extends AbstractListsAction
         ResponseInterface $response,
     ): ResponseInterface {
         // Force login:
-        if (!($user = $this->authManager->getUserObject())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 
@@ -82,7 +81,7 @@ class EditItemAction extends AbstractListsAction
 
         // Process save action if necessary:
         if ($this->getHelper(FormHelper::class)->formWasSubmitted($request)) {
-            $this->processEditSubmit($user, $driver);
+            $this->processEditSubmit($driver);
             $redirectHelper = $this->getHelper(RedirectHelper::class);
             return null === $listID
                 ? $redirectHelper->redirectToRoute($response, 'lists-allitems')
@@ -90,7 +89,7 @@ class EditItemAction extends AbstractListsAction
         }
 
         // Get saved favorites for selected list (or all lists if $listID is null)
-        $userResources = $this->userResourceService->getFavoritesForRecord($id, $source, $listID, $user);
+        $userResources = $this->userResourceService->getFavoritesForRecord($id, $source, $listID, $this->currentUser);
         $savedData = [];
         foreach ($userResources as $current) {
             // There should always be list data based on the way we retrieve this result, but check just in case.
@@ -99,7 +98,8 @@ class EditItemAction extends AbstractListsAction
                     'listId' => $currentList->getId(),
                     'listTitle' => $currentList->getTitle(),
                     'notes' => $current->getNotes(),
-                    'tags' => $this->favoritesService->getTagStringForEditing($user, $currentList, $id, $source),
+                    'tags' => $this->favoritesService
+                        ->getTagStringForEditing($this->currentUser, $currentList, $id, $source),
                 ];
             }
         }
@@ -108,7 +108,7 @@ class EditItemAction extends AbstractListsAction
         // the previous lookup was limited to a particular list ID:
         $containingLists = [];
         if (!empty($listID)) {
-            $userResources = $this->userResourceService->getFavoritesForRecord($id, $source, null, $user);
+            $userResources = $this->userResourceService->getFavoritesForRecord($id, $source, null, $this->currentUser);
         }
         foreach ($userResources as $current) {
             if ($currentList = $current->getUserList()) {
@@ -117,7 +117,7 @@ class EditItemAction extends AbstractListsAction
         }
 
         // Send non-containing lists to the view for user selection:
-        $userLists = $this->userListService->getUserListsByUser($user);
+        $userLists = $this->userListService->getUserListsByUser($this->currentUser);
         $lists = [];
         foreach ($userLists as $userList) {
             if (!in_array($userList->getId(), $containingLists)) {
@@ -131,12 +131,11 @@ class EditItemAction extends AbstractListsAction
     /**
      * Process the submission of the edit favorite form.
      *
-     * @param UserEntityInterface $user   Logged-in user
-     * @param AbstractDriver      $driver Record driver for favorite
+     * @param AbstractDriver $driver Record driver for favorite
      *
      * @return void
      */
-    protected function processEditSubmit(UserEntityInterface $user, AbstractDriver $driver): void
+    protected function processEditSubmit(AbstractDriver $driver): void
     {
         $lists = (array)$this->getPostParam('lists', []);
         $didSomething = false;
@@ -148,7 +147,7 @@ class EditItemAction extends AbstractListsAction
                     'mytags'  => $this->tagsService->parse($tags),
                     'notes' => $this->getPostParam('notes' . $list),
                 ],
-                $user,
+                $this->currentUser,
                 $driver
             );
             $didSomething = true;
@@ -157,7 +156,7 @@ class EditItemAction extends AbstractListsAction
         $addToList = $this->getPostParam('addToList');
         if ($addToList > -1) {
             $didSomething = true;
-            $this->favoritesService->saveRecordToFavorites(['list' => $addToList], $user, $driver);
+            $this->favoritesService->saveRecordToFavorites(['list' => $addToList], $this->currentUser, $driver);
         }
         if ($didSomething) {
             $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage('edit_list_success');

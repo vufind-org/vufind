@@ -29,10 +29,12 @@
 
 namespace VuFind\AjaxHandler;
 
+use VuFind\Application\CurrentContext;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Connection;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Renderer\TemplateRendererInterface;
 
@@ -62,6 +64,7 @@ abstract class AbstractIlsUserAndRendererAction extends AbstractBase implements 
         SessionSettings $ss,
         protected Connection $ils,
         protected ILSAuthenticator $ilsAuthenticator,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
         protected ?UserEntityInterface $user,
         protected TemplateRendererInterface $renderer
     ) {

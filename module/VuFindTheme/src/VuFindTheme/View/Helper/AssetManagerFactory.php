@@ -34,7 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Application\UriRegistry;
+use VuFind\Application\CurrentContext;
 
 use function count;
 
@@ -106,7 +106,7 @@ class AssetManagerFactory implements FactoryInterface
         return new $requestedName(
             $container->get(\VuFindTheme\ThemeInfo::class),
             $container->get(\VuFindTheme\AssetPipeline::class),
-            $container->get(UriRegistry::class)->get('BaseUrlPath'),
+            $container->get(CurrentContext::class)->get('BaseUrlPath'),
             $viewHelperManager->get(\Laminas\View\Helper\HeadLink::class),
             $viewHelperManager->get(\Laminas\View\Helper\HeadStyle::class),
             $viewHelperManager->get(\Laminas\View\Helper\InlineScript::class),

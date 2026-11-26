@@ -74,7 +74,7 @@ abstract class AbstractRedirectToEBookAction extends AbstractRecordAction
         $driver = $this->loadRecord($params, true);
         // If the user is a guest, redirect them to the login screen.
         if (!$this->getHelper(PermissionHelper::class)->isAuthorized('access.EDSExtendedResults')) {
-            if (!$this->getUser()) {
+            if (!$this->currentUser) {
                 return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
             }
             throw new ForbiddenException('Access denied.');

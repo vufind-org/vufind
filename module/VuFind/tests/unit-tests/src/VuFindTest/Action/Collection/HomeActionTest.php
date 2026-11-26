@@ -34,8 +34,8 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Http\Message\ResponseInterface;
 use VuFind\Action\Collection\HomeAction;
 use VuFind\ActionHelper\RedirectHelper;
-use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\ConfigManager;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Http\RouteHelper;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\Router as RecordRouter;
@@ -89,7 +89,7 @@ class HomeActionTest extends AbstractActionTestCase
         $action = new HomeAction(
             $searchMemory ?? $this->createStub(SearchMemory::class),
             $this->createStub(TabManager::class),
-            $this->createStub(AuthManager::class),
+            $this->createStub(UserEntityInterface::class),
             $this->createStub(ConfigManager::class),
             $recordLoader,
             $recordRouter ?? $this->createStub(RecordRouter::class),

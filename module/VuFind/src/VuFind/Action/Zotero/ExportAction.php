@@ -65,7 +65,7 @@ class ExportAction extends AbstractZoteroAction
         $this->storeReferrer($request);
 
         // Require logged-in user so that we can manage the access token:
-        if (!($user = $this->authManager->getUserObject())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 
@@ -76,7 +76,7 @@ class ExportAction extends AbstractZoteroAction
 
         $flashMessagesHelper = $this->getHelper(FlashMessagesHelper::class);
         try {
-            $result = $this->zoteroService->export($user, $callbackUrl);
+            $result = $this->zoteroService->export($this->currentUser, $callbackUrl);
             if (is_string($result)) {
                 return $this->getHelper(RedirectHelper::class)->redirectToUrl($response, $result);
             }
