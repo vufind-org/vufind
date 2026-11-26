@@ -33,7 +33,6 @@ use Exception;
 use MatthiasMullie\Minify\Minify;
 use Psr\Log\LoggerAwareInterface;
 use VuFind\Log\LoggerAwareTrait;
-use VuFind\View\Helper\Root\Url;
 use VuFindTheme\View\Helper\RelativePathTrait;
 
 use function count;
