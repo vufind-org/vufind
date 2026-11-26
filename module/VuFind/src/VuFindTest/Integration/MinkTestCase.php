@@ -1584,7 +1584,6 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         // further actions in any setUp methods of child classes):
         if (!$this->continuousIntegrationRunning()) {
             $this->markTestSkipped('Continuous integration not running.');
-            return;
         }
 
         // Reset the modified configs list.
