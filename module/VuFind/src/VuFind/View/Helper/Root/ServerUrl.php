@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Http\ServerUrlHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Server URL helper.
@@ -47,6 +48,7 @@ class ServerUrl
      *
      * @param ServerUrlHelper $serverUrlHelper Server URL helper
      */
+    #[Autowire]
     public function __construct(
         protected ServerUrlHelper $serverUrlHelper,
     ) {

@@ -29,7 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Escaper\Escaper;
 use Laminas\Escaper\EscaperInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\String\PropertyStringInterface;
