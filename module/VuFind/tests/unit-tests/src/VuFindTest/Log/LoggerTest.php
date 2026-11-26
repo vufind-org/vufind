@@ -159,7 +159,6 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
         ];
 
         $method = new \ReflectionMethod($logger, 'fillInMissingDetails');
-        $method->setAccessible(true);
 
         $result = $method->invoke($logger, $context);
 
