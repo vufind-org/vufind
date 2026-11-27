@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c40584325d349a2b25cf0f94cdf47302",
+    "content-hash": "a15e4c40de08e81d73fe005bf354c309",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -8332,16 +8332,16 @@
         },
         {
             "name": "swagger-api/swagger-ui",
-            "version": "v5.34.0",
+            "version": "v5.36.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swagger-api/swagger-ui.git",
-                "reference": "a3d333d7e99611288312d597c4023ee10df721e0"
+                "reference": "d157bfe091710f3a21d4c3be55985293d84b6e57"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/a3d333d7e99611288312d597c4023ee10df721e0",
-                "reference": "a3d333d7e99611288312d597c4023ee10df721e0",
+                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/d157bfe091710f3a21d4c3be55985293d84b6e57",
+                "reference": "d157bfe091710f3a21d4c3be55985293d84b6e57",
                 "shasum": ""
             },
             "type": "library",
@@ -8387,9 +8387,9 @@
             ],
             "support": {
                 "issues": "https://github.com/swagger-api/swagger-ui/issues",
-                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.34.0"
+                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.36.0"
             },
-            "time": "2026-10-19T12:14:19+00:00"
+            "time": "2026-11-23T07:25:52+00:00"
         },
         {
             "name": "symfony/console",
@@ -15440,15 +15440,15 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.2"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "platform-overrides": {
         "php": "8.2"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
