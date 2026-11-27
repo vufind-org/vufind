@@ -179,7 +179,14 @@ class VersionsAction extends AbstractSearchAndResultsAction
         string $searchClassId,
         ?callable $setupCallback = null
     ): array {
-        $templateParams = parent::getSearchResultsTemplateParams($request, $searchClassId, $setupCallback);
+        try {
+            $templateParams = parent::getSearchResultsTemplateParams($request, $searchClassId, $setupCallback);
+        } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
+            return $this->redirectToLegalSearchPage(
+                $request->getQueryParams() + $request->getParsedBody(),
+                $e->getLegalPage()
+            );
+        }
         if (null !== $this->recordId) {
             $templateParams['driver'] = $this->recordLoader->load($this->recordId, $this->getBackendId());
         }
