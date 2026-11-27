@@ -31,7 +31,9 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\View\Helper\EscapeHtml;
 use Laminas\View\Helper\PaginationControl;
+use Laminas\View\HelperPluginManager;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Application\CurrentContext;
 use VuFind\Cart;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Record\Loader as RecordLoader;
@@ -40,6 +42,7 @@ use VuFind\Search\Memory;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\ResultScroller;
 use VuFind\Search\SearchNormalizer;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\LocalizedNumber;
 use VuFind\View\Renderer\TemplateRendererInterface;
@@ -131,15 +134,21 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         protected ResultsManager $resultsManager,
         protected TemplateRendererInterface $renderer,
         protected RecordLoader $recordLoader,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
         protected ?UserEntityInterface $user,
+        #[Autowire(container: CurrentContext::class, service: 'SessionId')]
         protected string $sessionId,
         protected SearchNormalizer $searchNormalizer,
+        #[Autowire(config: 'config')]
         protected array $config,
         protected Memory $searchMemory,
         protected ResultScroller $resultScroller,
         protected Cart $cart,
+        #[Autowire(container: HelperPluginManager::class)]
         protected PaginationControl $paginationControl,
+        #[Autowire(container: HelperPluginManager::class)]
         protected LocalizedNumber $localizedNumber,
+        #[Autowire(container: HelperPluginManager::class)]
         protected EscapeHtml $escapeHtml,
     ) {
         parent::__construct($sessionSettings);

@@ -36,9 +36,10 @@ use Laminas\Session\Container;
 use Laminas\Session\ManagerInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\Action\HandleIlsExceptionsTrait;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Cache\CacheTrait;
 use VuFind\Cache\Manager as CacheManager;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventService;
 use VuFind\ILS\Connection;
 use VuFind\ILS\PaginationHelper;
@@ -70,17 +71,18 @@ abstract class AbstractHoldAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param Connection        $ilsConnection     ILS connection
-     * @param ManagerInterface  $sessionManager    Session manager
-     * @param AuthManager       $authManager       Authentication manager
-     * @param CsrfInterface     $csrf              CSRF validator
-     * @param AuditEventService $auditEventService Audit event service
-     * @param StorageInterface  $objectCache       Object cache
+     * @param Connection           $ilsConnection     ILS connection
+     * @param ManagerInterface     $sessionManager    Session manager
+     * @param ?UserEntityInterface $currentUser       Current user
+     * @param CsrfInterface        $csrf              CSRF validator
+     * @param AuditEventService    $auditEventService Audit event service
+     * @param StorageInterface     $objectCache       Object cache
      */
     public function __construct(
         protected Connection $ilsConnection,
         protected ManagerInterface $sessionManager,
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         protected CsrfInterface $csrf,
         protected AuditEventService $auditEventService,
         #[Autowire(container: CacheManager::class, service: 'object')]

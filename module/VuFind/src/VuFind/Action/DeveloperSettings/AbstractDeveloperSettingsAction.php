@@ -32,7 +32,8 @@
 namespace VuFind\Action\DeveloperSettings;
 
 use VuFind\Action\AbstractTemplateRenderingAction;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
 use VuFind\ServiceManager\Factory\Autowire;
 
@@ -52,12 +53,13 @@ abstract class AbstractDeveloperSettingsAction extends AbstractTemplateRendering
      * Constructor.
      *
      * @param DeveloperSettingsService $developerSettingsService Developer settings service
-     * @param AuthManager              $authManager              Authentication manager
+     * @param ?UserEntityInterface     $currentUser              Current user
      */
     #[Autowire]
     public function __construct(
         protected DeveloperSettingsService $developerSettingsService,
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
     ) {
     }
 }

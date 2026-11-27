@@ -34,7 +34,8 @@ namespace VuFind\Action\Fines;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\LoginHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PaymentServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
@@ -62,7 +63,7 @@ class ReceiptAction extends AbstractFinesAction
     /**
      * Constructor.
      *
-     * @param AuthManager                $authManager          Authentication manager
+     * @param ?UserEntityInterface       $currentUser          Current user
      * @param Connection                 $ilsConnection        ILS connection
      * @param RecordsHelper              $ilsRecordsHelper     ILS records helper
      * @param CurrencyFormatter          $currencyFormatter    Currency formatter
@@ -73,7 +74,8 @@ class ReceiptAction extends AbstractFinesAction
      * @param Receipt                    $receipt              Receipt creator
      */
     public function __construct(
-        AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        ?UserEntityInterface $currentUser,
         Connection $ilsConnection,
         RecordsHelper $ilsRecordsHelper,
         CurrencyFormatter $currencyFormatter,
@@ -87,7 +89,7 @@ class ReceiptAction extends AbstractFinesAction
         protected Receipt $receipt,
     ) {
         parent::__construct(
-            $authManager,
+            $currentUser,
             $ilsConnection,
             $ilsRecordsHelper,
             $currencyFormatter,

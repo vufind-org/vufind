@@ -36,7 +36,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ILS\Connection;
-use VuFind\Search\Base\Results;
 use VuFind\Search\ReservesHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 

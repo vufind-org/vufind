@@ -34,7 +34,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Exception\BadRequest as BadRequestException;
@@ -61,14 +62,15 @@ class AuthorizeAction extends AbstractOAuth2Action
      * Constructor.
      *
      * @param OAuth2ServerService         $oauth2Service      OAuth2 server service
-     * @param AuthManager                 $authManager        Authentication manager
+     * @param ?UserEntityInterface        $currentUser        Current user
      * @param CsrfInterface               $csrf               CSRF validator
      * @param AccessTokenServiceInterface $accessTokenService Access token database service
      * @param Connection                  $ilsConnection      ILS connection
      */
     public function __construct(
         OAuth2ServerService $oauth2Service,
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         protected CsrfInterface $csrf,
         #[Autowire(container: DbServicePluginManager::class)]
         protected AccessTokenServiceInterface $accessTokenService,
@@ -98,7 +100,7 @@ class AuthorizeAction extends AbstractOAuth2Action
             throw new BadRequestException("Invalid OAuth2 client $clientId");
         }
 
-        if (!($user = $this->authManager->getUserObject())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)
                 ->forceLogin($request, $response, 'external_auth_access_login_message');
         }
@@ -136,9 +138,9 @@ class AuthorizeAction extends AbstractOAuth2Action
 
             // Store OpenID nonce (or null if not present to clear any existing one) in the access
             // token table so that it can be retrieved for token or user info action:
-            $this->accessTokenService->storeNonce($user->getId(), $this->getQueryParam('nonce'));
+            $this->accessTokenService->storeNonce($this->currentUser->getId(), $this->getQueryParam('nonce'));
 
-            $authRequest->setUser($this->oauth2Service->getOAuth2UserEntity($user));
+            $authRequest->setUser($this->oauth2Service->getOAuth2UserEntity($this->currentUser));
             $authRequest->setAuthorizationApproved($formHelper->formWasSubmitted($request, 'allow'));
 
             try {
@@ -154,6 +156,7 @@ class AuthorizeAction extends AbstractOAuth2Action
             return $patron;
         }
         $showCatalogLoginForm = !$patron;
+        $user = $this->currentUser;
         return $this->renderTemplate(
             $request,
             $response,

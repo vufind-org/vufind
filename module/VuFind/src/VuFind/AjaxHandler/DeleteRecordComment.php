@@ -30,10 +30,14 @@
 namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Application\CurrentContext;
+use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
+use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Http\HttpStatus;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * AJAX handler to delete a comment on a record.
@@ -51,14 +55,16 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
     /**
      * Constructor.
      *
-     * @param CommentsServiceInterface $commentsService Comments database service
-     * @param ?UserEntityInterface     $user            Logged in user (or null)
-     * @param bool                     $enabled         Are comments enabled?
+     * @param CommentsServiceInterface $commentsService     Comments database service
+     * @param ?UserEntityInterface     $user                Logged in user (or null)
+     * @param AccountCapabilities      $accountCapabilities Account capabilities helper
      */
     public function __construct(
+        #[Autowire(container: DbServicePluginManager::class)]
         protected CommentsServiceInterface $commentsService,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
         protected ?UserEntityInterface $user,
-        protected bool $enabled = true
+        protected AccountCapabilities $accountCapabilities,
     ) {
         parent::__construct(null);
     }
@@ -73,7 +79,7 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
     public function handleRequest(ServerRequestInterface $request): array
     {
         // Make sure comments are enabled:
-        if (!$this->enabled) {
+        if ($this->accountCapabilities->getCommentSetting() === 'disabled') {
             return $this->formatResponse(
                 $this->translate('Comments disabled'),
                 HttpStatus::FORBIDDEN

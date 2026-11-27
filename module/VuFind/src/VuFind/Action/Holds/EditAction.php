@@ -147,7 +147,7 @@ class EditAction extends AbstractHoldAction implements TranslatorAwareInterface
                 $this->auditEventService->addEvent(
                     AuditEventType::ILS,
                     AuditEventSubtype::UpdateHolds,
-                    $this->authManager->getUserObject(),
+                    $this->currentUser,
                     data: [
                         'username' => $patron['cat_username'],
                         'results' => $results,

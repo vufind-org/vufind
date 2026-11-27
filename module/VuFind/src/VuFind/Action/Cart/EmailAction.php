@@ -38,10 +38,11 @@ use VuFind\ActionHelper\EmailHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Captcha\Service\CaptchaService;
 use VuFind\Cart;
 use VuFind\Config\AccountCapabilities;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Export;
@@ -73,15 +74,15 @@ class EmailAction extends AbstractCartAction implements TranslatorAwareInterface
     /**
      * Constructor.
      *
-     * @param Export              $export              Export handler
-     * @param Cart                $cart                Cart handler
-     * @param FollowupHelper      $followupHelper      Followup helper
-     * @param AccountCapabilities $accountCapabilities Account capabilities
-     * @param Mailer              $mailer              Mailer
-     * @param AuthManager         $authManager         Authentication manager
-     * @param RecordLoader        $recordLoader        Record loader
-     * @param CaptchaService      $captchaService      Captcha service
-     * @param ServerUrlHelper     $serverUrlHelper     Server URL helper
+     * @param Export               $export              Export handler
+     * @param Cart                 $cart                Cart handler
+     * @param FollowupHelper       $followupHelper      Followup helper
+     * @param AccountCapabilities  $accountCapabilities Account capabilities
+     * @param Mailer               $mailer              Mailer
+     * @param ?UserEntityInterface $currentUser         Current user
+     * @param RecordLoader         $recordLoader        Record loader
+     * @param CaptchaService       $captchaService      Captcha service
+     * @param ServerUrlHelper      $serverUrlHelper     Server URL helper
      */
     #[Autowire]
     public function __construct(
@@ -90,7 +91,8 @@ class EmailAction extends AbstractCartAction implements TranslatorAwareInterface
         FollowupHelper $followupHelper,
         protected AccountCapabilities $accountCapabilities,
         protected Mailer $mailer,
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         protected RecordLoader $recordLoader,
         protected CaptchaService $captchaService,
         protected ServerUrlHelper $serverUrlHelper,
@@ -140,10 +142,7 @@ class EmailAction extends AbstractCartAction implements TranslatorAwareInterface
             throw new ForbiddenException('Email action disabled');
         }
         // Force login if necessary:
-        if (
-            $emailActionSettings !== 'enabled'
-            && !$this->authManager->getUserObject()
-        ) {
+        if (!$this->currentUser && $emailActionSettings !== 'enabled') {
             return $this->getHelper(LoginHelper::class)->forceLogin(
                 $request,
                 $response,

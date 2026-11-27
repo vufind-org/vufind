@@ -30,7 +30,7 @@
 namespace VuFindTest\AjaxHandler;
 
 use VuFind\AjaxHandler\CommentRecord;
-use VuFind\AjaxHandler\CommentRecordFactory;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -39,6 +39,7 @@ use VuFind\Ratings\RatingsService;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\DefaultRecord;
+use VuFindTest\Feature\AutowireTrait;
 
 /**
  * CommentRecord test class.
@@ -51,6 +52,8 @@ use VuFind\RecordDriver\DefaultRecord;
  */
 class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
+    use AutowireTrait;
+
     /**
      * Set up a CommentRecord handler for testing.
      *
@@ -67,7 +70,13 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 
         // Set up auth manager with user:
         $authManager = $this->getMockAuthManager($user);
-        $this->container->set(\VuFind\Auth\Manager::class, $authManager);
+
+        // Set up current context with user:
+        $currentContext = $this->createMock(CurrentContext::class);
+        $currentContext->method('get')
+            ->with('CurrentUser')
+            ->willReturn($user);
+        $this->container->set(CurrentContext::class, $currentContext);
 
         // Set up capability configuration:
         $cfg = ['Social' => ['comments' => $enabled ? 'enabled' : 'disabled']];
@@ -80,8 +89,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $this->container->set(AccountCapabilities::class, $capabilities);
 
         // Build the handler:
-        $factory = new CommentRecordFactory();
-        return $factory($this->container, CommentRecord::class);
+        return $this->getAutowiredObject(CommentRecord::class, $this->container);
     }
 
     /**

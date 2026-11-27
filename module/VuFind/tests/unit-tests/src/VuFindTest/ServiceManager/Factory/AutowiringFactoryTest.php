@@ -52,6 +52,8 @@ use VuFindTest\ServiceManager\Factory\TestHarness\InvalidAutowiredClass2;
 use VuFindTest\ServiceManager\Factory\TestHarness\InvalidAutowiredClass3;
 use VuFindTest\ServiceManager\Factory\TestHarness\InvalidAutowiredClass4;
 use VuFindTest\ServiceManager\Factory\TestHarness\InvalidConfigType;
+use VuFindTest\ServiceManager\Factory\TestHarness\InvalidLazyAutowiredClass;
+use VuFindTest\ServiceManager\Factory\TestHarness\LazyAutowiredClass;
 
 /**
  * AutowiringFactory Test Class.
@@ -90,6 +92,8 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
             'Unable to autowire parameter "param" of type string; unexpected path attribute set',
         ];
         yield 'invalid config type' => [InvalidConfigType::class, 'Invalid configType yummy'];
+        yield 'lazy autowired class' => [LazyAutowiredClass::class];
+        yield 'invalid lazy autowired class' => [InvalidLazyAutowiredClass::class];
     }
 
     /**

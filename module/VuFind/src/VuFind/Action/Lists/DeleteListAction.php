@@ -71,7 +71,7 @@ class DeleteListAction extends AbstractListsAction
         }
 
         // Force login:
-        if (!($user = $this->authManager->getUserObject())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 
@@ -83,7 +83,7 @@ class DeleteListAction extends AbstractListsAction
         // Have we confirmed this?
         if ($this->getPostOrQueryParam('confirm')) {
             $list = $this->userListService->getUserListById($listID);
-            $this->favoritesService->destroyList($list, $user);
+            $this->favoritesService->destroyList($list, $this->currentUser);
             $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage('fav_list_delete');
             // Redirect to Lists home
             return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'lists-allitems');

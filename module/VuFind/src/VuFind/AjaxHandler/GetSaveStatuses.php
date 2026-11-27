@@ -30,12 +30,15 @@
 namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Application\CurrentContext;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserResourceEntityInterface;
+use VuFind\Db\Service\PluginManager as DbServiceManager;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Http\HttpStatus;
 use VuFind\Http\RouteHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Settings as SessionSettings;
 
 use function is_array;
@@ -65,8 +68,10 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
      */
     public function __construct(
         SessionSettings $ss,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
         protected ?UserEntityInterface $user,
         protected RouteHelper $routeHelper,
+        #[Autowire(container: DbServiceManager::class)]
         protected UserResourceServiceInterface $userResourceService
     ) {
         parent::__construct($ss);

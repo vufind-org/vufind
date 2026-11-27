@@ -33,7 +33,6 @@
 namespace VuFind\Action\Search;
 
 use Exception;
-use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
@@ -42,10 +41,11 @@ use VuFind\Action\CheckEnabledInterface;
 use VuFind\Action\SearchClassIdInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\RedirectHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\ConfigManager;
 use VuFind\ContentBlock\BlockLoader;
 use VuFind\Db\Entity\SearchEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Exception\ConfigException;
@@ -131,9 +131,9 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      * @param BlockLoader                $blockLoader                Content block loader
      * @param ConfigManager              $configManager              Configuration manager
      * @param RecordRouter               $recordRouter               Record router
-     * @param ManagerInterface           $sessionManager             Session manager
+     * @param string                     $sessionId                  Session ID
      * @param SearchServiceInterface     $searchService              Search service
-     * @param AuthManager                $authManager                Authentication manager
+     * @param ?UserEntityInterface       $currentUser                Current user
      * @param SearchNormalizer           $searchNormalizer           Search normalize
      * @param ResultFeed                 $resultFeedHelper           Result feed view helper
      * @param ThemeInfo                  $themeInfo                  Theme info
@@ -149,10 +149,12 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         protected BlockLoader $blockLoader,
         protected ConfigManager $configManager,
         protected RecordRouter $recordRouter,
-        protected ManagerInterface $sessionManager,
+        #[Autowire(container: CurrentContext::class, service: 'SessionId')]
+        protected string $sessionId,
         #[Autowire(container: DbServicePluginManager::class)]
         protected SearchServiceInterface $searchService,
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         protected SearchNormalizer $searchNormalizer,
         #[Autowire(container: 'ViewHelperManager')]
         protected ResultFeed $resultFeedHelper,
@@ -836,8 +838,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      */
     protected function retrieveSearchSecurely(int $searchId): ?SearchEntityInterface
     {
-        $sessId = $this->sessionManager->getId();
-        return $this->searchService->getSearchByIdAndOwner($searchId, $sessId, $this->authManager->getUserObject());
+        return $this->searchService->getSearchByIdAndOwner($searchId, $this->sessionId, $this->currentUser);
     }
 
     /**
@@ -849,12 +850,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      */
     protected function saveSearchToHistory(Results $results): void
     {
-        $sessId = $this->sessionManager->getId();
-        $this->searchNormalizer->saveNormalizedSearch(
-            $results,
-            $sessId,
-            $this->authManager->getUserObject()?->getId()
-        );
+        $this->searchNormalizer->saveNormalizedSearch($results, $this->sessionId, $this->currentUser?->getId());
     }
 
     /**

@@ -31,11 +31,13 @@ namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Account\AccountStatusLevelType;
+use VuFind\Application\CurrentContext;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Http\HttpStatus;
 use VuFind\ILS\Connection;
 use VuFind\Service\CurrencyFormatter;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Renderer\TemplateRendererInterface;
 
@@ -66,7 +68,8 @@ class GetUserFines extends AbstractIlsUserAndRendererAction
         SessionSettings $ss,
         Connection $ils,
         ILSAuthenticator $ilsAuthenticator,
-        ?UserEntityInterface $user,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $user,
         TemplateRendererInterface $renderer,
         protected CurrencyFormatter $currencyFormatter,
     ) {

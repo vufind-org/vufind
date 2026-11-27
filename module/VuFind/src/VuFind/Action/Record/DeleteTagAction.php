@@ -36,8 +36,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\UserContentHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\ConfigManager;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\Router as RecordRouter;
@@ -62,20 +63,21 @@ class DeleteTagAction extends AbstractRecordAction
     /**
      * Constructor.
      *
-     * @param SearchMemory   $searchMemory   Search memory
-     * @param TabManager     $tabManager     Tab manager
-     * @param AuthManager    $authManager    Authentication manager
-     * @param ConfigManager  $configManager  Configuration manager
-     * @param RecordLoader   $recordLoader   Record loader
-     * @param RecordRouter   $recordRouter   Record router
-     * @param ResultScroller $resultScroller Result scroller
-     * @param array          $config         VuFind configuration
-     * @param TagsService    $tagsService    Tags service
+     * @param SearchMemory         $searchMemory   Search memory
+     * @param TabManager           $tabManager     Tab manager
+     * @param ?UserEntityInterface $currentUser    Current user
+     * @param ConfigManager        $configManager  Configuration manager
+     * @param RecordLoader         $recordLoader   Record loader
+     * @param RecordRouter         $recordRouter   Record router
+     * @param ResultScroller       $resultScroller Result scroller
+     * @param array                $config         VuFind configuration
+     * @param TagsService          $tagsService    Tags service
      */
     public function __construct(
         SearchMemory $searchMemory,
         TabManager $tabManager,
-        AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        ?UserEntityInterface $currentUser,
         ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
@@ -87,7 +89,7 @@ class DeleteTagAction extends AbstractRecordAction
         parent::__construct(
             $searchMemory,
             $tabManager,
-            $authManager,
+            $currentUser,
             $configManager,
             $recordLoader,
             $recordRouter,
@@ -114,7 +116,7 @@ class DeleteTagAction extends AbstractRecordAction
         }
 
         // Force login:
-        if (!($user = $this->getUser())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 
@@ -123,7 +125,7 @@ class DeleteTagAction extends AbstractRecordAction
 
         // Delete tags, if any:
         if ($tag = $this->getPostParam('tag')) {
-            $this->tagsService->unlinkTagsFromRecord($driver, $user, [$tag]);
+            $this->tagsService->unlinkTagsFromRecord($driver, $this->currentUser, [$tag]);
             $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage(
                 [
                     'msg' => 'tags_deleted',

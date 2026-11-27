@@ -61,14 +61,13 @@ class ListAction extends AbstractSearchHistoryAction
         ResponseInterface $response,
     ): ResponseInterface {
         // Force login if necessary
-        $user = $this->authManager->getUserObject();
         if ($this->getQueryParam('require_login', 'no') !== 'no') {
             // If user is already logged in, drop the require_login parameter to allow for a cleaner log-out experience:
-            return $user
+            return $this->currentUser
                 ? $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'searchhistory-list')
                 : $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
-        $userId = $user?->getId();
+        $userId = $this->currentUser?->getId();
 
         if ($this->getQueryParam('purge')) {
             $this->searchHistory->purgeSearchHistory($userId);
@@ -84,7 +83,7 @@ class ListAction extends AbstractSearchHistoryAction
             unset($templateParams['schedule']);
         } else {
             $templateParams['scheduleOptions'] = $scheduleOptions;
-            $templateParams['alertemail'] = $user?->getEmail();
+            $templateParams['alertemail'] = $this->currentUser?->getEmail();
         }
         return $this->renderTemplate($request, $response, $templateParams);
     }

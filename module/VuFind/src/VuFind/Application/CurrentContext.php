@@ -1,7 +1,7 @@
 <?php
 
 /**
- * URI registry plugin manager.
+ * Plugin manager for current context information.
  *
  * PHP version 8
  *
@@ -29,12 +29,16 @@
 
 namespace VuFind\Application;
 
+use Closure;
+use Laminas\Session\ManagerInterface;
+use VuFind\Auth\Manager as AuthManager;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * URI registry plugin manager.
+ * Plugin manager for current context information.
  *
  * @category VuFind
  * @package  Application
@@ -42,18 +46,23 @@ use VuFind\ServiceManager\Factory\Autowire;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class UriRegistry extends \VuFind\ServiceManager\AbstractValueContainer
+class CurrentContext extends \VuFind\ServiceManager\AbstractValueContainer
 {
     /**
      * Constructor.
      *
-     * @param ServerUrlHelper $serverUrlHelper Server URL helper
-     * @param RouteHelper     $routeHelper     Route helper
+     * @param ServerUrlHelper  $serverUrlHelper    Server URL helper
+     * @param RouteHelper      $routeHelper        Route helper
+     * @param Closure          $authManagerFactory Autentication manager factory callback
+     * @param ManagerInterface $sessionManager     Session manager
      */
     #[Autowire]
     public function __construct(
         protected ServerUrlHelper $serverUrlHelper,
         protected RouteHelper $routeHelper,
+        #[Autowire(service: AuthManager::class, lazyLoad: true)]
+        protected Closure $authManagerFactory,
+        protected ManagerInterface $sessionManager,
     ) {
     }
 
@@ -85,5 +94,25 @@ class UriRegistry extends \VuFind\ServiceManager\AbstractValueContainer
     protected function getValueBaseUrlPath(): string
     {
         return $this->routeHelper->getUrlFromRoute('home');
+    }
+
+    /**
+     * Get logged-in user.
+     *
+     * @return ?UserEntityInterface
+     */
+    protected function getValueCurrentUser(): ?UserEntityInterface
+    {
+        return ($this->authManagerFactory)()->getUserObject();
+    }
+
+    /**
+     * Get session ID.
+     *
+     * @return string
+     */
+    protected function getValueSessionId(): string
+    {
+        return $this->sessionManager->getId();
     }
 }

@@ -40,7 +40,7 @@ use VuFind\Action\CheckEnabledInterface;
 use VuFind\Action\DefaultTabInterface;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\ConfigManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\ConfigException;
@@ -132,19 +132,20 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction impl
     /**
      * Constructor.
      *
-     * @param SearchMemory   $searchMemory   Search memory
-     * @param TabManager     $tabManager     Tab manager
-     * @param AuthManager    $authManager    Authentication manager
-     * @param ConfigManager  $configManager  Configuration manager
-     * @param RecordLoader   $recordLoader   Record loader
-     * @param RecordRouter   $recordRouter   Record router
-     * @param ResultScroller $resultScroller Result scroller
-     * @param array          $config         VuFind configuration
+     * @param SearchMemory         $searchMemory   Search memory
+     * @param TabManager           $tabManager     Tab manager
+     * @param ?UserEntityInterface $currentUser    Current user
+     * @param ConfigManager        $configManager  Configuration manager
+     * @param RecordLoader         $recordLoader   Record loader
+     * @param RecordRouter         $recordRouter   Record router
+     * @param ResultScroller       $resultScroller Result scroller
+     * @param array                $config         VuFind configuration
      */
     public function __construct(
         protected SearchMemory $searchMemory,
         protected TabManager $tabManager,
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         protected ConfigManager $configManager,
         protected RecordLoader $recordLoader,
         protected RecordRouter $recordRouter,
@@ -411,10 +412,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction impl
     {
         // Special case -- handle login request (currently needed for holdings tab when driver-based holds mode is
         // enabled, but may also be useful in other circumstances):
-        if (
-            $this->getQueryParam('login') == 'true'
-            && !$this->getUser()
-        ) {
+        if (!$this->currentUser && $this->getQueryParam('login') == 'true') {
             return $this->getHelper(LoginHelper::class)->forceLogin($this->request, $this->response);
         } elseif (
             $this->getQueryParam('catalogLogin') == 'true'
@@ -473,16 +471,6 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction impl
     protected function getRecordTabManager(): TabManager
     {
         return $this->tabManager;
-    }
-
-    /**
-     * Get the user object if logged in, false otherwise.
-     *
-     * @return ?UserEntityInterface
-     */
-    protected function getUser(): ?UserEntityInterface
-    {
-        return $this->authManager->getUserObject();
     }
 
     /**

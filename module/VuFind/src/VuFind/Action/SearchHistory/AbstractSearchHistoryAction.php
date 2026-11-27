@@ -32,9 +32,8 @@
 namespace VuFind\Action\SearchHistory;
 
 use Exception;
-use Laminas\Session\ManagerInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\SearchEntityInterface;
@@ -65,9 +64,9 @@ abstract class AbstractSearchHistoryAction extends AbstractTemplateRenderingActi
      * Constructor.
      *
      * @param array                      $config                     VuFind configuration
-     * @param AuthManager                $authManager                Authentication manager
+     * @param ?UserEntityInterface       $currentUser                Current user
      * @param AuditEventServiceInterface $auditEventService          Audit event service
-     * @param ManagerInterface           $sessionManager             Session manager
+     * @param string                     $sessionId                  Session ID
      * @param AccountCapabilities        $accountCapabilities        Account capabilities
      * @param Memory                     $searchMemory               Search memory
      * @param History                    $searchHistory              Search history
@@ -79,10 +78,12 @@ abstract class AbstractSearchHistoryAction extends AbstractTemplateRenderingActi
     public function __construct(
         #[Autowire(config: 'config')]
         protected array $config,
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         #[Autowire(container: DbServicePluginManager::class)]
         protected AuditEventServiceInterface $auditEventService,
-        protected ManagerInterface $sessionManager,
+        #[Autowire(container: CurrentContext::class, service: 'SessionId')]
+        protected string $sessionId,
         protected AccountCapabilities $accountCapabilities,
         protected Memory $searchMemory,
         protected History $searchHistory,
@@ -107,8 +108,7 @@ abstract class AbstractSearchHistoryAction extends AbstractTemplateRenderingActi
      */
     protected function getSearchRowSecurely(int $searchId, UserEntityInterface $user): SearchEntityInterface
     {
-        $sessionId = $this->sessionManager->getId();
-        if (!($search = $this->searchService->getSearchByIdAndOwner($searchId, $sessionId, $user))) {
+        if (!($search = $this->searchService->getSearchByIdAndOwner($searchId, $this->sessionId, $user))) {
             throw new ForbiddenException('Access denied.');
         }
         return $search;
@@ -131,9 +131,8 @@ abstract class AbstractSearchHistoryAction extends AbstractTemplateRenderingActi
             throw new Exception("Problem getting search object from search {$rowToCheck->getId()}.");
         }
         $normalized = $this->searchNormalizer->normalizeMinifiedSearch($searchObject);
-        $sessionId = $this->sessionManager->getId();
         $matches = $this->searchNormalizer
-            ->getSearchesMatchingNormalizedSearch($normalized, $sessionId, $user->getId());
+            ->getSearchesMatchingNormalizedSearch($normalized, $this->sessionId, $user->getId());
         foreach ($matches as $current) {
             if ($current->getSaved() && $current->getId() !== $rowToCheck->getId()) {
                 return $current->getId();

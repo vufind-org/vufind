@@ -57,6 +57,7 @@ class Autowire
      * a fallback if a path-based config is specified but unset)
      * @param ?string $service    Service to inject (mutually exclusive with $config)
      * @param ?string $container  Container or plugin manager to use to get the service
+     * @param bool    $lazyLoad   Return a closure that retrieves the object rather than instantiating it immediately?
      *
      * @throws LogicException
      */
@@ -68,6 +69,7 @@ class Autowire
         public readonly mixed $default = null,
         public readonly ?string $service = null,
         public readonly ?string $container = null,
+        public readonly bool $lazyLoad = false,
     ) {
         /**
          * Throw an exception if the service or container attributes are set.
@@ -98,16 +100,15 @@ class Autowire
         if (null !== $config) {
             $failOnServiceOrContainer('config', $service, $container);
         } elseif (null !== $configType) {
-            throw new LogicException(
-                '#[Autowire] attribute cannot contain configType without config.'
-            );
+            throw new LogicException('#[Autowire] attribute cannot contain configType without config.');
         } elseif (null !== $path) {
-            throw new LogicException(
-                '#[Autowire] attribute cannot contain path without config.'
-            );
+            throw new LogicException('#[Autowire] attribute cannot contain path without config.');
         }
         if (null !== $default) {
             $failOnServiceOrContainer('default', $service, $container);
+        }
+        if ($lazyLoad && !$service) {
+            throw new LogicException('#[Autowire] attribute cannot contain lazyLoad without service.');
         }
     }
 }

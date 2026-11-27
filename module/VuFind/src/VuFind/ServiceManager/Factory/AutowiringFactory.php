@@ -30,6 +30,7 @@
 namespace VuFind\ServiceManager\Factory;
 
 use ArrayAccess;
+use Closure;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use LogicException;
 use Psr\Container\ContainerInterface;
@@ -194,13 +195,13 @@ class AutowiringFactory implements FactoryInterface
         $name = $autowireArgs['service'] ?? null;
         if (null === $name) {
             $type = $reflectionParameter->getType();
-            $name = $type?->getName();
-            if (null === $name || !($type instanceof ReflectionNamedType)) {
+            if (!($type instanceof ReflectionNamedType)) {
                 throw new LogicException('Unable to resolve type of parameter ' . $reflectionParameter->getName());
             }
+            $name = $type->getName();
             if ($type->isBuiltIn()) {
                 $builtInError = 'Unable to autowire parameter "' . $reflectionParameter->getName() . '" of type '
-                    . $type->getName();
+                    . $name;
                 // If we have a literal default, we can use it now -- but if a path is set, something is misconfigured
                 // and we should go ahead with throwing an exception.
                 if (isset($autowireArgs['path'])) {
@@ -222,7 +223,12 @@ class AutowiringFactory implements FactoryInterface
         $containerToUse = ($containerName = $autowireArgs['container'] ?? null)
             ? $container->get($containerName)
             : $container;
-        return $containerToUse->get((string)$name);
+        if ($autowireArgs['lazyLoad'] ?? false) {
+            $result = Closure::fromCallable(fn () => $containerToUse->get((string)$name));
+        } else {
+            $result = $containerToUse->get((string)$name);
+        }
+        return $result;
     }
 
     /**

@@ -37,7 +37,7 @@ use Laminas\View\HelperPluginManager;
 use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\View;
 use Psr\Container\ContainerInterface;
-use VuFind\Application\UriRegistry;
+use VuFind\Application\CurrentContext;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Escaper\Escaper;
@@ -92,14 +92,14 @@ trait ViewTrait
                 $helperPluginManager->setService($key, $value);
             }
         }
-        $mockUriRegistry = $this->createMock(UriRegistry::class);
-        $mockUriRegistry->method('get')
+        $mockCurrentContext = $this->createMock(CurrentContext::class);
+        $mockCurrentContext->method('get')
             ->willReturnCallback(
                 fn ($s) => match ($s) {
                     'BaseUrlPath' => '/',
                 }
             );
-        $container->set(UriRegistry::class, $mockUriRegistry);
+        $container->set(CurrentContext::class, $mockCurrentContext);
         $container->set(HelperPluginManager::class, $helperPluginManager);
         $factory = new AssetManagerFactory();
         $assetManager = $factory($container, AssetManager::class);

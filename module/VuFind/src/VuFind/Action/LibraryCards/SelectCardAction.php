@@ -38,8 +38,9 @@ use VuFind\ActionHelper\ContextHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
+use VuFind\Application\CurrentContext;
 use VuFind\Auth\ILSAuthenticator;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Exception\ILS as ILSException;
@@ -61,14 +62,15 @@ class SelectCardAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param AuthManager              $authManager      Authentication manager
+     * @param ?UserEntityInterface     $currentUser      Current user
      * @param UserCardServiceInterface $userCardService  User card database service
      * @param Connection               $ilsConnection    ILS connection
      * @param ILSAuthenticator         $ilsAuthenticator ILS authenticator
      *                                                   ´
      */
     public function __construct(
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         #[Autowire(container: DbServicePluginManager::class)]
         protected UserCardServiceInterface $userCardService,
         protected Connection $ilsConnection,
@@ -90,7 +92,7 @@ class SelectCardAction extends AbstractTemplateRenderingAction
         ResponseInterface $response,
     ): ResponseInterface {
         // Force login:
-        if (!($user = $this->authManager->getUserObject())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 
@@ -101,13 +103,13 @@ class SelectCardAction extends AbstractTemplateRenderingAction
             return $redirectHelper->redirectToRoute($response, 'account-home');
         }
 
-        $this->userCardService->activateLibraryCard($user, $cardID);
+        $this->userCardService->activateLibraryCard($this->currentUser, $cardID);
 
         // Connect to the ILS and check that the credentials are correct:
         try {
             $patron = $this->ilsConnection->patronLogin(
-                $user->getCatUsername(),
-                $this->ilsAuthenticator->getCatPasswordForUser($user)
+                $this->currentUser->getCatUsername(),
+                $this->ilsAuthenticator->getCatPasswordForUser($this->currentUser)
             );
             if (!$patron) {
                 $this->getHelper(FlashMessagesHelper::class)->addErrorMessage('authentication_error_invalid');

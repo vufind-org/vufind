@@ -41,9 +41,10 @@ use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\ActionHelper\UrlHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Captcha\Service\CaptchaService;
 use VuFind\Config\AccountCapabilities;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Mailer\Mailer;
@@ -65,18 +66,19 @@ class EmailAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param Mailer              $mailer              Mailer
-     * @param AccountCapabilities $accountCapabilities Account capabilities
-     * @param CaptchaService      $captchaService      Captcha service
-     * @param AuthManager         $authManager         Authentication manager
-     * @param FollowupHelper      $followupHelper      Followup helper
+     * @param Mailer               $mailer              Mailer
+     * @param AccountCapabilities  $accountCapabilities Account capabilities
+     * @param CaptchaService       $captchaService      Captcha service
+     * @param ?UserEntityInterface $currentUser         Current user
+     * @param FollowupHelper       $followupHelper      Followup helper
      */
     #[Autowire]
     public function __construct(
         protected Mailer $mailer,
         protected AccountCapabilities $accountCapabilities,
         protected CaptchaService $captchaService,
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         protected FollowupHelper $followupHelper,
     ) {
         parent::__construct();
@@ -116,12 +118,8 @@ class EmailAction extends AbstractTemplateRenderingAction
             throw new ForbiddenException('Email action disabled');
         }
         // Force login if necessary:
-        if (
-            $emailActionSettings !== 'enabled'
-            && !$this->authManager->getUserObject()
-        ) {
-            return $this->getHelper(LoginHelper::class)
-                ->forceLogin($request, $response, extras: ['emailurl' => $url]);
+        if (!$this->currentUser && $emailActionSettings !== 'enabled') {
+            return $this->getHelper(LoginHelper::class)->forceLogin($request, $response, extras: ['emailurl' => $url]);
         }
 
         // Check if we have a URL in login followup data -- this should override any existing referrer to avoid emailing

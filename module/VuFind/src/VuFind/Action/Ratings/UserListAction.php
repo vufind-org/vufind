@@ -35,7 +35,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\UserContentHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\RatingsServiceInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
@@ -67,11 +68,12 @@ class UserListAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param AuthManager             $authManager    Authentication manager
+     * @param ?UserEntityInterface    $currentUser    Current user
      * @param RatingsServiceInterface $ratingsService Ratings database service
      */
     public function __construct(
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         #[Autowire(container: DbServicePluginManager::class)]
         protected RatingsServiceInterface $ratingsService,
     ) {
@@ -90,7 +92,7 @@ class UserListAction extends AbstractTemplateRenderingAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        if (!($user = $this->authManager->getUserObject())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
         $userContentHelper = $this->getHelper(UserContentHelper::class);
@@ -100,7 +102,7 @@ class UserListAction extends AbstractTemplateRenderingAction
         $paging = $userContentHelper->getPagingParams($request, $this->sortList);
         $ratings = $userContentHelper->getUserContentRecordTitles(
             $this->ratingsService->getRatingsPaginator(
-                $user->getId(),
+                $this->currentUser->getId(),
                 $paging['limit'],
                 $paging['page'],
                 $paging['sort'],

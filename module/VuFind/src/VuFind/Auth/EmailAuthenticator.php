@@ -30,16 +30,18 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\Request;
-use Laminas\Session\ManagerInterface;
 use OTPHP\HOTP;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Crypt\RandomHash;
 use VuFind\Db\Service\AuthHashServiceInterface;
+use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\Mailer\Mailer;
 use VuFind\Net\UserIpReader;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
@@ -69,7 +71,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     /**
      * Constructor.
      *
-     * @param ManagerInterface          $sessionManager   Session Manager
+     * @param string                    $sessionId        Session ID
      * @param RandomHash                $randomHash       Random hash generator
      * @param Mailer                    $mailer           Mailer
      * @param TemplateRendererInterface $templateRenderer Template Renderer
@@ -80,7 +82,8 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      * @param AuthHashServiceInterface  $authHashService  AuthHash database service
      */
     public function __construct(
-        protected ManagerInterface $sessionManager,
+        #[Autowire(container: CurrentContext::class, service: 'SessionId')]
+        protected string $sessionId,
         protected RandomHash $randomHash,
         protected Mailer $mailer,
         protected TemplateRendererInterface $templateRenderer,
@@ -88,6 +91,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         protected RouteHelper $routeHelper,
         protected UserIpReader $userIpReader,
         protected array $config,
+        #[Autowire(container: DbServicePluginManager::class)]
         protected AuthHashServiceInterface $authHashService
     ) {
     }
@@ -122,10 +126,9 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     ) {
         // Make sure we've waited long enough
         $recoveryInterval = $this->config['Authentication']['recover_interval'] ?? 60;
-        $sessionId = $this->sessionManager->getId();
 
         if (
-            ($row = $this->authHashService->getLatestBySessionId($sessionId))
+            ($row = $this->authHashService->getLatestBySessionId($this->sessionId))
             && time() - $row->getCreated()->getTimestamp() < $recoveryInterval
         ) {
             throw new AuthException('authentication_error_in_progress');
@@ -141,7 +144,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
 
         $row = $this->authHashService->getByHashAndType($hash, AuthHashServiceInterface::TYPE_EMAIL);
 
-        $row->setSessionId($sessionId)
+        $row->setSessionId($this->sessionId)
             ->setData(json_encode($linkData));
         $this->authHashService->persistEntity($row);
 
@@ -180,9 +183,8 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $linkData = json_decode($row->getData(), true);
 
         // Require same session id or IP address:
-        $sessionId = $this->sessionManager->getId();
         if (
-            $row->getSessionId() !== $sessionId
+            $row->getSessionId() !== $this->sessionId
             && $linkData['ip'] !== $this->userIpReader->getUserIp()
         ) {
             throw new AuthException('authentication_error_session_ip_mismatch');
@@ -242,10 +244,9 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     ): int {
         // Make sure we've waited long enough
         $recoveryInterval = $this->config['Authentication']['recover_interval'] ?? 60;
-        $sessionId = $this->sessionManager->getId();
 
         if (
-            ($row = $this->authHashService->getLatestBySessionId($sessionId))
+            ($row = $this->authHashService->getLatestBySessionId($this->sessionId))
             && time() - $row->getCreated()->getTimestamp() < $recoveryInterval
         ) {
             throw new AuthException('authentication_error_in_progress');
@@ -259,7 +260,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $hash = $otp . '||' . md5(random_bytes(32)) . '||0';
         $row = $this->authHashService->getByHashAndType($hash, AuthHashServiceInterface::TYPE_OTP);
 
-        $row->setSessionId($sessionId)
+        $row->setSessionId($this->sessionId)
             ->setData(json_encode($data));
         $this->authHashService->persistEntity($row);
 

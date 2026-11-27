@@ -42,8 +42,9 @@ use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\HoldsHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\ResponseHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Cache\Manager as CacheManager;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventService;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
@@ -77,19 +78,20 @@ class ListAction extends AbstractHoldAction
     /**
      * Constructor.
      *
-     * @param Connection        $ilsConnection     ILS connection
-     * @param ManagerInterface  $sessionManager    Session manager
-     * @param AuthManager       $authManager       Authentication manager
-     * @param CsrfInterface     $csrf              CSRF validator
-     * @param AuditEventService $auditEventService Audit event service
-     * @param StorageInterface  $objectCache       Object cache
-     * @param RecordsHelper     $recordsHelper     Records helper
-     * @param array             $config            VuFind configuration
+     * @param Connection           $ilsConnection     ILS connection
+     * @param ManagerInterface     $sessionManager    Session manager
+     * @param ?UserEntityInterface $currentUser       Current user
+     * @param CsrfInterface        $csrf              CSRF validator
+     * @param AuditEventService    $auditEventService Audit event service
+     * @param StorageInterface     $objectCache       Object cache
+     * @param RecordsHelper        $recordsHelper     Records helper
+     * @param array                $config            VuFind configuration
      */
     public function __construct(
         Connection $ilsConnection,
         ManagerInterface $sessionManager,
-        AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        ?UserEntityInterface $currentUser,
         CsrfInterface $csrf,
         AuditEventService $auditEventService,
         #[Autowire(container: CacheManager::class, service: 'object')]
@@ -98,7 +100,7 @@ class ListAction extends AbstractHoldAction
         #[Autowire(config: 'config')]
         protected array $config,
     ) {
-        parent::__construct($ilsConnection, $sessionManager, $authManager, $csrf, $auditEventService, $objectCache);
+        parent::__construct($ilsConnection, $sessionManager, $currentUser, $csrf, $auditEventService, $objectCache);
     }
 
     /**
@@ -135,7 +137,7 @@ class ListAction extends AbstractHoldAction
             $this->auditEventService->addEvent(
                 AuditEventType::ILS,
                 AuditEventSubtype::CancelHolds,
-                $this->authManager->getUserObject(),
+                $this->currentUser,
                 data: [
                     'username' => $patron['cat_username'],
                     'results' => $cancelResults,

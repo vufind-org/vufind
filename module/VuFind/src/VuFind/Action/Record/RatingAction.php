@@ -36,9 +36,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\ContextHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\ResponseHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Captcha\Service\CaptchaService;
 use VuFind\Config\ConfigManager;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Exception\BadRequest as BadRequestException;
@@ -72,7 +73,7 @@ class RatingAction extends AbstractRecordAction
      *
      * @param SearchMemory             $searchMemory      Search memory
      * @param TabManager               $tabManager        Tab manager
-     * @param AuthManager              $authManager       Authentication manager
+     * @param ?UserEntityInterface     $currentUser       Current user
      * @param ConfigManager            $configManager     Configuration manager
      * @param RecordLoader             $recordLoader      Record loader
      * @param RecordRouter             $recordRouter      Record router
@@ -87,7 +88,8 @@ class RatingAction extends AbstractRecordAction
     public function __construct(
         SearchMemory $searchMemory,
         TabManager $tabManager,
-        AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        ?UserEntityInterface $currentUser,
         ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
@@ -104,7 +106,7 @@ class RatingAction extends AbstractRecordAction
         parent::__construct(
             $searchMemory,
             $tabManager,
-            $authManager,
+            $currentUser,
             $configManager,
             $recordLoader,
             $recordRouter,
@@ -134,8 +136,7 @@ class RatingAction extends AbstractRecordAction
         }
 
         // Save rating, if any, and user has logged in:
-        $user = $this->getUser();
-        if ($user && null !== ($rating = $this->getPostParam('rating'))) {
+        if ($this->currentUser && null !== ($rating = $this->getPostParam('rating'))) {
             if (
                 '' === $rating
                 && !($this->config['Social']['remove_rating'] ?? true)
@@ -144,7 +145,7 @@ class RatingAction extends AbstractRecordAction
             }
             $this->ratingsService->saveRating(
                 $driver,
-                $user->getId(),
+                $this->currentUser->getId(),
                 '' === $rating ? null : intval($rating)
             );
             $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage('rating_add_success');
@@ -155,8 +156,8 @@ class RatingAction extends AbstractRecordAction
         }
 
         // Display the "add rating" form:
-        $currentRating = $user
-            ? $this->ratingsService->getRatingData($driver, $user->getId())
+        $currentRating = $this->currentUser
+            ? $this->ratingsService->getRatingData($driver, $this->currentUser->getId())
             : null;
 
         return $this->renderTemplate($request, $response, $this->getTemplateParams(compact('currentRating')));

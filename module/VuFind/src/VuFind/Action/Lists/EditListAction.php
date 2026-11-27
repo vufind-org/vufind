@@ -39,7 +39,6 @@ use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\ActionHelper\UserContentHelper;
-use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ListPermission as ListPermissionException;
@@ -77,7 +76,7 @@ class EditListAction extends AbstractListsAction
         }
 
         // User must be logged in to edit list:
-        if (!($user = $this->authManager->getUserObject())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 
@@ -87,17 +86,17 @@ class EditListAction extends AbstractListsAction
         // If this is a new list, use the FavoritesService to pre-populate some values in a fresh object; if it's an
         // existing list, we can just fetch from the database.
         $list = $newList
-            ? $this->favoritesService->createListForUser($user)
+            ? $this->favoritesService->createListForUser($this->currentUser)
             : $this->userListService->getUserListById($id);
 
         // Make sure the user isn't fishing for other people's lists:
-        if (!$newList && !$this->favoritesService->userCanEditList($user, $list)) {
+        if (!$newList && !$this->favoritesService->userCanEditList($this->currentUser, $list)) {
             throw new ListPermissionException('Access denied.');
         }
 
         // Process form submission:
         if ($this->getHelper(FormHelper::class)->formWasSubmitted($request)) {
-            if ($redirect = $this->processEditList($user, $list)) {
+            if ($redirect = $this->processEditList($list)) {
                 return $redirect;
             }
         }
@@ -125,16 +124,16 @@ class EditListAction extends AbstractListsAction
     /**
      * Process the "edit list" submission.
      *
-     * @param UserEntityInterface     $user Logged in user
      * @param UserListEntityInterface $list List being created/edited
      *
      * @return ?ResponseInterface Response object if redirect is needed, null if form needs to be redisplayed.
      */
-    protected function processEditList(UserEntityInterface $user, UserListEntityInterface $list): ?ResponseInterface
+    protected function processEditList(UserListEntityInterface $list): ?ResponseInterface
     {
         // Process form within a try..catch so we can handle errors appropriately:
         try {
-            $finalId = $this->favoritesService->updateListFromRequest($list, $user, $this->request->getParsedBody());
+            $finalId = $this->favoritesService
+                ->updateListFromRequest($list, $this->currentUser, $this->request->getParsedBody());
 
             // If the user is in the process of saving a record, send them back to the save screen; otherwise, send them
             // back to the list they just edited.

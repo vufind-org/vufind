@@ -37,10 +37,11 @@ use VuFind\ActionHelper\EmailHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Captcha\Service\CaptchaService;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Config\ConfigManager;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -71,22 +72,23 @@ class EmailAction extends AbstractRecordAction implements TranslatorAwareInterfa
     /**
      * Constructor.
      *
-     * @param SearchMemory        $searchMemory        Search memory
-     * @param TabManager          $tabManager          Tab manager
-     * @param AuthManager         $authManager         Authentication manager
-     * @param ConfigManager       $configManager       Configuration manager
-     * @param RecordLoader        $recordLoader        Record loader
-     * @param RecordRouter        $recordRouter        Record router
-     * @param ResultScroller      $resultScroller      Result scroller
-     * @param array               $config              VuFind configuration
-     * @param AccountCapabilities $accountCapabilities Account capabilities helper
-     * @param Mailer              $mailer              Mailer
-     * @param CaptchaService      $captchaService      Captcha service
+     * @param SearchMemory         $searchMemory        Search memory
+     * @param TabManager           $tabManager          Tab manager
+     * @param ?UserEntityInterface $currentUser         Current user
+     * @param ConfigManager        $configManager       Configuration manager
+     * @param RecordLoader         $recordLoader        Record loader
+     * @param RecordRouter         $recordRouter        Record router
+     * @param ResultScroller       $resultScroller      Result scroller
+     * @param array                $config              VuFind configuration
+     * @param AccountCapabilities  $accountCapabilities Account capabilities helper
+     * @param Mailer               $mailer              Mailer
+     * @param CaptchaService       $captchaService      Captcha service
      */
     public function __construct(
         SearchMemory $searchMemory,
         TabManager $tabManager,
-        AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        ?UserEntityInterface $currentUser,
         ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
@@ -100,7 +102,7 @@ class EmailAction extends AbstractRecordAction implements TranslatorAwareInterfa
         parent::__construct(
             $searchMemory,
             $tabManager,
-            $authManager,
+            $currentUser,
             $configManager,
             $recordLoader,
             $recordRouter,
@@ -126,10 +128,7 @@ class EmailAction extends AbstractRecordAction implements TranslatorAwareInterfa
             throw new ForbiddenException('Email action disabled');
         }
         // Force login if necessary:
-        if (
-            $emailActionSetting !== 'enabled'
-            && !$this->getUser()
-        ) {
+        if (!$this->currentUser && $emailActionSetting !== 'enabled') {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 

@@ -37,7 +37,8 @@ use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
@@ -59,13 +60,14 @@ class DeleteTagsAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param AuthManager                  $authManager         Authentication manager
+     * @param ?UserEntityInterface         $currentUser         Current user
      * @param ResourceTagsServiceInterface $resourceTagsService Resource tags database service
      * @param TagServiceInterface          $tagService          Tag database service
      * @param CsrfInterface                $csrf                CSRF validator
      */
     public function __construct(
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         #[Autowire(container: DbServicePluginManager::class)]
         protected ResourceTagsServiceInterface $resourceTagsService,
         #[Autowire(container: DbServicePluginManager::class)]
@@ -87,7 +89,7 @@ class DeleteTagsAction extends AbstractTemplateRenderingAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        if (!$this->authManager->getUserObject()) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
         if ($this->getHelper(FormHelper::class)->formWasSubmitted($request, ['deleteSelectedtag'])) {

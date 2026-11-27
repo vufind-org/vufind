@@ -39,9 +39,10 @@ use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Cart;
 use VuFind\Config\AccountCapabilities;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
@@ -77,7 +78,7 @@ class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
      * @param Cart                     $cart                Cart handler
      * @param FollowupHelper           $followupHelper      Followup helper
      * @param AccountCapabilities      $accountCapabilities Account capabilities
-     * @param AuthManager              $authManager         Authentication manager
+     * @param ?UserEntityInterface     $currentUser         Current user
      * @param RecordLoader             $recordLoader        Record loader
      * @param UserListServiceInterface $userListService     User list database service
      * @param FavoritesService         $favoritesService    Favorites service
@@ -87,7 +88,8 @@ class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
         Cart $cart,
         FollowupHelper $followupHelper,
         protected AccountCapabilities $accountCapabilities,
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         protected RecordLoader $recordLoader,
         #[Autowire(container: DbServicePluginManager::class)]
         protected UserListServiceInterface $userListService,
@@ -138,7 +140,7 @@ class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
         }
 
         // Make sure user is logged in:
-        if (!($user = $this->authManager->getUserObject())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin(
                 $request,
                 $response,
@@ -165,7 +167,8 @@ class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
             }
             // Process submission if necessary:
             if ($formHelper->formWasSubmitted($request)) {
-                $results = $this->favoritesService->saveRecordsToFavorites($request->getParsedBody(), $user);
+                $results
+                    = $this->favoritesService->saveRecordsToFavorites($request->getParsedBody(), $this->currentUser);
                 $listUrl = $this->getRouteHelper()->getUrlFromRoute(
                     'userList',
                     ['id' => $results['listId']]
@@ -184,7 +187,7 @@ class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
         // Pass record and list information to template:
         $templateParams = [
             'records' => $this->recordLoader->loadBatch($ids),
-            'lists' => $this->userListService->getUserListsByUser($user),
+            'lists' => $this->userListService->getUserListsByUser($this->currentUser),
         ];
         return $this->renderTemplate($request, $response, $templateParams);
     }

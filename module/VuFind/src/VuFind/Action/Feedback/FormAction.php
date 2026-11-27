@@ -37,7 +37,7 @@ use VuFind\ActionHelper\ContextHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Captcha\Service\CaptchaService;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Form\Form;
@@ -65,13 +65,14 @@ class FormAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param AuthManager    $authManager    Authentication manager
-     * @param Form           $form           Form
-     * @param CaptchaService $captchaService Captcha service
-     * @param array          $config         VuFind configuration
+     * @param ?UserEntityInterface $currentUser    Current user
+     * @param Form                 $form           Form
+     * @param CaptchaService       $captchaService Captcha service
+     * @param array                $config         VuFind configuration
      */
     public function __construct(
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         protected Form $form,
         protected CaptchaService $captchaService,
         #[Autowire(config: 'config')]
@@ -99,8 +100,6 @@ class FormAction extends AbstractTemplateRenderingAction
             $formId = 'FeedbackSite';
         }
 
-        $user = $this->authManager->getUserObject();
-
         $prefill = $request->getQueryParams();
         $params = [];
         if ($referrer = $this->getHelper(ContextHelper::class)->getReferrer($request)) {
@@ -116,10 +115,11 @@ class FormAction extends AbstractTemplateRenderingAction
             throw new \VuFind\Exception\Forbidden("Form '$formId' is disabled");
         }
 
-        if (!$user && $form->showOnlyForLoggedUsers()) {
+        if (!$this->currentUser && $form->showOnlyForLoggedUsers()) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 
+        $user = $this->currentUser;
         $templateParams = compact('form', 'formId', 'user');
         $templateParams['useCaptcha'] = $form->useCaptcha() && $this->captchaService->active('feedback');
 
@@ -129,7 +129,7 @@ class FormAction extends AbstractTemplateRenderingAction
         if (
             !$this->getHelper(FormHelper::class)->formWasSubmitted($request, useCaptcha: $templateParams['useCaptcha'])
         ) {
-            $this->prefillUserInfo($form, $user);
+            $this->prefillUserInfo($form);
         } elseif ($form->isValid()) {
             if ($this->senderIsBlocked($form)) {
                 $this->getHelper(FlashMessagesHelper::class)->addErrorMessage('could_not_process_feedback');
@@ -138,7 +138,7 @@ class FormAction extends AbstractTemplateRenderingAction
                 $template = 'feedback/response';
             } else {
                 $primaryHandler = $form->getPrimaryHandler();
-                $success = $primaryHandler->handle($form, $request, $user);
+                $success = $primaryHandler->handle($form, $request, $this->currentUser);
                 if ($success) {
                     $templateParams['successMessage'] = $form->getSubmitResponse();
                     $template = 'feedback/response';
@@ -150,7 +150,7 @@ class FormAction extends AbstractTemplateRenderingAction
                 $handlers = $form->getSecondaryHandlers();
                 foreach ($handlers as $handler) {
                     try {
-                        $handler->handle($form, $request, $user);
+                        $handler->handle($form, $request, $this->currentUser);
                     } catch (\Exception $e) {
                         $this->logError($e->getMessage());
                     }
@@ -164,18 +164,17 @@ class FormAction extends AbstractTemplateRenderingAction
     /**
      * Prefill form sender fields for logged in users.
      *
-     * @param Form                 $form Form
-     * @param ?UserEntityInterface $user User
+     * @param Form $form Form
      *
      * @return Form
      */
-    protected function prefillUserInfo(Form $form, ?UserEntityInterface $user): Form
+    protected function prefillUserInfo(Form $form): Form
     {
-        if ($user) {
+        if ($this->currentUser) {
             $form->setData(
                 [
-                    'name' => $user->getFirstname() . ' ' . $user->getLastname(),
-                    'email' => $user->getEmail(),
+                    'name' => $this->currentUser->getFirstname() . ' ' . $this->currentUser->getLastname(),
+                    'email' => $this->currentUser->getEmail(),
                 ]
             );
         }

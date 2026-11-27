@@ -32,8 +32,9 @@
 namespace VuFind\Action\Fines;
 
 use VuFind\Action\AbstractTemplateRenderingAction;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\Feature\EmailSettingsTrait;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PaymentServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
@@ -68,7 +69,7 @@ abstract class AbstractFinesAction extends AbstractTemplateRenderingAction imple
     /**
      * Constructor.
      *
-     * @param AuthManager                $authManager          Authentication manager
+     * @param ?UserEntityInterface       $currentUser          Current user
      * @param Connection                 $ilsConnection        ILS connection
      * @param RecordsHelper              $ilsRecordsHelper     ILS records helper
      * @param CurrencyFormatter          $currencyFormatter    Currency formatter
@@ -78,7 +79,8 @@ abstract class AbstractFinesAction extends AbstractTemplateRenderingAction imple
      * @param array                      $config               VuFind configuration
      */
     public function __construct(
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         protected Connection $ilsConnection,
         protected RecordsHelper $ilsRecordsHelper,
         protected CurrencyFormatter $currencyFormatter,

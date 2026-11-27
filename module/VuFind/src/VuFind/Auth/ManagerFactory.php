@@ -34,7 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Application\UriRegistry;
+use VuFind\Application\CurrentContext;
 
 /**
  * Authentication Manager factory.
@@ -92,7 +92,7 @@ class ManagerFactory implements FactoryInterface
             $csrf,
             $loginTokenManager,
             $ils,
-            fn () => $container->get(UriRegistry::class)->get('AccountHomeAbsoluteUrl'),
+            fn () => $container->get(CurrentContext::class)->get('AccountHomeAbsoluteUrl'),
             $auditEventService
         );
         $manager->setIlsAuthenticator($container->get(\VuFind\Auth\ILSAuthenticator::class));

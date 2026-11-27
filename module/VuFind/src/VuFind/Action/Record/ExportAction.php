@@ -36,8 +36,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\RedirectHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
 use VuFind\Config\ConfigManager;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Export;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\Record\Loader as RecordLoader;
@@ -63,22 +64,23 @@ class ExportAction extends AbstractRecordAction
     /**
      * Constructor.
      *
-     * @param SearchMemory    $searchMemory     Search memory
-     * @param TabManager      $tabManager       Tab manager
-     * @param AuthManager     $authManager      Authentication manager
-     * @param ConfigManager   $configManager    Configuration manager
-     * @param RecordLoader    $recordLoader     Record loader
-     * @param RecordRouter    $recordRouter     Record router
-     * @param ResultScroller  $resultScroller   Result scroller
-     * @param array           $config           VuFind configuration
-     * @param Export          $export           Export service
-     * @param ServerUrlHelper $serverUrlHelper  Server URL helper
-     * @param Record          $recordViewHelper Record view helper
+     * @param SearchMemory         $searchMemory     Search memory
+     * @param TabManager           $tabManager       Tab manager
+     * @param ?UserEntityInterface $currentUser      Current user
+     * @param ConfigManager        $configManager    Configuration manager
+     * @param RecordLoader         $recordLoader     Record loader
+     * @param RecordRouter         $recordRouter     Record router
+     * @param ResultScroller       $resultScroller   Result scroller
+     * @param array                $config           VuFind configuration
+     * @param Export               $export           Export service
+     * @param ServerUrlHelper      $serverUrlHelper  Server URL helper
+     * @param Record               $recordViewHelper Record view helper
      */
     public function __construct(
         SearchMemory $searchMemory,
         TabManager $tabManager,
-        AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        ?UserEntityInterface $currentUser,
         ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
@@ -93,7 +95,7 @@ class ExportAction extends AbstractRecordAction
         parent::__construct(
             $searchMemory,
             $tabManager,
-            $authManager,
+            $currentUser,
             $configManager,
             $recordLoader,
             $recordRouter,

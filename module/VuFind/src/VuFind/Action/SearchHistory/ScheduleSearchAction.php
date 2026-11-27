@@ -75,16 +75,16 @@ class ScheduleSearchAction extends AbstractSearchHistoryAction
             throw new BadRequestException('searchid missing');
         }
         // Not logged in?  Force user to log in:
-        if (!($user = $this->authManager->getIdentity())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 
         // Get the row, and fail if the current user doesn't own it.
-        $search = $this->getSearchRowSecurely($searchId, $user);
+        $search = $this->getSearchRowSecurely($searchId, $this->currentUser);
 
         // If the user has just logged in, the search might be a duplicate; if so, let's switch to the pre-existing
         // version instead.
-        if ($duplicateId = $search ? $this->isDuplicateOfSavedSearch($search, $user) : null) {
+        if ($duplicateId = $search ? $this->isDuplicateOfSavedSearch($search, $this->currentUser) : null) {
             $this->searchService->deleteSearch($search);
             return $this->getHelper(RedirectHelper::class)->redirectToRoute(
                 $response,

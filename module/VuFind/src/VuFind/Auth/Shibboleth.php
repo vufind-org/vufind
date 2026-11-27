@@ -100,13 +100,13 @@ class Shibboleth extends AbstractBase
     /**
      * Constructor.
      *
-     * @param \Laminas\Session\ManagerInterface $sessionManager      Session manager
-     * @param ConfigurationLoaderInterface      $configurationLoader Configuration loader
-     * @param Request                           $request             Http request object
-     * @param ILSAuthenticator                  $ilsAuthenticator    ILS authenticator
+     * @param string                       $sessionId           Session ID
+     * @param ConfigurationLoaderInterface $configurationLoader Configuration loader
+     * @param Request                      $request             Http request object
+     * @param ILSAuthenticator             $ilsAuthenticator    ILS authenticator
      */
     public function __construct(
-        protected \Laminas\Session\ManagerInterface $sessionManager,
+        protected string $sessionId,
         protected ConfigurationLoaderInterface $configurationLoader,
         protected Request $request,
         protected ILSAuthenticator $ilsAuthenticator
@@ -384,12 +384,11 @@ class Shibboleth extends AbstractBase
         if (null === $shibSessionId) {
             return;
         }
-        $localSessionId = $this->sessionManager->getId();
         $this->getDbService(ExternalSessionServiceInterface::class)
-            ->addSessionMapping($localSessionId, $shibSessionId);
+            ->addSessionMapping($this->sessionId, $shibSessionId);
         $this->debug(
             "Cached Shibboleth session id '$shibSessionId' for local session"
-            . " '$localSessionId'"
+            . " '{$this->sessionId}'"
         );
     }
 

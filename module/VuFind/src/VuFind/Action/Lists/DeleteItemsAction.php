@@ -67,7 +67,7 @@ class DeleteItemsAction extends AbstractListsAction
         ResponseInterface $response,
     ): ResponseInterface {
         // Force login:
-        if (!($user = $this->authManager->getUserObject())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 
@@ -92,7 +92,7 @@ class DeleteItemsAction extends AbstractListsAction
                 return $redirect;
             }
         } elseif ($this->getHelper(FormHelper::class)->formWasSubmitted($request)) {
-            $this->favoritesService->deleteFavorites($ids, $listID === null ? null : (int)$listID, $user);
+            $this->favoritesService->deleteFavorites($ids, $listID === null ? null : (int)$listID, $this->currentUser);
             $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage('fav_delete_success');
             $redirectHelper = $this->getHelper(RedirectHelper::class);
             return $listID

@@ -62,13 +62,13 @@ class AuthCallbackAction extends AbstractZoteroAction
         ResponseInterface $response,
     ): ResponseInterface {
         // Require logged-in user so that we can manage the access token:
-        if (!($user = $this->authManager->getUserObject())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 
         $flashMessagesHelper = $this->getHelper(FlashMessagesHelper::class);
         try {
-            $result = $this->zoteroService->handleAuthCallback($user, $request->getQueryParams());
+            $result = $this->zoteroService->handleAuthCallback($this->currentUser, $request->getQueryParams());
             if (is_string($result)) {
                 return $this->getHelper(RedirectHelper::class)->redirectToUrl($response, $result);
             }

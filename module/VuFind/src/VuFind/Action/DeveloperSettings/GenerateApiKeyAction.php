@@ -63,7 +63,7 @@ class GenerateApiKeyAction extends AbstractDeveloperSettingsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        if (!$user = $this->authManager->getUserObject()) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
         if (
@@ -76,7 +76,7 @@ class GenerateApiKeyAction extends AbstractDeveloperSettingsAction
         if ($this->getHelper(FormHelper::class)->formWasSubmitted($request)) {
             $flashMessagesHelper = $this->getHelper(FlashMessagesHelper::class);
             if ($title = $this->getPostOrQueryParam('title')) {
-                if ($apiKey = $this->developerSettingsService->generateApiKeyForUser($user, $title)) {
+                if ($apiKey = $this->developerSettingsService->generateApiKeyForUser($this->currentUser, $title)) {
                     $successMsg = [
                         'msg' => 'Developer::api_key_generation_success',
                         'tokens' => ['%%TOKEN%%' => $apiKey->getToken()],

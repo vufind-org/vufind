@@ -36,7 +36,8 @@ use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -57,12 +58,13 @@ class DeleteCommentsAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param AuthManager              $authManager     Authentication manager
+     * @param ?UserEntityInterface     $currentUser     Current user
      * @param CommentsServiceInterface $commentsService Comments database service
      * @param CsrfInterface            $csrf            CSRF validator
      */
     public function __construct(
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         #[Autowire(container: DbServicePluginManager::class)]
         protected CommentsServiceInterface $commentsService,
         protected CsrfInterface $csrf,
@@ -82,7 +84,7 @@ class DeleteCommentsAction extends AbstractTemplateRenderingAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        if (!($user = $this->authManager->getUserObject())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
         if ($this->getHelper(FormHelper::class)->formWasSubmitted($request, ['deleteSelectedcomment'])) {
@@ -92,7 +94,7 @@ class DeleteCommentsAction extends AbstractTemplateRenderingAction
         }
 
         if ($comments = $this->getPostParam('deleteSelectedcomment', [])) {
-            $this->commentsService->deleteByIdsAndUserId($comments, $user->getId());
+            $this->commentsService->deleteByIdsAndUserId($comments, $this->currentUser->getId());
         }
 
         return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'comments-userlist');

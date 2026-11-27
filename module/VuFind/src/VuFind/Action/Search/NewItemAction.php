@@ -34,7 +34,6 @@ namespace VuFind\Action\Search;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\ForwardHelper;
-use VuFind\Search\Base\Results;
 
 use function in_array;
 

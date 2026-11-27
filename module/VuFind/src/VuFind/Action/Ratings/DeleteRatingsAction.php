@@ -37,7 +37,8 @@ use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\ActionHelper\UserContentHelper;
-use VuFind\Auth\Manager as AuthManager;
+use VuFind\Application\CurrentContext;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\RatingsServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -58,12 +59,13 @@ class DeleteRatingsAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param AuthManager             $authManager    Authentication manager
+     * @param ?UserEntityInterface    $currentUser    Current user
      * @param RatingsServiceInterface $ratingsService Ratings database service
      * @param CsrfInterface           $csrf           CSRF validator
      */
     public function __construct(
-        protected AuthManager $authManager,
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $currentUser,
         #[Autowire(container: DbServicePluginManager::class)]
         protected RatingsServiceInterface $ratingsService,
         protected CsrfInterface $csrf,
@@ -83,7 +85,7 @@ class DeleteRatingsAction extends AbstractTemplateRenderingAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        if (!($user = $this->authManager->getUserObject())) {
+        if (!$this->currentUser) {
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
         if ($this->getHelper(FormHelper::class)->formWasSubmitted($request, ['deleteSelectedrating'])) {
@@ -96,7 +98,7 @@ class DeleteRatingsAction extends AbstractTemplateRenderingAction
             ($ratings = $this->getPostParam('deleteSelectedrating', []))
             && $this->getHelper(UserContentHelper::class)->isRatingRemovalAllowed()
         ) {
-            $this->ratingsService->deleteByIdsAndUserId($ratings, $user->getId());
+            $this->ratingsService->deleteByIdsAndUserId($ratings, $this->currentUser->getId());
         }
 
         return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'ratings-userlist');

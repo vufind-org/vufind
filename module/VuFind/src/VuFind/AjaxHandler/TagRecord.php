@@ -30,10 +30,12 @@
 namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Application\CurrentContext;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Http\HttpStatus;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Tags\TagsService;
 
 use function strlen;
@@ -61,7 +63,8 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
     public function __construct(
         protected Loader $loader,
         protected TagsService $tagsService,
-        protected ?UserEntityInterface $user
+        #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
+        protected ?UserEntityInterface $user,
     ) {
         parent::__construct(null);
     }

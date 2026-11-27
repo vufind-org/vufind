@@ -29,12 +29,13 @@
 
 namespace VuFindTest\AjaxHandler;
 
-use VuFind\AjaxHandler\AbstractIlsAndUserActionFactory;
 use VuFind\AjaxHandler\CheckRequestIsValid;
+use VuFind\Application\CurrentContext;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\ILS\Connection;
+use VuFindTest\Feature\AutowireTrait;
 
 /**
  * CheckRequestIsValid test class.
@@ -47,6 +48,8 @@ use VuFind\ILS\Connection;
  */
 class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
+    use AutowireTrait;
+
     /**
      * Set up a CheckRequestIsValid handler for testing.
      *
@@ -56,12 +59,15 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      */
     protected function getHandler(?UserEntityInterface $user = null): CheckRequestIsValid
     {
-        // Set up auth manager with user:
-        $this->container->set(Manager::class, $this->getMockAuthManager($user));
+        // Set up current context with user:
+        $currentContext = $this->createMock(CurrentContext::class);
+        $currentContext->method('get')
+            ->with('CurrentUser')
+            ->willReturn($user);
+        $this->container->set(CurrentContext::class, $currentContext);
 
         // Build the handler:
-        $factory = new AbstractIlsAndUserActionFactory();
-        return $factory($this->container, CheckRequestIsValid::class);
+        return $this->getAutowiredObject(CheckRequestIsValid::class, $this->container);
     }
 
     /**
