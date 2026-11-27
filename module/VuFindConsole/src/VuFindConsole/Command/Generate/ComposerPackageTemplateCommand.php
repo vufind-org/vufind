@@ -216,7 +216,8 @@ class ComposerPackageTemplateCommand extends AbstractCommand
 
         if ($name = $this->input->getArgument('name')) {
             if (!preg_match('"^[a-zA-Z]+$"', $name)) {
-                throw new \Exception('Invalid package name: "' . $name . '" (Please provide a CamelCase-string with only letters A-Z in upper- or lowercase)');
+                throw new \Exception('Invalid package name: "' . $name . '"'
+                    . ' (Please provide a CamelCase-string with only letters A-Z in upper- or lowercase)');
             }
             $this->moduleNamespace = ucfirst($name);
             $this->mixinName = strtolower($name);
