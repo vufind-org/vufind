@@ -129,19 +129,22 @@ class CachingDownloader implements GuzzleServiceAwareInterface
      * Download a resource using the cache in the background.
      *
      * @param string    $url            URL
-     * @param array     $params         Request parameters
-     *                                  (e.g. additional headers)
+     * @param array     $params         Request parameters (query string)
+     *                                  (either an associative key=>value array,
+     *                                  or a regular array of preformatted key=value strings)
+     * @param array     $headers        Additional request headers (e.g. User-Agent)
      * @param ?callable $decodeCallback Callback for decoding
      *
      * @return mixed
      */
     public function download(
-        $url,
-        $params = [],
+        string $url,
+        array $params = [],
+        array $headers = [],
         ?callable $decodeCallback = null
     ) {
         $cache = $this->getDownloaderCache();
-        $cacheItemKey = md5($url . http_build_query($params));
+        $cacheItemKey = md5($url . http_build_query(array_merge($params, $headers)));
 
         if ($cache && $cache->hasItem($cacheItemKey)) {
             return $cache->getItem($cacheItemKey);
@@ -149,7 +152,7 @@ class CachingDownloader implements GuzzleServiceAwareInterface
 
         // Add new item to cache if not exists
         try {
-            $response = $this->guzzleService->get($url, $params);
+            $response = $this->guzzleService->get($url, $params, null, $headers);
         } catch (\Exception $e) {
             throw new HttpDownloadException(
                 'HttpService download failed (error)',
@@ -163,18 +166,13 @@ class CachingDownloader implements GuzzleServiceAwareInterface
 
         $body = $response->getBody()->getContents();
         $response->getBody()->rewind(); // later code might need to read the body again
-        if ($response->getStatusCode() != 200) {
-            throw new HttpDownloadException(
-                'HttpService download failed (not ok)',
-                $url,
-                $response->getStatusCode(),
-                $response->getHeaders(),
-                $body
-            );
-        }
+        $this->validateResponse($url, $response);
 
         $finalValue = $decodeCallback !== null
             ? $decodeCallback($response, $url) : $body;
+
+        $this->validateResponseBody($url, $response, $finalValue);
+
         if ($cache) {
             $cache->addItem($cacheItemKey, $finalValue);
         }
@@ -182,20 +180,70 @@ class CachingDownloader implements GuzzleServiceAwareInterface
     }
 
     /**
+     * Validate the response (especially response code).
+     * This has been modularized to allow easy overriding depending on
+     * the behaviour of certain APIs.
+     *
+     * @param string            $url      URL
+     * @param ResponseInterface $response Response
+     *
+     * @return void
+     */
+    protected function validateResponse(string $url, ResponseInterface $response)
+    {
+        if ($response->getStatusCode() !== 200) {
+            throw new HttpDownloadException(
+                'HttpService download failed (not ok)',
+                $url,
+                $response->getStatusCode(),
+                $response->getHeaders(),
+                $response->getBody()->getContents()
+            );
+        }
+    }
+
+    /**
+     * Validate the decoded body of the response.
+     *
+     * This has been modularized to allow easy overriding depending on
+     * the behaviour of certain APIs. An example would be a API that
+     * returns status code 200 OK, but uses additional error codes
+     * inside the delivered JSON.
+     *
+     * @param string            $url        URL
+     * @param ResponseInterface $response   Response
+     * @param mixed             $finalValue The final version of the response body
+     *                                      (raw or decoded, if a decodeCallback was specified)
+     *
+     * @return void
+     */
+    protected function validateResponseBody(string $url, ResponseInterface $response, $finalValue)
+    {
+        // default: No specific body-related validation
+    }
+
+    /**
      * Download a resource using the cache in the background,
      * including decoding for JSON.
      *
      * @param string    $url         URL
-     * @param array     $params      Request parameters (e.g. additional headers)
+     * @param array     $params      Additional request parameters (e.g. for URL)
+     * @param array     $headers     Additional request headers (e.g. User-Agent)
      * @param bool|null $associative Sent to json_decode
+     * @param int       $flags       Sent to json_decode
      *
      * @return \stdClass|array
      */
-    public function downloadJson($url, $params = [], $associative = null)
-    {
-        $decodeJson = function (ResponseInterface $response, string $url) use ($associative) {
+    public function downloadJson(
+        string $url,
+        array $params = [],
+        array $headers = [],
+        ?bool $associative = null,
+        int $flags = 0
+    ) {
+        $decodeJson = function (ResponseInterface $response, string $url) use ($associative, $flags) {
             $body = $response->getBody()->getContents();
-            $decodedJson = json_decode($body, $associative);
+            $decodedJson = json_decode($body, $associative, flags: $flags);
             if ($decodedJson === null) {
                 throw new HttpDownloadException(
                     'Invalid response body',
@@ -208,6 +256,6 @@ class CachingDownloader implements GuzzleServiceAwareInterface
                 return $decodedJson;
             }
         };
-        return $this->download($url, $params, $decodeJson);
+        return $this->download($url, $params, $headers, $decodeJson);
     }
 }
