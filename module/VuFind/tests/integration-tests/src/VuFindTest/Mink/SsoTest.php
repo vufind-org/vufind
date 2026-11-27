@@ -75,6 +75,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
     public static function loginConfigProvider(): \Iterator
     {
         yield 'with cat_username mapping' => [ // test for regression of #3992
+            false,
             [
                 'General' => [
                     'attributes' => [
@@ -84,28 +85,57 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
             ],
         ];
         yield 'defaults' => [];
+        yield 'send to account and with cat_username mapping' => [ // test for regression of #3992
+            true,
+            [
+                'General' => [
+                    'attributes' => [
+                        'cat_username' => 'foo',
+                    ],
+                ],
+            ],
+        ];
+        yield 'send to account' => [true];
     }
 
     /**
      * Test SSO login.
      *
-     * @param array $extraSsoConfigs Extra configurations for SimulatedSSO.ini
+     * @param bool  $sendUserToAccount Send user to account after login
+     * @param array $extraSsoConfigs   Extra configurations for SimulatedSSO.ini
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('loginConfigProvider')]
-    public function testLogin(array $extraSsoConfigs = []): void
+    public function testLogin(bool $sendUserToAccount = false, array $extraSsoConfigs = []): void
     {
         // Set up configs
         $configs = $this->getConfigIniOverrides();
+        if ($sendUserToAccount) {
+            $configs['config']['Site']['logInToAccount'] = true;
+        }
         $configs['SimulatedSSO'] = array_merge_recursive($configs['SimulatedSSO'], $extraSsoConfigs);
         $this->changeConfigs($configs);
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl());
+        $session->visit($this->getVuFindUrl() . '/Record/testsample1');
         $page = $session->getPage();
 
-        // Login
+        // Log in
         $this->clickCss($page, '#loginOptions a');
+
+        $currentUrl = $session->getCurrentUrl();
+        if ($sendUserToAccount) {
+            // Check that user is sent to account
+            $this->assertStringContainsString('Account/Home', $currentUrl);
+            $this->assertSame('Saved Items', $page->find('css', '.mainbody h1')->getText());
+        } else {
+            // Check that user is sent back to referrer.
+            $this->assertStringContainsString('/Record/testsample1', $currentUrl);
+            $this->assertStringContainsString(
+                'Journal of rational emotive therapy',
+                $page->find('css', '.mainbody h1')->getText()
+            );
+        }
 
         // Log out
         $this->logoutAndAssertSuccess();
