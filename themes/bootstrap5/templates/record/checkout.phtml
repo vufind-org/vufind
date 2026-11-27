@@ -1,0 +1,22 @@
+<?php
+  // Disable top search box -- this page has a special layout.
+  $this->globals()['searchbox'] = false;
+?>
+
+<h1><?= $this->driver->getTitle() ?></h1>
+
+<dl>
+  <dt>Author</dt>
+  <dd><?= $this->driver->getPrimaryAuthor() ?></dd>
+</dl>
+
+<a class="toolbar-btn icon-link" 
+  data-lightbox 
+  href="<?= $this->url()->addQueryParameters(['askConfirm' => true, 'source' => $this->driver->getSourceIdentifier(), 'hashKey' => $this->hashKey]) ?>"
+  rel="nofollow"
+>
+  <?= $this->icon('checkout', 'icon-link__icon') ?>
+  <span class="icon-link__label">
+    <?= $this->transEsc('checkout_item') ?>
+  </span>
+</a>
