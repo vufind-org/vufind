@@ -92,7 +92,7 @@
         "mobiledetect/mobiledetectlib": "^4.8",
         "monolog/monolog": "^3.9",
         "mpdf/mpdf": "v8.3.1",
-        "paytrail/paytrail-php-sdk": "2.8.1",
+        "paytrail/paytrail-php-sdk": "2.9.0",
         "pear/archive_tar": "^1.4",
         "phing/phing": "3.1.2",
         "ppito/laminas-whoops": "2.3.0",

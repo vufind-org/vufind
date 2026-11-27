@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c40584325d349a2b25cf0f94cdf47302",
+    "content-hash": "123c9e48da3b9ce75cf318ce9ebd32fe",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -6502,16 +6502,16 @@
         },
         {
             "name": "paytrail/paytrail-php-sdk",
-            "version": "2.8.1",
+            "version": "2.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paytrail/paytrail-php-sdk.git",
-                "reference": "078274b048575e9bbbd98bb6acfc1e534b7b8480"
+                "reference": "0f9c4d27c6c008e0a79564a8353231348bb65092"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paytrail/paytrail-php-sdk/zipball/078274b048575e9bbbd98bb6acfc1e534b7b8480",
-                "reference": "078274b048575e9bbbd98bb6acfc1e534b7b8480",
+                "url": "https://api.github.com/repos/paytrail/paytrail-php-sdk/zipball/0f9c4d27c6c008e0a79564a8353231348bb65092",
+                "reference": "0f9c4d27c6c008e0a79564a8353231348bb65092",
                 "shasum": ""
             },
             "require": {
@@ -6521,7 +6521,7 @@
                 "php": ">=7.3"
             },
             "require-dev": {
-                "guzzlehttp/guzzle": "^7.0|^6.0",
+                "guzzlehttp/guzzle": "^8.0|^7.0|^6.0",
                 "mockery/mockery": "^1.5",
                 "phpcompatibility/php-compatibility": "^9.3",
                 "phpmd/phpmd": "^2.10",
@@ -6555,9 +6555,9 @@
             ],
             "support": {
                 "issues": "https://github.com/paytrail/paytrail-php-sdk/issues",
-                "source": "https://github.com/paytrail/paytrail-php-sdk/tree/2.8.1"
+                "source": "https://github.com/paytrail/paytrail-php-sdk/tree/2.9.0"
             },
-            "time": "2026-07-01T12:03:36+00:00"
+            "time": "2026-10-28T13:26:34+00:00"
         },
         {
             "name": "pcrov/jsonreader",
@@ -15440,15 +15440,15 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.2"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "platform-overrides": {
         "php": "8.2"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
