@@ -386,4 +386,71 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                 ->invokeArgs($obj, [$record->getField('100'), ['a', 'd']])
         );
     }
+
+    /**
+     * Data provider for testGetURLs().
+     *
+     * @return \Iterator
+     */
+    public static function getURLsProvider(): \Iterator
+    {
+        $marcA = ['url' => 'https://example.com/a', 'desc' => 'MARC A'];
+        $marcB = ['url' => 'https://example.com/b', 'desc' => 'MARC B'];
+        $ilsA = ['url' => 'https://example.com/a', 'desc' => 'ILS A'];
+        $ilsC = ['url' => 'https://example.com/c', 'desc' => 'ILS C'];
+
+        yield 'no dedup by default' => [
+            null,
+            [$marcA, $marcB],
+            [$ilsC, $ilsA],
+            [$marcA, $marcB, $ilsC, $ilsA],
+        ];
+        yield 'dedup disabled' => [
+            false,
+            [$marcA, $marcB],
+            [$ilsC, $ilsA],
+            [$marcA, $marcB, $ilsC, $ilsA],
+        ];
+        yield 'dedup prefers ILS and keeps ILS order first' => [
+            true,
+            [$marcA, $marcB],
+            [$ilsC, $ilsA],
+            [$ilsC, $ilsA, $marcB],
+        ];
+        yield 'dedup with no ILS URLs' => [
+            true,
+            [$marcA, $marcB],
+            [],
+            [$marcA, $marcB],
+        ];
+        yield 'dedup with no MARC URLs' => [
+            true,
+            [],
+            [$ilsC, $ilsA],
+            [$ilsC, $ilsA],
+        ];
+    }
+
+    /**
+     * Test getURLs() merging of MARC and ILS URLs.
+     *
+     * @param ?bool $dedup    Value of Catalog/holdings_dedup_urls (null to omit)
+     * @param array $marcUrls URLs returned from MARC
+     * @param array $ilsUrls  URLs returned from the ILS
+     * @param array $expected Expected result
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getURLsProvider')]
+    public function testGetURLs(?bool $dedup, array $marcUrls, array $ilsUrls, array $expected): void
+    {
+        $config = null === $dedup ? [] : ['Catalog' => ['holdings_dedup_urls' => $dedup]];
+        $record = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
+            ->setConstructorArgs([$config])
+            ->onlyMethods(['getMarcURLs', 'getIlsURLs'])
+            ->getMock();
+        $record->method('getMarcURLs')->willReturn($marcUrls);
+        $record->method('getIlsURLs')->willReturn($ilsUrls);
+        $this->assertEquals($expected, $record->getURLs());
+    }
 }

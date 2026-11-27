@@ -34,6 +34,8 @@ use Laminas\Http\Response;
 use VuFind\Connection\Webhook;
 use VuFind\ILS\Driver\Folio;
 
+use function count;
+
 /**
  * FOLIO ILS driver test.
  *
@@ -1092,6 +1094,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'folio_location_is_active' => true,
                     'loan_type_id' => '',
                     'loan_type_name' => '',
+                    'holdings_electronic_access' => [],
                 ],
             ],
             'electronic_holdings' => [],
@@ -1149,6 +1152,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                         'folio_location_is_active' => true,
                         'loan_type_id' => '',
                         'loan_type_name' => '',
+                        'holdings_electronic_access' => [],
                     ],
                 ],
                 'electronic_holdings' => [],
@@ -1182,6 +1186,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                         'folio_location_is_active' => true,
                         'loan_type_id' => 'd012791f-4e26-4dc2-a279-b6a42b1df315',
                         'loan_type_name' => 'Can Circulate',
+                        'holdings_electronic_access' => [],
                     ],
                     1 => [
                         'callnumber_prefix' => '',
@@ -1209,6 +1214,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                         'folio_location_is_active' => true,
                         'loan_type_id' => 'd012791f-4e26-4dc2-a279-b6a42b1df315',
                         'loan_type_name' => 'Can Circulate',
+                        'holdings_electronic_access' => [],
                     ],
                 ],
                 'electronic_holdings' => [],
@@ -1292,6 +1298,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'folio_location_is_active' => true,
                     'loan_type_id' => '',
                     'loan_type_name' => '',
+                    'holdings_electronic_access' => [],
                 ],
             ],
             'electronic_holdings' => [],
@@ -1339,6 +1346,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'folio_location_is_active' => true,
                     'loan_type_id' => '',
                     'loan_type_name' => '',
+                    'holdings_electronic_access' => [],
                 ],
             ],
             'electronic_holdings' => [],
@@ -1384,6 +1392,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'folio_location_is_active' => true,
                     'loan_type_id' => '',
                     'loan_type_name' => '',
+                    'holdings_electronic_access' => [],
                 ],
             ],
             'electronic_holdings' => [],
@@ -1431,6 +1440,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'folio_location_is_active' => true,
                     'loan_type_id' => '',
                     'loan_type_name' => '',
+                    'holdings_electronic_access' => [],
                 ],
                 1 => [
                     'callnumber_prefix' => '',
@@ -1458,11 +1468,137 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'folio_location_is_active' => true,
                     'loan_type_id' => '',
                     'loan_type_name' => '',
+                    'holdings_electronic_access' => [],
                 ],
             ],
             'electronic_holdings' => [],
         ];
         $this->assertEquals($expected, $this->driver->getHolding('instanceid'));
+    }
+
+    /**
+     * Test that getHolding exposes the holdings record's electronicAccess data.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testTokens')]
+    public function testGetHoldingWithElectronicAccess(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $driverConfig['IDs']['type'] = 'hrid';
+        $this->createConnector('get-holding-electronic-access', $driverConfig);
+        $holding = $this->driver->getHolding('foo');
+        $this->assertEquals(
+            [
+                [
+                    'uri' => 'https://example.com/one',
+                    'linkText' => 'Access online',
+                    'materialsSpecification' => 'v. 1',
+                    'publicNote' => 'Campus only',
+                    'relationshipId' => 'f5d0068e-6272-458e-8a81-b85e7b9a14aa',
+                ],
+                [
+                    'uri' => 'https://example.com/two',
+                ],
+            ],
+            $holding['holdings'][0]['holdings_electronic_access']
+        );
+    }
+
+    /**
+     * Data provider for testGetUrlsForRecord.
+     *
+     * @return \Iterator
+     */
+    public static function getUrlsForRecordProvider(): \Iterator
+    {
+        $withLinkText = ['uri' => 'https://example.com/a', 'linkText' => 'Link A'];
+        $withoutLinkText = ['uri' => 'https://example.com/b'];
+        $emptyLinkText = ['uri' => 'https://example.com/c', 'linkText' => ''];
+        $enabled = ['enabled' => true];
+        $enabledWithLinkText = [
+            'enabled' => true,
+            'link_text_source' => ['electronic_access_link_text'],
+        ];
+
+        yield 'not configured' => [
+            null,
+            [[$withLinkText]],
+            [],
+        ];
+        yield 'explicitly disabled' => [
+            ['enabled' => false],
+            [[$withLinkText]],
+            [],
+        ];
+        yield 'enabled, no holdings' => [
+            $enabled,
+            [],
+            [],
+        ];
+        yield 'enabled, no electronic access' => [
+            $enabled,
+            [[]],
+            [],
+        ];
+        yield 'default link text falls back to URL' => [
+            $enabled,
+            [[$withLinkText, $withoutLinkText]],
+            [
+                ['url' => 'https://example.com/a', 'desc' => 'https://example.com/a'],
+                ['url' => 'https://example.com/b', 'desc' => 'https://example.com/b'],
+            ],
+        ];
+        yield 'link text from electronicAccess' => [
+            $enabledWithLinkText,
+            [[$withLinkText, $withoutLinkText, $emptyLinkText]],
+            [
+                ['url' => 'https://example.com/a', 'desc' => 'Link A'],
+                ['url' => 'https://example.com/b', 'desc' => 'https://example.com/b'],
+                ['url' => 'https://example.com/c', 'desc' => 'https://example.com/c'],
+            ],
+        ];
+        yield 'multiple holdings flattened in order' => [
+            $enabledWithLinkText,
+            [[$withoutLinkText], [], [$withLinkText, $emptyLinkText]],
+            [
+                ['url' => 'https://example.com/b', 'desc' => 'https://example.com/b'],
+                ['url' => 'https://example.com/a', 'desc' => 'Link A'],
+                ['url' => 'https://example.com/c', 'desc' => 'https://example.com/c'],
+            ],
+        ];
+    }
+
+    /**
+     * Test getUrlsForRecord.
+     *
+     * @param ?array $electronicHoldingsConfig [ElectronicHoldings] config section (null to omit)
+     * @param array  $holdingsElectronicAccess holdings_electronic_access value for each holding
+     * @param array  $expected                 Expected URL list
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getUrlsForRecordProvider')]
+    public function testGetUrlsForRecord(
+        ?array $electronicHoldingsConfig,
+        array $holdingsElectronicAccess,
+        array $expected
+    ): void {
+        $config = $this->defaultDriverConfig;
+        if (null !== $electronicHoldingsConfig) {
+            $config['ElectronicHoldings'] = $electronicHoldingsConfig;
+        }
+        $this->createConnector('empty', $config, null, ['getHolding']);
+        $holdings = array_map(
+            fn ($access) => ['holdings_electronic_access' => $access],
+            $holdingsElectronicAccess
+        );
+        $this->driver->expects(
+            ($electronicHoldingsConfig['enabled'] ?? false) ? $this->once() : $this->never()
+        )->method('getHolding')
+            ->with('instanceid')
+            ->willReturn(['total' => count($holdings), 'holdings' => $holdings, 'electronic_holdings' => []]);
+        $this->assertEquals($expected, $this->driver->getUrlsForRecord('instanceid'));
     }
 
     /**
