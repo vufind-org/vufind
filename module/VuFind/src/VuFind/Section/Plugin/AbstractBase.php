@@ -29,6 +29,8 @@
 
 namespace VuFind\Section\Plugin;
 
+use Psr\Log\LoggerAwareInterface;
+
 /**
  * Abstract base section.
  *
@@ -40,7 +42,7 @@ namespace VuFind\Section\Plugin;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-abstract class AbstractBase implements SectionInterface
+abstract class AbstractBase implements SectionInterface, LoggerAwareInterface
 {
     use SectionTrait;
 }
