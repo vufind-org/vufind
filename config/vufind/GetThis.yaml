@@ -12,6 +12,9 @@
 # Whether to comment in the HTML code the displayed template name for troubleshooting/debugging, default false.
 #commentTemplateName: false
 
+# Length at which the main title should be truncated; 0 does not truncate, default 0.
+#truncateTitle: 0
+
 templates:
   # Elements here correspond to .phtml template files within templates/record/get-this
   # (e.g. the holdings section configures templates/record/get-this/holdings.phtml)
@@ -19,9 +22,18 @@ templates:
   #   enabled: true/false, whether to enable the template
   #   view_variables: array of extra variables made available to the templates.
   #     It can be used with placeholders if available; see example below.
+  #   exclusive: whether to display other templates (referencing `templates_order`) or not if this one matches; possible values are :
+  #    - only: if the template matches the rules for display, it will be the only one displayed
+  #    - preventFollowing: if the template matches the rules for display, all following templates will be ignored
   #   condition_function: a function within GetThisLoader returning a boolean indicating whether to display the template.
   #     The result of the function can be negated if prefixed with "!".
   #     note : If the function does not exist, the condition will evaluate to false
+  #   regex: will match a regex from Regex.yaml with a value to know whether to display the template. It requires 2 parameters :
+  #     name: The name of the regex found in Regex.yaml
+  #     itemKey or function: The value to match the regex against. It can either be :
+  #       - itemKey : A key of the item array (callnumber will match the value of $item['callnumber'] against the regex)
+  #       - function : A method from GetThisLoader (getLocation, will match the result of the function against the regex)
+  #     The result of the regex can be negated if prefixed with "!".
   #   condition_group: if condition_function is limiting for you, condition_group replaces it to give more flexibility.
   #     This element defines a set of logical conditions.
   #     If any entry is true, the whole list is considered true (logical OR).
@@ -45,6 +57,9 @@ templates:
   #                 - condition_function: {test_function2}
   #             - condition_function: {test_function3}
   #         - condition_function: {test_function4}
+  #         - regex:
+  #             name: {regex_name}
+  #             itemKey or function: {variable_or_function}
   #       view_variables:
   #         - {my_link}: {https://your_lib.edu}
   #         - {my_link_with_placeholder}: {https://mylib.edu/%%location%%/open_hours}
@@ -55,9 +70,14 @@ templates:
   biblio-info:
     enabled: true
 
+  place-request:
+    enabled: true
+
   micro-form:
     # Template displayed if the location matches LOCATION_MICROFORMS in Regex.yaml
-    condition_function: showMicroForm
+    regex:
+      name: 'LOCATION_MICROFORMS'
+      function: 'getLocation'
     view_variables:
       open_hours: https://your_lib.edu/hours
 

@@ -5,11 +5,16 @@ $templates = $this->getThisLoader->getSubTemplates();
 $commentTemplateName = $this->getThisLoader->commentTemplateName();
 
 $recordTitle = $this->driver->getRawData()['title_full'] ?? '';
+if ($this->getThisLoader->getTruncateTitleLength() > 0) {
+    $recordTitle = $this->truncate($recordTitle, $this->getThisLoader->getTruncateTitleLength());
+}
 echo $this->component(
     'page-title',
     [
-        'title' => $this->translate('Get This') . ' : ' . $recordTitle,
+        'title' => $this->translate('Get This') . ' : <span class="title-in-heading">' . $this->escapeHtml($recordTitle) . '</span>',
         'level' => 1,
+        'headTitle' => $this->translate('Get This') . ' : ' . $recordTitle,
+        'escape' => false,
     ]
 );
 
