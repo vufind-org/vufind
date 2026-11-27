@@ -91,7 +91,7 @@ class ListAction extends AbstractHoldAction
         Connection $ilsConnection,
         ManagerInterface $sessionManager,
         #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
-        protected ?UserEntityInterface $currentUser,
+        ?UserEntityInterface $currentUser,
         CsrfInterface $csrf,
         AuditEventService $auditEventService,
         #[Autowire(container: CacheManager::class, service: 'object')]

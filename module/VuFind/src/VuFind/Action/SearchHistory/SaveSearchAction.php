@@ -32,7 +32,6 @@
 namespace VuFind\Action\SearchHistory;
 
 use DateTime;
-use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -74,7 +73,7 @@ class SaveSearchAction extends AbstractSearchHistoryAction
      * @param array                      $config                     VuFind configuration
      * @param ?UserEntityInterface       $currentUser                Current user
      * @param AuditEventServiceInterface $auditEventService          Audit event service
-     * @param ManagerInterface           $sessionManager             Session manager
+     * @param string                     $sessionId                  Session ID
      * @param AccountCapabilities        $accountCapabilities        Account capabilities
      * @param Memory                     $searchMemory               Search memory
      * @param History                    $searchHistory              Search history
@@ -91,7 +90,8 @@ class SaveSearchAction extends AbstractSearchHistoryAction
         ?UserEntityInterface $currentUser,
         #[Autowire(container: DbServicePluginManager::class)]
         AuditEventServiceInterface $auditEventService,
-        ManagerInterface $sessionManager,
+        #[Autowire(container: CurrentContext::class, service: 'SessionId')]
+        string $sessionId,
         AccountCapabilities $accountCapabilities,
         Memory $searchMemory,
         History $searchHistory,
@@ -107,7 +107,7 @@ class SaveSearchAction extends AbstractSearchHistoryAction
             $config,
             $currentUser,
             $auditEventService,
-            $sessionManager,
+            $sessionId,
             $accountCapabilities,
             $searchMemory,
             $searchHistory,
@@ -152,8 +152,7 @@ class SaveSearchAction extends AbstractSearchHistoryAction
             // If the row the user is trying to save is a duplicate of an already-saved row, we should just delete the
             // duplicate. (This can happen if the user clicks "save" before logging in, then logs in during the save
             // process, but has the same search already saved in their account).
-            $sessionId = $this->sessionManager->getId();
-            $rowToCheck = $this->searchService->getSearchByIdAndOwner($id, $sessionId, $this->currentUser);
+            $rowToCheck = $this->searchService->getSearchByIdAndOwner($id, $this->sessionId, $this->currentUser);
             if ($duplicateId = $rowToCheck ? $this->isDuplicateOfSavedSearch($rowToCheck, $this->currentUser) : null) {
                 $this->searchService->deleteSearch($rowToCheck);
                 $id = $duplicateId;

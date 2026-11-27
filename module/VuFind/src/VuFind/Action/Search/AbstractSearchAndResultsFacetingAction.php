@@ -32,7 +32,6 @@
 
 namespace VuFind\Action\Search;
 
-use Laminas\Session\ManagerInterface;
 use VuFind\Application\CurrentContext;
 use VuFind\Config\ConfigManager;
 use VuFind\ContentBlock\BlockLoader;
@@ -81,7 +80,7 @@ abstract class AbstractSearchAndResultsFacetingAction extends AbstractSearchAndR
      * @param BlockLoader                $blockLoader                Content block loader
      * @param ConfigManager              $configManager              Configuration manager
      * @param RecordRouter               $recordRouter               Record router
-     * @param ManagerInterface           $sessionManager             Session manager
+     * @param string                     $sessionId                  Session ID
      * @param SearchServiceInterface     $searchService              Search service
      * @param ?UserEntityInterface       $currentUser                Current user
      * @param SearchNormalizer           $searchNormalizer           Search normalize
@@ -101,7 +100,8 @@ abstract class AbstractSearchAndResultsFacetingAction extends AbstractSearchAndR
         BlockLoader $blockLoader,
         ConfigManager $configManager,
         RecordRouter $recordRouter,
-        ManagerInterface $sessionManager,
+        #[Autowire(container: CurrentContext::class, service: 'SessionId')]
+        string $sessionId,
         #[Autowire(container: DbServicePluginManager::class)]
         SearchServiceInterface $searchService,
         #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
@@ -124,7 +124,7 @@ abstract class AbstractSearchAndResultsFacetingAction extends AbstractSearchAndR
             $blockLoader,
             $configManager,
             $recordRouter,
-            $sessionManager,
+            $sessionId,
             $searchService,
             $currentUser,
             $searchNormalizer,

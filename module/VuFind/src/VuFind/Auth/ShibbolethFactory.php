@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Application\CurrentContext;
 use VuFind\Auth\Shibboleth\ConfigurationLoaderInterface;
 use VuFind\Auth\Shibboleth\MultiIdPConfigurationLoader;
 use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
@@ -75,7 +76,7 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         $loader = $this->getConfigurationLoader($container);
         $request = $container->get('Request');
         return new $requestedName(
-            $container->get(\Laminas\Session\ManagerInterface::class),
+            $container->get(CurrentContext::class)->get('SessionId'),
             $loader,
             $request,
             $container->get(\VuFind\Auth\ILSAuthenticator::class)

@@ -33,7 +33,6 @@
 namespace VuFind\Action\Search;
 
 use Exception;
-use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
@@ -132,7 +131,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      * @param BlockLoader                $blockLoader                Content block loader
      * @param ConfigManager              $configManager              Configuration manager
      * @param RecordRouter               $recordRouter               Record router
-     * @param ManagerInterface           $sessionManager             Session manager
+     * @param string                     $sessionId                  Session ID
      * @param SearchServiceInterface     $searchService              Search service
      * @param ?UserEntityInterface       $currentUser                Current user
      * @param SearchNormalizer           $searchNormalizer           Search normalize
@@ -150,7 +149,8 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         protected BlockLoader $blockLoader,
         protected ConfigManager $configManager,
         protected RecordRouter $recordRouter,
-        protected ManagerInterface $sessionManager,
+        #[Autowire(container: CurrentContext::class, service: 'SessionId')]
+        protected string $sessionId,
         #[Autowire(container: DbServicePluginManager::class)]
         protected SearchServiceInterface $searchService,
         #[Autowire(container: CurrentContext::class, service: 'CurrentUser')]
@@ -838,8 +838,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      */
     protected function retrieveSearchSecurely(int $searchId): ?SearchEntityInterface
     {
-        $sessId = $this->sessionManager->getId();
-        return $this->searchService->getSearchByIdAndOwner($searchId, $sessId, $this->currentUser);
+        return $this->searchService->getSearchByIdAndOwner($searchId, $this->sessionId, $this->currentUser);
     }
 
     /**
@@ -851,12 +850,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      */
     protected function saveSearchToHistory(Results $results): void
     {
-        $sessId = $this->sessionManager->getId();
-        $this->searchNormalizer->saveNormalizedSearch(
-            $results,
-            $sessId,
-            $this->currentUser?->getId()
-        );
+        $this->searchNormalizer->saveNormalizedSearch($results, $this->sessionId, $this->currentUser?->getId());
     }
 
     /**
