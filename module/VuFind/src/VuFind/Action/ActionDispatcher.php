@@ -106,9 +106,7 @@ class ActionDispatcher
                 ->getActionHandlerName($routeMatch->getParam('controller'), $routeMatch->getParam('action'));
         }
 
-        $action = $id
-            ? $this->actionPluginManager->get($id)
-            : $this->actionPluginManager->get(NotFoundAction::class);
+        $action = $this->actionPluginManager->get($id ?: NotFoundAction::class);
         $this->actionConfigManager->applyActionConfig($action, $routeMatch);
 
         $request = $request
