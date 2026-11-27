@@ -31,7 +31,6 @@ namespace VuFindTest\Auth;
 
 use DateTime;
 use Laminas\Http\Request;
-use Laminas\Session\ManagerInterface;
 use PHPUnit\Event\NoPreviousThrowableException;
 use PHPUnit\Framework\InvalidArgumentException;
 use PHPUnit\Framework\MockObject\Exception;
@@ -62,7 +61,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
     /**
      * Get an EmailAuthenticator to test.
      *
-     * @param ?ManagerInterface          $sessionManager  Session manager
+     * @param ?string                    $sessionId       Session ID
      * @param ?RandomHash                $randomHash      Random hash generator
      * @param ?Mailer                    $mailer          Mailer service
      * @param ?TemplateRendererInterface $renderer        Template renderer
@@ -78,7 +77,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
      * @throws NoPreviousThrowableException
      */
     protected function getEmailAuthenticator(
-        ?ManagerInterface $sessionManager = null,
+        ?string $sessionId = null,
         ?RandomHash $randomHash = null,
         ?Mailer $mailer = null,
         ?TemplateRendererInterface $renderer = null,
@@ -89,7 +88,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         ?AuthHashServiceInterface $authHashService = null
     ): EmailAuthenticator {
         $authenticator = new EmailAuthenticator(
-            $sessionManager ?? $this->createStub(ManagerInterface::class),
+            $sessionId ?? '---',
             $randomHash ?? $this->createStub(RandomHash::class),
             $mailer ?? $this->createStub(Mailer::class),
             $renderer ?? $this->createStub(TemplateRendererInterface::class),
@@ -111,15 +110,13 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
     public function testRecoveryInterval(): void
     {
         $this->expectExceptionMessage('authentication_error_in_progress');
-        $sessionManager = $this->createMock(ManagerInterface::class);
-        $sessionManager->expects($this->once())->method('getId')->willReturn('foo-session');
         $authHashService = $this->createMock(AuthHashServiceInterface::class);
         $row = $this->createMock(AuthHashEntityInterface::class);
         $row->expects($this->once())->method('getCreated')->willReturn(new DateTime());
         $authHashService->expects($this->once())->method('getLatestBySessionId')->with('foo-session')
             ->willReturn($row);
         $authenticator = $this->getEmailAuthenticator(
-            sessionManager: $sessionManager,
+            sessionId: 'foo-session',
             authHashService: $authHashService
         );
         $authenticator->sendAuthenticationLink('', [], []);
@@ -132,8 +129,6 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testSendAuthenticationLink(): void
     {
-        $sessionManager = $this->createMock(ManagerInterface::class);
-        $sessionManager->expects($this->once())->method('getId')->willReturn('foo-session');
         $authHashService = $this->createMock(AuthHashServiceInterface::class);
         $row = $this->createMock(AuthHashEntityInterface::class);
         $row->expects($this->once())->method('setSessionId')->with('foo-session')->willReturn($row);
@@ -190,7 +185,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $userIpReader = $this->createMock(userIpReader::class);
         $userIpReader->expects($this->once())->method('getUserIp')->willReturn('foo-ip');
         $authenticator = $this->getEmailAuthenticator(
-            sessionManager: $sessionManager,
+            sessionId: 'foo-session',
             randomHash: $randomHash,
             mailer: $mailer,
             renderer: $renderer,
@@ -229,10 +224,8 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $authHashService = $this->createMock(AuthHashServiceInterface::class);
         $authHashService->expects($this->once())->method('getByHashAndType')->with('foo-hash', 'email')
             ->willReturn($row);
-        $sessionManager = $this->createMock(ManagerInterface::class);
-        $sessionManager->expects($this->once())->method('getId')->willReturn('foo-session');
         $authenticator = $this->getEmailAuthenticator(
-            sessionManager: $sessionManager,
+            sessionId: 'foo-session',
             authHashService: $authHashService
         );
         $authenticator->authenticate('foo-hash');
@@ -252,10 +245,8 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $authHashService = $this->createMock(AuthHashServiceInterface::class);
         $authHashService->expects($this->once())->method('getByHashAndType')->with('foo-hash', 'email')
             ->willReturn($row);
-        $sessionManager = $this->createMock(ManagerInterface::class);
-        $sessionManager->expects($this->once())->method('getId')->willReturn('foo-session');
         $authenticator = $this->getEmailAuthenticator(
-            sessionManager: $sessionManager,
+            sessionId: 'foo-session',
             authHashService: $authHashService
         );
         $this->assertEquals(['bar'], $authenticator->authenticate('foo-hash'));
