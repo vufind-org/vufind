@@ -60,6 +60,10 @@ Header:
       checkMethod: checkThemeOptions
       excludeFromSiteMapPage: true
 
+    - template: Section/HeaderBar/HeaderBar-colorSchemeOptions.phtml
+      checkMethod: checkColorSchemeOptions
+      excludeFromSiteMapPage: true
+
     - template: Section/HeaderBar/HeaderBar-allLangs.phtml
       checkMethod: checkAllLangs
       excludeFromSiteMapPage: true

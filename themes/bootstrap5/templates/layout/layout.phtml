@@ -20,10 +20,20 @@
     $globals['searchbox'] = $this->context($this)->renderInContext('search/searchbox.phtml', []);
   }
 ?>
-<html lang="<?=$globals['userLang']?>"<?php if ($globals['rtl']): ?> dir="rtl"<?php endif; ?>>
+<html
+  <?php if ('normal' != $globals['selectedColorScheme']): ?>
+    data-bs-theme="<?=$globals['selectedColorScheme']?>"
+  <?php endif; ?>
+  lang="<?=$globals['userLang']?>"<?php if ($globals['rtl']): ?> dir="rtl"<?php endif; ?>
+>
   <head>
     <?php $this->setupThemeResources(); ?>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <?php if ('dark' == $globals['selectedColorScheme']): ?>
+      <meta name="color-scheme" data-bs-theme="dark light">
+    <?php elseif ('light' == $globals['selectedColorScheme']): ?>
+      <meta name="color-scheme" data-bs-theme="light dark">
+    <?php endif; ?>
     <?=$this->headMeta()?>
     <?=$this->googleTagManager()->getHeadCode()?>
 

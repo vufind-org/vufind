@@ -749,6 +749,11 @@ header .container.navbar {
     height: auto !important;
   }
 }
+@include color-mode(dark, true) {
+  .top-title {
+    color: #fff;
+  }
+}
 
 /* ------ CURRENT FILTERS ------ */
 .active-filters {
@@ -977,11 +982,20 @@ table.search-history-table {
       height: 2em;
       border: none;
       border-radius: 50%;
-      background-color: $gray-lighter;
       margin: 0;
       padding: 2px;
       font-size: 1em;
       cursor: pointer;
+    }
+  }
+}
+
+@include color-mode(light, true) {
+  .searchForm {
+    .searchForm-query {
+      #searchForm-reset {
+        background-color: $gray-lighter;
+      }
     }
   }
 }
