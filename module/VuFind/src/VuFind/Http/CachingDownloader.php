@@ -191,7 +191,7 @@ class CachingDownloader implements GuzzleServiceAwareInterface
      */
     protected function validateResponse(string $url, ResponseInterface $response)
     {
-        if ($response->getStatusCode() != 200) {
+        if ($response->getStatusCode() !== 200) {
             throw new HttpDownloadException(
                 'HttpService download failed (not ok)',
                 $url,
