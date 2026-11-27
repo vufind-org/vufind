@@ -98,7 +98,7 @@ class AjaxActionTest extends AbstractActionTestCase
             $manager->method('has')->willReturn(false);
             return $manager;
         }
-        $manager->method('has')->willReturnCallback(fn ($m) => $m === $method);
+        $manager->method('has')->willReturnCallback(fn (string $m): bool => $m === $method);
         $handler = $this->createMock(AjaxHandlerInterface::class);
         if ($resultOrException instanceof \Throwable) {
             $handler->method('handleRequest')->willThrowException($resultOrException);

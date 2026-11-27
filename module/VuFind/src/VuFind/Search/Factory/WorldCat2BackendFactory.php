@@ -87,9 +87,9 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         $this->setup($container);
         $configManager = $this->getService(\VuFind\Config\ConfigManagerInterface::class);
         $this->wcConfig = $configManager->getConfigArray('WorldCat2');

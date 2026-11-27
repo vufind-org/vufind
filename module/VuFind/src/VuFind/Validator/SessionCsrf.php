@@ -29,9 +29,10 @@
 
 namespace VuFind\Validator;
 
+use InvalidArgumentException;
+use Laminas\Session\Container;
 use Laminas\Session\Validator\Csrf;
 
-use function array_slice;
 use function count;
 
 /**
@@ -53,13 +54,24 @@ class SessionCsrf implements CsrfInterface
     protected Csrf $csrf;
 
     /**
+     * Session container.
+     *
+     * @var Container
+     */
+    protected Container $sessionContainer;
+
+    /**
      * Constructor.
      *
      * @param array $options Options to pass to CSRF validator
      */
     public function __construct(array $options = [])
     {
+        if (!isset($options['session'])) {
+            throw new InvalidArgumentException('Options must include session');
+        }
         $this->csrf = new Csrf($options);
+        $this->sessionContainer = $options['session'];
     }
 
     /**
@@ -71,15 +83,7 @@ class SessionCsrf implements CsrfInterface
      */
     public function trimTokenList($limit)
     {
-        $session = $this->csrf->getSession();
-        if ($limit < 1) {
-            // Reset the array if necessary:
-            $session->tokenList = [];
-        } elseif ($limit < $this->getTokenCount()) {
-            // Trim the array if necessary:
-            $session->tokenList
-                = array_slice($session->tokenList, -1 * $limit, null, true);
-        }
+        // This method only exists for back-compatibility.
     }
 
     /**
@@ -89,7 +93,8 @@ class SessionCsrf implements CsrfInterface
      */
     public function getTokenCount()
     {
-        return count($this->csrf->getSession()->tokenList ?? []);
+        // This method only exists for back-compatibility.
+        return count($this->sessionContainer->tokenList ?? []);
     }
 
     /**
@@ -104,7 +109,10 @@ class SessionCsrf implements CsrfInterface
      */
     public function getHash($regenerate = false)
     {
-        return $this->csrf->getHash($regenerate);
+        if ($regenerate) {
+            throw new InvalidArgumentException('The regenerate parameter is no longer supported');
+        }
+        return $this->csrf->getHash();
     }
 
     /**
@@ -114,7 +122,7 @@ class SessionCsrf implements CsrfInterface
      *
      * @return bool
      */
-    public function isValid($value)
+    public function isValid(mixed $value): bool
     {
         return $this->csrf->isValid($value);
     }

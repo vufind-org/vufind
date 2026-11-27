@@ -30,8 +30,8 @@
 namespace VuFind\RateLimiter\Turnstile;
 
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Mvc\MvcEvent;
 use Psr\Log\LoggerAwareInterface;
+use VuFind\EventManager\EventInterface;
 use VuFind\Log\LoggerAwareTrait;
 use VuFindHttp\HttpServiceAwareInterface;
 use VuFindHttp\HttpServiceAwareTrait;
@@ -65,11 +65,11 @@ class Turnstile implements HttpServiceAwareInterface, LoggerAwareInterface
     /**
      * Determines if a Turnstile challenge is allowed based on the current event.
      *
-     * @param MvcEvent $event The MVC event
+     * @param EventInterface $event The event
      *
      * @return bool Whether or not the challenge is allowed
      */
-    public function isChallengeAllowed($event)
+    public function isChallengeAllowed(EventInterface $event)
     {
         $routeMatch = $event->getRouteMatch();
         $controller = $routeMatch?->getParam('controller') ?? '??';

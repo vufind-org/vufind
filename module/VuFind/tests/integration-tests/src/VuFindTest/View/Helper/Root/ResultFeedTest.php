@@ -29,6 +29,11 @@
 
 namespace VuFindTest\Integration\View\Helper\Root;
 
+use Laminas\Router\AssembledUrl;
+use Laminas\Router\RouteStackInterface;
+use Laminas\View\Helper\EscapeHtml;
+use VuFind\Escaper\Escaper;
+use VuFind\Http\RequestHelper;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\View\Helper\Root\ResultFeed;
@@ -75,20 +80,20 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $record = $this->createMock(\VuFind\View\Helper\Root\Record::class);
         $record->method('__invoke')->willReturn($record);
         $record->method('getLinkDetails')->willReturn([['url' => 'http://driver-url']]);
-        $router = new \VuFind\Record\Router([]);
+        $recordRouter = new \VuFind\Record\Router([]);
         $memory = $this->createMock(\VuFind\Search\Memory::class);
-        $url = $this->createMock(\VuFind\View\Helper\Root\Url::class);
-        $url->method('__invoke')->willReturn('test/url');
+        $router = $this->createMock(RouteStackInterface::class);
+        $router->method('assemble')->willReturnCallback(fn () => new AssembledUrl('test/url'));
         $searchOptionsManager = $this->createMock(\VuFind\Search\Options\PluginManager::class);
         $translate = $this->createMock(\VuFind\View\Helper\Root\Translate::class);
         $truncate = $this->createMock(\VuFind\View\Helper\Root\Truncate::class);
-        $escapeHtml = $this->createMock(\Laminas\View\Helper\EscapeHtml::class);
+        $escapeHtml = new EscapeHtml(new Escaper());
 
         $recordLinker = $this->getMockBuilder(\VuFind\View\Helper\Root\RecordLinker::class)
             ->setConstructorArgs([
-                $router,
+                $recordRouter,
                 $memory,
-                new RouteHelper(fn () => $url),
+                new RouteHelper(new RequestHelper(), $router),
                 $searchOptionsManager,
                 $translate,
                 $truncate,

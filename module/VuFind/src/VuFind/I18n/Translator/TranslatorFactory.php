@@ -37,6 +37,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\PathResolver;
 use VuFind\I18n\Locale\LocaleSettings;
+use VuFind\I18n\Translator\TranslationCollector\DynamicFileListCollector;
 
 use function extension_loaded;
 
@@ -70,10 +71,10 @@ class TranslatorFactory implements DelegatorFactoryInterface
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
-        $name,
+        string $name,
         callable $callback,
         ?array $options = null
-    ) {
+    ): mixed {
         $this->setPathResolver($container->get(PathResolver::class));
         $translator = $callback();
         if (!extension_loaded('intl')) {
@@ -84,37 +85,12 @@ class TranslatorFactory implements DelegatorFactoryInterface
         }
         $settings = $container->get(LocaleSettings::class);
         $language = $settings->getUserLocale();
-        $this->enableCaching($translator, $container);
-        $this->addLanguageToTranslator($translator, $settings, $language);
+        $this->addLanguageToTranslationCollector(
+            $container->get(DynamicFileListCollector::class),
+            $settings,
+            $language
+        );
 
         return $translator;
-    }
-
-    /**
-     * Add caching to a translator object.
-     *
-     * @param Translator         $translator Translator object
-     * @param ContainerInterface $container  Service manager
-     *
-     * @return void
-     */
-    protected function enableCaching(
-        Translator $translator,
-        ContainerInterface $container
-    ): void {
-        // Set up language caching for better performance:
-        try {
-            $translator->setCache(
-                $container->get(\VuFind\Cache\Manager::class)->getCache('language')
-            );
-        } catch (\Exception $e) {
-            // Don't let a cache failure kill the whole application, but make
-            // note of it:
-            $logger = $container->get(\VuFind\Log\Logger::class);
-            $logger->debug(
-                'Problem loading cache: ' . $e::class . ' exception: '
-                . $e->getMessage()
-            );
-        }
     }
 }

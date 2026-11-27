@@ -29,7 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\ServerUrl;
 use VuFind\ServiceManager\Factory\Autowire;
 
 use function strlen;

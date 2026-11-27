@@ -36,6 +36,7 @@ use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Http\RouteHelper;
+use VuFind\I18n\Translator\TranslationCollector\DynamicFileListCollector;
 use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindConsole\Command\ScheduledSearch\NotifyCommand;
 use VuFindTest\Container\MockContainer;
@@ -511,7 +512,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             $options['mailer'] ?? $this->createStub(\VuFind\Mailer\Mailer::class),
             $options['searchService'] ?? $this->createStub(SearchServiceInterface::class),
             $options['localeSettings'] ?? $this->createStub(\VuFind\I18n\Locale\LocaleSettings::class),
-            $routeHelper
+            $this->createMock(DynamicFileListCollector::class),
+            $routeHelper,
         );
         $command->setTranslator(
             $options['translator'] ?? $this->createStub(\Laminas\Translator\TranslatorInterface::class)

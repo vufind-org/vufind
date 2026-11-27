@@ -47,7 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
+    protected array $aliases = [
         AccessTokenEntityInterface::class => AccessToken::class,
         ApiKeyEntityInterface::class => ApiKey::class,
         AuthHashEntityInterface::class => AuthHash::class,
@@ -82,7 +82,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var bool
      */
-    protected $sharedByDefault = false;
+    protected bool $sharedByDefault = false;
 
     /**
      * Constructor.

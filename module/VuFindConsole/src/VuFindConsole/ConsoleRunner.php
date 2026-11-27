@@ -32,8 +32,10 @@ namespace VuFindConsole;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\ConsoleRunner as DoctrineConsoleRunner;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
+use Laminas\EventManager\EventManagerInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
+use VuFind\EventManager\Event;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -59,11 +61,13 @@ class ConsoleRunner
      *
      * @param ContainerInterface     $pluginManager Plugin manager (to retrieve commands)
      * @param EntityManagerInterface $entityManager Entity manager
+     * @param EventManagerInterface  $eventManager  Event manager
      */
     public function __construct(
         #[Autowire(service: \VuFindConsole\Command\PluginManager::class)]
         protected ContainerInterface $pluginManager,
         protected EntityManagerInterface $entityManager,
+        protected EventManagerInterface $eventManager,
     ) {
     }
 
@@ -100,6 +104,11 @@ class ConsoleRunner
      */
     public function run()
     {
+        // Trigger bootstrap event:
+        $event = (new Event());
+        $this->eventManager->setEventPrototype($event);
+        $this->eventManager->trigger(Event::EVENT_BOOTSTRAP);
+
         // Get command list before initializing Application, since we may need
         // to manipulate $_SERVER for backward compatibility.
         $commands = $this->getCommandList();

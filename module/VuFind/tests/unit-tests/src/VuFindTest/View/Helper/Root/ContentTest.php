@@ -31,6 +31,7 @@ namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtml;
 use VuFind\ContentBlock\TemplateBased;
+use VuFind\Escaper\Escaper;
 use VuFind\View\Helper\Root\Content;
 use VuFind\View\Helper\Root\Context;
 use VuFind\View\Helper\Root\Markdown;
@@ -85,7 +86,7 @@ class ContentTest extends \PHPUnit\Framework\TestCase
         $content = new Content(
             $mockTemplateBased,
             $mockContext,
-            new EscapeHtml(),
+            new EscapeHtml(new Escaper()),
             $this->createCleanHtmlHelper(),
             $mockMarkdownHelper
         );

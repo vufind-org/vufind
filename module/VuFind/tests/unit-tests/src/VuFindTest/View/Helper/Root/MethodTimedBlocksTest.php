@@ -31,6 +31,7 @@ namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtml;
 use VuFind\Date\Converter;
+use VuFind\Escaper\Escaper;
 use VuFind\ILS\Connection;
 use VuFind\View\Helper\Root\DateTime;
 use VuFind\View\Helper\Root\MethodTimedBlocks;
@@ -136,7 +137,7 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
         $translator = $this->getMockTranslator($translations);
         $translate = new Translate();
         $translate->setTranslator($translator);
-        $transEsc = new TransEsc($translate, new EscapeHtml());
+        $transEsc = new TransEsc($translate, new EscapeHtml(new Escaper()));
 
         $connection = $this->createMock(Connection::class);
         $connection->method('getMethodBlock')->willReturn($blocked ? $timedBlocks : []);

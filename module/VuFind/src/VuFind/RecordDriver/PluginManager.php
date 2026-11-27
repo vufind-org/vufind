@@ -47,7 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
+    protected array $aliases = [
         'browzine' => BrowZine::class,
         'eds' => EDS::class,
         'eit' => EIT::class,
@@ -79,7 +79,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var string[][]|\Laminas\ServiceManager\Factory\DelegatorFactoryInterface[][]
      */
-    protected $delegators = [
+    protected array $delegators = [
         SolrMarc::class => [IlsAwareDelegatorFactory::class],
         SolrMarcRemote::class => [IlsAwareDelegatorFactory::class],
         EDS::class => [IlsAwareDelegatorFactory::class],
@@ -90,7 +90,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $factories = [
+    protected array $factories = [
+        EDS::class => NameBasedConfigFactory::class,
         EIT::class => NameBasedConfigFactory::class,
         Pazpar2::class => NameBasedConfigFactory::class,
         Primo::class => NameBasedConfigFactory::class,

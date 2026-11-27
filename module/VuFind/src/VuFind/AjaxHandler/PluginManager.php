@@ -47,7 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
+    protected array $aliases = [
         'checkRequestIsValid' => CheckRequestIsValid::class,
         'commentRecord' => CommentRecord::class,
         'deleteRecordComment' => DeleteRecordComment::class,

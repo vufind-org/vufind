@@ -60,9 +60,9 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
         $header = $generator->getReportToHeader();
         $expectedHeaderValue =
             '{"group":"CSPReportingEndpoint","max_age":"12345","endpoints":[{"url":"https://abc.report-uri.com"}]}';
-        $this->assertInstanceOf(\Laminas\Http\Header\GenericHeader::class, $header);
-        $this->assertEquals($expectedHeaderValue, $header->getFieldValue());
-        $this->assertEquals('Report-To', $header->getFieldName());
+        $this->assertIsArray($header);
+        $this->assertSame($expectedHeaderValue, $header['value'] ?? null);
+        $this->assertSame('Report-To', $header['name'] ?? null);
     }
 
     /**
@@ -91,10 +91,10 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
         $expectedHeaderValue =
             '{"group":"CSPReportingEndpoint","max_age":"12345","endpoints":[{"url":"https://abc.report-uri.com"}]}, ' .
             '{"group":"Endpoint2","max_age":"67890","endpoints":[{"url":"https://url1.endpoint2.com"},{"url":"https://url2.endpoint2.com"}]}';
-        $this->assertInstanceOf(\Laminas\Http\Header\GenericHeader::class, $header);
         // phpcs:enable
-        $this->assertEquals($expectedHeaderValue, $header->getFieldValue());
-        $this->assertEquals('Report-To', $header->getFieldName());
+        $this->assertIsArray($header);
+        $this->assertSame($expectedHeaderValue, $header['value'] ?? null);
+        $this->assertSame('Report-To', $header['name'] ?? null);
     }
 
     /**
@@ -113,9 +113,9 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
         $header = $generator->getNetworkErrorLoggingHeader();
         $expectedHeaderValue =
             '{"report_to":"CSPReportingEndpoint","max_age":"55555"}';
-        $this->assertInstanceOf(\Laminas\Http\Header\GenericHeader::class, $header);
-        $this->assertEquals($expectedHeaderValue, $header->getFieldValue());
-        $this->assertEquals('NEL', $header->getFieldName());
+        $this->assertIsArray($header);
+        $this->assertSame($expectedHeaderValue, $header['value'] ?? null);
+        $this->assertSame('NEL', $header['name'] ?? null);
     }
 
     /**
@@ -136,9 +136,9 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
         $header = $generator->getNetworkErrorLoggingHeader();
         $expectedHeaderValue =
             '{"report_to":"CSPReportingEndpoint","max_age":"55555","include_subdomains":true,"failure_fraction":0.5}';
-        $this->assertInstanceOf(\Laminas\Http\Header\GenericHeader::class, $header);
-        $this->assertEquals($expectedHeaderValue, $header->getFieldValue());
-        $this->assertEquals('NEL', $header->getFieldName());
+        $this->assertIsArray($header);
+        $this->assertSame($expectedHeaderValue, $header['value'] ?? null);
+        $this->assertSame('NEL', $header['name'] ?? null);
     }
 
     /**
@@ -160,9 +160,9 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
         $header = $generator->getNetworkErrorLoggingHeader();
         $expectedHeaderValue =
             '{"report_to":"CSPReportingEndpoint","max_age":0,"include_subdomains":false,"failure_fraction":0}';
-        $this->assertInstanceOf(\Laminas\Http\Header\GenericHeader::class, $header);
-        $this->assertEquals($expectedHeaderValue, $header->getFieldValue());
-        $this->assertEquals('NEL', $header->getFieldName());
+        $this->assertIsArray($header);
+        $this->assertSame($expectedHeaderValue, $header['value'] ?? null);
+        $this->assertSame('NEL', $header['name'] ?? null);
     }
 
     /**

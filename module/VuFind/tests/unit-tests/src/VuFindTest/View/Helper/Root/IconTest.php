@@ -47,6 +47,7 @@ use VuFindTheme\View\Helper\ImageLink;
  */
 class IconTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\AutowireTrait;
     use \VuFindTest\Feature\ViewTrait;
 
     /**

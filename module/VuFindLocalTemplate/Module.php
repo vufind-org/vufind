@@ -29,8 +29,10 @@
 
 namespace VuFindLocalTemplate;
 
-use Laminas\ModuleManager\ModuleManager;
-use Laminas\Mvc\MvcEvent;
+use Laminas\EventManager\EventManagerInterface;
+use Psr\Container\ContainerInterface;
+use VuFind\EventManager\Event;
+use VuFind\ModuleManager\ModuleInterface;
 
 /**
  * Template for code module for storing local overrides.
@@ -41,14 +43,14 @@ use Laminas\Mvc\MvcEvent;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
-class Module
+class Module implements ModuleInterface
 {
     /**
      * Get module configuration.
      *
      * @return array
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return include __DIR__ . '/config/module.config.php';
     }
@@ -56,24 +58,27 @@ class Module
     /**
      * Initialize the module.
      *
-     * @param ModuleManager $m Module manager
+     * @param ContainerInterface $container Service manager
      *
      * @return void
      */
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
-    public function init(ModuleManager $m)
+    public function initialize(ContainerInterface $container): void
     {
+        $eventManager = $container->get(EventManagerInterface::class);
+        $eventManager->attach(Event::EVENT_BOOTSTRAP, fn ($e) => $this->onBootstrap($e, $container));
     }
 
     /**
      * Bootstrap the module.
      *
-     * @param MvcEvent $e Event
+     * @param Event              $event     Event
+     * @param ContainerInterface $container Service manager
      *
      * @return void
      */
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
-    public function onBootstrap(MvcEvent $e)
+    public function onBootstrap(Event $event, ContainerInterface $container): void
     {
     }
 }

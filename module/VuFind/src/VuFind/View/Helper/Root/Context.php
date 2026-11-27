@@ -1,9 +1,7 @@
 <?php
 
 /**
- * Context manager (useful for using render() instead of partial() for better
- * performance -- this allows us to set and roll back variables in the global
- * scope instead of relying on the overhead of building a whole new scope).
+ * Context manager.
  *
  * PHP version 8
  *
@@ -31,14 +29,12 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Renderer\Template;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
- * Context manager (useful for using render() instead of partial() for better
- * performance -- this allows us to set and roll back variables in the global
- * scope instead of relying on the overhead of building a whole new scope).
+ * Context manager.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -49,16 +45,34 @@ use VuFind\View\Renderer\TemplateRendererInterface;
 class Context
 {
     /**
+     * Current template.
+     *
+     * @var ?Template
+     */
+    protected ?Template $template = null;
+
+    /**
      * Constructor.
      *
-     * @param RendererInterface         $view             View renderer
      * @param TemplateRendererInterface $templateRenderer Template renderer
      */
     #[Autowire]
     public function __construct(
-        protected RendererInterface $view,
         protected TemplateRendererInterface $templateRenderer,
     ) {
+    }
+
+    /**
+     * Set current template.
+     *
+     * @param ?Template $template Template
+     *
+     * @return static
+     */
+    public function setTemplate(?Template $template): static
+    {
+        $this->template = $template;
+        return $this;
     }
 
     /**
@@ -70,7 +84,7 @@ class Context
      */
     public function getVars(array $extra = []): array
     {
-        return $extra + (array)($this->view->vars() ?? []);
+        return $extra + ($this->template ? iterator_to_array($this->template) : []);
     }
 
     /**
@@ -83,23 +97,25 @@ class Context
      */
     public function renderInContext(string $templateName, array $context = [])
     {
-        return $this->templateRenderer->renderTemplateAsString(
-            template: $templateName,
-            params: $this->getVars($context)
-        );
+        if ($this->template) {
+            $context += iterator_to_array($this->template);
+        }
+        return $this->templateRenderer->renderTemplateAsString(template: $templateName, params: $context);
     }
 
     /**
      * Return this helper instance.
      *
-     * @param RendererInterface $view View Renderer
+     * @param ?Template $template Template
      *
-     * @return Context
+     * @return static
      */
-    public function __invoke(?RendererInterface $view = null)
+    public function __invoke(?Template $template = null): static
     {
-        if (null !== $view) {
-            $this->view = $view;
+        if (null !== $template) {
+            $result = clone $this;
+            $result->setTemplate($template);
+            return $result;
         }
         return $this;
     }

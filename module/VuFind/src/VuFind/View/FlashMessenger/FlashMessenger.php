@@ -231,7 +231,10 @@ class FlashMessenger implements FlashMessengerInterface
     public function clearAllMessages(): void
     {
         $container = $this->getContainer();
-        foreach (array_keys((array)$container->getArrayCopy()) as $namespace) {
+        // We have to use an iterator, because getArrayCopy() doesn't work if the container was written with an older
+        // laminas-session version that used Laminas\StdLib\ArrayObject:
+        $namespaces = iterator_to_array($container->getIterator());
+        foreach (array_keys($namespaces) as $namespace) {
             unset($container->{$namespace});
         }
     }

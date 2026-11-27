@@ -29,14 +29,16 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\Router\AssembledUrl;
+use Laminas\Router\RouteStackInterface;
 use Laminas\View\Exception\RuntimeException;
-use Laminas\View\Helper\ServerUrl;
 use Laminas\View\Resolver\ResolverInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Cover\Loader;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\PluginManager;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Http\RequestHelper;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
@@ -45,6 +47,7 @@ use VuFind\View\GlobalsContainer;
 use VuFind\View\Helper\Root\Context;
 use VuFind\View\Helper\Root\Record;
 use VuFind\View\Helper\Root\SearchTabs;
+use VuFind\View\Helper\Root\ServerUrl;
 use VuFind\View\Helper\Root\Url;
 use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindTheme\ThemeInfo;
@@ -753,7 +756,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $templateRenderer = $this->createMock(TemplateRendererInterface::class);
 
         $serverUrlHelper = $this->getMockServerUrl($serverurl);
-        $urlHelper = $url ? $this->getMockUrl($url) : $this->createMock(Url::class);
+        $router = $this->getMockRouter($url);
         $searchTabs ??= $this->getMockSearchTabs($setSearchTabExpectations);
         $auth = new \VuFind\View\Helper\Root\Auth(
             $this->createMock(\VuFind\Auth\Manager::class),
@@ -777,7 +780,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             $this->createMock(\VuFind\View\Helper\Root\EscapeOrCleanHtml::class),
             $this->createMock(\VuFind\View\Helper\Root\Truncate::class),
             $auth,
-            new RouteHelper(fn () => $urlHelper),
+            new RouteHelper(new RequestHelper(), $router),
             $serverUrlHelper,
             new GlobalsContainer(),
             $config,
@@ -809,23 +812,24 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock URL helper.
+     * Get a mock router.
      *
-     * @param string $expectedRoute Route expected by mock helper
+     * @param ?string $expectedRoute Expected route
      *
-     * @return MockObject&Url
+     * @return MockObject&RouteStackInterface
      */
-    protected function getMockUrl($expectedRoute): MockObject&Url
+    protected function getMockRouter(?string $expectedRoute): MockObject&RouteStackInterface
     {
-        $url = $this->createMock(Url::class);
-        $url->expects($this->once())->method('__invoke')
-            ->with($expectedRoute)
-            ->willReturnCallback(function ($route, $params, $opts) {
+        $url = $this->createMock(RouteStackInterface::class);
+        $url->method('assemble')
+            ->willReturnCallback(function (array $params, array $opts) use ($expectedRoute) {
+                $this->assertSame($expectedRoute, $opts['name']);
+                $this->assertFalse($opts['normalize_path']);
                 $result = 'http://foo/bar';
                 if ($query = $opts['query'] ?? null) {
                     $result .= '?' . http_build_query($query);
                 }
-                return $result;
+                return new AssembledUrl($result);
             });
         return $url;
     }

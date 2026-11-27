@@ -29,7 +29,7 @@
 
 namespace VuFind\ActionHelper;
 
-use Laminas\Router\RouteMatch;
+use Laminas\Router\Http\HttpRouteMatch;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\ActionConfigManager;
@@ -108,7 +108,7 @@ class ForwardHelper implements HelperInterface
         array $extras = []
     ): ResponseInterface {
         $action = $this->actionPluginManager->get('confirm/confirm');
-        $routeMatch = new RouteMatch(
+        $routeMatch = new HttpRouteMatch(
             [
                 'data' => serialize([
                     'title' => $title,
@@ -117,9 +117,9 @@ class ForwardHelper implements HelperInterface
                     'messages' => (array)$messages,
                     'extras' => $extras,
                 ]),
-            ]
+            ],
+            'Confirm/Confirm'
         );
-        $routeMatch->setMatchedRouteName('Confirm/Confirm');
         return $action(
             $request->withAttribute('action-id', 'confirm/confirm')
                 ->withAttribute('route-match', $routeMatch),

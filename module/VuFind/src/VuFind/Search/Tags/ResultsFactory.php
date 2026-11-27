@@ -62,9 +62,9 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }

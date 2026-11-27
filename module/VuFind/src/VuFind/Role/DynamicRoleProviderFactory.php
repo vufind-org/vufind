@@ -56,7 +56,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
      * @return object
      */
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
-    public function __invoke(ContainerInterface $container, $name, ?array $options = null)
+    public function __invoke(ContainerInterface $container, string $name, ?array $options = null): mixed
     {
         $config = $container->get('config');
         return new $name(

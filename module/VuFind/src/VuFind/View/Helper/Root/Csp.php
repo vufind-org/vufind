@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Http\Response;
+use VuFind\Security\CspHeaderGenerator;
 use VuFind\Security\NonceGenerator;
 use VuFind\ServiceManager\Factory\Autowire;
 
@@ -54,12 +54,12 @@ class Csp
     /**
      * Constructor.
      *
-     * @param ?Response      $response  HTTP Response, if any
-     * @param NonceGenerator $generator Nonce generator
+     * @param CspHeaderGenerator $cspHeaderGenerator CSP header generator
+     * @param NonceGenerator     $generator          Nonce generator
      */
     public function __construct(
-        #[Autowire(service: 'Response')]
-        protected ?Response $response,
+        #[Autowire]
+        protected CspHeaderGenerator $cspHeaderGenerator,
         NonceGenerator $generator
     ) {
         $this->nonce = $generator->getNonce();
@@ -72,25 +72,7 @@ class Csp
      */
     public function disablePolicy(): void
     {
-        if (null === $this->response) {
-            return;
-        }
-        $headers = $this->response->getHeaders();
-        $fieldsToCheck = [
-            'Content-Security-Policy',
-            'Content-Security-Policy-Report-Only',
-        ];
-        foreach ($fieldsToCheck as $field) {
-            if ($cspHeaders = $headers->get($field)) {
-                // Make sure the result is iterable (an array cast doesn't work here
-                // as a single header may be castable as an array):
-                $headerArray = $cspHeaders instanceof \ArrayIterator
-                    ? $cspHeaders : [$cspHeaders];
-                foreach ($headerArray as $header) {
-                    $headers->removeHeader($header);
-                }
-            }
-        }
+        $this->cspHeaderGenerator->setActive(false);
     }
 
     /**

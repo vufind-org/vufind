@@ -61,9 +61,9 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         $solr = parent::__invoke($container, $requestedName, $options);
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('Search2');
         $solr->setSpellingProcessor(

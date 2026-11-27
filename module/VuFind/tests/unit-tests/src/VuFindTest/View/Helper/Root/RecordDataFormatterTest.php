@@ -29,6 +29,7 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\Router\RouteStackInterface;
 use Laminas\View\Helper\EscapeHtml;
 use Laminas\View\Helper\EscapeHtmlAttr;
 use Laminas\View\HelperPluginManager;
@@ -36,10 +37,12 @@ use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Resolver\ResolverInterface;
 use Laminas\View\Resolver\TemplatePathStack;
+use Laminas\View\View;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\Escaper\Escaper;
+use VuFind\Http\RequestHelper;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\RecordDataFormatter\Specs\DefaultRecord as DefaultRecordSpec;
@@ -48,6 +51,7 @@ use VuFind\RecordDriver\Response\PublicationDetails;
 use VuFind\Tags\TagsService;
 use VuFind\View\GlobalsContainer;
 use VuFind\View\Helper\Root\RecordDataFormatter;
+use VuFind\View\Helper\Root\Render;
 use VuFind\View\Helper\Root\SchemaOrg;
 use VuFind\View\Helper\Root\Url;
 
@@ -64,6 +68,7 @@ use function count;
  */
 class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\AutowireTrait;
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\ViewTrait;
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
@@ -91,7 +96,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      * @param RendererInterface   $renderer            View renderer
      * @param HelperPluginManager $helperPluginManager View helper plugin manager
      * @param ResolverInterface   $resolver            View resolver
-     * @param Url                 $url                 Url view helper
+     * @param Url                 $url                 URL helper
      *
      * @return array
      */
@@ -104,7 +109,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         Url $url
     ): array {
         $escapeHtml = new EscapeHtml(new Escaper());
-        $serverUrlHelper = new ServerUrlHelper(false);
 
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $configHelper = new \VuFind\View\Helper\Root\Config($configManager, $this->createMock(LoginHelper::class));
@@ -132,7 +136,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 
         $templateRenderer = $this->getTemplateRenderer($helperPluginManager, renderer: $renderer);
 
-        $context = new \VuFind\View\Helper\Root\Context($this->getPhpRenderer($helperPluginManager), $templateRenderer);
+        $context = new \VuFind\View\Helper\Root\Context($templateRenderer);
 
         $authManager = $this->createMock(\VuFind\Auth\Manager::class);
         $authManager->method('loginEnabled')->willReturn(true);
@@ -164,8 +168,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $escapeOrCleanHtml,
             $truncate,
             $auth,
-            new RouteHelper(fn () => $url),
-            $serverUrlHelper,
+            new RouteHelper(new RequestHelper(), $this->createMock(RouteStackInterface::class)),
+            $this->createMock(ServerUrlHelper::class),
             new GlobalsContainer(),
             $configEntity
         );
@@ -201,6 +205,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
             'record' => $record,
             'recordLinker' => $recordLinker,
+            'render' => new Render($templateRenderer),
             'schemaOrg' => $schemaOrgHelper,
             'searchMemory' => $this->getSearchMemoryViewHelper($memory),
             'searchOptions' => $searchOptions,
@@ -373,12 +378,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         );
         $this->addConfigRelatedServicesToContainer($container);
 
-        $match = new \Laminas\Router\RouteMatch([]);
-        $match->setMatchedRouteName('foo');
-
-        $url = new Url();
-        $url->setRouter($this->createMock(\Laminas\Router\RouteStackInterface::class));
-        $url->setRouteMatch($match);
+        $url = $this->createMock(Url::class);
 
         // Create resolver and view
         $resolver = new TemplatePathStack();
@@ -388,24 +388,12 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         ]);
 
         $helperPluginManager = $this->getHelperPluginManager(container: $container);
-        $view = new PhpRenderer();
-        $view->setHelperPluginManager($helperPluginManager);
-        $view->setResolver($resolver);
+        $view = new PhpRenderer($helperPluginManager, $resolver, false);
         $container->set(PhpRenderer::class, $view);
-        $container->set('config', []);
 
         $helpers = $this->getViewHelpers($container, $schemaOrgHelper, $view, $helperPluginManager, $resolver, $url);
-
-        foreach ($helpers as $helper) {
-            if (method_exists($helper, 'setView')) {
-                $helper->setView($view);
-            }
-        }
-
-        $pluginManager = $view->getHelperPluginManager();
-        $pluginManager->setAllowOverride(true);
         foreach ($helpers as $key => $value) {
-            $pluginManager->setService($key, $value);
+            $helperPluginManager->setService($key, $value);
         }
 
         $formatter = new RecordDataFormatter(
@@ -694,8 +682,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'Multi Count' => 1,
             'Subjects' => 'Naples (Kingdom) History Spanish rule, 1442-1707 Sources',
             'Online Access' => 'http://fictional.com/sample/url',
-            // Double slash at the end comes from inline javascript
-            'Tags' => 'Add Tag No Tags, Be the first to tag this record! //',
+            'Tags' => 'Add Tag No Tags, Be the first to tag this record! ' . "$('.tag-submit').on('click', function(e)"
+                . " { VuFind.record.ajaxTagUpdate(this, $(this).data('tag'), $(this).data('selected'));"
+                . ' return false; });',
             'ZeroAllowed' => 0,
             'c' => 'c',
             'd' => 'd',

@@ -67,9 +67,9 @@ class ExplanationFactory implements FactoryInterface
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         // Replace trailing "Explanation" with "Params" to get the params service:
         $paramsService = preg_replace('/Explanation$/', 'Params', $requestedName);
         // Replace leading namespace with "VuFind" if service is not available:

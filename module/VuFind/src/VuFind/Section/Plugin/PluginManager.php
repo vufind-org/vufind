@@ -52,7 +52,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
+    protected array $aliases = [
         'accountMenu' => AccountMenu::class,
         'adminMenu' => AdminMenu::class,
         'footerMenu' => FooterMenu::class,

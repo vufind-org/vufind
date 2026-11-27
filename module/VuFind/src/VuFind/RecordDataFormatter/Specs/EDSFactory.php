@@ -67,9 +67,9 @@ class EDSFactory implements FactoryInterface
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }

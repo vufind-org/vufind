@@ -31,28 +31,28 @@ namespace VuFindTest\Feature;
 
 use Laminas\Cache\Storage\Adapter\AdapterOptions;
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Mvc\View\Http\ViewManager;
+use Laminas\View\Helper\Doctype;
 use Laminas\View\Helper\EscapeHtml;
 use Laminas\View\HelperPluginManager;
+use Laminas\View\HelperPluginManagerInterface;
 use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\View;
+use Laminas\View\ViewInterface;
 use Psr\Container\ContainerInterface;
+use VuFind\Application;
 use VuFind\Application\UriRegistry;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Escaper\Escaper;
 use VuFind\Http\RouteHelper;
-use VuFind\Http\ServerUrlHelper;
 use VuFind\Search\Memory;
 use VuFind\Search\Params\PluginManager;
-use VuFind\View\GlobalsContainer;
 use VuFind\View\Helper\Root\CleanHtml;
 use VuFind\View\Helper\Root\CleanHtmlFactory;
 use VuFind\View\Helper\Root\SearchMemory;
 use VuFind\View\Renderer\LaminasTemplateRenderer;
 use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindTest\Container\MockContainer;
-use VuFindTheme\InjectTemplateListener;
 use VuFindTheme\View\Helper\AssetManager;
 use VuFindTheme\View\Helper\AssetManagerFactory;
 
@@ -80,27 +80,26 @@ trait ViewTrait
     {
         $container = new MockContainer($this);
         $container->get(\VuFind\Security\NonceGenerator::class)->method('getNonce')->willReturn('');
+        $escaper = new Escaper();
+        $doctype = new Doctype();
         $services = [
             \Laminas\View\Helper\Doctype::class => new \Laminas\View\Helper\Doctype(),
-            \Laminas\View\Helper\HeadLink::class => new \Laminas\View\Helper\HeadLink(),
-            \Laminas\View\Helper\HeadStyle::class => new \Laminas\View\Helper\HeadStyle(),
-            \Laminas\View\Helper\InlineScript::class => new \Laminas\View\Helper\InlineScript(),
-            \Laminas\View\Helper\Url::class => new \Laminas\View\Helper\Url(),
+            \VuFind\View\Helper\Root\HeadLink::class
+                => new \VuFind\View\Helper\Root\HeadLink(new \Laminas\View\Helper\HeadLink($escaper, $doctype)),
+            \Laminas\View\Helper\HeadStyle::class => new \Laminas\View\Helper\HeadStyle($escaper, $doctype),
+            \Laminas\View\Helper\InlineScript::class => new \Laminas\View\Helper\InlineScript($escaper, $doctype),
+            \VuFind\View\Helper\Root\Url::class => new \VuFind\View\Helper\Root\Url(
+                $this->createMock(Application::class),
+                $this->createMock(RouteHelper::class)
+            ),
         ];
         foreach ($services as $key => $value) {
-            if (!$helperPluginManager->has($key)) {
-                $helperPluginManager->setService($key, $value);
-            }
+            $helperPluginManager->setService($key, $value);
         }
-        $mockUriRegistry = $this->createMock(UriRegistry::class);
-        $mockUriRegistry->method('get')
-            ->willReturnCallback(
-                fn ($s) => match ($s) {
-                    'BaseUrlPath' => '/',
-                }
-            );
-        $container->set(UriRegistry::class, $mockUriRegistry);
-        $container->set(HelperPluginManager::class, $helperPluginManager);
+        $container->set(HelperPluginManagerInterface::class, $helperPluginManager);
+        $uriRegistry = $this->createMock(UriRegistry::class);
+        $uriRegistry->method('get')->with('BaseUrlPath')->willReturn('/');
+        $container->set(UriRegistry::class, $uriRegistry);
         $factory = new AssetManagerFactory();
         $assetManager = $factory($container, AssetManager::class);
 
@@ -138,8 +137,8 @@ trait ViewTrait
     {
         $resolver = new \Laminas\View\Resolver\TemplatePathStack();
 
-        // This assumes that all themes we'll be testing inherit directly from root with no intermediate themes.
-        // Probably safe for most test situations, though other scenarios are possible.
+        // This assumes that all themes will be testing inherit directly from root with no intermediate themes. Probably
+        // safe for most test situations, though other scenarios are possible.
         $resolver->setPaths(
             [
                 $this->getPathForTheme('root'),
@@ -151,10 +150,7 @@ trait ViewTrait
         if (!$helperPluginManager->has('assetManager')) {
             $helperPluginManager->setService('assetManager', $this->getAssetManager($helperPluginManager));
         }
-        $renderer = new PhpRenderer();
-        $renderer->setResolver($resolver);
-        $renderer->setHelperPluginManager($helperPluginManager);
-        return $renderer;
+        return new PhpRenderer($helperPluginManager, $resolver);
     }
 
     /**
@@ -172,21 +168,13 @@ trait ViewTrait
         $renderer = null
     ): TemplateRendererInterface {
         $renderer ??= $this->getPhpRenderer($helperPluginManager, $theme);
-        $view = $this->createMock(View::class);
-        $view->method('render')
-            ->willReturnCallback([$renderer, 'render']);
-        $viewManager = $this->createMock(ViewManager::class);
-        $viewManager->method('getView')
-            ->willReturn($view);
-        return new LaminasTemplateRenderer(
-            $this->createMock(ServerUrlHelper::class),
-            $renderer,
-            $viewManager,
-            $this->createMock(InjectTemplateListener::class),
-            false,
-            'error/404.phtml',
-            'error/error.phtml',
-            new GlobalsContainer()
+        return $this->getAutowiredObject(
+            LaminasTemplateRenderer::class,
+            [
+                'config' => [],
+                ViewInterface::class => new View($renderer, $helperPluginManager, 'layout/layout', 'content'),
+                'ViewRenderer' => $renderer,
+            ]
         );
     }
 

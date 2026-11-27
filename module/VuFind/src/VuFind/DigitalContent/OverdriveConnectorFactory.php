@@ -66,9 +66,9 @@ class OverdriveConnectorFactory implements
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }

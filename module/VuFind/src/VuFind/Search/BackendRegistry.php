@@ -45,7 +45,7 @@ class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
+    protected array $aliases = [
         // Allow Solr core names to be used as aliases for services:
         'authority' => 'SolrAuth',
         'biblio' => 'Solr',
@@ -60,7 +60,7 @@ class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $factories = [
+    protected array $factories = [
         'Blender' => Factory\BlenderBackendFactory::class,
         'Blender2' => Factory\Blender2BackendFactory::class,
         'BrowZine' => Factory\BrowZineBackendFactory::class,

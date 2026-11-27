@@ -29,6 +29,7 @@
 
 namespace VuFindTest\AjaxHandler;
 
+use Laminas\View\HelperPluginManagerInterface;
 use VuFind\AjaxHandler\Recommend;
 use VuFind\Recommend\PluginManager;
 use VuFind\Recommend\RecommendInterface;
@@ -126,7 +127,7 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 
         // Set up view helper plugin manager:
         $plugins = new \VuFindTest\Container\MockViewHelperContainer($this);
-        $this->container->set(\Laminas\View\HelperPluginManager::class, $plugins);
+        $this->container->set(HelperPluginManagerInterface::class, $plugins);
 
         // Build and test the ajax handler:
         $handler = $this->getAutowiredObject(Recommend::class, $this->container);

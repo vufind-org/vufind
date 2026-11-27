@@ -237,7 +237,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
         $mockResults = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $mockResults->method('get')
             ->willReturnCallback(
-                function ($backend) use ($mockSolr, $mockPrimo) {
+                function (string $backend) use ($mockSolr, $mockPrimo): mixed {
                     switch ($backend) {
                         case 'Solr':
                             return $mockSolr;

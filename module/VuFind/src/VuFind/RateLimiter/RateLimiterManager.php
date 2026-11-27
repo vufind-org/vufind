@@ -30,9 +30,8 @@
 namespace VuFind\RateLimiter;
 
 use Closure;
-use Laminas\EventManager\EventInterface;
-use Laminas\Mvc\MvcEvent;
 use Psr\Log\LoggerAwareInterface;
+use VuFind\EventManager\EventInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Log\LoggerAwareTrait;
@@ -145,7 +144,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
             'message' => null,
         ];
 
-        if (!$this->isEnabled() || !($event instanceof MvcEvent)) {
+        if (!$this->isEnabled()) {
             return $result;
         }
         $routeMatch = $event->getRouteMatch();
@@ -154,7 +153,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
         $this->eventDesc = "$controller/$action";
         if ('AJAX' === $controller && 'JSON' === $action) {
             $req = $event->getRequest();
-            $method = $req->getPost('method') ?? $req->getQuery('method');
+            $method = $req->getParsedBody()['method'] ?? $req->getQueryParams()['method'] ?? '??';
             $this->eventDesc .= " $method";
         }
         try {
@@ -206,14 +205,12 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
 
             // Add headers if configured:
             if ($this->config['Policies'][$policyId]['addHeaders'] ?? false) {
-                $headers = $event->getResponse()->getHeaders();
-                $headers->addHeaders(
-                    [
-                        'X-RateLimit-Remaining' => $result['requestsRemaining'],
-                        'X-RateLimit-Retry-After' => $result['retryAfter'],
-                        'X-RateLimit-Limit' => $result['requestLimit'],
-                    ]
-                );
+                $response = $event->getResponse();
+                $response = $response
+                    ->withHeader('X-RateLimit-Remaining', (string)$result['requestsRemaining'])
+                    ->withHeader('X-RateLimit-Retry-After', (string)$result['retryAfter'])
+                    ->withHeader('X-RateLimit-Limit', (string)$result['requestLimit']);
+                $event->setResponse($response);
             }
             if (isset($turnstileLimit) && !$turnstileLimit->isAccepted()) {
                 $priorTurnstileResult = $this->turnstile->checkPriorResult($policyId, $this->clientIp);
@@ -268,11 +265,11 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     /**
      * Try to find a policy that matches an event.
      *
-     * @param MvcEvent $event Event
+     * @param EventInterface $event Event
      *
      * @return ?string policy id or null if no match
      */
-    public function getPolicyIdForEvent(MvcEvent $event): ?string
+    public function getPolicyIdForEvent(EventInterface $event): ?string
     {
         if ($event->getRouteMatch()->getParams()['controller'] == 'Turnstile') {
             return null;
@@ -316,12 +313,12 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     /**
      * Check if an event matches a filter.
      *
-     * @param MvcEvent $event  Event
-     * @param array    $filter Filter from configuration
+     * @param EventInterface $event  Event
+     * @param array          $filter Filter from configuration
      *
      * @return bool
      */
-    protected function eventMatchesFilter(MvcEvent $event, array $filter): bool
+    protected function eventMatchesFilter(EventInterface $event, array $filter): bool
     {
         $routeMatch = $event->getRouteMatch();
         foreach ($filter as $param => $value) {
@@ -332,9 +329,9 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
             } elseif (in_array($param, ['params', 'query', 'post'])) {
                 $req = $event->getRequest();
                 $allParams = match ($param) {
-                    'query' => $req->getQuery()->toArray(),
-                    'post' => $req->getPost()->toArray(),
-                    default => $req->getPost()->toArray() + $req->getQuery()->toArray(),
+                    'query' => $req->getQueryParams(),
+                    'post' => $req->getParsedBody(),
+                    default => $req->getParsedBody() + $req->getQueryParams(),
                 };
                 foreach ($value as $key => $val) {
                     if ($val !== ($allParams[$key] ?? null)) {
@@ -365,12 +362,12 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     /**
      * Get a response message for too many requests.
      *
-     * @param MvcEvent $event  Request event
-     * @param array    $result Rate limiter result
+     * @param EventInterface $event  Request event
+     * @param array          $result Rate limiter result
      *
      * @return string
      */
-    protected function getTooManyRequestsResponseMessage(MvcEvent $event, array $result): string
+    protected function getTooManyRequestsResponseMessage(EventInterface $event, array $result): string
     {
         if ($result['retryAfter']) {
             $msg = $this->translate('error_too_many_requests_retry_after', ['%%seconds%%' => $result['retryAfter']]);
@@ -387,17 +384,16 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     /**
      * Check if the request is from a crawler.
      *
-     * @param MvcEvent $event Request event
+     * @param EventInterface $event Request event
      *
      * @return bool
      */
-    protected function isCrawlerRequest(MvcEvent $event): bool
+    protected function isCrawlerRequest(EventInterface $event): bool
     {
         $headers = $event->getRequest()->getHeaders();
-        if (!$headers->has('User-Agent')) {
+        if (!($agent = $headers['User-Agent'][0] ?? null)) {
             return false;
         }
-        $agent = $headers->get('User-Agent')->getFieldValue();
         $crawlerDetect = new \Jaybizzle\CrawlerDetect\CrawlerDetect();
         return $crawlerDetect->isCrawler($agent);
     }

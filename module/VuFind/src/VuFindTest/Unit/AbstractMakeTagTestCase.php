@@ -30,6 +30,8 @@
 
 namespace VuFindTest\Unit;
 
+use VuFind\Escaper\Escaper;
+
 /**
  * Abstract Test Class for element making helpers.
  *
@@ -49,9 +51,10 @@ abstract class AbstractMakeTagTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getMakeTagHelper(): \VuFind\View\Helper\Root\MakeTag
     {
+        $escaper = new Escaper();
         return new \VuFind\View\Helper\Root\MakeTag(
-            new \Laminas\View\Helper\HtmlAttributes(),
-            new \Laminas\View\Helper\EscapeHtml(),
+            new \Laminas\View\Helper\HtmlAttributes($escaper),
+            new \Laminas\View\Helper\EscapeHtml($escaper),
         );
     }
 }

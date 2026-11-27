@@ -101,9 +101,9 @@ class BlenderBackendFactory implements FactoryInterface
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         $this->container = $container;
         $this->configManager = $container->get(ConfigManagerInterface::class);
         $blenderConfig = $this->configManager->getConfigArray($this->searchConfig);

@@ -69,7 +69,7 @@ abstract class AbstractValueContainer implements ContainerInterface
      *
      * @return bool
      */
-    public function has(string $id)
+    public function has(string $id): bool
     {
         $method = $this->getMethodName($id);
         return method_exists($this, $method);

@@ -64,17 +64,17 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
         $helper = $this->getHelper();
 
         $this->assertEquals(
-            '<a href="https&#x3A;&#x2F;&#x2F;vufind.org">text</a>',
+            '<a href="https://vufind.org">text</a>',
             $helper('text', 'https://vufind.org')
         );
 
         $this->assertEquals(
-            '<a href="&#x2F;Record&#x2F;id">text</a>',
+            '<a href="/Record/id">text</a>',
             $helper('text', false, ['href' => '/Record/id'])
         );
 
         $this->assertEquals(
-            '<a href="&#x23;anchor">text</a>',
+            '<a href="#anchor">text</a>',
             $helper('text', '#anchor', ['href' => 'default'])
         );
     }
@@ -103,23 +103,23 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
         $helper = $this->getHelper();
 
         $this->assertEquals(
-            '<a class="btn" id="login" href="&#x23;">text</a>',
+            '<a class="btn" href="#" id="login">text</a>',
             $helper('text', '#', ['class' => 'btn', 'id' => 'login'])
         );
 
         // Skip href
         $this->assertEquals(
-            '<a href="&#x23;" class="btn" id="login">text</a>',
+            '<a class="btn" href="#" id="login">text</a>',
             $helper('text', null, ['href' => '#', 'class' => 'btn', 'id' => 'login'])
         );
         $this->assertEquals(
-            '<a href="&#x23;" class="btn" id="login">text</a>',
+            '<a class="btn" href="#" id="login">text</a>',
             $helper('text', false, ['href' => '#', 'class' => 'btn', 'id' => 'login'])
         );
 
         // String
         $this->assertEquals(
-            '<a class="btn" href="&#x23;">text</a>',
+            '<a class="btn" href="#">text</a>',
             $helper('text', '#', 'btn')
         );
 
@@ -153,13 +153,13 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
 
         // Test standard output of recordLink helper:
         $this->assertEquals(
-            '<a href="&#x2F;Record&#x2F;foo">recordLink</a>',
+            '<a href="/Record/foo">recordLink</a>',
             $helper('recordLink', '/Record/foo')
         );
 
         // Confirm that attributes and HTML contents are escaped
         $this->assertEquals(
-            '<a data-foo="this&amp;that" href="&#x2F;Record&#x2F;foo&#x25;2Fbar&#x3F;checkRoute&#x3D;1">'
+            '<a data-foo="this&amp;that" href="/Record/foo%2Fbar?checkRoute=1">'
                 . 'contains &lt;b&gt;bold&lt;/b&gt;</a>',
             $helper(
                 'contains <b>bold</b>',
@@ -170,7 +170,7 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
 
         // Confirm that HTML is NOT escaped when asked politely
         $this->assertEquals(
-            '<a data-foo="this&amp;that" href="&#x2F;Record&#x2F;foo&#x25;2Fbar&#x3F;checkRoute&#x3D;1">'
+            '<a data-foo="this&amp;that" href="/Record/foo%2Fbar?checkRoute=1">'
                 . 'contains <b>bold</b></a>',
             $helper(
                 'contains <b>bold</b>',
@@ -191,12 +191,12 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
         $helper = $this->getHelper();
 
         $this->assertEquals(
-            '<a href="&#x2F;Record&#x2F;foo">recordLink</a>',
+            '<a href="/Record/foo">recordLink</a>',
             $helper('recordLink', '/Record/foo', null, null)
         );
 
         $this->assertEquals(
-            '<a href="https&#x3A;&#x2F;&#x2F;super.safe&#x3F;url&#x3D;&#x2F;Record&#x2F;foo">recordLink</a>',
+            '<a href="https://super.safe?url=/Record/foo">recordLink</a>',
             $helper('recordLink', '/Record/foo', null, ['proxyUrl' => 'https://super.safe?url='])
         );
     }

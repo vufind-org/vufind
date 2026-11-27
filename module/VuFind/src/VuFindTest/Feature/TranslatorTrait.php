@@ -29,8 +29,8 @@
 
 namespace VuFindTest\Feature;
 
-use Laminas\I18n\Translator\Translator;
-use PHPUnit\Framework\MockObject\MockObject;
+use Laminas\Translator\TranslatorInterface;
+use VuFindTest\I18n\Translator\TestHarness\Translator;
 
 /**
  * Trait for tests involving Laminas Translator.
@@ -44,20 +44,17 @@ use PHPUnit\Framework\MockObject\MockObject;
 trait TranslatorTrait
 {
     /**
-     * Get mock translator.
+     * Get translator.
      *
      * @param array  $translations Key => value translation map.
      * @param string $locale       Locale, default to 'en'
      *
-     * @return MockObject&Translator
+     * @return TranslatorInterface
      */
-    protected function getMockTranslator(array $translations, string $locale = 'en'): MockObject&Translator
+    protected function getMockTranslator(array $translations, string $locale = 'en'): TranslatorInterface
     {
-        $translator = $this->createMock(Translator::class);
-        $translator->expects($this->any())->method('translate')->willReturnCallback(
-            fn ($str, $domain) => $translations[$domain][$str] ?? $str
-        );
-        $translator->expects($this->any())->method('getLocale')->willReturn($locale);
+        $translator = new Translator($translations);
+        $translator->setLocale($locale);
         return $translator;
     }
 }

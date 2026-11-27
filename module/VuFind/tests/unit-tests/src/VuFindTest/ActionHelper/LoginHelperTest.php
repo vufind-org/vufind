@@ -33,7 +33,7 @@ namespace VuFindTest\ActionHelper;
 use Generator;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
-use Laminas\Router\Http\RouteMatch;
+use Laminas\Router\RouteMatchInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -378,7 +378,7 @@ class LoginHelperTest extends TestCase
         $request = (new ServerRequest())
             ->withParsedBody(['cat_username' => 'USER@LOCALHOST', 'cat_password' => '****', 'target' => 'ils1']);
         if ($route) {
-            $routeMatch = $this->createMock(RouteMatch::class);
+            $routeMatch = $this->createMock(RouteMatchInterface::class);
             $routeMatch
                 ->method('getMatchedRouteName')
                 ->willReturn($route);

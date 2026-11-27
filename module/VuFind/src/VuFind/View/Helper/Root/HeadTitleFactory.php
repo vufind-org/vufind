@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,26 +22,26 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\Escaper\EscaperInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Laminas\View\Helper\Placeholder\Container\AbstractContainer;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * HeadTitle helper factory.
+ * HeadTitle view helper.
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -64,15 +64,15 @@ class HeadTitleFactory implements FactoryInterface
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $helper = new $requestedName();
-        // In VuFind, we always want to set, not append, titles:
-        $helper->setDefaultAttachOrder(AbstractContainer::SET);
-        return $helper;
+        $wrappedHelper = new \Laminas\View\Helper\HeadTitle(
+            $container->get(EscaperInterface::class)
+        );
+        return new $requestedName($wrappedHelper);
     }
 }

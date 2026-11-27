@@ -29,13 +29,8 @@
 
 namespace VuFind\Security;
 
-use Laminas\Http\Header\ContentSecurityPolicy;
-use Laminas\Http\Header\ContentSecurityPolicyReportOnly;
-use Laminas\Http\Header\GenericHeader;
-use PHPMD\Attribute\SuppressWarnings;
-use PHPMD\Rule\Design\NumberOfChildren;
-
 use function in_array;
+use function sprintf;
 
 /**
  * VuFind class for generating Content Security Policy http headers.
@@ -48,7 +43,6 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
-#[SuppressWarnings(NumberOfChildren::class)]
 class CspHeaderGenerator implements
     \Psr\Log\LoggerAwareInterface
 {
@@ -69,6 +63,13 @@ class CspHeaderGenerator implements
     protected $scriptDirectives = ['script-src', 'script-src-elem'];
 
     /**
+     * Is CSP active?
+     *
+     * @var bool
+     */
+    protected bool $active = true;
+
+    /**
      * CspHeaderGenerator constructor.
      *
      * @param array                           $config         Configuration
@@ -80,11 +81,34 @@ class CspHeaderGenerator implements
     }
 
     /**
+     * Is CSP active?
+     *
+     * @return bool
+     */
+    public function getActive(): bool
+    {
+        return $this->active;
+    }
+
+    /**
+     * Toggle active flag.
+     *
+     * @param bool $active Active flag
+     *
+     * @return static
+     */
+    public function setActive(bool $active): static
+    {
+        $this->active = $active;
+        return $this;
+    }
+
+    /**
      * Create all relevant CSP-related headers based on given configuration.
      *
      * @return array
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         $headers = [];
         if ($cspHeader = $this->getCspHeader()) {
@@ -102,15 +126,14 @@ class CspHeaderGenerator implements
     /**
      * Create CSP header base on given configuration.
      *
-     * @return ContentSecurityPolicy
+     * @return ?array
      */
-    public function getCspHeader()
+    public function getCspHeader(): ?array
     {
-        $cspHeader = $this->createHeaderObject();
-        $directives = $this->config['Directives'] ?? [];
-        if (!$cspHeader || !$directives) {
+        if (!($cspHeader = $this->getCSPHeaderName()) || !($directives = $this->config['Directives'] ?? [])) {
             return null;
         }
+        $headerDirectives = [];
         foreach ($directives as $name => $sources) {
             if (
                 in_array($name, $this->scriptDirectives)
@@ -126,36 +149,37 @@ class CspHeaderGenerator implements
                     }
                 }
             }
-            $cspHeader->setDirective($name, $sources);
+            $headerDirectives[] = sprintf('%s %s;', $name, implode(' ', $sources));
         }
-        return $cspHeader;
+
+        return [
+            'name' => $cspHeader,
+            'value' => str_replace(' ;', ';', implode(' ', $headerDirectives)),
+        ];
     }
 
     /**
-     * Create header object.
+     * Get CSP header to use.
      *
-     * @return ContentSecurityPolicy
+     * @return ?string
      */
-    protected function createHeaderObject()
+    protected function getCSPHeaderName(): ?string
     {
-        $mode = $this->config['CSP']['enabled'][APPLICATION_ENV] ?? 'report_only';
-        if (!$mode) {
+        if (!$this->active || !($mode = $this->config['CSP']['enabled'][APPLICATION_ENV] ?? 'report_only')) {
             return null;
         }
         return ('report_only' === $mode)
-            ? new ContentSecurityPolicyReportOnly()
-            : new ContentSecurityPolicy();
+            ? 'Content-Security-Policy-Report-Only'
+            : 'Content-Security-Policy';
     }
 
     /**
      * Create Report-To header based on given configuration.
      *
-     * @return ?GenericHeader
+     * @return ?array
      */
-    public function getReportToHeader()
+    public function getReportToHeader(): ?array
     {
-        $reportToHeader = new GenericHeader();
-        $reportToHeader->setFieldName('Report-To');
         $groupsText = [];
 
         $reportTo = $this->config['ReportTo'] ?? [];
@@ -180,28 +204,29 @@ class CspHeaderGenerator implements
         if (!$groupsText) {
             return null;
         }
-        $reportToHeader->setFieldValue(implode(', ', $groupsText));
-        return $reportToHeader;
+
+        return [
+            'name' => 'Report-To',
+            'value' => implode(', ', $groupsText),
+        ];
     }
 
     /**
      * Create NEL (Network Error Logging) header based on given configuration.
      *
-     * @return ?GenericHeader
+     * @return ?array
      */
-    public function getNetworkErrorLoggingHeader()
+    public function getNetworkErrorLoggingHeader(): ?array
     {
-        $nelHeader = new \Laminas\Http\Header\GenericHeader();
-        $nelHeader->setFieldName('NEL');
-        $nelData = [];
-
         $nelConfig = $this->config['NetworkErrorLogging'] ?? [];
-        if ($reportTo = $nelConfig['report_to'] ?? null) {
-            $nelData['report_to'] = $reportTo;
-        } else {
+        if (!($reportTo = $nelConfig['report_to'] ?? null)) {
             return null;
         }
-        $nelData['max_age'] = $nelConfig['max_age'] ?? 86400; // one day
+
+        $nelData = [
+            'report_to' => $reportTo,
+            'max_age' => $nelConfig['max_age'] ?? 86400, // one day
+        ];
         if (isset($nelConfig['include_subdomains'])) {
             $nelData['include_subdomains'] = (bool)$nelConfig['include_subdomains'];
         }
@@ -210,7 +235,10 @@ class CspHeaderGenerator implements
         }
 
         $nelText = json_encode($nelData, JSON_UNESCAPED_SLASHES);
-        $nelHeader->setFieldValue($nelText);
-        return $nelHeader;
+
+        return [
+            'name' => 'NEL',
+            'value' => $nelText,
+        ];
     }
 }

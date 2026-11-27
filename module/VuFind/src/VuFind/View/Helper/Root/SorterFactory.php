@@ -64,9 +64,9 @@ class SorterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         $helper = new $requestedName();
         $helper->setSorter($container->get(\VuFind\I18n\Sorter::class));
         return $helper;

@@ -45,14 +45,13 @@ trait LowerCaseServiceNameTrait
     /**
      * Retrieve a plugin.
      *
-     * @param string     $name    Name of plugin
-     * @param null|array $options Options to use when creating the instance.
+     * @param string $name Name of plugin
      *
      * @return mixed
      */
-    public function get($name, ?array $options = null)
+    public function get(string $name): mixed
     {
-        return parent::get($this->getNormalizedServiceName($name), $options);
+        return parent::get($this->getNormalizedServiceName($name));
     }
 
     /**
@@ -63,7 +62,7 @@ trait LowerCaseServiceNameTrait
      *
      * @return bool
      */
-    public function has($id)
+    public function has(string $id): bool
     {
         return parent::has($this->getNormalizedServiceName($id));
     }

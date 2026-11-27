@@ -134,8 +134,6 @@ class VerifyOtpAction extends AbstractAccountAction
             if (!$this->csrf->isValid($this->getPostParam('csrf'))) {
                 throw new \VuFind\Exception\BadRequest('error_inconsistent_parameters');
             }
-            // After successful token verification, clear list to shrink session:
-            $this->csrf->trimTokenList(0);
 
             $password = $this->getPostParam('password', '');
             if (

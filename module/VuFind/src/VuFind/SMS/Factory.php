@@ -57,9 +57,9 @@ class Factory implements FactoryInterface
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
-        $name,
+        string $name,
         ?array $options = null
-    ) {
+    ): mixed {
         // Load configurations:
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $mainConfig = $configManager->getConfigArray('config');

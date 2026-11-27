@@ -29,9 +29,9 @@
 
 namespace VuFindTheme\View\Helper;
 
-use Laminas\View\Helper\HeadLink;
 use Laminas\View\Helper\HeadMeta;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Helper\Root\HeadLink;
 use VuFindTheme\ResourceContainer;
 
 use function in_array;

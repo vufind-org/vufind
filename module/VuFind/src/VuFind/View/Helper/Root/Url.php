@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Url view helper (extending core Laminas helper with additional functionality).
+ * Url view helper.
  *
  * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,73 +24,95 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Chris Hallberg <challber@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Router\RouteMatchInterface;
+use RuntimeException;
+use VuFind\Application;
+use VuFind\Http\RouteHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 
-use function func_get_args;
 use function func_num_args;
+use function is_bool;
 
 /**
- * Url view helper (extending core Laminas helper with additional functionality).
+ * Url view helper.
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Chris Hallberg <challber@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Url extends \Laminas\View\Helper\Url
+class Url
 {
-    /**
-     * Request (or null if unavailable).
-     *
-     * @var Request
-     */
-    protected $request = null;
-
     /**
      * Constructor.
      *
-     * @param ?Request $request Request object for GET parameters
+     * @param Application $application Application
+     * @param RouteHelper $routeHelper Route helper
      */
-    public function __construct(?Request $request = null)
-    {
-        $this->request = $request;
+    #[Autowire]
+    public function __construct(
+        protected Application $application,
+        protected RouteHelper $routeHelper,
+    ) {
     }
 
     /**
      * Generates a url given the name of a route.
      *
-     * @param string             $name               Name of the route
-     * @param array              $params             Parameters for the link
-     * @param array|\Traversable $options            Options for the route
-     * @param bool               $reuseMatchedParams Whether to reuse matched
-     * parameters
+     * @param string $name               Name of the route
+     * @param array  $params             Parameters for the link
+     * @param array  $options            Options for the route (only 'query' => [...] is supported)
+     * @param bool   $reuseMatchedParams Whether to reuse matched parameters
      *
      * @see \Laminas\Router\RouteInterface::assemble()
      *
-     * @throws \Laminas\View\Exception\RuntimeException If no RouteStackInterface was provided
-     * @throws \Laminas\View\Exception\RuntimeException If no RouteMatch was provided
-     * @throws \Laminas\View\Exception\RuntimeException If RouteMatch didn't contain a matched
-     * route name
-     * @throws \Laminas\View\Exception\InvalidArgumentException If the params object was not an
-     * array or Traversable object.
+     * @throws RuntimeException If no RouteMatch was provided, or if RouteMatch is missing the route name
      *
-     * @return self|string Url For the link href attribute
+     * @return static|string This if no params were passed, or URL for the link href attribute
      */
     public function __invoke(
-        $name = null,
-        $params = [],
-        $options = [],
-        $reuseMatchedParams = false
-    ) {
+        ?string $name = null,
+        array $params = [],
+        array $options = [],
+        bool $reuseMatchedParams = false
+    ): static|string {
         // If argument list is empty, return object for method access:
-        return func_num_args() === 0 ? $this : parent::__invoke(...func_get_args());
+        if (func_num_args() === 0) {
+            return $this;
+        }
+
+        if (3 === func_num_args() && is_bool($options)) {
+            $reuseMatchedParams = $options;
+            $options            = [];
+        }
+
+        if ($name === null) {
+            if (null === ($routeMatch = $this->getRouteMatch())) {
+                throw new RuntimeException('No route-match in request');
+            }
+
+            $name = $routeMatch->getMatchedRouteName();
+
+            if ($name === '') {
+                throw new RuntimeException('RouteMatch does not contain a matched route name');
+            }
+        }
+
+        if ($reuseMatchedParams && null !== ($routeMatch = $this->getRouteMatch())) {
+            $routeMatchParams = $routeMatch->getParams();
+            $params = array_merge($routeMatchParams, $params);
+        }
+
+        return $this->routeHelper->getUrlFromRoute($name, $params, $options['query'] ?? []);
     }
 
     /**
@@ -100,16 +123,24 @@ class Url extends \Laminas\View\Helper\Url
      *
      * @return string
      */
-    public function addQueryParameters($params, $reuseMatchedParams = true)
+    public function addQueryParameters(array $params, bool $reuseMatchedParams = true): string
     {
-        $requestQuery = (null !== $this->request)
-            ? $this->request->getQuery()->toArray() : [];
+        $requestQuery = $this->application->getRequest()?->getQueryParams() ?? [];
         $options = [
             'query' => array_merge($requestQuery, $params),
-            'normalize_path' => false, // fix for VUFIND-1392
         ];
         // If we don't have a route match, direct any url's to default route:
-        $routeName = $this->routeMatch ? null : 'default';
+        $routeName = $this->getRouteMatch() ? null : 'default';
         return ($this)($routeName, [], $options, $reuseMatchedParams);
+    }
+
+    /**
+     * Get route match from application, if available.
+     *
+     * @return ?RouteMatchInterface
+     */
+    protected function getRouteMatch(): ?RouteMatchInterface
+    {
+        return $this->application->getRequest()?->getAttribute('route-match');
     }
 }

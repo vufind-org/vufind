@@ -45,7 +45,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
+    protected array $aliases = [
         'aleph' => Aleph::class,
         'alma' => Alma::class,
         'amicus' => Amicus::class,
@@ -81,7 +81,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $factories = [
+    protected array $factories = [
         Alma::class => DriverWithDateConverterFactory::class,
         DAIA::class => DriverWithDateConverterFactory::class,
         Evergreen::class => DriverWithDateConverterFactory::class,

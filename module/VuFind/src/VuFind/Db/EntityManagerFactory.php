@@ -35,16 +35,11 @@ use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Laminas\Cache\Psr\CacheItemPool\CacheItemPoolDecorator;
 use Laminas\Cache\Storage\Adapter\BlackHole;
-use Laminas\Cache\Storage\Adapter\Filesystem;
-use Laminas\Cache\Storage\Capabilities;
-use Laminas\Cache\Storage\PostEvent;
-use Laminas\Cache\Storage\StorageInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use stdClass;
 use VuFind\Db\Mapping\ClassMetadataFactory;
 use VuFind\Db\Mapping\ClassMetadataMappingsInterface;
 
@@ -63,13 +58,6 @@ use VuFind\Db\Mapping\ClassMetadataMappingsInterface;
 class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Cache storage.
-     *
-     * @var ?StorageInterface
-     */
-    protected ?StorageInterface $cacheStorage = null;
-
-    /**
      * Create an object.
      *
      * @param ContainerInterface $container     Service manager
@@ -84,7 +72,7 @@ class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
      * @throws ContainerException&\Throwable if any other error occurs
      */
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
-    public function __invoke(ContainerInterface $container, $requestedName, array|null $options = null)
+    public function __invoke(ContainerInterface $container, string $requestedName, ?array $options = null): mixed
     {
         $connection = $container->get(Connection::class);
         $paths = [
@@ -122,28 +110,6 @@ class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
     }
 
     /**
-     * Cache adapter post capabilities check handler that adds fake TTL support.
-     *
-     * @param PostEvent $event Event
-     *
-     * @return void
-     */
-    public function cacheCapabilitiesHandler(PostEvent $event): void
-    {
-        if ($event->getStorage() !== $this->cacheStorage) {
-            return;
-        }
-        $oldCapabilities = $event->getResult();
-        $newCapabilities = new Capabilities(
-            $event->getStorage(),
-            new stdClass(),
-            ['staticTtl' => true],
-            $oldCapabilities
-        );
-        $event->setResult($newCapabilities);
-    }
-
-    /**
      * Get cache adapter.
      *
      * @param ContainerInterface $container Service manager
@@ -156,18 +122,6 @@ class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
             return new CacheItemPoolDecorator(new BlackHole());
         }
 
-        $this->cacheStorage = $container->get(\VuFind\Cache\Manager::class)->getCache('object');
-
-        // Cache item pool decorator requires static TTL support that file system cache does not provide. Doctrine
-        // doesn't need it, so fake the support:
-        if ($this->cacheStorage instanceof Filesystem) {
-            $eventManager = $this->cacheStorage->getEventManager();
-            $eventManager->attach('getCapabilities.post', [$this, 'cacheCapabilitiesHandler']);
-            $cache = new CacheItemPoolDecorator($this->cacheStorage);
-            $eventManager->detach([$this, 'cacheCapabilitiesHandler']);
-        } else {
-            $cache = new CacheItemPoolDecorator($this->cacheStorage);
-        }
-        return $cache;
+        return new CacheItemPoolDecorator($container->get(\VuFind\Cache\Manager::class)->getCache('object'));
     }
 }

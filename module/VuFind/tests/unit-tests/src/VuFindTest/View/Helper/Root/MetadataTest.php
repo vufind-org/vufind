@@ -29,7 +29,9 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\View\Helper\Doctype;
 use Laminas\View\Helper\HeadMeta;
+use VuFind\Escaper\Escaper;
 use VuFind\MetadataVocabulary\PluginManager;
 use VuFind\MetadataVocabulary\PRISM;
 use VuFind\View\Helper\Root\Metadata;
@@ -106,13 +108,19 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
      */
     public function testMetadata()
     {
+        $metaHelper = new HeadMeta(new Escaper(), new Doctype());
         $helper = new Metadata(
             $this->getPluginManager(),
             ['Vocabularies' => [TestHarness::class => ['PRISM']]],
-            $this->getMetaHelper()
+            $metaHelper,
         );
         $helper->generateMetatags(
             $this->getDriver(['Title' => 'Fake Title'])
+        );
+
+        $this->assertSame(
+            '<meta content="Fake Title" name="prism.title">',
+            $metaHelper->toString()
         );
     }
 }

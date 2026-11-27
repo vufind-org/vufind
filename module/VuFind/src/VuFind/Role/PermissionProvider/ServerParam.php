@@ -59,7 +59,7 @@ class ServerParam implements
      *
      * @var array
      */
-    protected $aliases = [];
+    protected array $aliases = [];
 
     /**
      * Delimiter for multi-valued server params (default: none).

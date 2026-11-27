@@ -206,9 +206,9 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         $this->setup($container);
         $this->configManager = $this->getService(ConfigManagerInterface::class);
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {

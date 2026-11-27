@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Container;
 
+use Laminas\View\HelperPluginManagerInterface;
 use PHPUnit\Framework\MockObject\MockBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -65,7 +66,7 @@ trait MockContainerTrait
      * @var array
      */
     protected $mockAliases = [
-        'ViewHelperManager' => \Laminas\View\HelperPluginManager::class,
+        'ViewHelperManager' => HelperPluginManagerInterface::class,
     ];
 
     /**
@@ -123,7 +124,7 @@ trait MockContainerTrait
      *
      * @return mixed
      */
-    public function get($rawId, ?array $options = [])
+    public function get(string $rawId, ?array $options = []): mixed
     {
         $id = $this->mockAliases[$rawId] ?? $rawId;
         if (!isset($this->mockServices[$id])) {
@@ -140,7 +141,7 @@ trait MockContainerTrait
      *
      * @return bool
      */
-    public function has($rawId)
+    public function has(string $rawId): bool
     {
         $id = $this->mockAliases[$rawId] ?? $rawId;
         // Assume every service exists unless explicitly disabled
@@ -181,12 +182,11 @@ trait MockContainerTrait
      * @param string $alias  Alias of the service.
      * @param string $target Target service.
      *
-     * @return object
+     * @return void
      */
-    public function setAlias($alias, $target)
+    public function setAlias(string $alias, string $target): void
     {
         $this->mockAliases[$alias] = $target;
-        return $this;
     }
 
     /**

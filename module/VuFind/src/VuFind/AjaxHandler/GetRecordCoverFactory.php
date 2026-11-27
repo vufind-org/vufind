@@ -64,9 +64,9 @@ class GetRecordCoverFactory implements FactoryInterface
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $useFallbacks = $config['Content']['useCoverFallbacksOnFail'] ?? false;
         return new $requestedName(

@@ -59,10 +59,10 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
-        $name,
+        string $name,
         callable $callback,
         ?array $options = null
-    ) {
+    ): mixed {
         $driver = call_user_func($callback);
 
         // Attach the ILS if at least one backend supports it:

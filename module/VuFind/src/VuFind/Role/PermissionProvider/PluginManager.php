@@ -47,7 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
+    protected array $aliases = [
         'insecureCookie' => InsecureCookie::class,
         'ipRange' => IpRange::class,
         'ipRegEx' => IpRegEx::class,

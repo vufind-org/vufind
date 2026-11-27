@@ -31,6 +31,7 @@ namespace VuFind\View\Helper\Root;
 
 use DateTime;
 use Laminas\Feed\Writer\Feed;
+use Laminas\Feed\Writer\StandaloneExtensionManager;
 use Laminas\Feed\Writer\Writer as FeedWriter;
 use Psr\Container\ContainerInterface;
 use VuFind\Http\ServerUrlHelper;
@@ -100,20 +101,20 @@ class ResultFeed implements TranslatorAwareInterface
      */
     public function registerExtensions(ContainerInterface $container)
     {
-        $manager = new \Laminas\Feed\Writer\ExtensionPluginManager($container);
-        $manager->setInvokableClass(
+        $manager = new StandaloneExtensionManager();
+        $manager->add(
             'DublinCore\Renderer\Entry',
             \VuFind\Feed\Writer\Extension\DublinCore\Renderer\Entry::class
         );
-        $manager->setInvokableClass(
+        $manager->add(
             'DublinCore\Entry',
             \VuFind\Feed\Writer\Extension\DublinCore\Entry::class
         );
-        $manager->setInvokableClass(
+        $manager->add(
             'OpenSearch\Renderer\Feed',
             \VuFind\Feed\Writer\Extension\OpenSearch\Renderer\Feed::class
         );
-        $manager->setInvokableClass(
+        $manager->add(
             'OpenSearch\Feed',
             \VuFind\Feed\Writer\Extension\OpenSearch\Feed::class
         );

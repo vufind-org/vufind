@@ -78,9 +78,9 @@ class AbstractPluginManagerFactory implements FactoryInterface
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
@@ -92,7 +92,7 @@ class AbstractPluginManagerFactory implements FactoryInterface
         $config = $container->get('Config');
         return new $requestedName(
             $container,
-            $config['vufind']['plugin_managers'][$configKey]
+            $config['vufind']['plugin_managers'][$configKey] ?? []
         );
     }
 }

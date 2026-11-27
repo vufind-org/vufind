@@ -1,5 +1,7 @@
 <?php
 
+use Laminas\View\HelperPluginManagerInterface;
+
 require __DIR__ . '/constants.config.php';
 
 // Set up modules:
@@ -10,6 +12,7 @@ $modules = [
     'Laminas\Cache\Storage\Adapter\Memcached',
     'Laminas\Cache\Storage\Adapter\Memory',
     'Laminas\Router',
+    'Laminas\View',
     'Lmc\Rbac',
     'Laminas\I18n',
     'VuFindTheme',
@@ -22,9 +25,6 @@ if (PHP_SAPI === 'cli' && APPLICATION_ENV !== 'testing') {
     $modules[] = 'VuFindConsole';
 }
 if (APPLICATION_ENV === 'development' || APPLICATION_ENV === 'testing') {
-    if (!isset($_SERVER['HTTP_X_VUFIND_DISABLE_WHOOPS'])) {
-        $modules[] = 'WhoopsErrorHandler';
-    }
     $modules[] = 'VuFindDevTools';
 }
 if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {
@@ -88,9 +88,28 @@ return [
     'service_manager' => [
         'use_defaults' => true,
         'factories'    => [
+            \VuFind\ModuleManager\ModuleManager::class => \VuFind\ModuleManager\ModuleManagerFactory::class,
+            // Laminas MVC back-compatibility:
+            \Laminas\EventManager\EventManager::class => \VuFind\EventManager\EventManagerFactory::class,
+            \Laminas\EventManager\SharedEventManager::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
+        ],
+        'aliases' => [
+            // Laminas MVC back-compatibility:
+            'ViewRenderer' => \Laminas\View\Renderer\PhpRenderer::class,
+            'EventManager' => \Laminas\EventManager\EventManagerInterface::class,
+            \Laminas\EventManager\EventManagerInterface::class => \Laminas\EventManager\EventManager::class,
+            'SharedEventManager' => \Laminas\EventManager\SharedEventManagerInterface::class,
+            \Laminas\EventManager\SharedEventManagerInterface::class => \Laminas\EventManager\SharedEventManager::class,
+            'HttpRouter' => \Laminas\Router\Http\TreeRouteStack::class,
+
+            // Back-compatibility with older laminas-view:
+            'ViewHelperManager' => HelperPluginManagerInterface::class,
+        ],
+        'shared' => [
+            // Laminas MVC back-compatibility:
+            'EventManager' => false,
         ],
     ],
     'listeners' => [
-        \VuFind\Action\ActionDispatchListener::class,
     ],
 ];

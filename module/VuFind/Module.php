@@ -29,7 +29,12 @@
 
 namespace VuFind;
 
-use Laminas\Mvc\MvcEvent;
+use Laminas\EventManager\EventManagerInterface;
+use Psr\Container\ContainerInterface;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\EventManager\Event;
+use VuFind\EventManager\EventInterface;
+use VuFind\ModuleManager\ModuleInterface;
 
 /**
  * Code module for the core of the VuFind application.
@@ -40,28 +45,47 @@ use Laminas\Mvc\MvcEvent;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Module
+class Module implements ModuleInterface
 {
     /**
      * Get module configuration.
      *
      * @return array
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return include __DIR__ . '/config/module.config.php';
     }
 
     /**
-     * Bootstrap the module.
+     * Initialize the module.
      *
-     * @param MvcEvent $e Event
+     * @param ContainerInterface $container Service manager
      *
      * @return void
      */
-    public function onBootstrap(MvcEvent $e)
+    public function initialize(ContainerInterface $container): void
     {
-        $bootstrapper = new Bootstrapper($e);
+        $eventManager = $container->get(EventManagerInterface::class);
+        $eventManager->attach(Event::EVENT_BOOTSTRAP, fn ($e) => $this->onBootstrap($e, $container, $eventManager));
+    }
+
+    /**
+     * Bootstrap the module.
+     *
+     * @param EventInterface        $event        Event
+     * @param ContainerInterface    $container    Service manager
+     * @param EventManagerInterface $eventManager Event manager
+     *
+     * @return void
+     */
+    public function onBootstrap(
+        EventInterface $event,
+        ContainerInterface $container,
+        EventManagerInterface $eventManager
+    ): void {
+        $config = $container->get(ConfigManagerInterface::class)->getConfigArray('config');
+        $bootstrapper = new Bootstrapper($event, $container, $eventManager, $config);
         $bootstrapper->bootstrap();
     }
 }

@@ -51,7 +51,7 @@ class AbstractTopLevelServiceFactory extends AbstractPluginFactory
      * @return bool
      */
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
-    public function canCreate(ContainerInterface $container, $requestedName)
+    public function canCreate(ContainerInterface $container, string $requestedName): bool
     {
         // We don't want to override abstract factories from modules outside of the
         // VuFind namespace, so we should only apply abstract factory logic to classes

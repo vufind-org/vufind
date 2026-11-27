@@ -157,7 +157,7 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
     {
         $manager = $this->createMock(PluginManager::class);
         $manager->method('get')->willReturnCallback(
-            function ($settings) {
+            function (string $settings): mixed {
                 return new class ($settings) extends AbstractChannelProvider {
                     /**
                      * Constructor.

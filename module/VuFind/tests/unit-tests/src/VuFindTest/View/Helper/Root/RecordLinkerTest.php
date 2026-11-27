@@ -29,8 +29,11 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\Router\RoutePluginManager;
 use Laminas\View\Helper\EscapeHtml;
+use Psr\Container\ContainerInterface;
 use VuFind\Escaper\Escaper;
+use VuFind\Http\RequestHelper;
 use VuFind\Http\RouteHelper;
 use VuFind\Record\Router;
 use VuFind\Search\Base\Results;
@@ -209,7 +212,6 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getRecordLinker(array $extraHelpers = []): RecordLinker
     {
-        $url = $this->getUrl();
         $memory = $this->createMock(\VuFind\Search\Memory::class);
         $memory->method('getLastSearchId')->willReturn(-123);
 
@@ -230,7 +232,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
         $recordLinker = new RecordLinker(
             new Router([]),
             $memory,
-            new RouteHelper(fn () => $url),
+            $this->getRouteHelper(),
             $searchOptionManager,
             $translate,
             $truncate,
@@ -241,22 +243,18 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a URL helper.
+     * Get RouteHelper.
      *
-     * @return Url
+     * @return RouteHelper
      */
-    protected function getUrl(): Url
+    protected function getRouteHelper(): RouteHelper
     {
-        $request = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
-            ->onlyMethods(['getQuery'])->getMock();
-        $request->method('getQuery')->willReturn(new \Laminas\Stdlib\Parameters());
-
-        $url = new \VuFind\View\Helper\Root\Url($request);
-
         // Create router
-        $router = new \Laminas\Router\Http\TreeRouteStack();
-        $router->setRequestUri(new \Laminas\Uri\Http('http://localhost'));
+        $router = new \Laminas\Router\Http\TreeRouteStack(
+            new RoutePluginManager($this->createMock(ContainerInterface::class))
+        );
         $recordRoute = new \Laminas\Router\Http\Segment(
+            'record',
             '/Record/[:id[/[:tab]]]',
             [
                 'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
@@ -270,6 +268,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
         $router->addRoute('record', $recordRoute);
 
         $actionRoute = new \Laminas\Router\Http\Segment(
+            'record-description',
             '/Record/[:id]/Description',
             [
                 'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
@@ -282,8 +281,6 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
         );
         $router->addRoute('record-description', $actionRoute);
 
-        $url->setRouter($router);
-
-        return $url;
+        return new RouteHelper(new RequestHelper(), $router);
     }
 }

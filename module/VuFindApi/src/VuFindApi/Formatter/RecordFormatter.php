@@ -212,7 +212,7 @@ class RecordFormatter extends BaseFormatter implements TranslatorAwareInterface
                     if ($value instanceof TranslatableString) {
                         $value = [
                             'value' => (string)$value,
-                            'translated' => $this->translator->translate($value),
+                            'translated' => $this->translate($value),
                         ];
                     } else {
                         $value = (string)$value;

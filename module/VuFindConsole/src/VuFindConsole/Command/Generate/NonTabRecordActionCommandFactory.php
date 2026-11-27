@@ -61,9 +61,9 @@ class NonTabRecordActionCommandFactory extends AbstractCommandFactory
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         $config = $container->get('Config');
         return parent::__invoke(
             $container,

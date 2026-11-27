@@ -100,15 +100,11 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
         $transEsc = new TransEsc($translate, $escapehtml);
         $helperPluginManager = $this->getHelperPluginManager(compact('translate', 'transEsc', 'escapehtml'));
         $templateRenderer = $this->getTemplateRenderer($helperPluginManager);
-        $realView = $this->getPhpRenderer($helperPluginManager);
-        $context = new \VuFind\View\Helper\Root\Context($realView, $templateRenderer);
-        $realView->getHelperPluginManager()->setService('context', $context);
-
         return new Permission(
             $this->getMockPm(false),
             $mockPdm,
             $transEsc,
-            $context
+            new Context($templateRenderer)
         );
     }
 

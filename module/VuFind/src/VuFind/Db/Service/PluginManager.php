@@ -48,7 +48,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
+    protected array $aliases = [
         AccessTokenServiceInterface::class => AccessTokenService::class,
         ApiKeyServiceInterface::class => ApiKeyService::class,
         AuthHashServiceInterface::class => AuthHashService::class,

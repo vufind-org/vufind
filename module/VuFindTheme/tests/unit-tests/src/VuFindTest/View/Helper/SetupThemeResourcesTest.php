@@ -29,11 +29,11 @@
 
 namespace VuFindTest\View\Helper;
 
-use Laminas\View\Helper\HeadLink;
+use Laminas\View\Helper\Doctype;
 use Laminas\View\Helper\HeadMeta;
-use Laminas\View\Renderer\PhpRenderer;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Escaper\Escaper;
+use VuFind\View\Helper\Root\HeadLink;
 use VuFindTheme\ResourceContainer;
 use VuFindTheme\View\Helper\AssetManager;
 use VuFindTheme\View\Helper\ImageLink;
@@ -60,13 +60,9 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
     public function testHelper()
     {
         $escaper = new Escaper();
-        $renderer = new PhpRenderer();
-        $headMeta = new HeadMeta();
-        $headMeta->setEscaper($escaper);
-        $headMeta->setView($renderer);
-        $headLink = new HeadLink();
-        $headLink->setEscaper($escaper);
-        $headLink->setView($renderer);
+        $doctype = new Doctype();
+        $headMeta = new HeadMeta($escaper, $doctype);
+        $headLink = new HeadLink(new \Laminas\View\Helper\HeadLink($escaper, $doctype));
         $helper = new SetupThemeResources(
             $this->getResourceContainer(),
             $headMeta,
@@ -78,8 +74,8 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame(
             <<<EOT
-                <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-                <meta name="Generator" content="fake-generator">
+                <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+                <meta content="fake-generator" name="Generator">
                 EOT,
             $headMeta->toString()
         );

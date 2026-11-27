@@ -54,7 +54,7 @@ class AbstractAutowiringFactory extends AutowiringFactory implements AbstractFac
      * @return bool
      */
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
-    public function canCreate(ContainerInterface $container, $requestedName)
+    public function canCreate(ContainerInterface $container, string $requestedName): bool
     {
         return $this->isAutowireable($requestedName);
     }

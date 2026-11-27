@@ -29,10 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Mvc\Application;
 use Laminas\Router\Http\TreeRouteStack;
 use Laminas\View\Helper\EscapeJs;
-use Laminas\View\Helper\HeadTitle;
+use Laminas\View\Renderer\RendererInterface;
+use VuFind\Application;
 use VuFind\RecordDriver\AbstractBase as RecordDriverBase;
 use VuFind\Search\Base\Results;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -121,23 +121,24 @@ class Matomo
     /**
      * Constructor.
      *
-     * @param array            $config           VuFind configuration
-     * @param TreeRouteStack   $router           Router
-     * @param Application      $application      Application
-     * @param GlobalsContainer $globalsContainer Globals container
-     * @param AssetManager     $assetManager     AssetManager view helper
-     * @param EscapeJs         $escapejs         EscapeJs view helper
-     * @param CookieConsent    $cookieConsent    CookieConsent view helper
-     * @param Translate        $translate        Translate view helper
-     * @param HeadTitle        $headTitle        HeadTitle view helper
+     * @param array             $config           VuFind configuration
+     * @param TreeRouteStack    $router           Router
+     * @param Application       $application      Application
+     * @param RendererInterface $viewRenderer     View renderer
+     * @param GlobalsContainer  $globalsContainer Globals container
+     * @param AssetManager      $assetManager     AssetManager view helper
+     * @param EscapeJs          $escapejs         EscapeJs view helper
+     * @param CookieConsent     $cookieConsent    CookieConsent view helper
+     * @param Translate         $translate        Translate view helper
+     * @param HeadTitle         $headTitle        HeadTitle view helper
      */
     public function __construct(
         #[Autowire(config: 'config', configType: 'array')]
         array $config,
         #[Autowire(service: 'HttpRouter')]
         protected TreeRouteStack $router,
-        #[Autowire(service: 'Application')]
         protected Application $application,
+        protected RendererInterface $viewRenderer,
         protected GlobalsContainer $globalsContainer,
         #[Autowire(container: 'ViewHelperManager')]
         protected AssetManager $assetManager,
@@ -491,16 +492,15 @@ class Matomo
      */
     protected function getPageUrl(): string
     {
-        $request = $this->application->getRequest();
-        if (!($request instanceof \Laminas\Http\PhpEnvironment\Request)) {
+        if (!($request = $this->application->getRequest())) {
             return '';
         }
-        $path = $request->getUri()->toString();
+        $path = (string)$request->getUri();
         // Replace 'AjaxTab' with tab name in record page URLs:
         $routeMatch = $this->router->match($request);
         if (
             $routeMatch
-            && ($tab = $request->getPost('tab'))
+            && ($tab = $request->getParsedBody()['tab'] ?? null)
             && str_ends_with($routeMatch->getMatchedRouteName(), '-ajaxtab')
             && null !== ($pos = strrpos($path, '/AjaxTab'))
         ) {

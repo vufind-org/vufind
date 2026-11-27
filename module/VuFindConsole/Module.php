@@ -29,6 +29,9 @@
 
 namespace VuFindConsole;
 
+use Psr\Container\ContainerInterface;
+use VuFind\ModuleManager\ModuleInterface;
+
 /**
  * Code module for VuFind's console functionality.
  *
@@ -38,15 +41,26 @@ namespace VuFindConsole;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
-class Module
+class Module implements ModuleInterface
 {
     /**
      * Get module configuration.
      *
      * @return array
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return include __DIR__ . '/config/module.config.php';
+    }
+
+    /**
+     * Initialize the module.
+     *
+     * @param ContainerInterface $container Service manager
+     *
+     * @return void
+     */
+    public function initialize(ContainerInterface $container): void
+    {
     }
 }

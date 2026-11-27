@@ -66,9 +66,9 @@ class AuditEventServiceFactory extends AbstractDbServiceFactory
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
-    ) {
+    ): mixed {
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $enabledEventTypes = $this->explodeListSetting($config['Logging']['log_audit_events'] ?? 'payment');
         $sessionId = null;
