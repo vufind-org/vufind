@@ -129,7 +129,9 @@ class CachingDownloader implements GuzzleServiceAwareInterface
      * Download a resource using the cache in the background.
      *
      * @param string    $url            URL
-     * @param array     $params         Additional request parameters (e.g. for URL)
+     * @param array     $params         Request parameters (query string)
+     *                                  (either an associative key=>value array,
+     *                                  or a regular array of preformatted key=value strings)
      * @param array     $headers        Additional request headers (e.g. User-Agent)
      * @param ?callable $decodeCallback Callback for decoding
      *
@@ -190,14 +192,20 @@ class CachingDownloader implements GuzzleServiceAwareInterface
      * @param array     $params      Additional request parameters (e.g. for URL)
      * @param array     $headers     Additional request headers (e.g. User-Agent)
      * @param bool|null $associative Sent to json_decode
+     * @param int       $flags       Sent to json_decode
      *
      * @return \stdClass|array
      */
-    public function downloadJson(string $url, array $params = [], array $headers = [], ?bool $associative = null)
-    {
-        $decodeJson = function (ResponseInterface $response, string $url) use ($associative) {
+    public function downloadJson(
+        string $url,
+        array $params = [],
+        array $headers = [],
+        ?bool $associative = null,
+        int $flags = 0
+    ) {
+        $decodeJson = function (ResponseInterface $response, string $url) use ($associative, $flags) {
             $body = $response->getBody()->getContents();
-            $decodedJson = json_decode($body, $associative);
+            $decodedJson = json_decode($body, $associative, flags: $flags);
             if ($decodedJson === null) {
                 throw new HttpDownloadException(
                     'Invalid response body',
