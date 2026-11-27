@@ -314,3 +314,39 @@ forms:
         required: true
         minValue: "2026-01-01"
         maxValue: "2026-12-31"
+
+  TestCommonFields:
+    fields:
+      # Fully inherited from commonFields
+      - name: common_message
+      # Inherited from commonFields, with overrides
+      - name: common_topic
+        label: Overridden Topic
+        required: false
+      # Not defined in commonFields
+      - name: phone
+        type: text
+        label: Phone Number
+      # Not defined in commonFields and has no type, so should be skipped
+      - name: undefined_field
+        label: Undefined Field
+
+  TestCommonFieldsSettingsOverride:
+    fields:
+      # Field-specific settings replace (rather than merge with) common settings
+      - name: common_topic
+        settings:
+          - [placeholder, Override placeholder]
+
+commonFields:
+  common_message:
+    type: textarea
+    label: Comments
+    required: true
+  common_topic:
+    type: text
+    label: Topic
+    required: true
+    settings:
+      - [placeholder, Common placeholder]
+      - [size, 50]

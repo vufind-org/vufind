@@ -75,7 +75,7 @@
 #                          With configured field 'siteCode' enables prefilling the field with
 #                          /Feedback/Form/FeedbackSite?siteCode=website
 #
-#   fields (array) List of form elements with the following options:
+#   fields (array) List of form elements with the following options (see also commonFields):
 #
 #     name (string)        Element name (see below for reserved element names)
 #     label (string)       Element label (translation key)
@@ -140,6 +140,9 @@
 #       settings:
 #         - [placeholder, Please select...]
 #
+#   commonFields (array) Map of form name to field config. If a form uses a field
+#     with a name defined here, the commonFields config will be used first, before any
+#     form-specific config overrides. This avoids re-defining a field used in multiple forms.
 #
 # Reserved element names:
 #
@@ -183,12 +186,8 @@ forms:
     #  post: feedback_help_post
 
     fields:
+      # Inherits config from commonFields below
       - name: message
-        type: textarea
-        label: Comments
-        required: true
-        settings:
-        # help: message_help
 
   # Example for an acquisition request form
 
@@ -262,3 +261,15 @@ forms:
         options:
           - Yes
           - No
+      
+      # Inherits config from commonFields below, but overrides 'required'
+      - name: message
+        required: false
+
+commonFields:
+  message:
+    type: textarea
+    label: Comments
+    required: true
+    settings:
+    # help: message_help
