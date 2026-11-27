@@ -24,5 +24,9 @@ $this->jsConfigs()->add(
     'item-status:load-observable-only',
     $this->config()->getArray('config')['Item_Status']['load_observable_only'] ?? true
 );
+$this->jsConfigs()->add(
+    'site:button-to-show-passwords',
+    $this->config()->getArray('config')['Site']['buttonToShowPasswords'] ?? false
+);
 
 echo $this->jsConfigs()->getJSON();
