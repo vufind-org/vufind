@@ -1,5 +1,12 @@
 /* ACCESSIBILITY IMPROVEMENTS */
 
+// Buttons draw their focus ring in a mix of their own colors with an opacity of
+// 50%, which gives a contrast of 1.4:1 for default and 2.1:1 for primary buttons.
+// Use the general focus ring for them as well.
+.btn {
+  --#{$prefix}btn-focus-box-shadow: #{$focus-ring-box-shadow};
+}
+
 /* AAA Color Contrasts */
 $breadcrumb-color: #535353 !default;
 $breadcrumb-active-color: #444 !default;
