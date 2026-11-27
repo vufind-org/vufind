@@ -73,7 +73,7 @@ class ComposerPackageTemplateCommand extends AbstractCommand
      */
     protected Filesystem $filesystem;
 
-    protected string $vuFindHomeDirAbsolute;
+    protected string $vuFindHomeDirAbsolute = APPLICATION_PATH;
 
     protected string $targetDirAbsolute;
 
@@ -154,6 +154,10 @@ class ComposerPackageTemplateCommand extends AbstractCommand
                 'target_directory',
                 InputArgument::REQUIRED,
                 'the path of the target directory where the module should be created'
+            )->addArgument(
+                'name',
+                InputArgument::OPTIONAL,
+                'when set, adjust naming of all other components (according to conventions)'
             )->addOption(
                 'module',
                 null,
@@ -201,7 +205,6 @@ class ComposerPackageTemplateCommand extends AbstractCommand
     {
         $this->input = $input;
         $this->output = $output;
-        $this->vuFindHomeDirAbsolute = getenv('VUFIND_HOME');
         $this->filesystem = new Filesystem();
 
         $this->targetDirAbsolute = rtrim($input->getArgument('target_directory'), DIRECTORY_SEPARATOR);
@@ -211,6 +214,14 @@ class ComposerPackageTemplateCommand extends AbstractCommand
         }
         $this->filesystem->mkdir($this->targetDirAbsolute);
 
+        if ($name = $this->input->getArgument('name')) {
+            if (!preg_match('"^[a-zA-Z]+$"', $name)) {
+                throw new \Exception('Invalid package name: "' . $name . '" (Please provide a CamelCase-string with only letters A-Z in upper- or lowercase)');
+            }
+            $this->moduleNamespace = ucfirst($name);
+            $this->mixinName = strtolower($name);
+            $this->configIniFileName = strtolower($name) . '.ini';
+        }
         if ($this->input->getOption('module')) {
             $this->generateModule();
         }
