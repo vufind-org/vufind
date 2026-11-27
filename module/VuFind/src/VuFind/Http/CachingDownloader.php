@@ -166,22 +166,60 @@ class CachingDownloader implements GuzzleServiceAwareInterface
 
         $body = $response->getBody()->getContents();
         $response->getBody()->rewind(); // later code might need to read the body again
+        $this->validateResponse($url, $response);
+
+        $finalValue = $decodeCallback !== null
+            ? $decodeCallback($response, $url) : $body;
+
+        $this->validateResponseBody($url, $response, $finalValue);
+
+        if ($cache) {
+            $cache->addItem($cacheItemKey, $finalValue);
+        }
+        return $finalValue;
+    }
+
+    /**
+     * Validate the response (especially response code).
+     * This has been modularized to allow easy overriding depending on
+     * the behaviour of certain APIs.
+     *
+     * @param string            $url      URL
+     * @param ResponseInterface $response Response
+     *
+     * @return void
+     */
+    protected function validateResponse(string $url, ResponseInterface $response)
+    {
         if ($response->getStatusCode() != 200) {
             throw new HttpDownloadException(
                 'HttpService download failed (not ok)',
                 $url,
                 $response->getStatusCode(),
                 $response->getHeaders(),
-                $body
+                $response->getBody()->getContents()
             );
         }
+    }
 
-        $finalValue = $decodeCallback !== null
-            ? $decodeCallback($response, $url) : $body;
-        if ($cache) {
-            $cache->addItem($cacheItemKey, $finalValue);
-        }
-        return $finalValue;
+    /**
+     * Validate the decoded body of the response.
+     *
+     * This has been modularized to allow easy overriding depending on
+     * the behaviour of certain APIs. An example would be a API that
+     * returns status code 200 OK, but uses additional error codes
+     * inside the delivered JSON.
+     *
+     * @param string            $url        URL
+     * @param ResponseInterface $response   Response
+     * @param mixed             $finalValue The final version of the response body
+     *                                      (raw or decoded, if a decodeCallback was specified)
+     *
+     * @return void
+     */
+    protected function validateResponseBody(string $url, ResponseInterface $response, $finalValue)
+    {
+        // default: No specific body-related validation
     }
 
     /**
