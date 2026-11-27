@@ -350,7 +350,15 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
             return $this->redirectToSavedSearch((int)$savedId);
         }
 
-        $templateParams = $this->getSearchResultsTemplateParams($request, $this->getSearchClassId(), $setupCallback);
+        try {
+            $templateParams
+                = $this->getSearchResultsTemplateParams($request, $this->getSearchClassId(), $setupCallback);
+        } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
+            return $this->redirectToLegalSearchPage(
+                $request->getQueryParams() + $request->getParsedBody(),
+                $e->getLegalPage()
+            );
+        }
 
         // For page parameter being out of results list, we want to redirect to correct page
         $page = $templateParams['params']->getPage();
@@ -421,16 +429,12 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         $templateParams['request'] = $request->getQueryParams() + $request->getParsedBody();
 
         $lastView = $this->searchMemory->retrieveLastSetting($searchClassId, 'view');
-        try {
-            $templateParams['results'] = $results = $this->searchRunner->run(
-                $templateParams['request'],
-                $searchClassId,
-                $setupCallback ?: $this->getSearchSetupCallback($request),
-                $lastView
-            );
-        } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
-            return $this->redirectToLegalSearchPage($templateParams['request'], $e->getLegalPage());
-        }
+        $templateParams['results'] = $results = $this->searchRunner->run(
+            $templateParams['request'],
+            $searchClassId,
+            $setupCallback ?: $this->getSearchSetupCallback($request),
+            $lastView
+        );
         $templateParams['params'] = $results->getParams();
 
         // If we received an EmptySet back, that indicates that the real search

@@ -156,7 +156,14 @@ abstract class AbstractCitationAction extends AbstractSearchAndResultsAction
             }
         };
 
-        $templateParams = $this->getSearchResultsTemplateParams($request, $this->getSearchClassId(), $callback);
+        try {
+            $templateParams = $this->getSearchResultsTemplateParams($request, $this->getSearchClassId(), $callback);
+        } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
+            return $this->redirectToLegalSearchPage(
+                $request->getQueryParams() + $request->getParsedBody(),
+                $e->getLegalPage()
+            );
+        }
         $templateParams['driver'] = $driver;
         return $this->renderTemplate($request, $response, $templateParams);
     }

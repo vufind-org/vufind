@@ -142,7 +142,14 @@ class ReservesSearchAction extends AbstractSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $templateParams = $this->getSearchResultsTemplateParams($request, $this->getSearchClassId(), null);
+        try {
+            $templateParams = $this->getSearchResultsTemplateParams($request, $this->getSearchClassId(), null);
+        } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
+            return $this->redirectToLegalSearchPage(
+                $request->getQueryParams() + $request->getParsedBody(),
+                $e->getLegalPage()
+            );
+        }
         $templateParams['params'] = $templateParams['results']->getParams();
         return $this->renderTemplate($request, $response, $templateParams);
     }
