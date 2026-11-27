@@ -47,6 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'compile/theme' => Compile\ThemeCommand::class,
+        'generate/composerpackagetemplate' => Generate\ComposerPackageTemplateCommand::class,
         'generate/dynamicroute' => Generate\DynamicRouteCommand::class,
         'generate/extendclass' => Generate\ExtendClassCommand::class,
         'generate/extendservice' => Generate\ExtendServiceCommand::class,
