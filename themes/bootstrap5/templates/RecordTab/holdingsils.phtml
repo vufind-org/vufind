@@ -75,6 +75,18 @@
   <?php if (!empty($urls)): ?>
     <?php foreach ($urls as $current): ?>
       <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br>
+      <?=
+        $this->context($this)->renderInContext(
+            'RecordTab/holdingsils/accesscredentials.phtml',
+            compact('current', 'account')
+        );
+      ?>
+      <?=
+        $this->context($this)->renderInContext(
+            'RecordTab/holdingsils/accesssummary.phtml',
+            compact('current')
+        );
+      ?>
     <?php endforeach; ?>
   <?php endif; ?>
   <?php if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><?php endif; ?>
