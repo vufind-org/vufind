@@ -49,6 +49,8 @@ use Psr\Container\ContainerInterface;
  */
 class ManagerFactory implements FactoryInterface
 {
+    use SessionHandlerTrait;
+
     /**
      * Build the options array.
      *
@@ -78,26 +80,6 @@ class ManagerFactory implements FactoryInterface
         }
 
         return $options;
-    }
-
-    /**
-     * Set up the session handler by retrieving all the pieces from the service
-     * manager and injecting appropriate dependencies.
-     *
-     * @param ContainerInterface $container Service manager
-     *
-     * @return array
-     */
-    protected function getHandler(ContainerInterface $container)
-    {
-        // Load and validate session configuration:
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
-        if (!isset($config['Session']['type'])) {
-            throw new \Exception('Cannot initialize session; configuration missing');
-        }
-
-        return $container->get(\VuFind\Session\PluginManager::class)
-            ->get($config['Session']['type']);
     }
 
     /**

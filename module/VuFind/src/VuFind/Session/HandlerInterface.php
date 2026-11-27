@@ -58,4 +58,13 @@ interface HandlerInterface extends SaveHandlerInterface
      * @return void
      */
     public function disableWrites();
+
+    /**
+     * Check which sessions expired based on an array of IDs.
+     *
+     * @param array $sessionIds Session IDs to check.
+     *
+     * @return array
+     */
+    public function expiredSessionIds(array $sessionIds): array;
 }

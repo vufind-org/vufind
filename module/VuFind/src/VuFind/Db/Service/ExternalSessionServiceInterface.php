@@ -40,7 +40,7 @@ use VuFind\Db\Entity\ExternalSessionEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface ExternalSessionServiceInterface extends DbServiceInterface
+interface ExternalSessionServiceInterface extends SessionRelatedDataServiceInterface
 {
     /**
      * Create a new external session entity.
@@ -70,13 +70,4 @@ interface ExternalSessionServiceInterface extends DbServiceInterface
      * @return ExternalSessionEntityInterface[]
      */
     public function getAllByExternalSessionId(string $sid): array;
-
-    /**
-     * Destroy data for the given session ID.
-     *
-     * @param string $sid Session ID to erase
-     *
-     * @return void
-     */
-    public function destroySession(string $sid): void;
 }

@@ -35,6 +35,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Db\Service\Feature\DeleteExpiredInterface;
 use VuFindConsole\Command\Util\AbstractExpireCommand;
 
+use function count;
+
 /**
  * AbstractExpireCommand test.
  *
@@ -98,7 +100,7 @@ abstract class AbstractExpireCommandTestCase extends \PHPUnit\Framework\TestCase
     public function testIllegalAgeInput()
     {
         $service = $this->createMock($this->validServiceClass);
-        $command = new $this->targetClass($service, 'foo');
+        $command = $this->getCommand($service);
         $commandTester = new CommandTester($command);
         if (null === $this->expectedMinAge) {
             $this->expectExceptionMessage('The "age" argument does not exist.');
@@ -110,6 +112,16 @@ abstract class AbstractExpireCommandTestCase extends \PHPUnit\Framework\TestCase
             $commandTester->getDisplay()
         );
         $this->assertSame(1, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Get extra expected lines.
+     *
+     * @return array
+     */
+    protected function getExtraExpectedLines(): array
+    {
+        return [];
     }
 
     /**
@@ -134,7 +146,8 @@ abstract class AbstractExpireCommandTestCase extends \PHPUnit\Framework\TestCase
         // The response contains date stamps that will vary every time the test
         // runs, so let's split things apart to work around that...
         $parts = explode("\n", trim($response));
-        $this->assertCount(3, $parts);
+        $extraExpectedLines = $this->getExtraExpectedLines();
+        $this->assertCount(3 + count($extraExpectedLines), $parts);
         $this->assertSame(
             "1000 {$this->rowLabel} deleted.",
             explode('] ', $parts[0])[1]
@@ -147,6 +160,12 @@ abstract class AbstractExpireCommandTestCase extends \PHPUnit\Framework\TestCase
             "Total 1007 {$this->rowLabel} deleted.",
             explode('] ', $parts[2])[1]
         );
+        foreach ($extraExpectedLines as $i => $line) {
+            $this->assertSame(
+                $line,
+                explode('] ', $parts[$i + 3])[1]
+            );
+        }
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 
@@ -169,34 +188,57 @@ abstract class AbstractExpireCommandTestCase extends \PHPUnit\Framework\TestCase
         // The response contains date stamps that will vary every time the test
         // runs, so let's split things apart to work around that...
         $parts = explode("\n", trim($response));
-        $this->assertCount(1, $parts);
+        $extraExpectedLines = $this->getExtraExpectedLines();
+        $this->assertCount(1 + count($extraExpectedLines), $parts);
         $this->assertSame(
             "Total 0 {$this->rowLabel} deleted.",
             explode('] ', $parts[0])[1]
         );
+        foreach ($extraExpectedLines as $i => $line) {
+            $this->assertSame(
+                $line,
+                explode('] ', $parts[$i + 1])[1]
+            );
+        }
         $this->assertSame(0, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Get the command constructor arguments.
+     *
+     * @return array
+     */
+    protected function getExtraCommandConstructorArgs(): array
+    {
+        return [];
     }
 
     /**
      * Get the command class.
      *
      * @param DeleteExpiredInterface $service Table to process
-     * @param DateTime               $date    Expiration date threshold
+     * @param ?DateTime              $date    Expiration date threshold (optional)
      *
      * @return MockObject&AbstractExpireCommand
      */
     protected function getCommand(
         DeleteExpiredInterface $service,
-        DateTime $date
+        ?DateTime $date = null
     ): MockObject&AbstractExpireCommand {
+        $methods = [];
+        if ($date !== null) {
+            $methods = ['getDateThreshold'];
+        }
         $command = $this->getMockBuilder($this->targetClass)
-            ->setConstructorArgs([$service, 'foo'])
-            ->onlyMethods(['getDateThreshold'])
+            ->setConstructorArgs(array_merge([$service, 'foo'], $this->getExtraCommandConstructorArgs()))
+            ->onlyMethods($methods)
             ->getMock();
-        $command->expects($this->once())
-            ->method('getDateThreshold')
-            ->with($this->expectedThreshold)
-            ->willReturn($date);
+        if ($date !== null) {
+            $command->expects($this->once())
+                ->method('getDateThreshold')
+                ->with($this->expectedThreshold)
+                ->willReturn($date);
+        }
         return $command;
     }
 }

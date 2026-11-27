@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Command\Util;
 
+use VuFind\Session\SessionRelatedTablesTrait;
 use VuFindConsole\Command\Util\ExpireSessionsCommand;
 
 /**
@@ -42,6 +43,8 @@ use VuFindConsole\Command\Util\ExpireSessionsCommand;
  */
 class ExpireSessionsCommandTest extends AbstractExpireCommandTestCase
 {
+    use SessionRelatedTablesTrait;
+
     /**
      * Name of class being tested.
      *
@@ -76,4 +79,38 @@ class ExpireSessionsCommandTest extends AbstractExpireCommandTestCase
      * @var ?float
      */
     protected $expectedMinAge = 0.1;
+
+    /**
+     * Get extra expected lines.
+     *
+     * @return array
+     */
+    protected function getExtraExpectedLines(): array
+    {
+        $lines = [];
+        $i = 0;
+        foreach (array_keys($this->getSessionDatabaseServices()) as $serviceName) {
+            $lines[] = "Total {$i} {$serviceName} deleted.";
+            $i++;
+        }
+        return $lines;
+    }
+
+    /**
+     * Get the command constructor arguments.
+     *
+     * @return array
+     */
+    protected function getExtraCommandConstructorArgs(): array
+    {
+        $serviceManager = new \VuFindTest\Container\MockDbServicePluginManager($this);
+        $i = 0;
+        foreach ($this->getSessionDatabaseServices() as $databaseService) {
+            $serviceMock = $this->createMock($databaseService);
+            $serviceMock->method('deleteRowsWithoutSession')->willReturn($i++);
+            $serviceManager->set($databaseService, $serviceMock);
+        }
+
+        return [$serviceManager];
+    }
 }

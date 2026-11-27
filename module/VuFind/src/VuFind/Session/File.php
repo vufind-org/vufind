@@ -178,4 +178,22 @@ class File extends AbstractBase
         echo 'Cannot write session to ' . $sessFile . "\n";
         return false;
     }
+
+    /**
+     * Check which sessions expired based on an array of IDs.
+     *
+     * @param array $sessionIds Session IDs to check.
+     *
+     * @return array
+     */
+    public function expiredSessionIds(array $sessionIds): array
+    {
+        return array_filter(
+            $sessionIds,
+            function ($sessionId) {
+                $sessFile = $this->path . '/sess_' . $sessionId;
+                return !file_exists($sessFile) || filemtime($sessFile) + $this->lifetime < time();
+            }
+        );
+    }
 }

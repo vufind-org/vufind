@@ -98,4 +98,14 @@ interface SessionServiceInterface extends DbServiceInterface
      * @return SessionEntityInterface
      */
     public function createEntity(): SessionEntityInterface;
+
+    /**
+     * Check which session IDs exist.
+     *
+     * @param array $sessionIds Session IDs to check
+     * @param int   $lifetime   Session lifetime (in seconds)
+     *
+     * @return array Existing session IDs
+     */
+    public function existingSessions(array $sessionIds, int $lifetime): array;
 }

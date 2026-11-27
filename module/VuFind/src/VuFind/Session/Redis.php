@@ -140,4 +140,19 @@ class Redis extends AbstractBase
             }
         );
     }
+
+    /**
+     * Check which sessions expired based on an array of IDs.
+     *
+     * @param array $sessionIds Session IDs to check.
+     *
+     * @return array
+     */
+    public function expiredSessionIds(array $sessionIds): array
+    {
+        return array_filter(
+            $sessionIds,
+            fn ($sessionId) => empty($this->read($sessionId))
+        );
+    }
 }

@@ -41,7 +41,7 @@ use VuFind\Db\Entity\UserEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways interface
  */
-interface SearchServiceInterface extends DbServiceInterface
+interface SearchServiceInterface extends SessionRelatedDataServiceInterface
 {
     /**
      * Create a search entity.
@@ -70,7 +70,7 @@ interface SearchServiceInterface extends DbServiceInterface
      *
      * @return void
      */
-    public function destroySession(string $sessionId, UserEntityInterface|int|null $userOrId = null): void;
+    public function deleteUnsaved(string $sessionId, UserEntityInterface|int|null $userOrId = null): void;
 
     /**
      * Get a SearchEntityInterface object by ID.
