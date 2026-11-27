@@ -26,7 +26,7 @@
 <?=$this->translate('new_results_heading', ['%%count%%' => $info['recordCount']]) ?>:
 
 <?php foreach ($records as $result): ?>
-  <?=$this->record($result)->getSearchResult('email') . PHP_EOL; ?>
+  <?=$this->record($result)->getSearchResult('email', $this->context($this)->getVars()) . PHP_EOL; ?>
 <?php endforeach; ?>
 
 

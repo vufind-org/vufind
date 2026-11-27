@@ -97,9 +97,9 @@ class Params
     /**
      * Result limit.
      *
-     * @var int
+     * @var ?int
      */
-    protected int $limit = 20;
+    protected ?int $limit = null;
 
     /**
      * Search type (basic or advanced).
@@ -515,6 +515,10 @@ class Params
             $handler = $handler[0];
         }
 
+        if ($handler && preg_match('/^label:(.*)$/', $handler, $matches)) {
+            $handler = $this->getOptions()->getHandlerForLabel($matches[1]);
+        }
+
         // Set the search:
         $this->setBasicSearch($lookfor, $handler);
         return true;
@@ -667,13 +671,23 @@ class Params
     }
 
     /**
-     * Return the current limit value.
+     * Return the currently set limit value.
+     *
+     * @return ?int
+     */
+    public function getActiveLimitSetting(): ?int
+    {
+        return $this->limit;
+    }
+
+    /**
+     * Return the limit value and fallback to default.
      *
      * @return int
      */
     public function getLimit(): int
     {
-        return $this->limit;
+        return $this->limit ?? $this->getOptions()->getDefaultLimit();
     }
 
     /**

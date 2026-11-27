@@ -157,10 +157,12 @@ class Record implements DbServiceAwareInterface
     {
         $template = 'RecordDriver/%s/' . $name;
         $className = get_class($this->driver);
+        $context ??= [];
+        $context['driver'] ??= $this->driver;
         return $this->renderClassTemplate(
             $template,
             $className,
-            $context ?? ['driver' => $this->driver],
+            $context,
             $throw
         );
     }
@@ -542,13 +544,14 @@ class Record implements DbServiceAwareInterface
     /**
      * Render a search result for the specified view mode.
      *
-     * @param string $view View mode to use.
+     * @param string $view    View mode to use
+     * @param array  $context Rendering context
      *
      * @return string
      */
-    public function getSearchResult($view)
+    public function getSearchResult($view, array $context = [])
     {
-        return $this->renderTemplate('result-' . $view . '.phtml');
+        return $this->renderTemplate('result-' . $view . '.phtml', $context);
     }
 
     /**

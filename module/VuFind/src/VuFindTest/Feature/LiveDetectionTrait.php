@@ -59,6 +59,7 @@ trait LiveDetectionTrait
     {
         // We'll assume that if the CI Solr PID is present, then CI is active:
         $port = $this->getSolrPort();
-        return file_exists(__DIR__ . "/../../../../../local/solr-$port.pid");
+        $localDir = LOCAL_OVERRIDE_DIR ?: __DIR__ . '/../../../../../local';
+        return file_exists($localDir . "/solr-$port.pid");
     }
 }
