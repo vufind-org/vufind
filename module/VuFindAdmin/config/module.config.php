@@ -221,6 +221,11 @@ $config = [
                     'Admintags' => 'AdminTags',
                 ],
             ],
+            'ajaxhandler' => [
+                'aliases' => [
+                    'editNotices' => 'VuFindAdmin\AjaxHandler\EditNotices',
+                ],
+            ],
         ],
     ],
 ];
