@@ -446,7 +446,7 @@ class Citation implements TranslatorAwareInterface
         $start = $this->driver->tryMethod('getContainerStartPage');
         $end = $this->driver->tryMethod('getContainerEndPage');
         return ($start == $end || empty($end))
-            ? $start : $start . '-' . $end;
+            ? $start : $start . '–' . $end;
     }
 
     /**
