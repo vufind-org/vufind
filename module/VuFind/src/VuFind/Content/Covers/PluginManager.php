@@ -58,6 +58,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'browzine' => BrowZine::class,
         'contentcafe' => ContentCafe::class,
         'demo' => Demo::class,
+        'eds' => EDS::class,
         'google' => Google::class,
         'koha' => Koha::class,
         'librarything' => LibraryThing::class,
@@ -91,8 +92,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->addAbstractFactory(AbstractPluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
+        $this->addAbstractFactory(AbstractPluginFactory::class);
     }
 
     /**

@@ -184,7 +184,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
         }
         $this->cachableSources = $this->cacheConfig[$context] ?? [];
         if (
-            $context != Cache::CONTEXT_DEFAULT
+            $context !== Cache::CONTEXT_DEFAULT
             && isset($this->cacheConfig[Cache::CONTEXT_DEFAULT])
         ) {
             // Inherit settings from Default section

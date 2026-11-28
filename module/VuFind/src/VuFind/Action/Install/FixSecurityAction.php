@@ -81,7 +81,7 @@ class FixSecurityAction extends AbstractInstallAction
                 ->addErrorMessage('Cannot connect to database; please configure database before fixing security.');
             return $redirectHelper->redirectToRoute($response, 'install-home');
         }
-        if (count($userRows) + count($cardRows) == 0 || $userConfirmation === 'Yes') {
+        if (count($userRows) + count($cardRows) === 0 || $userConfirmation === 'Yes') {
             return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'Install/performsecurityfix');
         }
 

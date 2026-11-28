@@ -8,7 +8,7 @@
     <?php if ($account->supportsPersistentLogin()) : ?>
       <div class="form-group">
         <label>
-          <input type="checkbox" name="remember_me"<?=$this->request->get('remember_me') ? ' checked' : ''?>>
+          <input type="checkbox" name="remember_me"<?=($this->request['remember_me'] ?? false) ? ' checked' : ''?>>
           <?=$this->transEsc('remember_me', ['%%days%%' => $account->getPersistentLoginLifetime()])?>
         </label>
       </div>

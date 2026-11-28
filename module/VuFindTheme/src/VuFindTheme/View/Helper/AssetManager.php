@@ -33,7 +33,6 @@ use Laminas\View\Helper\HeadLink;
 use Laminas\View\Helper\HeadScript;
 use Laminas\View\Helper\HeadStyle;
 use Laminas\View\Helper\InlineScript;
-use Laminas\View\Helper\Url;
 use VuFindTheme\AssetPipeline;
 use VuFindTheme\ThemeInfo;
 
@@ -76,14 +75,14 @@ class AssetManager
      *
      * @var bool
      */
-    protected bool $allowArbitraryScriptAttributesByDefault = false;
+    protected bool $allowArbitraryScriptAttributesByDefault = true;
 
     /**
      * Constructor.
      *
      * @param ThemeInfo     $themeInfo    Theme information service
      * @param AssetPipeline $pipeline     Asset pipeline helper
-     * @param Url           $url          Url view helper
+     * @param string        $baseUrlPath  Path part of the base URL
      * @param HeadLink      $headLink     HeadLink view helper
      * @param HeadStyle     $headStyle    HeadStyle view helper
      * @param InlineScript  $inlineScript InlineScript view helper
@@ -92,7 +91,7 @@ class AssetManager
     public function __construct(
         protected ThemeInfo $themeInfo,
         protected AssetPipeline $pipeline,
-        protected Url $url,
+        protected string $baseUrlPath,
         protected HeadLink $headLink,
         protected HeadStyle $headStyle,
         protected InlineScript $inlineScript,
@@ -122,11 +121,11 @@ class AssetManager
      *
      * @param string $href                  Stylesheet href
      * @param string $media                 Media
-     * @param string $conditionalStylesheet Any conditions
+     * @param string $conditionalStylesheet Any conditions (no longer supported, but exists for back-compatibility)
      * @param array  $extras                Array of extra attributes
      * @param array  $options               Additional options (supported: exclude_from_pipeline)
      *
-     * @return void
+     * @return static
      */
     public function appendStyleLink(
         string $href,
@@ -144,7 +143,7 @@ class AssetManager
      *
      * @param string $href                  Stylesheet href
      * @param string $media                 Media
-     * @param string $conditionalStylesheet Any conditions
+     * @param string $conditionalStylesheet Any conditions (no longer supported, but exists for back-compatibility)
      * @param array  $extras                Array of extra attributes
      * @param array  $options               Additional options (supported: exclude_from_pipeline)
      *
@@ -191,7 +190,7 @@ class AssetManager
      */
     protected function applyArbitraryScriptAttributesOption(HeadScript $helper, array $options): ?bool
     {
-        $newValue = $options['allow_arbitrary_attributes'] ?? $this->allowArbitraryScriptAttributesByDefault;
+        $newValue = $this->allowArbitraryScriptAttributesByDefault;
         $resetValue = null;
         if ($helper->arbitraryAttributesAllowed() !== $newValue) {
             $helper->setAllowArbitraryAttributes($newValue);
@@ -206,7 +205,7 @@ class AssetManager
      * @param string $script   Script code
      * @param array  $attrs    Additional attributes for the script tag
      * @param string $position Position to output script (header or footer)
-     * @param array  $options  Additional options (supported: allow_arbitrary_attributes, exclude_from_pipeline)
+     * @param array  $options  Additional options (supported: exclude_from_pipeline)
      *
      * @return static
      */
@@ -226,7 +225,7 @@ class AssetManager
      * @param string $src      Script src
      * @param array  $attrs    Additional attributes for the script tag
      * @param string $position Position to output script (header or footer)
-     * @param array  $options  Additional options (supported: allow_arbitrary_attributes, exclude_from_pipeline)
+     * @param array  $options  Additional options (supported: exclude_from_pipeline)
      *
      * @return static
      */
@@ -246,7 +245,7 @@ class AssetManager
      * @param string $src      Script src
      * @param array  $attrs    Additional attributes for the script tag
      * @param string $position Position to output script (header or footer)
-     * @param array  $options  Additional options (supported: allow_arbitrary_attributes, exclude_from_pipeline)
+     * @param array  $options  Additional options (supported: exclude_from_pipeline)
      *
      * @return static
      */
@@ -272,7 +271,7 @@ class AssetManager
      * @param string $script   Script code
      * @param array  $attrs    Additional attributes for the script tag
      * @param string $position Position to output script (header or footer)
-     * @param array  $options  Additional options (supported: allow_arbitrary_attributes, exclude_from_pipeline)
+     * @param array  $options  Additional options (supported: exclude_from_pipeline)
      *
      * @return static
      */
@@ -309,8 +308,8 @@ class AssetManager
     {
         $details = $this->themeInfo->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
         if (!empty($details)) {
-            $url = ($this->url)('home') . "themes/{$details['theme']}/" . $relPath;
-            $url .= strstr($url, '?') ? '&_=' : '?_=';
+            $url = $this->baseUrlPath . "themes/{$details['theme']}/" . $relPath;
+            $url .= str_contains($url, '?') ? '&_=' : '?_=';
             $url .= filemtime($details['path']);
             return $url;
         }
@@ -365,7 +364,7 @@ class AssetManager
             $this->headLink->appendStylesheet(
                 $sheet['href'],
                 $sheet['media'],
-                $sheet['conditionalStylesheet'],
+                '',
                 $sheet['extras']
             );
         }
@@ -392,7 +391,7 @@ class AssetManager
      *
      * @param string $script  Script code
      * @param array  $attrs   Additional attributes for the script tag
-     * @param array  $options Additional options (supported option: allow_arbitrary_attributes)
+     * @param array  $options Additional options (none supported at the moment)
      *
      * @return string
      */
@@ -420,7 +419,7 @@ class AssetManager
      *
      * @param string $src     Script src
      * @param array  $attrs   Additional attributes for the script tag
-     * @param array  $options Additional options (supported option: allow_arbitrary_attributes)
+     * @param array  $options Additional options (none supported at the moment)
      *
      * @return string
      */

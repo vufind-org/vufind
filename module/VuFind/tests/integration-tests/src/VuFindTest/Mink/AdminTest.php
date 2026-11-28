@@ -84,7 +84,7 @@ class AdminTest extends \VuFindTest\Integration\MinkTestCase
         if ($enabled) {
             $config['Site']['admin_theme'] = 'local_theme_example';
         }
-        $this->changeConfigs(compact('config'));
+        $this->changeConfigs($this->getAdminPermissionConfig() + compact('config'));
         $html = $this->httpGet($this->getVuFindUrl() . '/Admin')->getBody();
         if ($enabled) {
             $this->assertStringContainsString('local_theme_example', (string)$html);

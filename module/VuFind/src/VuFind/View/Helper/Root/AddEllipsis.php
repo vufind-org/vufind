@@ -88,7 +88,7 @@ class AddEllipsis
 
             // If the last five characters don't match, chances are something was cut
             // from the end:
-            if (substr($dehighlighted, -5) != substr($fullString, -5)) {
+            if (substr($dehighlighted, -5) !== substr($fullString, -5)) {
                 $highlighted .= '...';
             }
         }

@@ -61,7 +61,7 @@ class FixSslCertsAction extends AbstractInstallAction
         ResponseInterface $response,
     ): ResponseInterface {
         // Bail out if we've fixed the problem:
-        if ($result = $this->testSslConnection()) {
+        if ($this->testSslConnection()) {
             $this->getHelper(FlashMessagesHelper::class)->addInfoMessage('SSL configuration fixed.');
             return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'install-home');
         }
@@ -76,7 +76,7 @@ class FixSslCertsAction extends AbstractInstallAction
             [], // reset configuration as last attempt
         ];
         if (isset($configsToTest[$try])) {
-            $this->updateSslCertConfig($configsToTest[$try], $try);
+            $this->updateSslCertConfig($configsToTest[$try]);
 
             // Jump back to fix action so we can check if it worked (and attempt the next config by incrementing the
             // $try variable, if necessary):
@@ -95,11 +95,10 @@ class FixSslCertsAction extends AbstractInstallAction
      * Switch to a specific SSL configuration.
      *
      * @param array $config Setting(s) to add to [Http] section of config.ini.
-     * @param int   $try    Which config index are we trying right now?
      *
      * @return void
      */
-    protected function updateSslCertConfig($config, $try): void
+    protected function updateSslCertConfig($config): void
     {
         // Reset old settings
         $fixedConfig = [

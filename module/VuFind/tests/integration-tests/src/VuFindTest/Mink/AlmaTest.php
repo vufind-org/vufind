@@ -99,7 +99,10 @@ class AlmaTest extends \VuFindTest\Integration\MinkTestCase
     {
         $configs = $this->configs;
         $configs['Alma']['Webhook']['secret'] = 'strawberry';
+        // Disable logging of known exception:
+        $configs['config']['Logging']['file'] = null;
         $this->changeConfigs($configs);
+
         $url = $this->getVuFindUrl(path: '/Alma/Webhook') . '?challenge=foo';
         $request = json_encode(['action' => 'FOO']);
         $result = $this->httpPost($url, $request);
@@ -115,7 +118,11 @@ class AlmaTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testUnsupportedRequest(): void
     {
-        $this->changeConfigs($this->configs);
+        $configs = $this->configs;
+        // Disable logging of known exception:
+        $configs['config']['Logging']['file'] = null;
+        $this->changeConfigs($configs);
+
         $url = $this->getVuFindUrl('/Alma/Webhook') . '?challenge=foo';
         $request = json_encode([
             'action' => 'FOO',
@@ -132,7 +139,11 @@ class AlmaTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testUserRequest(): void
     {
-        $this->changeConfigs($this->configs);
+        $configs = $this->configs;
+        // Disable logging of known exception:
+        $configs['config']['Logging']['file'] = null;
+        $this->changeConfigs($configs);
+
         $url = $this->getVuFindUrl('/Alma/Webhook') . '?challenge=foo';
         $request = json_encode([
             'action' => 'USER',

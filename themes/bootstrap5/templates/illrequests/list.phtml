@@ -173,4 +173,4 @@
   <?=$this->section('AccountMenu', template: 'account/menu.phtml')->render(['active' => 'ILLRequests'])?>
 </div>
 
-<?=$this->render('account/notify-account-status.phtml', ['method' => 'illRequests', 'accountStatus' => $this->accountStatus]); ?>
+<?=$this->context($this)->renderInContext('account/notify-account-status.phtml', ['method' => 'illRequests', 'accountStatus' => $this->accountStatus]); ?>

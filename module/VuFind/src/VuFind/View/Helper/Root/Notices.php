@@ -31,10 +31,10 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Content\NoticeManager;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Notices view helper.
@@ -60,15 +60,14 @@ class Notices implements TranslatorAwareInterface
     /**
      * Constructor.
      *
-     * @param NoticeManager $noticeManager Notice manager
-     * @param PhpRenderer   $renderer      PhpRenderer
-     * @param Content       $contentHelper Content view helper
+     * @param NoticeManager             $noticeManager    Notice manager
+     * @param TemplateRendererInterface $templateRenderer Template renderer
+     * @param Content                   $contentHelper    Content view helper
      */
     public function __construct(
         #[Autowire(service: NoticeManager::class)]
         protected NoticeManager $noticeManager,
-        #[Autowire(service: PhpRenderer::class)]
-        protected PhpRenderer $renderer,
+        protected TemplateRendererInterface $templateRenderer,
         #[Autowire(container: 'ViewHelperManager')]
         protected Content $contentHelper,
     ) {
@@ -103,9 +102,9 @@ class Notices implements TranslatorAwareInterface
      */
     public function renderNoticesForPosition(string $position): string
     {
-        return $this->renderer->render(
-            'Helpers/notices/notices.phtml',
-            compact('position')
+        return $this->templateRenderer->renderTemplateAsString(
+            template: 'Helpers/notices/notices.phtml',
+            params: compact('position')
         );
     }
 
@@ -144,9 +143,9 @@ class Notices implements TranslatorAwareInterface
         if ($style = $notice['style'] ?? null) {
             $classes = $this->getStyleClasses($style);
         }
-        return $this->renderer->render(
-            'Helpers/notices/notice.phtml',
-            compact('content', 'classes')
+        return $this->templateRenderer->renderTemplateAsString(
+            template: 'Helpers/notices/notice.phtml',
+            params: compact('content', 'classes')
         );
     }
 }

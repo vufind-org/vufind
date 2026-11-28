@@ -27,7 +27,7 @@
       <?php if (isset($this->previous)): ?>
         <?php if ($showFirstLast && isset($this->first)): ?>
           <?=
-            $this->render(
+            $this->context($this)->renderInContext(
                 'Helpers/pagination-item.phtml',
                 [
                   'params' => $this->params,
@@ -42,7 +42,7 @@
         <?php endif; ?>
 
         <?=
-          $this->render(
+          $this->context($this)->renderInContext(
               'Helpers/pagination-item.phtml',
               [
                 'params' => $this->params,
@@ -59,7 +59,7 @@
       <?php if (count($this->pagesInRange) > 1): ?>
         <?php foreach ($this->pagesInRange as $page): ?>
           <?=
-            $this->render(
+            $this->context($this)->renderInContext(
                 'Helpers/pagination-item.phtml',
                 [
                   'params' => $this->params,
@@ -76,7 +76,7 @@
 
       <?php if (isset($this->next)): ?>
         <?=
-          $this->render(
+          $this->context($this)->renderInContext(
               'Helpers/pagination-item.phtml',
               [
                 'params' => $this->params,
@@ -91,7 +91,7 @@
 
         <?php if ($showFirstLast && isset($this->last)): ?>
           <?=
-            $this->render(
+            $this->context($this)->renderInContext(
                 'Helpers/pagination-item.phtml',
                 [
                   'params' => $this->params,

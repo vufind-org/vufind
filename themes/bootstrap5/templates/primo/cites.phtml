@@ -1,3 +1,2 @@
 <?php
-$this->pageTitle = 'results_cited_by_title';
-echo $this->render('primo/citation_results.phtml');
+echo $this->context($this)->renderInContext('primo/citation_results.phtml', ['pageTitle' => 'results_cited_by_title']);

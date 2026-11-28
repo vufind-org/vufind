@@ -65,7 +65,7 @@ class ConfirmAction extends AbstractTemplateRenderingAction
         ResponseInterface $response,
     ): ResponseInterface {
         // Get data from the route
-        $data = $this->getRouteParam('data');
+        $data = unserialize($this->getRouteParam('data'));
 
         // Assign Flash Messages
         $flashMessagesHelper = $this->getHelper(FlashMessagesHelper::class);

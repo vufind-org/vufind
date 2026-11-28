@@ -52,7 +52,7 @@ class SideFacetsDeferred extends SideFacets
     {
         // Since we didn't add facets in init, do it now so that the config is
         // available for e.g. $this->results->getParams()->getFilterList().
-        parent::init($this->results->getParams(), null);
+        parent::init($this->results->getParams(), []);
         return $this->results;
     }
 
@@ -77,12 +77,12 @@ class SideFacetsDeferred extends SideFacets
      * search is done.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
     }
 }

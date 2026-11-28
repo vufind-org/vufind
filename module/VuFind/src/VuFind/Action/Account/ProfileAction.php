@@ -42,7 +42,6 @@ use VuFind\Auth\Manager as AuthManager;
 use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
-use VuFind\Http\ServerUrlHelper;
 use VuFind\ILS\Connection;
 use VuFind\Mailer\Mailer;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -70,7 +69,7 @@ class ProfileAction extends AbstractAccountAction
      * @param EmailAuthenticator              $emailAuthenticator Email authenticator
      * @param UserSessionPersistenceInterface $userSessionService User session database service
      * @param AuditEventServiceInterface      $auditEventService  Audit event service
-     * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
+     * @param string                          $absoluteBaseUrl    Absolute base URL
      * @param Mailer                          $mailer             Mailer
      * @param Connection                      $ilsConnection      ILS connection
      * @param array                           $config             VuFind configuration
@@ -84,7 +83,8 @@ class ProfileAction extends AbstractAccountAction
         UserSessionPersistenceInterface $userSessionService,
         #[Autowire(container: DbServicePluginManager::class)]
         AuditEventServiceInterface $auditEventService,
-        ServerUrlHelper $serverUrlHelper,
+        #[Autowire(container: \VuFind\Application\UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        string $absoluteBaseUrl,
         Mailer $mailer,
         Connection $ilsConnection,
         #[Autowire(config: 'config')]
@@ -97,7 +97,7 @@ class ProfileAction extends AbstractAccountAction
             $emailAuthenticator,
             $userSessionService,
             $auditEventService,
-            $serverUrlHelper,
+            $absoluteBaseUrl,
             $mailer,
             $ilsConnection,
             $config

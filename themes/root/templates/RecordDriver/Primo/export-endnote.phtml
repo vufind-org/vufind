@@ -63,4 +63,4 @@ case 'Website':
 
 $this->slot('endnote-formats')->set([$endnoteFormat]);
 // Use the default template, but override the formats:
-echo $this->render('RecordDriver/AbstractBase/export-endnote.phtml');
+echo $this->context($this)->renderInContext('RecordDriver/AbstractBase/export-endnote.phtml');

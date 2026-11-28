@@ -32,7 +32,7 @@ namespace VuFind\Session;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
@@ -107,11 +107,11 @@ class ManagerFactory implements FactoryInterface
      *
      * This method sets that up.
      *
-     * @param SessionManager $sessionManager Session manager instance
+     * @param ManagerInterface $sessionManager Session manager instance
      *
      * @return void
      */
-    protected function registerShutdownFunction(SessionManager $sessionManager)
+    protected function registerShutdownFunction(ManagerInterface $sessionManager)
     {
         register_shutdown_function(
             function () use ($sessionManager): void {

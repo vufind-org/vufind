@@ -31,7 +31,6 @@
 
 namespace VuFindAdmin\Action\AdminFeedback;
 
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -119,7 +118,7 @@ class DeleteAction extends AbstractAdminAction implements TranslatorAwareInterfa
             return $this->confirmDelete($request, $response, $ids, $originUrl, $newUrl);
         }
         $delete = $this->feedbackService->deleteByIdArray($ids);
-        if (0 == $delete) {
+        if (0 === $delete) {
             $flashMessagesHelper->addErrorMessage('feedback_delete_failure');
             return $redirectHelper->redirectToUrl($response, $originUrl);
         }
@@ -150,24 +149,20 @@ class DeleteAction extends AbstractAdminAction implements TranslatorAwareInterfa
         string $originUrl,
         string $newUrl
     ): ResponseInterface {
-        $data = [
-            'confirm' => $newUrl,
-            'cancel' => $originUrl,
-            'title' => 'confirm_delete_feedback',
-            'messages' => $this->getConfirmDeleteMessages(count($ids)),
-            'ids' => $ids,
-            'extras' => [
+        return $this->getHelper(ForwardHelper::class)->forwardToConfirm(
+            $request,
+            $response,
+            'confirm_delete_feedback',
+            $newUrl,
+            $originUrl,
+            $this->getConfirmDeleteMessages(count($ids)),
+            [
                 'form_name' => $this->getPostOrQueryParam('form_name'),
                 'site_url' => $this->getPostOrQueryParam('site_url'),
                 'status' => $this->getPostOrQueryParam('status'),
                 'ids' => $ids,
-            ],
-        ];
-        if (!($routeMatch = $request->getAttribute('route-match'))) {
-            throw new Exception('Route match missing from request');
-        }
-        $routeMatch->setParam('data', $data);
-        return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'Confirm/Confirm');
+            ]
+        );
     }
 
     /**

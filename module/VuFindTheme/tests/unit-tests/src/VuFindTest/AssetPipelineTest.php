@@ -29,7 +29,6 @@
 
 namespace VuFindTest;
 
-use Laminas\View\Helper\Url;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFindTheme\AssetPipeline;
 use VuFindTheme\ThemeInfo;
@@ -52,7 +51,7 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
      *
      * @param string|bool $pipelineConfig Pipeline configuration
      * @param ?ThemeInfo  $themeInfo      ThemeInfo object (omit for default mock)
-     * @param ?Url        $urlHelper      URL view helper (omit for default mock)
+     * @param string      $baseUrlPath    Path part of the base url (omit for default)
      * @param array       $methods        Pipeline methods to mock (omit for all)
      * @param ?int        $maxImportSize  Maximum imported file size (null for no limit)
      *
@@ -61,15 +60,15 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
     protected function getMockPipeline(
         string|bool $pipelineConfig = '*',
         ?ThemeInfo $themeInfo = null,
-        ?Url $urlHelper = null,
+        ?string $baseUrlPath = null,
         array $methods = [],
         ?int $maxImportSize = null
     ): MockObject&AssetPipeline {
         $themeInfo ??= $this->createMock(ThemeInfo::class);
-        $urlHelper ??= $this->createMock(Url::class);
+        $baseUrlPath ??= '/';
         return $this->getMockBuilder(AssetPipeline::class)
             ->onlyMethods($methods)
-            ->setConstructorArgs([$themeInfo, $urlHelper, $pipelineConfig, $maxImportSize])
+            ->setConstructorArgs([$themeInfo, $baseUrlPath, $pipelineConfig, $maxImportSize])
             ->getMock();
     }
 

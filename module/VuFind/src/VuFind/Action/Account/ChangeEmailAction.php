@@ -33,6 +33,7 @@ namespace VuFind\Action\Account;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\ActionHelper\EmailHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
@@ -44,7 +45,6 @@ use VuFind\Captcha\Service\CaptchaService;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Exception\Auth as AuthException;
-use VuFind\Http\ServerUrlHelper;
 use VuFind\ILS\Connection;
 use VuFind\Mailer\Mailer;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -71,7 +71,7 @@ class ChangeEmailAction extends AbstractAccountAction
      * @param EmailAuthenticator              $emailAuthenticator Email authenticator
      * @param UserSessionPersistenceInterface $userSessionService User session database service
      * @param AuditEventServiceInterface      $auditEventService  Audit event service
-     * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
+     * @param string                          $absoluteBaseUrl    Absolute base URL
      * @param Mailer                          $mailer             Mailer
      * @param Connection                      $ilsConnection      ILS connection
      * @param array                           $config             VuFind configuration
@@ -86,7 +86,8 @@ class ChangeEmailAction extends AbstractAccountAction
         UserSessionPersistenceInterface $userSessionService,
         #[Autowire(container: DbServicePluginManager::class)]
         AuditEventServiceInterface $auditEventService,
-        ServerUrlHelper $serverUrlHelper,
+        #[Autowire(container: \VuFind\Application\UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        string $absoluteBaseUrl,
         Mailer $mailer,
         Connection $ilsConnection,
         #[Autowire(config: 'config')]
@@ -100,7 +101,7 @@ class ChangeEmailAction extends AbstractAccountAction
             $emailAuthenticator,
             $userSessionService,
             $auditEventService,
-            $serverUrlHelper,
+            $absoluteBaseUrl,
             $mailer,
             $ilsConnection,
             $config
@@ -141,10 +142,9 @@ class ChangeEmailAction extends AbstractAccountAction
                 throw new \VuFind\Exception\BadRequest('error_inconsistent_parameters');
             }
             // Update email:
-            $validator = new \Laminas\Validator\EmailAddress();
             $email = $this->getPostParam('email', '');
             try {
-                if (!$validator->isValid($email)) {
+                if (!$this->getHelper(EmailHelper::class)->isValidAddress($email)) {
                     throw new AuthException('Email address is invalid');
                 }
                 $this->authManager->updateEmail($user, $email);

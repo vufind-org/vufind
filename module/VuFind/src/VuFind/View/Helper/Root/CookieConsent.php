@@ -29,15 +29,16 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Renderer\RendererInterface;
 use VuFind\Auth\LoginTokenManager;
 use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Cookie\CookieManager;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Http\PhpEnvironment\Request;
+use VuFind\Http\ServerUrlHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function in_array;
 use function is_string;
@@ -92,13 +93,14 @@ class CookieConsent implements TranslatorAwareInterface
     /**
      * Constructor.
      *
-     * @param array             $config            Main configuration
-     * @param array             $consentConfig     Cookie consent configuration
-     * @param CookieManager     $cookieManager     Cookie manager
-     * @param DateConverter     $dateConverter     Date converter
-     * @param LoginTokenManager $loginTokenManager Login token manager
-     * @param Request           $request           Request
-     * @param RendererInterface $renderer          View renderer
+     * @param array                     $config            Main configuration
+     * @param array                     $consentConfig     Cookie consent configuration
+     * @param CookieManager             $cookieManager     Cookie manager
+     * @param DateConverter             $dateConverter     Date converter
+     * @param LoginTokenManager         $loginTokenManager Login token manager
+     * @param Request                   $request           Request
+     * @param TemplateRendererInterface $templateRenderer  Template renderer
+     * @param ServerUrlHelper           $serverUrlHelper   Server URL helper
      */
     public function __construct(
         #[Autowire(config: 'config')]
@@ -110,8 +112,8 @@ class CookieConsent implements TranslatorAwareInterface
         protected LoginTokenManager $loginTokenManager,
         #[Autowire(service: 'Request')]
         protected Request $request,
-        #[Autowire(service: 'ViewRenderer')]
-        protected RendererInterface $renderer,
+        protected TemplateRendererInterface $templateRenderer,
+        protected ServerUrlHelper $serverUrlHelper
     ) {
         $this->consentCookieName = $this->consentConfig['CookieName'] ?? 'cc_cookie';
         $this->consentCookieExpiration = $this->consentConfig['CookieExpiration'] ?? 182; // half a year
@@ -159,7 +161,7 @@ class CookieConsent implements TranslatorAwareInterface
             }
         }
 
-        return $this->renderer->render('CookieConsent/cookie-consent.phtml');
+        return $this->templateRenderer->renderTemplateAsString(template: 'CookieConsent/cookie-consent.phtml');
     }
 
     /**
@@ -269,7 +271,7 @@ class CookieConsent implements TranslatorAwareInterface
                         str_replace('Z', '+00:00', $result['lastConsentTimestamp'])
                     );
                 $result['domain'] = $this->cookieManager->getDomain()
-                    ?: $this->renderer->plugin('serverUrl')->getHost();
+                    ?: $this->serverUrlHelper->getHost();
                 $result['path'] = $this->cookieManager->getPath();
                 return $result;
             }
@@ -393,7 +395,7 @@ class CookieConsent implements TranslatorAwareInterface
     protected function getHostName(): string
     {
         if (null === $this->hostName) {
-            $this->hostName = $this->renderer->plugin('serverUrl')->getHost();
+            $this->hostName = $this->serverUrlHelper->getHost();
         }
         return $this->hostName;
     }

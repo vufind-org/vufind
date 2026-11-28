@@ -35,13 +35,15 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\Session\Container;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Laminas\Translator\TranslatorInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\Http\GuzzleService;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
 
 /**
  * Zotero service factory.
@@ -75,14 +77,16 @@ class ZoteroServiceFactory implements FactoryInterface
     ) {
         $sessionContainer = new Container(
             'zotero_oauth',
-            $container->get(SessionManager::class)
+            $container->get(ManagerInterface::class)
         );
         $config = $container->get(ConfigManagerInterface::class)->getConfigArray('config');
         $clientCredentials = (array)($config['Zotero'] ?? []);
         if (empty($clientCredentials['callback_uri'])) {
-            $serverHelper = $container->get('ViewRenderer')->plugin('serverurl');
-            $urlHelper = $container->get('ViewRenderer')->plugin('url');
-            $clientCredentials['callback_uri'] = $serverHelper($urlHelper('zotero-authcallback'));
+            $serverUrlHelper = $container->get(ServerUrlHelper::class);
+            $routeHelper = $container->get(RouteHelper::class);
+            $clientCredentials['callback_uri'] = $serverUrlHelper->getUrlForPath(
+                $routeHelper->getUrlFromRoute('zotero-authcallback')
+            );
         }
         $translator = $container->get(TranslatorInterface::class);
         $serviceName = $translator->translate($config['Site']['title']);

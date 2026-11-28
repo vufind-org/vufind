@@ -53,7 +53,7 @@
         'data-hierarchy-id' => $activeTree,
         'data-context' => $this->treeContext ?? 'Record',
         'data-preview-element' => $this->treePreviewElement ?? '',
-        'data-lightbox' => $this->layout()->getTemplate() === 'layout/lightbox',
+        'data-lightbox' => $this->globals()['inLightbox'] ?? false,
         'data-full-hierarchy' => $this->tab->isFullHierarchyVisible(),
       ]);
     ?>

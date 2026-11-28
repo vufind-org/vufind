@@ -38,7 +38,7 @@
   }
 
   // Load Javascript dependencies into header:
-  $this->render('search/results-scripts.phtml', compact('displayVersions'));
+  $this->context($this)->renderInContext('search/results-scripts.phtml', compact('displayVersions'));
   $this->assetManager()->appendScriptLink('combined-search.js');
   // Style
   $this->assetManager()->appendStyleLink('combined-search.css');
@@ -55,7 +55,7 @@
 <?php endif; ?>
 <?php if ($config['Layout']['jump_links'] ?? false): ?>
   <?=
-    $this->render(
+    $this->context($this)->renderInContext(
         'combined/jump-links.phtml',
         [
           'combinedResults' => $this->combinedResults,

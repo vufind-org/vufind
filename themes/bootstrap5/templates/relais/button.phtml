@@ -8,7 +8,7 @@
         throw new \Exception('Record driver missing!');
     }
     $globals['relaisActive'] = true;
-    $this->render('relais/relais-setup.phtml'); // set up script and translations
+    $this->context($this)->renderInContext('relais/relais-setup.phtml'); // set up script and translations
     $addLink = $this->escapeJs($this->url('relais-request'));
     $oclc = $this->escapeJs($driver->tryMethod('getCleanOCLCNum'));
     $failLink = $this->escapeJs($this->relais()->getSearchLink($driver));

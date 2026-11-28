@@ -36,6 +36,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Receipt factory.
@@ -76,9 +77,8 @@ class ReceiptFactory implements FactoryInterface
             $container->get(\VuFind\Date\Converter::class),
             $container->get(\VuFind\I18n\Locale\LocaleSettings::class),
             $container->get(\VuFind\Service\CurrencyFormatter::class),
-            $container->get('HttpRouter'),
             $container->get(\VuFind\Mailer\Mailer::class),
-            $container->get('ViewRenderer'),
+            $container->get(TemplateRendererInterface::class),
             $dbServiceManager->get(\VuFind\Db\Service\PaymentFeeServiceInterface::class),
             $container->get(\VuFind\Cache\Manager::class)->getNamedCacheDir('object')
         );

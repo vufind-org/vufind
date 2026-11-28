@@ -1185,6 +1185,7 @@ class BackendTest extends TestCase
      *
      * @return object
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getEDSBackendMock($fixture = null)
     {
         $callback = function (

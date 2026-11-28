@@ -33,6 +33,8 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
 
 /**
  * Factory for SimulatedSSO authentication module.
@@ -67,15 +69,13 @@ class SimulatedSSOFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $helpers = $container->get('ViewHelperManager');
-        // The view helpers aren't set up yet when this factory runs, so we need to
-        // wrap the view helper functionality in a callback function to ensure
-        // everything is ready when it is called.
-        $getUrl = function ($target) use ($helpers) {
-            $serverUrl = $helpers->get('serverUrl');
-            $url = $helpers->get('url');
-            return $serverUrl(
-                $url('simulatedsso-login', [], ['query' => ['return' => $target]])
+        // The services aren't set up yet when this factory runs, so we need to wrap the functionality in a callback
+        // function to ensure everything is ready when it is called.
+        $getUrl = function ($target) use ($container) {
+            $serverUrlHelper = $container->get(ServerUrlHelper::class);
+            $routeHelper = $container->get(RouteHelper::class);
+            return $serverUrlHelper->getUrlForPath(
+                $routeHelper->getUrlFromRoute('simulatedsso-login', queryParams: ['return' => $target])
             );
         };
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('SimulatedSSO');
@@ -83,7 +83,7 @@ class SimulatedSSOFactory implements \Laminas\ServiceManager\Factory\FactoryInte
             $getUrl,
             $config,
             $container->get(\VuFind\Auth\ILSAuthenticator::class),
-            $container->get(\Laminas\Session\SessionManager::class)
+            $container->get(\Laminas\Session\ManagerInterface::class)
         );
     }
 }

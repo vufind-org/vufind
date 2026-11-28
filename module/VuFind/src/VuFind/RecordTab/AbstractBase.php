@@ -29,8 +29,8 @@
 
 namespace VuFind\RecordTab;
 
-use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
-use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
+use VuFind\Service\AuthorizationServiceAwareInterface;
+use VuFind\Service\AuthorizationServiceAwareTrait;
 
 /**
  * Record tab abstract base class.

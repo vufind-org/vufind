@@ -98,7 +98,7 @@ class RateLimiterManagerFactory implements FactoryInterface
 
         if (
             ($config['Turnstile']['enabled'] ?? false)
-            && (strtolower($config['Storage']['adapter']) != 'redis')
+            && (strtolower($config['Storage']['adapter']) !== 'redis')
         ) {
             $turnstile = $container->get(\VuFind\RateLimiter\Turnstile\Turnstile::class);
             $rateLimiterManager->setTurnstile($turnstile);

@@ -63,8 +63,8 @@ class PluginManager extends AbstractPluginManager
         $configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->addAbstractFactory(AbstractAutowiringFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
+        $this->addAbstractFactory(AbstractAutowiringFactory::class);
     }
 
     /**

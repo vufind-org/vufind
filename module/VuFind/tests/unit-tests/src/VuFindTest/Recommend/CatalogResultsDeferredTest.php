@@ -50,7 +50,7 @@ class CatalogResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestC
         $mod = $this->getRecommend(
             \VuFind\Recommend\CatalogResultsDeferred::class,
             ':3',
-            new \Laminas\Stdlib\Parameters(['lookfor' => 'foo'])
+            ['lookfor' => 'foo']
         );
         $this->assertEquals(
             'mod=CatalogResults&params=lookfor%3A3&lookfor=foo',
@@ -69,7 +69,7 @@ class CatalogResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestC
         $mod = $this->getRecommend(
             \VuFind\Recommend\CatalogResultsDeferred::class,
             ':3',
-            new \Laminas\Stdlib\Parameters(['lookfor' => ['foo', 'bar']])
+            ['lookfor' => ['foo', 'bar']]
         );
         $this->assertEquals(
             'mod=CatalogResults&params=lookfor%3A3&lookfor=foo+bar',

@@ -80,6 +80,8 @@ abstract class AbstractCartAction extends AbstractTemplateRenderingAction
             return 'PrintCart';
         } elseif ('' !== $this->getPostParam('saveCart', '')) {
             return 'Save';
+        } elseif ('' !== $this->getPostParam('cite', '')) {
+            return 'Cite';
         } elseif ('' !== $this->getPostParam('export', '')) {
             return 'Export';
         }

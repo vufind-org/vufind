@@ -74,6 +74,7 @@ class MailHandler extends MonologMailHandler
      *
      * @return void
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function send(string $content, array $records): void
     {
         $this->mailer->send($this->to, $this->from, $this->subject, $this->buildMessage($records));

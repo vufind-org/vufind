@@ -413,6 +413,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function testSendLink()
     {
         $renderer = $this->createMock(TemplateRendererInterface::class);
@@ -432,7 +433,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
             $to = $message->getTo();
             return 'to@example.com' === $to[0]->toString()
                 && 'to2@example.com' === $to[1]->toString()
-                && 2 == count($to)
+                && 2 === count($to)
                 && 'from@example.com' == $message->getFrom()[0]->toString()
                 && 'cc@example.com' == $message->getCc()[0]->toString()
                 && 'body' == $message->getBody()->getBody()

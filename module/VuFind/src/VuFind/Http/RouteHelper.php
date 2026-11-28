@@ -31,7 +31,7 @@
 namespace VuFind\Http;
 
 use Closure;
-use Laminas\View\Helper\Url;
+use VuFind\View\Helper\Root\Url;
 
 /**
  * Route Helper class.  Wrapper around Laminas UrlHelper.

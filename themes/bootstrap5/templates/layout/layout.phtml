@@ -57,7 +57,7 @@
       // if we render them after calling AssetManager's outputHeaderAssets method,
       // some dependencies may not load correctly. Thus, we render early, but use
       // this later.
-      $icons = !isset($globals['renderingError']) ? $this->render('js-icons.phtml') : '{}';
+      $icons = !isset($globals['renderingError']) ? $this->context($this)->renderInContext('layout/js-icons.phtml') : '{}';
     ?>
     <?php if ($globals['rtl']) {
       // RTL styling
@@ -96,15 +96,14 @@
         if ($this->session()->put('reset_account_status', null)) {
           $this->assetManager()->appendScriptString(
               script: 'VuFind.account.clearAllCaches();',
-              attrs: ['data-lightbox-run' => 'always'],
-              options: ['allow_arbitrary_attributes' => true]
+              attrs: ['data-lightbox-run' => 'always']
           );
         }
       }
 
       $root = rtrim($this->url('home'), '/');
-      $jsConfig = !isset($this->renderingError) ? $this->render('js-configs.phtml') : '{}';
-      $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
+      $jsConfig = !isset($this->renderingError) ? $this->context($this)->renderInContext('layout/js-configs.phtml') : '{}';
+      $translations = !isset($this->renderingError) ? $this->context($this)->renderInContext('layout/js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
       $cspNonce = $this->csp()->getNonce();
       $searchId = json_encode($globals['searchId']);
@@ -152,7 +151,7 @@
         <span class="visually-hidden" role="heading" aria-level="1"><?=$globals['srmessage'] ?></span>
       <?php endif; ?>
       <a class="visually-hidden-focusable" href="#content"><?=$this->transEsc('Skip to content') ?></a>
-      <?=$this->render('header.phtml')?>
+      <?=$this->context($this)->renderInContext('header.phtml')?>
     </header>
     <?=$this->breadcrumbs()->render()?>
     <div role="main" class="main">
@@ -160,10 +159,10 @@
         <?php if (!($globals['disableDefaultNotices'] ?? false)): ?>
           <?=$this->notices()->renderNoticesForPosition('default')?>
         <?php endif; ?>
-        <?=$this->layout()->content ?>
+        <?=$this->content ?>
       </div>
     </div>
-    <?=$this->render('footer.phtml')?>
+    <?=$this->context($this)->renderInContext('footer.phtml')?>
     <!-- MODAL IN CASE WE NEED ONE -->
     <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
@@ -176,7 +175,7 @@
       </div>
     </div>
     <div class="vufind-offcanvas-overlay" data-toggle="vufind-offcanvas"></div>
-    <?=$this->render('Helpers/analytics.phtml')?>
+    <?=$this->context($this)->renderInContext('Helpers/analytics.phtml')?>
     <?php foreach ($this->captcha()->js() as $jsInclude):?>
       <?=$this->assetManager()->outputInlineScriptLink($jsInclude)?>
     <?php endforeach; ?>

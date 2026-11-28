@@ -129,7 +129,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
      */
     public function getFacetOperator(string $field, ?string $specifiedOperator = null): string
     {
-        if ($specifiedOperator && $specifiedOperator != 'AND') {
+        if ($specifiedOperator && $specifiedOperator !== 'AND') {
             return $specifiedOperator;
         }
         if (in_array($field, $this->forcedOrFields)) {

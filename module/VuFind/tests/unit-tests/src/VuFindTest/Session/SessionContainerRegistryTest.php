@@ -31,7 +31,7 @@ namespace VuFindTest\Session;
 
 use Generator;
 use Laminas\Session\Container;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use VuFind\Session\SessionContainerRegistry;
 
@@ -51,13 +51,13 @@ class SessionContainerRegistryTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a registry object.
      *
-     * @param ?SessionManager $sessionManager Session manager (or null to create default stub)
+     * @param ?ManagerInterface $sessionManager Session manager (or null to create default stub)
      *
      * @return SessionContainerRegistry
      */
-    protected function getRegistry(?SessionManager $sessionManager = null): SessionContainerRegistry
+    protected function getRegistry(?ManagerInterface $sessionManager = null): SessionContainerRegistry
     {
-        return new SessionContainerRegistry($sessionManager ?? $this->createStub(SessionManager::class));
+        return new SessionContainerRegistry($sessionManager ?? $this->createStub(ManagerInterface::class));
     }
 
     /**

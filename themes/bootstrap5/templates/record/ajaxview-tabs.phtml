@@ -1,7 +1,7 @@
 <?=$this->matomo(['context' => 'tabs'])?>
 <?=$this->googleanalytics()?>
 <?php
-  $this->defaultTab = strtolower($this->defaultTab);
+  $defaultTab = strtolower($this->defaultTab);
   $idSuffix = '-' . md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier());
   $idSuffixEsc = $this->escapeHtmlAttr($idSuffix);
 
@@ -45,13 +45,13 @@
     ];
   }
   $filteredTabs = array_filter($this->tabs, fn ($obj) => $obj->supportsSearchResultEmbedding());
-  $tabs = array_merge($tabs, $this->recordTabs()->getTabs($this->driver, $filteredTabs, $this->defaultTab));
+  $tabs = array_merge($tabs, $this->recordTabs()->getTabs($this->driver, $filteredTabs));
 ?>
 <?=$this->component(
     'tabs',
     [
       'tabs' => $tabs,
-      'activeTab' => $this->defaultTab,
+      'activeTab' => $defaultTab,
       'idSuffix' => $idSuffix,
       'tabNavClasses' => ['list-tabs'],
       'tabPaneClasses' => ['list-tab-content'],

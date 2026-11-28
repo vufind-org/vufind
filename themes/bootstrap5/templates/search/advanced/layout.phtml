@@ -39,7 +39,7 @@
   // Step 2: Build the page
   $this->assetManager()->appendScriptString(
       $this->partial(
-          $this->buildPageOverride ?? 'search/advanced/build_page.phtml',
+          $this->globals()['buildPageOverride'] ?? 'search/advanced/build_page.phtml',
           ['options' => $this->options, 'searchDetails' => $searchDetails]
       )
   );
@@ -99,8 +99,8 @@
       </a>
       <?php /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
       <div class="no-js">
-        <?php if (!empty($this->formOverride)): ?>
-          <?=$this->formOverride ?>
+        <?php if (null !== ($formOverride = $this->globals()['formOverride'] ?? null)): ?>
+          <?=$formOverride ?>
         <?php else: ?>
           <?php for ($group = 0; $group < 3 || $group <= $setGroupCount; $group++): ?>
             <?php if ($group == 0): ?>
@@ -160,9 +160,9 @@
         <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEscAttr('Clear')?>">
         <input class="btn btn-primary" type="submit" value="<?= $this->transEscAttr('Find')?>">
       </div>
-      <?php if (isset($this->extraAdvancedControls)): ?>
+      <?php if ($extraAdvancedControls = $this->globals()['extraAdvancedControls'] ?? null): ?>
         <div class="clearfix">
-          <?=$this->extraAdvancedControls ?>
+          <?=$extraAdvancedControls ?>
         </div>
         <div class="adv-submit">
           <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEscAttr('Clear')?>">

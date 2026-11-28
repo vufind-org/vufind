@@ -75,11 +75,12 @@ trait CacheTrait
      *
      * Data is cached for up to $this->cacheLifetime.
      *
-     * @param string $key Cache entry key
+     * @param string $key             Cache entry key
+     * @param ?int   $maxRetrievalAge Use instead of lifetime to retrieve from the cache
      *
      * @return mixed|null Cached entry or null if not cached or expired
      */
-    protected function getCachedData($key)
+    protected function getCachedData(string $key, ?int $maxRetrievalAge = null)
     {
         // No cache object, no cached results!
         if (null === $this->cache) {
@@ -89,13 +90,19 @@ trait CacheTrait
         $fullKey = $this->getCacheKey($key);
         $item = $this->cache->getItem($fullKey);
         if (null !== $item) {
-            // Return value if still valid:
-            $lifetime = $item['lifetime'] ?? $this->cacheLifetime;
-            if (time() - $item['time'] <= $lifetime) {
+            $age = time() - $item['time'];
+            $expirationLifetime = $item['lifetime'] ?? $this->cacheLifetime;
+
+            // Expired items are always purged and never returned
+            if ($age > $expirationLifetime) {
+                $this->cache->removeItem($fullKey);
+                return null;
+            }
+
+            // Check if the item satisfies the caller's optional stricter retrieval age
+            if ($maxRetrievalAge === null || $age <= $maxRetrievalAge) {
                 return $item['entry'];
             }
-            // Clear expired item from cache:
-            $this->cache->removeItem($fullKey);
         }
         return null;
     }

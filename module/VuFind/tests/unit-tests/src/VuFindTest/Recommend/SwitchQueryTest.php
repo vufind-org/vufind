@@ -198,7 +198,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
             $this->getSearchService($bm ?? $this->getMockBackendManager())
         );
         $sq->setConfig($settings);
-        $sq->init($results->getParams(), new \Laminas\Stdlib\Parameters([]));
+        $sq->init($results->getParams(), []);
         $sq->process($results);
         return $sq;
     }

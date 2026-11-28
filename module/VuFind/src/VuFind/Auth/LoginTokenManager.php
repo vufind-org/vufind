@@ -33,7 +33,7 @@ declare(strict_types=1);
 namespace VuFind\Auth;
 
 use BrowscapPHP\BrowscapInterface;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Laminas\View\Renderer\RendererInterface;
 use Psr\Log\LoggerAwareInterface;
 use VuFind\Config\Feature\EmailSettingsTrait;
@@ -107,7 +107,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
      * @param UserServiceInterface       $userService       User database service
      * @param LoginTokenServiceInterface $loginTokenService Login Token database service
      * @param CookieManager              $cookieManager     Cookie manager
-     * @param SessionManager             $sessionManager    Session manager
+     * @param ManagerInterface           $sessionManager    Session manager
      * @param Mailer                     $mailer            Mailer
      * @param RendererInterface          $viewRenderer      View Renderer
      * @param callable                   $browscapCB        Callback for creating Browscap
@@ -117,7 +117,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
         protected UserServiceInterface $userService,
         protected LoginTokenServiceInterface $loginTokenService,
         protected CookieManager $cookieManager,
-        protected SessionManager $sessionManager,
+        protected ManagerInterface $sessionManager,
         protected Mailer $mailer,
         protected RendererInterface $viewRenderer,
         callable $browscapCB

@@ -87,7 +87,7 @@ class OverdriveConnectorFactory implements
         if (PHP_SAPI !== 'cli') {
             $sessionContainer = new \Laminas\Session\Container(
                 'DigitalContent\OverdriveController',
-                $container->get(\Laminas\Session\SessionManager::class)
+                $container->get(\Laminas\Session\ManagerInterface::class)
             );
         }
         $connector = new $requestedName(

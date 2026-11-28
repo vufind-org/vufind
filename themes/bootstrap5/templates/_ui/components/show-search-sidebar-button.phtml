@@ -7,4 +7,4 @@
    * @property string  $linkText Text to display within link (default = 'Refine Results')
    */
 ?>
-<?=$this->component('show-sidebar-button', $this->vars()->getArrayCopy() + ['targetId' => 'search-sidebar', 'linkText' => 'Refine Results']);
+<?=$this->component('show-sidebar-button', $this->context($this)->getVars(['targetId' => 'search-sidebar', 'linkText' => 'Refine Results']));

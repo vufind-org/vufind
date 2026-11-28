@@ -1,7 +1,6 @@
 <?php
-  // Load the Blender-specific advanced search and inject it into the
-  // standard advanced search layout:
-  $this->buildPageOverride = '/search/advanced/build_page_blender.phtml';
+  // Load the Blender-specific advanced search and inject it into the standard advanced search layout:
+  $this->globals()['buildPageOverride'] = '/search/advanced/build_page_blender.phtml';
 
   ob_start();
 ?>
@@ -40,11 +39,11 @@
   </div>
 </div>
 <?php
-  $this->formOverride = ob_get_contents();
+  $this->globals()['formOverride'] = ob_get_contents();
   ob_end_clean();
 
-  $params = (array)$this->vars() + [
+  $params = [
       'helpTopics' => ['blender_advsearch' => 'Help with Advanced Search', 'blender' => 'Help with Search Operators'],
   ];
-  echo $this->render('search/advanced/layout.phtml', $params);
+  echo $this->context($this)->renderInContext('search/advanced/layout.phtml', $params);
 ?>

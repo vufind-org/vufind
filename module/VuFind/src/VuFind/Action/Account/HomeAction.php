@@ -50,7 +50,6 @@ use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\AuthInProgress as AuthInProgressException;
-use VuFind\Http\ServerUrlHelper;
 use VuFind\ILS\Connection;
 use VuFind\Mailer\Mailer;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -77,7 +76,7 @@ class HomeAction extends AbstractAccountAction
      * @param EmailAuthenticator              $emailAuthenticator        Email authenticator
      * @param UserSessionPersistenceInterface $userSessionService        User session database service
      * @param AuditEventServiceInterface      $auditEventService         Audit event service
-     * @param ServerUrlHelper                 $serverUrlHelper           Server URL helper
+     * @param string                          $absoluteBaseUrl           Absolute base URL
      * @param Mailer                          $mailer                    Mailer
      * @param Connection                      $ilsConnection             ILS connection
      * @param array                           $config                    VuFind configuration
@@ -91,7 +90,8 @@ class HomeAction extends AbstractAccountAction
         UserSessionPersistenceInterface $userSessionService,
         #[Autowire(container: DbServicePluginManager::class)]
         AuditEventServiceInterface $auditEventService,
-        ServerUrlHelper $serverUrlHelper,
+        #[Autowire(container: \VuFind\Application\UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        string $absoluteBaseUrl,
         Mailer $mailer,
         Connection $ilsConnection,
         #[Autowire(config: 'config')]
@@ -105,7 +105,7 @@ class HomeAction extends AbstractAccountAction
             $emailAuthenticator,
             $userSessionService,
             $auditEventService,
-            $serverUrlHelper,
+            $absoluteBaseUrl,
             $mailer,
             $ilsConnection,
             $config
@@ -224,7 +224,7 @@ class HomeAction extends AbstractAccountAction
         }
         if ($e instanceof AuthEmailNotVerifiedException) {
             $this->sendFirstVerificationEmail($e->getUser());
-            if ($msg == 'authentication_error_email_not_verified_html') {
+            if ($msg === 'authentication_error_email_not_verified_html') {
                 $this->userVerificationContainer->user = $e->getUser()->getUsername();
                 $url = $this->routeHelper
                     ->getUrlFromRoute('account-emailnotverified', queryParams: ['reverify' => 'true']);
@@ -239,7 +239,7 @@ class HomeAction extends AbstractAccountAction
         // If a Shibboleth-style login has failed and the user just logged out, we need to override the error message
         // with a more relevant one:
         if (
-            $msg == 'authentication_error_admin'
+            $msg === 'authentication_error_admin'
             && $this->authManager->userHasLoggedOut()
             && $this->authManager->hasSessionInitiator()
         ) {

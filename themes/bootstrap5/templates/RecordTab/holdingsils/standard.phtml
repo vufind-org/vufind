@@ -101,7 +101,7 @@
         <?php endif; ?>
         <?php if (!empty($holding['bound_with_records'])): ?>
           <?=
-            $this->render(
+            $this->context($this)->renderInContext(
                 'RecordTab/holdingsils/boundwith.phtml',
                 [
                   'boundWithRecords' => $holding['bound_with_records'],

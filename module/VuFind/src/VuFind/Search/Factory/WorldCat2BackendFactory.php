@@ -83,9 +83,8 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
@@ -157,7 +156,7 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
         $connector = new Connector(
             $this->createHttpClient(),
             $this->createAuthProvider($connectorOptions),
-            new Container('WorldCat2', $this->getService(\Laminas\Session\SessionManager::class)),
+            new Container('WorldCat2', $this->getService(\Laminas\Session\ManagerInterface::class)),
             $connectorOptions
         );
         $connector->setLogger($this->logger);

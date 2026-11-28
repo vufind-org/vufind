@@ -19,7 +19,7 @@
       ?>
       <div id="<?=$this->escapeHtmlAttr($currentSearch['domId'])?>" class="combined-list">
         <?php $templateSuffix = ($currentSearch['ajax'] ?? false) ? 'ajax' : 'list'; ?>
-        <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $viewParams)?>
+        <?=$this->context($this)->renderInContext('combined/results-' . $templateSuffix . '.phtml', $viewParams)?>
       </div>
       <?php $columnIndex++; ?>
       <?php if ($columnIndex < $columns): ?>

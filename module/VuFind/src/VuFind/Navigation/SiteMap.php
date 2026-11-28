@@ -29,11 +29,11 @@
 
 namespace VuFind\Navigation;
 
-use Laminas\View\Renderer\RendererInterface;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Exception\BadConfig;
 use VuFind\Section\SectionServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function array_key_exists;
 use function count;
@@ -54,10 +54,10 @@ class SiteMap extends AbstractMenu
     /**
      * Constructor.
      *
-     * @param SectionServiceInterface $sectionService Section service
-     * @param array                   $sectionConfig  Section configuration
-     * @param array                   $config         Main configuration
-     * @param RendererInterface       $renderer       View renderer
+     * @param SectionServiceInterface   $sectionService   Section service
+     * @param array                     $sectionConfig    Section configuration
+     * @param array                     $config           Main configuration
+     * @param TemplateRendererInterface $templateRenderer Template renderer
      */
     public function __construct(
         SectionServiceInterface $sectionService,
@@ -65,8 +65,7 @@ class SiteMap extends AbstractMenu
         array $sectionConfig,
         #[Autowire(config: 'config')]
         array $config,
-        #[Autowire(service: 'ViewRenderer')]
-        protected RendererInterface $renderer
+        protected TemplateRendererInterface $templateRenderer,
     ) {
         $this->addRequiredSettings(
             [
@@ -249,8 +248,10 @@ class SiteMap extends AbstractMenu
                             ...$plugin->getSectionContext(),
                             ...$item,
                         ];
-                        $pluginGroup['MenuItems'][$key]['__html']
-                            = $this->renderer->render($templateToUse, $context);
+                        $pluginGroup['MenuItems'][$key]['__html'] = $this->templateRenderer->renderTemplateAsString(
+                            template: $templateToUse,
+                            params: $context
+                        );
                     }
                 }
                 $processedGroups[$pluginGroupName] = $pluginGroup;
@@ -271,10 +272,10 @@ class SiteMap extends AbstractMenu
               MenuItems:
                 - label: 'Home Page'
                   route: home
-            
+
             HeaderBar:
               section: HeaderBar
-            
+
             FooterMenu:
               section: FooterMenu
             YAML;

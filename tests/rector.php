@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
+use Rector\CodeQuality\Rector\Equal\UseIdenticalOverEqualWithSameTypeRector;
 use Rector\Config\RectorConfig;
 use Rector\PHPUnit\CodeQuality\Rector\ClassMethod\BareCreateMockAssignToDirectUseRector;
 use Rector\PHPUnit\CodeQuality\Rector\Expression\AssertArrayCastedObjectToAssertSameRector;
@@ -38,6 +39,9 @@ return RectorConfig::configure()
         ExpressionCreateMockToCreateStubRector::class, // buggy, replaces method on wrong classes as of 2.4.3
         DeclareStrictTypesTestsRector::class,
         FinalizeTestCaseClassRector::class,
+    ])
+    ->withRules([
+        UseIdenticalOverEqualWithSameTypeRector::class,
     ])
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(6)

@@ -32,7 +32,7 @@
 namespace VuFind\ActionHelper;
 
 use Laminas\Session\Container;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Crypt\HMAC;
 use VuFind\Date\Converter as DateConverter;
@@ -68,7 +68,7 @@ abstract class AbstractRequestBase implements HelperInterface
      * Constructor.
      *
      * @param HMAC                    $hmac           HMAC generator
-     * @param SessionManager          $sessionManager Session manager
+     * @param ManagerInterface        $sessionManager Session manager
      * @param DateConverter           $dateConverter  Date converter
      * @param RouteHelper             $routeHelper    Route helper
      * @param ForwardHelper           $forwardHelper  Forward helper
@@ -76,7 +76,7 @@ abstract class AbstractRequestBase implements HelperInterface
      */
     public function __construct(
         protected HMAC $hmac,
-        protected SessionManager $sessionManager,
+        protected ManagerInterface $sessionManager,
         protected DateConverter $dateConverter,
         protected RouteHelper $routeHelper,
         #[Autowire(container: PluginManager::class)]

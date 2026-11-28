@@ -112,9 +112,8 @@ class Backend extends AbstractBackend
      * @param ?ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function retrieve($id, ?ParamBag $params = null)
     {
         $response   = $this->connector->getRecord($id);

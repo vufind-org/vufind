@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\Url;
+use VuFind\Http\RouteHelper;
 use VuFind\Search\Base\Options;
 
 use function is_array;
@@ -55,12 +55,12 @@ class GeoCoords
     /**
      * Constructor.
      *
-     * @param string $coords Default coordinates
-     * @param Url    $url    URL helper
+     * @param string      $coords      Default coordinates
+     * @param RouteHelper $routeHelper Route helper
      */
     public function __construct(
         protected string $coords,
-        protected Url $url
+        protected RouteHelper $routeHelper,
     ) {
     }
 
@@ -101,10 +101,10 @@ class GeoCoords
         if (!$this->recommendationEnabled($options->getRecommendationSettings())) {
             return false;
         }
-        $query = http_build_query([
+        $queryParams = [
             'filter' => [$this->geoField . ':Intersects(ENVELOPE(' . $this->coords . '))'],
-        ]);
-        return ($this->url)('search-results') . '?' . $query;
+        ];
+        return $this->routeHelper->getUrlFromRoute('search-results', $queryParams);
     }
 
     /**

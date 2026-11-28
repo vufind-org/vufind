@@ -33,7 +33,7 @@ namespace VuFind\OnlinePayment;
 
 use Laminas\Http\PhpEnvironment\Response;
 use Laminas\Session\Container as SessionContainer;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Laminas\Stdlib\RequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use VuFind\Auth\ILSAuthenticator;
@@ -76,7 +76,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
      * @param UserCardServiceInterface   $userCardService   User card database service
      * @param AuditEventServiceInterface $auditEventService Audit event database service
      * @param Receipt                    $receipt           Receipt handler
-     * @param SessionManager             $sessionManager    Session manager
+     * @param ManagerInterface           $sessionManager    Session manager
      * @param bool                       $testHandlerUsable Is the test payment handler available?
      */
     public function __construct(
@@ -88,7 +88,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
         protected UserCardServiceInterface $userCardService,
         protected AuditEventServiceInterface $auditEventService,
         protected Receipt $receipt,
-        protected SessionManager $sessionManager,
+        protected ManagerInterface $sessionManager,
         protected bool $testHandlerUsable
     ) {
     }

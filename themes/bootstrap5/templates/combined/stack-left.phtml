@@ -31,7 +31,7 @@
       ?>
       <div id="<?=$this->escapeHtmlAttr($currentSearch['domId'])?>" class="combined-list">
         <?php $templateSuffix = ($currentSearch['ajax'] ?? false) ? 'ajax' : 'list'; ?>
-        <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $viewParams)?>
+        <?=$this->context($this)->renderInContext('combined/results-' . $templateSuffix . '.phtml', $viewParams)?>
       </div>
     <?php endforeach; ?>
   </div>
@@ -39,7 +39,7 @@
     <div class="combined-column">
       <div id="<?=$this->escapeHtmlAttr($colParams['domId'])?>" class="combined-list">
         <?php $templateSuffix = ($colParams['ajax'] ?? false) ? 'ajax' : 'list'; ?>
-        <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $colParams)?>
+        <?=$this->context($this)->renderInContext('combined/results-' . $templateSuffix . '.phtml', $colParams)?>
       </div>
     </div>
   <?php endforeach; ?>

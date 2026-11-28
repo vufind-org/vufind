@@ -43,7 +43,6 @@ use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
-use VuFind\Http\ServerUrlHelper;
 use VuFind\ILS\Connection;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFindHttp\HttpService;
@@ -70,7 +69,6 @@ class PerformSecurityFixAction extends AbstractInstallAction
      * @param SearchService            $searchService    Search service
      * @param PathResolver             $pathResolver     Path resolver
      * @param ConfigManagerInterface   $configManager    Config manager
-     * @param ServerUrlHelper          $serverUrlHelper  Server URL helper
      * @param HttpService              $httpService      HTTP service
      * @param TagServiceInterface      $tagService       Tags database service
      * @param UserServiceInterface     $userService      User database service
@@ -84,7 +82,6 @@ class PerformSecurityFixAction extends AbstractInstallAction
         SearchService $searchService,
         PathResolver $pathResolver,
         ConfigManagerInterface $configManager,
-        ServerUrlHelper $serverUrlHelper,
         HttpService $httpService,
         #[Autowire(container: DbServicePluginManager::class)]
         TagServiceInterface $tagService,
@@ -105,7 +102,6 @@ class PerformSecurityFixAction extends AbstractInstallAction
             $config,
             $ilsConnection,
             $searchService,
-            $serverUrlHelper,
             $httpService,
             $tagService,
         );

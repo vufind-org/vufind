@@ -29,9 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Resolver\ResolverInterface;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * ContentBlock view helper.
@@ -49,17 +49,17 @@ class ContentBlock
     /**
      * Constructor.
      *
-     * @param RendererInterface $viewRenderer View renderer
-     * @param ResolverInterface $viewResolver View resolver
-     * @param Context           $context      Context helper
+     * @param TemplateRendererInterface $templateRenderer Template renderer
+     * @param ResolverInterface         $viewResolver     View resolver
+     * @param Context                   $context          Context helper
      */
     public function __construct(
-        RendererInterface $viewRenderer,
+        TemplateRendererInterface $templateRenderer,
         ResolverInterface $viewResolver,
         #[Autowire(container: 'ViewHelperManager')]
         Context $context,
     ) {
-        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $context);
+        $this->setClassBasedTemplateRendererDependencies($templateRenderer, $viewResolver, $context);
     }
 
     /**

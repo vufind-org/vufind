@@ -855,7 +855,7 @@ abstract class Results
             }
             $facetfields = $nextfields;
             $page++;
-        } while ($limit == -1 && !empty($facetfields));
+        } while ($limit === -1 && !empty($facetfields));
         return $facets;
     }
 

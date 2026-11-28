@@ -8,6 +8,6 @@
     $this->breadcrumbs()->set($this->translate('Channels'), $this->url('channels-home'))->add($lookfor, active: true);
 
     // Set up query parameters for channel list:
-    $this->queryParams = ltrim($this->results->getUrlQuery()->getParams(false), '?');
+    $queryParams = ltrim($this->results->getUrlQuery()->getParams(false), '?');
 ?>
-<?=$this->render('channels/channelList.phtml')?>
+<?=$this->context($this)->renderInContext('channels/channelList.phtml', compact('queryParams'))?>

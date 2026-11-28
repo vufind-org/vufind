@@ -446,7 +446,7 @@ abstract class AbstractBrowseAction extends AbstractTemplateRenderingAction impl
         $callback = function ($letter) use ($action) {
             // Tag is a special case because it is database-backed; for everything
             // else, use a Solr query that will allow case-insensitive lookups.
-            $value = ($action == 'Tag')
+            $value = ($action === 'Tag')
                 ? $letter
                 : '(' . strtoupper($letter) . '* OR ' . strtolower($letter) . '*)';
             return ['value' => $value, 'displayText' => $letter];

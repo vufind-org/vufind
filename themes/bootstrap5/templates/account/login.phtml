@@ -13,7 +13,7 @@
 ?>
 
 <?php if ($offlineMode == 'ils-offline'): ?>
-  <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
+  <?=$this->context($this)->renderInContext('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
 <?php endif; ?>
 
 <h2 class="lightbox-header"><?=$this->transEsc('Login')?></h2>

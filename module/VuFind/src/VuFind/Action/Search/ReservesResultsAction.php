@@ -31,7 +31,7 @@
 
 namespace VuFind\Action\Search;
 
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -88,7 +88,7 @@ class ReservesResultsAction extends AbstractSearchAndResultsAction
      * @param BlockLoader                $blockLoader                Content block loader
      * @param ConfigManager              $configManager              Configuration manager
      * @param RecordRouter               $recordRouter               Record router
-     * @param SessionManager             $sessionManager             Session manager
+     * @param ManagerInterface           $sessionManager             Session manager
      * @param SearchServiceInterface     $searchService              Search service
      * @param AuthManager                $authManager                Authentication manager
      * @param SearchNormalizer           $searchNormalizer           Search normalize
@@ -107,7 +107,7 @@ class ReservesResultsAction extends AbstractSearchAndResultsAction
         BlockLoader $blockLoader,
         ConfigManager $configManager,
         RecordRouter $recordRouter,
-        SessionManager $sessionManager,
+        ManagerInterface $sessionManager,
         #[Autowire(container: DbServicePluginManager::class)]
         SearchServiceInterface $searchService,
         AuthManager $authManager,

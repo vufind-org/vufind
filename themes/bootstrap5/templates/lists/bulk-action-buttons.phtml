@@ -1,6 +1,9 @@
-<?php if ($this->isBottom): ?>
-  <?php $this->idPrefix = 'bottom_' . ($this->idPrefix ?? ''); ?>
-<?php endif; ?>
+<?php
+  $idPrefix = $this->idPrefix ?? '';
+  if ($this->isBottom) {
+    $idPrefix = 'bottom_' . $idPrefix;
+  }
+?>
 <?php if (isset($list) && !$this->isBottom): ?>
   <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->getId())?>">
   <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->getTitle())?>">
@@ -33,14 +36,26 @@
               'ui-delete',
               'Delete',
               [
-                'id' => $this->idPrefix . 'delete_list_items_' . (null !== $this->list ? $this->escapeHtmlAttr($this->list->getId()) : ''),
+                'id' => $idPrefix . 'delete_list_items_' . (null !== $this->list ? $this->escapeHtmlAttr($this->list->getId()) : ''),
                 'title' => $this->translate('bulk_delete_myresearch'),
               ]
           )
         ?>
       <?php endif; ?>
-      <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
-      <?php if (count($exportOptions) > 0): ?>
+      <?php $citationConfig = $this->config()->getArray('config')['Citation'] ?? []; ?>
+      <?php if (($citationConfig['list_bulk'] ?? false) && ($citationConfig['formats'] ?? true)): ?>
+        <?=
+          $this->bulkAction()->button(
+              'cite',
+              'cite',
+              'Cite this',
+              [
+                'title' => $this->translate('bulk_cite_myresearch'),
+              ],
+          )
+        ?>
+      <?php endif; ?>
+      <?php if (count($this->export()->getActiveFormats('bulk')) > 0): ?>
         <?=
           $this->bulkAction()->button(
               'export',
@@ -70,7 +85,7 @@
               'cart-add',
               'Add to Book Bag',
               [
-                'id' => $this->idPrefix . 'updateCart',
+                'id' => $idPrefix . 'updateCart',
               ]
           )
         ?>
@@ -84,7 +99,7 @@
     <ul class="selection-controls-bar">
       <?php if (in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
         <li class="bulk-checkbox">
-          <?php $selectAllCheckboxId = $this->idPrefix . 'myresearchCheckAll'; ?>
+          <?php $selectAllCheckboxId = $idPrefix . 'myresearchCheckAll'; ?>
           <label<?=$this->htmlAttributes(['for' => $selectAllCheckboxId])?>>
             <input<?=$this->htmlAttributes(['type' => 'checkbox', 'name' => 'selectAll', 'class' => 'checkbox-select-all', 'id' => $selectAllCheckboxId])?>>
             <?=$this->transEsc('select_all_on_page')?>
@@ -94,7 +109,7 @@
       <?php if ($multiPageSelection && in_array($checkboxSelectAllType, ['global', 'both'])): ?>
         <li class="bulk-checkbox">
           <div class="select-all-global hidden">
-            <?php $selectAllGlobalCheckboxId = $this->idPrefix . 'myresearchCheckAllGlobal'; ?>
+            <?php $selectAllGlobalCheckboxId = $idPrefix . 'myresearchCheckAllGlobal'; ?>
             <label<?=$this->htmlAttributes(['for' => $selectAllGlobalCheckboxId])?>>
               <input<?=$this->htmlAttributes(['type' => 'checkbox', 'name' => 'selectAllGlobal', 'class' => 'checkbox-select-all-global', 'id' => $selectAllGlobalCheckboxId])?>>
               <?=$this->transEsc('select_all')?>

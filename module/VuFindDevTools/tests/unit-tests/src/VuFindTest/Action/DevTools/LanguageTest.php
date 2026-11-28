@@ -56,6 +56,7 @@ class LanguageTest extends AbstractActionTestCase
      *
      * @return void
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function testLanguageAction()
     {
         $localeSettings = $this->createMock(LocaleSettings::class);
@@ -75,8 +76,6 @@ class LanguageTest extends AbstractActionTestCase
                  * keys 'template' and 'params'
                  *
                  * @return ResponseInterface
-                 *
-                 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
                  */
                 function (
                     ServerRequestInterface $request,

@@ -25,7 +25,7 @@
     <div class="js-hide-if-empty">
       <div id="<?=$this->escapeHtmlAttr($colParams['domId'])?>" class="combined-list">
         <?php $templateSuffix = ($colParams['ajax'] ?? false) ? 'ajax' : 'list'; ?>
-        <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $colParams)?>
+        <?=$this->context($this)->renderInContext('combined/results-' . $templateSuffix . '.phtml', $colParams)?>
       </div>
     </div>
   <?php endforeach; ?>

@@ -32,6 +32,7 @@ namespace VuFind\AjaxHandler;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Record\Loader;
 use VuFind\RecordTab\TabManager;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\Record;
 
@@ -50,44 +51,21 @@ use function is_array;
 class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
 {
     /**
-     * Record loader.
-     *
-     * @var Loader
-     */
-    protected $recordLoader;
-
-    /**
-     * Record plugin.
-     *
-     * @var Record
-     */
-    protected $recordPlugin;
-
-    /**
-     * Tab manager.
-     *
-     * @var TabManager
-     */
-    protected $tabManager;
-
-    /**
      * Constructor.
      *
-     * @param SessionSettings $ss     Session settings
-     * @param Loader          $loader Record loader
-     * @param Record          $rp     Record plugin
-     * @param TabManager      $tm     Tab manager
+     * @param SessionSettings $ss           Session settings
+     * @param Loader          $recordLoader Record loader
+     * @param Record          $recordPlugin Record view helper
+     * @param TabManager      $tabManager   Tab manager
      */
     public function __construct(
         SessionSettings $ss,
-        Loader $loader,
-        Record $rp,
-        TabManager $tm
+        protected Loader $recordLoader,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Record $recordPlugin,
+        protected TabManager $tabManager
     ) {
         parent::__construct($ss);
-        $this->recordLoader = $loader;
-        $this->recordPlugin = $rp;
-        $this->tabManager = $tm;
     }
 
     /**

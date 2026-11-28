@@ -31,8 +31,8 @@ declare(strict_types=1);
 
 namespace VuFindTest\Auth;
 
+use Laminas\Session\ManagerInterface;
 use Laminas\Session\SaveHandler\SaveHandlerInterface;
-use Laminas\Session\SessionManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\LoginTokenManager;
 use VuFind\Cookie\CookieManager;
@@ -183,10 +183,10 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Get login token.
      *
-     * @param CookieManager $cookieManager cookie manager
-     * @param LoginToken    $tokenTable    Login token table
-     * @param User          $userTable     User table
-     * @param bool          $browscapOk    Whether to emulate working browscap
+     * @param CookieManager              $cookieManager cookie manager
+     * @param LoginTokenServiceInterface $tokenTable    Login token table
+     * @param UserServiceInterface       $userTable     User table
+     * @param bool                       $browscapOk    Whether to emulate working browscap
      *
      * @return LoginTokenManager
      */
@@ -194,7 +194,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
     {
         $config = [];
         $saveHandler = $this->createMock(SaveHandlerInterface::class);
-        $sessionManager = $this->createMock(SessionManager::class);
+        $sessionManager = $this->createMock(ManagerInterface::class);
         $sessionManager->method('getSaveHandler')->willReturn($saveHandler);
         $mailer = $this->createMock(\VuFind\Mailer\Mailer::class);
         $viewRenderer = $this->createMock(\Laminas\View\Renderer\RendererInterface::class);

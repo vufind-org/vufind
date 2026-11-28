@@ -52,7 +52,7 @@ class ProQuestFSGResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredT
         $mod = $this->getRecommend(
             \VuFind\Recommend\ProQuestFSGResultsDeferred::class,
             ':3',
-            new \Laminas\Stdlib\Parameters(['lookfor' => 'foo'])
+            ['lookfor' => 'foo']
         );
         $this->assertEquals(
             'mod=ProQuestFSGResults&params=lookfor%3A3&lookfor=foo',

@@ -108,9 +108,8 @@ abstract class AbstractBase implements HandlerInterface
      * @param string $sess_name Session name
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function open($sess_path, $sess_name): bool
     {
         return true;
@@ -153,9 +152,8 @@ abstract class AbstractBase implements HandlerInterface
      * @param int $sessMaxLifetime Maximum session lifetime.
      *
      * @return int|false
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function gc($sessMaxLifetime): int|false
     {
         // how often does this get called (if at all)?

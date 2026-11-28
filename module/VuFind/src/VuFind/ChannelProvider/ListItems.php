@@ -138,9 +138,8 @@ class ListItems extends AbstractChannelProvider
      * Channels page, 'tab' for record tab)
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getFromRecord(
         RecordDriver $driver,
         ?string $channelToken = null,
@@ -157,9 +156,8 @@ class ListItems extends AbstractChannelProvider
      * to load (if omitted, all channels will be loaded)
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getFromSearch(Results $results, ?string $channelToken = null): array
     {
         return $this->buildListChannels($channelToken);
@@ -278,7 +276,8 @@ class ListItems extends AbstractChannelProvider
             return $retVal;
         }
         $results = $this->resultsManager->get('Favorites');
-        $results->getParams()->initFromRequest(['id' => $list->getId()]);
+        $results->getParams()->initFromRequest(['id' => $list->getId(), 'page' => $this->page]);
+        $results->getParams()->setLimit($this->limit ?? $this->batchSize);
         $retVal['contents'] = $this->summarizeRecordDrivers($results->getResults());
         $retVal['links'][] = [
             'label' => 'channel_search',

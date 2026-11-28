@@ -281,7 +281,7 @@ class UserCardService extends AbstractDbService implements
         // If this is the first or active library card, or no credentials are
         // currently set, activate the card now
         if (
-            count($this->getLibraryCards($user)) == 1 || !$user->getCatUsername()
+            count($this->getLibraryCards($user)) === 1 || !$user->getCatUsername()
             || $user->getCatUsername() === $row->getCatUsername()
         ) {
             $this->activateLibraryCard($user, $row->getId());

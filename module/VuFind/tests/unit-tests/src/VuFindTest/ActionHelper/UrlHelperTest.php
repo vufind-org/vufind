@@ -31,7 +31,7 @@ namespace VuFindTest\ActionHelper;
 
 use PHPUnit\Framework\TestCase;
 use VuFind\ActionHelper\UrlHelper;
-use VuFind\Http\ServerUrlHelper;
+use VuFind\Application\UriRegistry;
 use VuFindTest\Feature\AutowireTrait;
 use VuFindTest\Feature\ReflectionTrait;
 
@@ -56,15 +56,18 @@ class UrlHelperTest extends TestCase
      */
     public function testIsLocalUrl(): void
     {
-        $serverUrlHelper = $this->createMock(ServerUrlHelper::class);
-        $serverUrlHelper->expects($this->once())
-            ->method('getUrlForPath')
-            ->willReturn('http://vufind.org/');
+        $mockUriRegistry = $this->createMock(UriRegistry::class);
+        $mockUriRegistry->method('get')
+            ->willReturnCallback(
+                fn (string $s) => match ($s) {
+                    'AbsoluteBaseUrl' => 'http://vufind.org/',
+                }
+            );
 
         $helper = $this->getAutowiredObject(
             UrlHelper::class,
             [
-                ServerUrlHelper::class => $serverUrlHelper,
+                UriRegistry::class => $mockUriRegistry,
             ]
         );
 

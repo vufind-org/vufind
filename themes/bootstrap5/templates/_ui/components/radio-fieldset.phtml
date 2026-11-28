@@ -8,17 +8,19 @@
    * @property ?string $checkedValue Checked value (default is first value)
    */
   $escGroupNameAttr = $this->escapeHtmlAttr($this->groupName);
-  if (array_is_list($this->values)) {
-    $this->values = array_combine($this->values, $this->values);
+  $values = $this->values;
+  if (array_is_list($values)) {
+    $values = array_combine($values, $values);
   }
-  if (!in_array($this->checkedValue, array_keys($this->values))) {
-    $this->checkedValue = array_key_first($this->values);
+  $checkedValue = $this->checkedValue;
+  if (!in_array($checkedValue, array_keys($values))) {
+    $checkedValue = array_key_first($values);
   }
 ?>
 <fieldset name="<?=$escGroupNameAttr?>_fieldset">
   <legend><?=$this->transEsc($this->displayName ?? $this->groupName)?></legend>
   <div class="form-group">
-    <?php foreach ($this->values as $value => $valueDisplayName): ?>
+    <?php foreach ($values as $value => $valueDisplayName): ?>
       <?php
       $escValueAttr = $this->escapeHtmlAttr($value);
       ?>
@@ -29,7 +31,7 @@
             id="<?=$escGroupNameAttr?>_fieldset[<?=$escValueAttr?>]"
             class="form-check-input"
             value="<?=$escValueAttr?>"
-            <?=($this->checkedValue === $value) ? 'checked' : ''?>
+            <?=($checkedValue === $value) ? 'checked' : ''?>
         >
         <label for="<?=$escGroupNameAttr?>_fieldset[<?=$escValueAttr?>]">
           <?=$this->transEsc($valueDisplayName, default: $value)?>

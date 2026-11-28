@@ -57,7 +57,7 @@ class FlashMessengerTest extends \PHPUnit\Framework\TestCase
     {
         $messages = [];
         for ($i = 0; $i < $count; $i++) {
-            $messages[] = ($i % 2 == 0) ? "$prefix $i" : ['msg' => "$prefix $i"];
+            $messages[] = ($i % 2 === 0) ? "$prefix $i" : ['msg' => "$prefix $i"];
         }
         return $messages;
     }

@@ -410,8 +410,8 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
             }
             $typeCount = count($settings['type']);
             if (
-                $typeCount != count($settings['target'])
-                || $typeCount != count($settings['label'])
+                $typeCount !== count($settings['target'])
+                || $typeCount !== count($settings['label'])
             ) {
                 throw new \Exception('CombinedHandlers configuration incomplete.');
             }
@@ -567,8 +567,8 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
                         $finalLabel = $searchDesc;
                         $indent = false;
                     } else {
-                        $finalLabel = $j == 1 ? $label : $searchDesc;
-                        $indent = $j != 1;
+                        $finalLabel = $j === 1 ? $label : $searchDesc;
+                        $indent = $j !== 1;
                     }
                     $handlers[] = [
                         'value' => $type . ':' . $target . '|' . $searchVal,

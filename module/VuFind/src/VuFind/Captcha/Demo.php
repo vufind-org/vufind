@@ -49,9 +49,8 @@ class Demo extends AbstractBase
      * @param array $queryParams Query params
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function verify(array $postParams, array $queryParams): bool
     {
         return ($postParams['demo_captcha'] ?? null) === 'demo';

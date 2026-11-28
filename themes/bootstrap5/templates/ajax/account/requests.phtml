@@ -1,5 +1,5 @@
 <?php
-echo $this->render(
+echo $this->context($this)->renderInContext(
     'ajax/account/status-badge.phtml',
     [
         'title' => 'account_requests_available',
@@ -7,7 +7,7 @@ echo $this->render(
         'class' => 'account-info',
     ]
 );
-echo $this->render(
+echo $this->context($this)->renderInContext(
     'ajax/account/status-badge.phtml',
     [
         'title' => 'account_requests_in_transit',
@@ -15,7 +15,7 @@ echo $this->render(
         'class' => 'account-warning',
     ]
 );
-echo $this->render(
+echo $this->context($this)->renderInContext(
     'ajax/account/status-badge.phtml',
     [
         'title' => 'account_requests_other',

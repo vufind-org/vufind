@@ -36,6 +36,8 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Http\RouteHelper;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Factory for ScheduledSearch/Notify command.
@@ -79,13 +81,14 @@ class NotifyCommandFactory implements FactoryInterface
         // Now build the object:
         $command = new $requestedName(
             $container->get(\VuFind\Crypt\SecretCalculator::class),
-            $container->get('ViewRenderer'),
+            $container->get(TemplateRendererInterface::class),
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $scheduleOptions,
             $mainConfig,
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get(\VuFind\Db\Service\PluginManager::class)->get(SearchServiceInterface::class),
             $container->get(\VuFind\I18n\Locale\LocaleSettings::class),
+            $container->get(RouteHelper::class),
             ...($options ?? [])
         );
         $command->setPathResolver($container->get(PathResolver::class));

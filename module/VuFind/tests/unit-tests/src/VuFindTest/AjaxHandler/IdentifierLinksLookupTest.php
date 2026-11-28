@@ -31,7 +31,6 @@ namespace VuFindTest\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\AjaxHandler\IdentifierLinksLookup;
-use VuFind\AjaxHandler\IdentifierLinksLookupFactory;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\IdentifierLinker\IdentifierLinkerInterface;
@@ -51,6 +50,7 @@ use VuFind\View\Renderer\TemplateRendererInterface;
 class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
+    use \VuFindTest\Feature\AutowireTrait;
 
     /**
      * Set up configuration for a test.
@@ -126,6 +126,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return array
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getHandlerResults($requested = [['doi' => 'bar']])
     {
         $serverUrlHelper = $this->createMock(ServerUrlHelper::class);
@@ -170,9 +171,9 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
             );
 
         $this->container->set(TemplateRendererInterface::class, $mockRenderer);
+        $this->container->set('ViewHelperManager', $viewHelperManager);
 
-        $factory = new IdentifierLinksLookupFactory();
-        $handler = $factory($this->container, IdentifierLinksLookup::class);
+        $handler = $this->getAutowiredObject(IdentifierLinksLookup::class, $this->container);
         $request = $this->getRequest(content: json_encode($requested));
         return $handler->handleRequest($request);
     }

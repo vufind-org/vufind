@@ -29,10 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\ServerUrl;
-use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Resolver\ResolverInterface;
 use VuFind\Cover\Router as CoverRouter;
+use VuFind\Db\Entity\CommentsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
@@ -40,11 +39,14 @@ use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
 use VuFind\Search\Memory;
 use VuFind\Search\UrlQueryHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Tags\TagsService;
 use VuFind\View\GlobalsContainer;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function get_class;
 use function in_array;
@@ -76,23 +78,23 @@ class Record implements DbServiceAwareInterface
     /**
      * Constructor.
      *
-     * @param TagsService       $tagsService       Tags service
-     * @param CoverRouter       $coverRouter       Cover router
-     * @param Memory            $searchMemory      Search memory
-     * @param Context           $contextHelper     Context helper
-     * @param RendererInterface $viewRenderer      View renderer
-     * @param ResolverInterface $viewResolver      View resolver
-     * @param SearchTabs        $searchTabs        SearchTabs helper
-     * @param TransEsc          $transEsc          TransEsc helper
-     * @param Highlight         $highlight         Highlight helper
-     * @param AddEllipsis       $addEllipsis       AddEllipsis helper
-     * @param EscapeOrCleanHtml $escapeOrCleanHtml EscapeOrCleanHtml helper
-     * @param Truncate          $truncate          Truncate helper
-     * @param Auth              $auth              Auth helper
-     * @param Url               $url               Url helper
-     * @param ServerUrl         $serverUrl         ServerUrl helper
-     * @param GlobalsContainer  $globalsContainer  Global data container
-     * @param ?array            $config            Configuration from config.ini
+     * @param TagsService               $tagsService       Tags service
+     * @param CoverRouter               $coverRouter       Cover router
+     * @param Memory                    $searchMemory      Search memory
+     * @param Context                   $contextHelper     Context helper
+     * @param TemplateRendererInterface $templateRenderer  Template renderer
+     * @param ResolverInterface         $viewResolver      View resolver
+     * @param SearchTabs                $searchTabs        SearchTabs helper
+     * @param TransEsc                  $transEsc          TransEsc helper
+     * @param Highlight                 $highlight         Highlight helper
+     * @param AddEllipsis               $addEllipsis       AddEllipsis helper
+     * @param EscapeOrCleanHtml         $escapeOrCleanHtml EscapeOrCleanHtml helper
+     * @param Truncate                  $truncate          Truncate helper
+     * @param Auth                      $auth              Auth helper
+     * @param RouteHelper               $routeHelper       RouteHelper
+     * @param ServerUrlHelper           $serverUrlHelper   Server URL helper
+     * @param GlobalsContainer          $globalsContainer  Global data container
+     * @param ?array                    $config            Configuration from config.ini
      */
     public function __construct(
         protected TagsService $tagsService,
@@ -100,7 +102,7 @@ class Record implements DbServiceAwareInterface
         protected Memory $searchMemory,
         #[Autowire(container: 'ViewHelperManager')]
         Context $contextHelper,
-        RendererInterface $viewRenderer,
+        TemplateRendererInterface $templateRenderer,
         ResolverInterface $viewResolver,
         #[Autowire(container: 'ViewHelperManager')]
         protected SearchTabs $searchTabs,
@@ -116,15 +118,13 @@ class Record implements DbServiceAwareInterface
         protected Truncate $truncate,
         #[Autowire(container: 'ViewHelperManager')]
         protected Auth $auth,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected Url $url,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected ServerUrl $serverUrl,
+        protected RouteHelper $routeHelper,
+        protected ServerUrlHelper $serverUrlHelper,
         protected GlobalsContainer $globalsContainer,
         #[Autowire(config: 'config', configType: 'array')]
         protected ?array $config = null
     ) {
-        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $contextHelper);
+        $this->setClassBasedTemplateRendererDependencies($templateRenderer, $viewResolver, $contextHelper);
     }
 
     /**
@@ -157,10 +157,12 @@ class Record implements DbServiceAwareInterface
     {
         $template = 'RecordDriver/%s/' . $name;
         $className = get_class($this->driver);
+        $context ??= [];
+        $context['driver'] ??= $this->driver;
         return $this->renderClassTemplate(
             $template,
             $className,
-            $context ?? ['driver' => $this->driver],
+            $context,
             $throw
         );
     }
@@ -525,10 +527,8 @@ class Record implements DbServiceAwareInterface
         $context = ['driver' => $this->driver, 'tab' => $tab];
         $classParts = explode('\\', $tab::class);
         $template = 'RecordTab/' . strtolower(array_pop($classParts)) . '.phtml';
-        $oldContext = $this->contextHelper->apply($context);
-        $html = $this->viewRenderer->render($template);
-        $this->contextHelper->restore($oldContext);
-        return $html;
+
+        return $this->getTemplateRenderer()->renderTemplateAsString(null, $template, $context);
     }
 
     /**
@@ -544,13 +544,14 @@ class Record implements DbServiceAwareInterface
     /**
      * Render a search result for the specified view mode.
      *
-     * @param string $view View mode to use.
+     * @param string $view    View mode to use
+     * @param array  $context Rendering context
      *
      * @return string
      */
-    public function getSearchResult($view)
+    public function getSearchResult($view, array $context = [])
     {
-        return $this->renderTemplate('result-' . $view . '.phtml');
+        return $this->renderTemplate('result-' . $view . '.phtml', $context);
     }
 
     /**
@@ -736,7 +737,7 @@ class Record implements DbServiceAwareInterface
             'text' => $text, 'level' => $level, 'size' => $size, 'margin' => $margin,
         ];
 
-        return ($this->url)('qrcode-show') . '?' . http_build_query($qrcode);
+        return $this->routeHelper->getUrlFromRoute('qrcode-show', queryParams: $qrcode);
     }
 
     /**
@@ -800,8 +801,8 @@ class Record implements DbServiceAwareInterface
             if (!isset($link['url'])) {
                 $routeParams = $link['routeParams'] ?? [];
 
-                $link['url'] = ($this->serverUrl)(
-                    ($this->url)($link['route'], $routeParams)
+                $link['url'] = $this->serverUrlHelper->getUrlForPath(
+                    $this->routeHelper->getUrlFromRoute($link['route'], $routeParams)
                 );
                 if (isset($link['queryString'])) {
                     $link['url'] .= $link['queryString'];

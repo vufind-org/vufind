@@ -170,4 +170,4 @@
   <?=$this->section('AccountMenu', template: 'account/menu.phtml')->render(['active' => 'storageRetrievalRequests'])?>
 </div>
 
-<?=$this->render('account/notify-account-status.phtml', ['method' => 'storageRetrievalRequests', 'accountStatus' => $this->accountStatus]); ?>
+<?=$this->context($this)->renderInContext('account/notify-account-status.phtml', ['method' => 'storageRetrievalRequests', 'accountStatus' => $this->accountStatus]); ?>

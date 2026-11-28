@@ -1,1 +1,12 @@
-<?=$this->captcha->getHtml();
+<?php
+  $options = $this->captcha->getOptions();
+  $data = [
+    'data-sitekey' => $this->captcha->getSiteKey(),
+  ];
+  $allowedOptions = ['theme', 'type', 'size', 'tabindex', 'callback', 'expired-callback'];
+  $options = array_intersect_key($options, $allowedOptions);
+  foreach ($options as $key => $value) {
+    $data['data-' . $key] = $value;
+  }
+?>
+<div class="g-recaptcha"<?=$this->htmlAttributes($data)?>></div>

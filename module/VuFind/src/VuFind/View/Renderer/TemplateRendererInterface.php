@@ -102,6 +102,7 @@ interface TemplateRendererInterface
      * @param array[]                 $childTemplates Any child templates; an array of associative array with keys
      *                                                'template' and 'params'
      * @param bool                    $useLayout      Render full page with the layout?
+     * @param bool                    $rootContext    Include root context (main template variables)?
      *
      * @return string
      */
@@ -111,6 +112,7 @@ interface TemplateRendererInterface
         array $params = [],
         array $childTemplates = [],
         bool $useLayout = false,
+        bool $rootContext = false,
     ): string;
 
     /**

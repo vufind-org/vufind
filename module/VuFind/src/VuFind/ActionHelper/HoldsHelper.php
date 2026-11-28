@@ -31,7 +31,6 @@
 
 namespace VuFind\ActionHelper;
 
-use Laminas\Http\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Date\DateException;

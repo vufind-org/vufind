@@ -11,7 +11,7 @@
             ...$item,
           ];
         ?>
-        <?=$this->render($item['template'] ?? 'account/menu-item.phtml', $context)?>
+        <?=$this->context($this)->renderInContext($item['template'] ?? 'account/menu-item.phtml', $context)?>
       <?php endforeach; ?>
     </ul>
   </nav>

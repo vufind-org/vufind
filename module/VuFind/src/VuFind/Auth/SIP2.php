@@ -69,7 +69,7 @@ class SIP2 extends AbstractBase
     {
         $username = trim($request->getPost()->get('username', ''));
         $password = trim($request->getPost()->get('password', ''));
-        if ($username == '' || $password == '') {
+        if ($username === '' || $password === '') {
             throw new AuthException('authentication_error_blank');
         }
 

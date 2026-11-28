@@ -67,6 +67,40 @@ class OAuth2ServerService
     public const SESSION_NAME = 'OAuth2Server';
 
     /**
+     * Mapping of predefined scopes to claims.
+     *
+     * @var array
+     */
+    protected array $defaultClaims = [
+        'address' => [
+            'address',
+        ],
+        'email' => [
+            'email',
+            'email_verified',
+        ],
+        'phone' => [
+            'phone',
+        ],
+        'profile' => [
+            'name',
+            'family_name',
+            'given_name',
+            'middle_name',
+            'nickname',
+            'preferred_username',
+            'profile',
+            'picture',
+            'website',
+            'gender',
+            'birthdate',
+            'zoneinfo',
+            'locale',
+            'updated_at',
+        ],
+    ];
+
+    /**
      * Constructor.
      *
      * @param Closure                     $authorizationServerFactory OAuth2 authorization server factory
@@ -270,6 +304,14 @@ class OAuth2ServerService
         }
         if ($scopes = $this->oauth2Config['Scopes'] ?? []) {
             $configuration['scopes_supported'] = array_keys($scopes);
+            $claims = [];
+            foreach ($scopes as $scopeId => $scope) {
+                $claims = [
+                    ...$claims,
+                    ...($scope['claims'] ?? $this->defaultClaims[$scopeId] ?? []),
+                ];
+            }
+            $configuration['claims_supported'] = array_values(array_unique($claims));
         }
         return $configuration;
     }

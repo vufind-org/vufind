@@ -1,6 +1,6 @@
 <?=$this->component('page-title', ['title' => $this->translate('Tag Management'), 'headTitle' => $this->translate('VuFind Administration - Tag Maintenance')]);?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <?=$this->render('admin/tags/menu.phtml', ['active' => 'manage'])?>
+  <?=$this->context($this)->renderInContext('admin/tags/menu.phtml', ['active' => 'manage'])?>
 
   <h3><?=$this->transEsc('Manage Tags')?></h3>
 

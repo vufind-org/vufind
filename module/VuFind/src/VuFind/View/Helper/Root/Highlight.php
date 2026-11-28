@@ -88,7 +88,7 @@ class Highlight
         // encoding later.
         foreach ($needle as $phrase) {
             $phrase = trim(str_replace(['"', '*', '?'], '', $phrase));
-            if ($phrase != '') {
+            if ($phrase !== '') {
                 $phrase = preg_quote($phrase, '/');
                 $haystack = preg_replace(
                     "/($phrase)/iu",

@@ -100,7 +100,7 @@ trait TagTrait
     protected function goToTagAdmin(string $subPage = ''): Element
     {
         $this->changeConfigs(
-            [
+            $this->getAdminPermissionConfig() + [
                 'config' => [
                     'Site' => ['admin_enabled' => 1],
                     'Social' => ['case_sensitive_tags' => 'true'],

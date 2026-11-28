@@ -236,9 +236,8 @@ class MultiBackend extends AbstractMultiDriver
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $source = $this->getSource($id);
@@ -998,9 +997,8 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function patronLogin($username, $password)
     {
         $source = $this->getSource($username);
@@ -1023,7 +1021,7 @@ class MultiBackend extends AbstractMultiDriver
      */
     public function supportsMethod(string $method, array $params)
     {
-        if ($method == 'getLoginDrivers' || $method == 'getDefaultLoginDriver') {
+        if ($method === 'getLoginDrivers' || $method === 'getDefaultLoginDriver') {
             return true;
         }
 
@@ -1250,7 +1248,7 @@ class MultiBackend extends AbstractMultiDriver
                 if (
                     (!is_array($data)
                     || (!ctype_digit((string)$key) && in_array($key, $modifyFields)))
-                    && strncmp("$source.", $value, $prefixLen) == 0
+                    && strncmp("$source.", $value, $prefixLen) === 0
                 ) {
                     $array[$key] = substr($value, $prefixLen);
                 }

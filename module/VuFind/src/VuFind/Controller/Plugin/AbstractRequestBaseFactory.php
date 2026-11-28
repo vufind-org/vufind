@@ -70,7 +70,7 @@ class AbstractRequestBaseFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Crypt\HMAC::class),
-            $container->get(\Laminas\Session\SessionManager::class),
+            $container->get(\Laminas\Session\ManagerInterface::class),
             $container->get(\VuFind\Date\Converter::class)
         );
     }

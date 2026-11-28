@@ -32,7 +32,7 @@
 namespace VuFind\Action\Checkouts;
 
 use Laminas\Session\Container as SessionContainer;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\Action\HandleIlsExceptionsTrait;
 use VuFind\ILS\Connection;
@@ -67,7 +67,7 @@ abstract class AbstractCheckoutsAction extends AbstractTemplateRenderingAction
      *
      * @param array            $config           VuFind configuration
      * @param CsrfInterface    $csrf             CSRF validator
-     * @param SessionManager   $sessionManager   Session manager
+     * @param ManagerInterface $sessionManager   Session manager
      * @param PaginationHelper $paginationHelper Pagination helper
      * @param Connection       $ilsConnection    ILS connection
      * @param RecordsHelper    $ilsRecordsHelper ILS records helper
@@ -76,7 +76,7 @@ abstract class AbstractCheckoutsAction extends AbstractTemplateRenderingAction
         #[Autowire(config: 'config')]
         protected array $config,
         protected CsrfInterface $csrf,
-        protected SessionManager $sessionManager,
+        protected ManagerInterface $sessionManager,
         protected PaginationHelper $paginationHelper,
         protected Connection $ilsConnection,
         protected RecordsHelper $ilsRecordsHelper,

@@ -30,9 +30,9 @@
 namespace VuFind\Db\Service;
 
 use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
-use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrinePaginatorAdapter;
 use Laminas\Paginator\Paginator;
 use Psr\Log\LoggerAwareInterface;
+use VuFind\Db\DoctrinePaginatorAdapter;
 use VuFind\Db\Entity\RatingsEntityInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -196,13 +196,13 @@ class RatingsService extends AbstractDbService implements
      * @param ?int                        $rating       Rating (null to delete)
      *
      * @throws \Exception
-     * @return int ID of rating added, deleted or updated
+     * @return ?RatingsEntityInterface Entity of rating added, deleted or updated (or null if nothing was done)
      */
     public function addOrUpdateRating(
         ResourceEntityInterface|int $resourceOrId,
         UserEntityInterface|int $userOrId,
         ?int $rating
-    ): int {
+    ): ?RatingsEntityInterface {
         if (null !== $rating && ($rating < 0 || $rating > 100)) {
             throw new \Exception('Rating value out of range');
         }
@@ -223,18 +223,17 @@ class RatingsService extends AbstractDbService implements
             } else {
                 $existing->setRating($rating);
             }
-            $updatedRatingId = $existing->getId();
             try {
                 $this->entityManager->flush();
             } catch (\Exception $e) {
                 $this->logError('Rating update failed: ' . $e->getMessage());
                 throw $e;
             }
-            return $updatedRatingId;
+            return $existing;
         }
 
         if (null === $rating) {
-            return 0;
+            return $existing;
         }
 
         $row = $this->createEntity()
@@ -246,9 +245,9 @@ class RatingsService extends AbstractDbService implements
             $this->persistEntity($row);
         } catch (\Exception $e) {
             $this->logError('Could not save rating: ' . $e->getMessage());
-            return 0;
+            return null;
         }
-        return $row->getId();
+        return $row;
     }
 
     /**

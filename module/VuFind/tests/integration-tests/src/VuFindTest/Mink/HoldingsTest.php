@@ -115,6 +115,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     #[\PHPUnit\Framework\Attributes\DataProvider('itemStatusAndHoldingsProvider')]
     public function testItemStatus(
         $availability,

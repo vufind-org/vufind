@@ -61,7 +61,6 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     {
         yield [
             [],
-            2,
             [],
             1,
             '',
@@ -71,7 +70,6 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
                 'first' => 'foo',
                 'second' => 'bar',
             ],
-            1,
             [
                 'last' => ['foo'],
             ],
@@ -81,7 +79,6 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
         ];
         yield [
             [],
-            1,
             [
                 'last' => ['foo'],
             ],
@@ -94,7 +91,6 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
      * Test getCurrentHiddenFilterParams method.
      *
      * @param array  $currentFilters   Current hidden filters
-     * @param int    $filtersCalls     Number of expected calls to get filters
      * @param array  $lastFilters      Hidden filters for last search
      * @param int    $lastFiltersCalls Number of expected calls to get last filters
      * @param string $expected         Expected results
@@ -104,14 +100,12 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('getCurrentHiddenFilterParamsProvider')]
     public function testGetCurrentHiddenFilterParams(
         array $currentFilters,
-        int $filtersCalls,
         array $lastFilters,
         int $lastFiltersCalls,
         string $expected
     ): void {
         $helper = $this->getHelper(
             $currentFilters,
-            $filtersCalls,
             $lastFilters,
             $lastFiltersCalls
         );
@@ -135,21 +129,18 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getHelper(
             [],
-            0,
             [],
             0,
             [
                 'Solr' => 'Local Index',
                 'Solr:filtered' => 'Local Journals',
             ],
-            4,
             [
                 'Solr:filtered' => [
                     'building:"main"',
                     'format:"journal"',
                 ],
-            ],
-            4
+            ]
         );
 
         $expected = [
@@ -203,14 +194,12 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getHelper(
             [],
-            0,
             [],
             0,
             [
                 'Solr' => 'Local Index',
                 'Dolr' => 'Local Index',
             ],
-            4,
             [
                 'Solr' => [
                     'building:"main"',
@@ -219,8 +208,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
                 'Dolr' => [
                     'building:"dolr"',
                 ],
-            ],
-            4
+            ]
         );
 
         $this->assertEquals(
@@ -244,26 +232,20 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a SearchTabs helper.
      *
-     * @param array $filters              Current filters
-     * @param int   $filtersCalls         Number of expected calls to get filters
-     * @param array $lastFilters          Last filters
-     * @param int   $lastFiltersCalls     Number of expected calls to get last filters
-     * @param array $tabConfig            Tab configuration
-     * @param int   $tabConfigCalls       Number of expected calls to get tab config
-     * @param array $tabFilterConfig      Tab filter configuration
-     * @param int   $tabFilterConfigCalls Number of expected calls to get tab filter config
+     * @param array $filters          Current filters
+     * @param array $lastFilters      Last filters
+     * @param int   $lastFiltersCalls Number of expected calls to get last filters
+     * @param array $tabConfig        Tab configuration
+     * @param array $tabFilterConfig  Tab filter configuration
      *
      * @return SearchTabs
      */
     protected function getHelper(
         array $filters,
-        int $filtersCalls,
         array $lastFilters,
         int $lastFiltersCalls,
         array $tabConfig = [],
-        int $tabConfigCalls = 0,
         array $tabFilterConfig = [],
-        int $tabFilterConfigCalls = 0
     ): SearchTabs {
         $searchService = $this->createMock(SearchService::class);
         $recordLoader = $this->createMock(Loader::class);

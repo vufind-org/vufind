@@ -72,7 +72,7 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
                     if ($group instanceof Query) {
                         // Build this group individually as a basic search
                         $queryOperator = $group->getOperator();
-                        $op = (null != $queryOperator && 0 != $i) ?
+                        $op = (null != $queryOperator && 0 !== $i) ?
                             call_user_func($translate, $queryOperator) . ' ' : '';
                         $all[] = $op
                             . call_user_func($showName, $group->getHandler()) . ':'

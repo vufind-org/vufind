@@ -9,13 +9,13 @@
 <?php endif; ?>
 
 <?php
-  if (!isset($this->recordIds)) {
-    $this->recordIds = array_map(
+  if (null === ($recordIds = $this->recordIds ?? null)) {
+    $recordIds = array_map(
         fn ($record) => $record->getSourceIdentifier() . '|' . $record->getUniqueId(),
         $this->records ?? []
     );
   }
 ?>
-<?php foreach ($this->recordIds as $current): ?>
+<?php foreach ($recordIds as $current): ?>
   <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current)?>">
 <?php endforeach; ?>

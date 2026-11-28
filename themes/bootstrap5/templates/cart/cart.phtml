@@ -38,8 +38,20 @@
             )
           ?>
         <?php endif; ?>
-        <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
-        <?php if (count($exportOptions) > 0): ?>
+        <?php $citationConfig = $this->config()->getArray('config')['Citation'] ?? []; ?>
+        <?php if (($citationConfig['book_bag'] ?? false) && ($citationConfig['formats'] ?? true)): ?>
+          <?=
+            $this->bulkAction()->button(
+                'cite',
+                'cite',
+                'Cite this',
+                [
+                  'title' => $this->translate('bulk_cite_cart'),
+                ]
+            )
+          ?>
+        <?php endif; ?>
+        <?php if (count($this->export()->getActiveFormats('bulk')) > 0): ?>
           <?=
             $this->bulkAction()->button(
                 'export',
@@ -106,7 +118,7 @@
       </label>
     </div>
   <?php endif; ?>
-  <?=$this->render('cart/contents.phtml')?>
+  <?=$this->context($this)->renderInContext('cart/contents.phtml')?>
 </form>
 
 <?php

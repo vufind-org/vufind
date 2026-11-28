@@ -29,11 +29,10 @@
 
 namespace VuFind\Auth;
 
+use Closure;
 use Laminas\Http\PhpEnvironment\Request;
-use Laminas\Session\SessionManager;
-use Laminas\View\Renderer\RendererInterface;
+use Laminas\Session\ManagerInterface;
 use Lmc\Rbac\Identity\IdentityInterface;
-use Lmc\Rbac\Mvc\Identity\IdentityProviderInterface;
 use Psr\Log\LoggerAwareInterface;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -57,7 +56,7 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager implements IdentityProviderInterface, LoggerAwareInterface
+class Manager implements LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -120,29 +119,30 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     /**
      * Constructor.
      *
-     * @param array                           $config            VuFind configuration
-     * @param UserServiceInterface            $userService       User database service
-     * @param UserSessionPersistenceInterface $userSession       User session persistence service
-     * @param SessionManager                  $sessionManager    Session manager
-     * @param PluginManager                   $pluginManager     Authentication plugin manager
-     * @param CookieManager                   $cookieManager     Cookie manager
-     * @param CsrfInterface                   $csrf              CSRF validator
-     * @param LoginTokenManager               $loginTokenManager Login Token manager
-     * @param Connection                      $ils               ILS connection
-     * @param RendererInterface               $viewRenderer      View renderer
-     * @param AuditEventServiceInterface      $auditEventService Event database service
+     * @param array                           $config                         VuFind configuration
+     * @param UserServiceInterface            $userService                    User database service
+     * @param UserSessionPersistenceInterface $userSession                    User session persistence service
+     * @param ManagerInterface                $sessionManager                 Session manager
+     * @param PluginManager                   $pluginManager                  Authentication plugin manager
+     * @param CookieManager                   $cookieManager                  Cookie manager
+     * @param CsrfInterface                   $csrf                           CSRF validator
+     * @param LoginTokenManager               $loginTokenManager              Login Token manager
+     * @param Connection                      $ils                            ILS connection
+     * @param Closure                         $accountHomeAbsoluteUrlCallback Factory callback for account home page
+     * absolute URL
+     * @param AuditEventServiceInterface      $auditEventService              Event database service
      */
     public function __construct(
         protected array $config,
         protected UserServiceInterface $userService,
         protected UserSessionPersistenceInterface $userSession,
-        protected SessionManager $sessionManager,
+        protected ManagerInterface $sessionManager,
         protected PluginManager $pluginManager,
         protected CookieManager $cookieManager,
         protected CsrfInterface $csrf,
         protected LoginTokenManager $loginTokenManager,
         protected Connection $ils,
-        protected RendererInterface $viewRenderer,
+        protected Closure $accountHomeAbsoluteUrlCallback,
         protected AuditEventServiceInterface $auditEventService
     ) {
         // Initialize active authentication setting (defaulting to Database
@@ -263,9 +263,8 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      * the one in config file
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsEmailChange(?string $authMethod = null): bool
     {
         return $this->config['Authentication']['change_email'] ?? false;
@@ -405,9 +404,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     protected function getDefaultSessionInitiatorTarget(): string
     {
         if ($this->defaultSessionInitiatorTarget === null) {
-            $serverHelper = $this->viewRenderer->plugin('serverurl');
-            $urlHelper = $this->viewRenderer->plugin('url');
-            $this->defaultSessionInitiatorTarget = $serverHelper($urlHelper('account-home'));
+            $this->defaultSessionInitiatorTarget = ($this->accountHomeAbsoluteUrlCallback)();
         }
         return $this->defaultSessionInitiatorTarget;
     }
@@ -811,8 +808,6 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      *
      * @throws AuthException
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function updateEmail(UserEntityInterface $user, string $email): void
     {

@@ -195,7 +195,7 @@ class Params extends \VuFind\Search\Base\Params
         // setting this facet actually EXPANDS rather than reduces the result set.
         foreach ($facets as $i => $facet) {
             [$field] = explode(':', $facet['filter']);
-            if ($field == 'holdingsOnly' || $field == 'queryExpansion') {
+            if ($field === 'holdingsOnly' || $field === 'queryExpansion') {
                 $facets[$i]['alwaysVisible'] = true;
             }
         }
@@ -220,7 +220,7 @@ class Params extends \VuFind\Search\Base\Params
             // If we have an empty search with relevance sort, see if there is
             // an override configured:
             if (
-                $sort == 'relevance' && $this->getQuery()->getAllTerms() == ''
+                $sort === 'relevance' && $this->getQuery()->getAllTerms() == ''
                 && ($relOv = $this->getOptions()->getEmptySearchRelevanceOverride())
             ) {
                 $sort = $relOv;
@@ -265,7 +265,7 @@ class Params extends \VuFind\Search\Base\Params
             // if not, override them with defaults.
             $parts = explode(',', $facet);
             $facetName = $parts[0];
-            $defaultMode = ($this->getFacetOperator($facet) == 'OR') ? 'or' : 'and';
+            $defaultMode = ($this->getFacetOperator($facet) === 'OR') ? 'or' : 'and';
             $facetMode = $parts[1] ?? $defaultMode;
             $facetPage = $parts[2] ?? 1;
             $facetLimit = $parts[3] ?? $this->getFacetLimitForField($facetName);
@@ -298,21 +298,21 @@ class Params extends \VuFind\Search\Base\Params
                     if ($filt['field'] == 'holdingsOnly') {
                         $params->set(
                             'holdings',
-                            strtolower(trim($safeValue)) == 'true'
+                            strtolower(trim($safeValue)) === 'true'
                         );
                     } elseif ($filt['field'] == 'queryExpansion') {
                         // Special case -- "query expansion" is a separate parameter
                         // from other facets.
                         $params->set(
                             'expand',
-                            strtolower(trim($safeValue)) == 'true'
+                            strtolower(trim($safeValue)) === 'true'
                         );
                     } elseif ($filt['field'] == 'openAccessFilter') {
                         // Special case -- "open access filter" is a separate
                         // parameter from other facets.
                         $params->set(
                             'openAccessFilter',
-                            strtolower(trim($safeValue)) == 'true'
+                            strtolower(trim($safeValue)) === 'true'
                         );
                     } elseif ($filt['field'] == 'excludeNewspapers') {
                         // Special case -- support a checkbox for excluding
@@ -378,8 +378,8 @@ class Params extends \VuFind\Search\Base\Params
             // Case insensitive case: [x TO y] OR [X TO Y]; convert
             // only if values in both ranges match up!
             if (
-                strtolower($matches[3]) == strtolower($matches[1])
-                && strtolower($matches[4]) == strtolower($matches[2])
+                strtolower($matches[3]) === strtolower($matches[1])
+                && strtolower($matches[4]) === strtolower($matches[2])
             ) {
                 $filter['displayText'] = $matches[1] . '-' . $matches[2];
             }

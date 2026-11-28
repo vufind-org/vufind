@@ -1,6 +1,6 @@
 <?php
   if ($this->driver->getIsMarc()) {
-    echo $this->render('RecordTab/staffviewmarc.phtml');
+    echo $this->context($this)->renderInContext('RecordTab/staffviewmarc.phtml');
     return;
   }
 
@@ -24,5 +24,5 @@
 </table>
 <?php if ($this->config()->alwaysDisplayIndexRecordInStaffView()): ?>
     <h2><?=$this->transEsc('Record in the Search Index')?></h2>
-    <?=$this->render('RecordTab/staffviewarray.phtml')?>
+    <?=$this->context($this)->renderInContext('RecordTab/staffviewarray.phtml')?>
 <?php endif; ?>

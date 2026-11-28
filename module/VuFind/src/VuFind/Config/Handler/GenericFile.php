@@ -53,9 +53,8 @@ class GenericFile extends AbstractBase
      * @param bool                    $handleParentConfig If parent configuration should be handled
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array
     {
         $content = file_get_contents($configLocation->getPath());

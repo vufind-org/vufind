@@ -32,7 +32,7 @@
 
 namespace VuFind\Action\Search;
 
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\ConfigManager;
 use VuFind\ContentBlock\BlockLoader;
@@ -80,7 +80,7 @@ abstract class AbstractSearchAndResultsFacetingAction extends AbstractSearchAndR
      * @param BlockLoader                $blockLoader                Content block loader
      * @param ConfigManager              $configManager              Configuration manager
      * @param RecordRouter               $recordRouter               Record router
-     * @param SessionManager             $sessionManager             Session manager
+     * @param ManagerInterface           $sessionManager             Session manager
      * @param SearchServiceInterface     $searchService              Search service
      * @param AuthManager                $authManager                Authentication manager
      * @param SearchNormalizer           $searchNormalizer           Search normalize
@@ -100,7 +100,7 @@ abstract class AbstractSearchAndResultsFacetingAction extends AbstractSearchAndR
         BlockLoader $blockLoader,
         ConfigManager $configManager,
         RecordRouter $recordRouter,
-        SessionManager $sessionManager,
+        ManagerInterface $sessionManager,
         #[Autowire(container: DbServicePluginManager::class)]
         SearchServiceInterface $searchService,
         AuthManager $authManager,
@@ -198,9 +198,8 @@ abstract class AbstractSearchAndResultsFacetingAction extends AbstractSearchAndR
      * @param array    $hierarchicalFacetsSortOptions Hierarchical facet sort options (if any)
      *
      * @return array Sorted facets, with selected values flagged.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function processAdvancedFacets(
         array $facetList,
         ?Results $searchObject = null,

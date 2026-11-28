@@ -63,8 +63,6 @@ class GetSearchResultsFactory implements \Laminas\ServiceManager\Factory\Factory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -81,7 +79,7 @@ class GetSearchResultsFactory implements \Laminas\ServiceManager\Factory\Factory
             $container->get(TemplateRendererInterface::class),
             $container->get(\VuFind\Record\Loader::class),
             $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
-            $container->get(\Laminas\Session\SessionManager::class)->getId(),
+            $container->get(\Laminas\Session\ManagerInterface::class)->getId(),
             $container->get(\VuFind\Search\SearchNormalizer::class),
             $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config'),
             $container->get(\VuFind\Search\Memory::class),

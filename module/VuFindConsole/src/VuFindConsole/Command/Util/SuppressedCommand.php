@@ -102,7 +102,7 @@ class SuppressedCommand extends AbstractSolrAndIlsCommand
 
         // Make ILS Connection
         try {
-            $result = ($backend == 'SolrAuth')
+            $result = ($backend === 'SolrAuth')
                 ? $this->catalog->getSuppressedAuthorityRecords()
                 : $this->catalog->getSuppressedRecords();
         } catch (\Exception $e) {

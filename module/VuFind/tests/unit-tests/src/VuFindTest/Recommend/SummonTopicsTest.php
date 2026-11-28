@@ -71,7 +71,7 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
     public function testInit(): void
     {
         $parms = $this->createMock(\VuFind\Search\Base\Params::class);
-        $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
+        $request = [];
         $options = $this->getMockBuilder(\VuFind\Search\Summon\Options::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getSearchAction', 'setMaxTopicRecommendations'])

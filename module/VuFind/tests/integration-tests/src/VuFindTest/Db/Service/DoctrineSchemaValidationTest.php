@@ -29,7 +29,10 @@
 
 namespace VuFindTest\Db\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaValidator;
+
+use function get_class;
 
 /**
  * Test class to validate the Doctrine schema.
@@ -57,7 +60,6 @@ final class DoctrineSchemaValidationTest extends \PHPUnit\Framework\TestCase
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
             $this->markTestSkipped('Continuous integration not running.');
-            return;
         }
     }
 
@@ -79,18 +81,24 @@ final class DoctrineSchemaValidationTest extends \PHPUnit\Framework\TestCase
     public function testSchemaValidation(): void
     {
         $container = $this->getLiveDatabaseContainer();
+        $entityManager = $container->get(EntityManagerInterface::class);
         // Flush the Doctrine cache to be sure we're validating the latest data:
-        $cache = $container->get('doctrine.cache.filesystem');
-        $cache->flushAll();
-        $entityManager = $container->get('doctrine.entitymanager.orm_vufind');
-        $platform = $entityManager->getConnection()->getDatabasePlatform()->getName();
+        if ($cache = $entityManager->getCache()) {
+            $cache->evictCollectionRegions();
+            $cache->evictEntityRegions();
+            $cache->evictQueryRegions();
+        }
+
+        $platform = strtolower(get_class($entityManager->getConnection()->getDatabasePlatform()));
         $validator = new SchemaValidator($entityManager);
         $errorList = $validator->validateMapping();
+        // We don't have entities for these tables (intentionally), so we should ignore the drops:
+        $expectedSchemaIssues = ['DROP TABLE log_table', 'DROP TABLE migrations'];
         $schemaList = $validator->getUpdateSchemaList();
-        if ($platform === 'postgresql') {
+        if (str_contains($platform, 'postgresql')) {
             $schemaList = $this->filterIndexRecreation($schemaList);
         }
-        $this->assertEquals(
+        $this->assertSame(
             [],
             $errorList,
             'Unexpected validation error'
@@ -98,7 +106,7 @@ final class DoctrineSchemaValidationTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertSame(
             [],
-            $schemaList,
+            array_diff($schemaList, $expectedSchemaIssues),
             'Unexpected schema updates pending'
             . (($firstUpdate = reset($schemaList)) ? "; first update: $firstUpdate" : '')
         );

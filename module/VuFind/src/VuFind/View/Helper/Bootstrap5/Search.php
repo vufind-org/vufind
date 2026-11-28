@@ -53,15 +53,14 @@ class Search extends \VuFind\View\Helper\AbstractSearch
     /**
      * Render an expand link.
      *
-     * @param string                             $url  Link href
-     * @param \Laminas\View\Renderer\PhpRenderer $view View renderer object
+     * @param string $url Link href
      *
      * @return string
      */
-    protected function renderExpandLink($url, $view)
+    protected function renderExpandLink(string $url): string
     {
         return ' <a href="' . $url
-            . '" title="' . $view->transEsc('spell_expand_alt')
-            . '">(' . $view->transEsc('spell_expand_alt') . ')</a>';
+            . '" title="' . ($this->transEsc)('spell_expand_alt')
+            . '">(' . ($this->transEsc)('spell_expand_alt') . ')</a>';
     }
 }

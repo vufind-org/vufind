@@ -31,6 +31,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtml;
+use VuFind\Http\RouteHelper;
 use VuFind\Search\Memory;
 use VuFind\Search\Params\PluginManager;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -51,14 +52,13 @@ class SearchMemory
      * Constructor.
      *
      * @param Memory        $memory       Search memory service
-     * @param Url           $url          Url view helper
+     * @param RouteHelper   $routeHelper  Route helper
      * @param EscapeHtml    $escapeHtml   EscapeHtml view helper
      * @param PluginManager $searchParams Search Params plugin manager
      */
     public function __construct(
         protected Memory $memory,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected Url $url,
+        protected RouteHelper $routeHelper,
         #[Autowire(container: 'ViewHelperManager')]
         protected EscapeHtml $escapeHtml,
         protected PluginManager $searchParams
@@ -112,7 +112,7 @@ class SearchMemory
                 }
             }
 
-            $url = ($this->url)($lastSearch->getOptions()->getSearchAction());
+            $url = $this->routeHelper->getUrlFromRoute($lastSearch->getOptions()->getSearchAction());
             $queryHelper = $lastSearch->getUrlQuery();
             // Try to append page number and page size from search context parameters saved in params object
             $searchContext = $params->getSavedSearchContextParameters();
@@ -184,7 +184,7 @@ class SearchMemory
     public function getEditLink($searchClassId, $action, $value)
     {
         $query = compact('searchClassId') + [$action => $value];
-        return ($this->url)('search-editmemory', [], compact('query'));
+        return $this->routeHelper->getUrlFromRoute('search-editmemory', queryParams: $query);
     }
 
     /**
@@ -206,7 +206,7 @@ class SearchMemory
         // different backend, we don't want to display irrelevant filters. If there
         // is a backend mismatch, don't initialize the parameter object!
         if ($lastUrl) {
-            $expectedPath = ($this->url)($params->getOptions()->getSearchAction());
+            $expectedPath = $this->routeHelper->getUrlFromRoute($params->getOptions()->getSearchAction());
             if (str_starts_with($lastUrl, $expectedPath)) {
                 $params->initFromRequest($request);
             }

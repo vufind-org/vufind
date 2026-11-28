@@ -148,17 +148,16 @@ class AuthorityRecommend implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param Parameters                 $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function init($params, $request)
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // Save user search query:
-        $this->lookfor = $request->get('lookfor');
+        $this->lookfor = $request['lookfor'] ?? '';
     }
 
     /**
@@ -198,7 +197,7 @@ class AuthorityRecommend implements RecommendInterface
         $normalize = function ($str) {
             return trim(strtolower(preg_replace('/\W/', '', $str)));
         };
-        return $normalize($a) == $normalize($b);
+        return $normalize($a) === $normalize($b);
     }
 
     /**

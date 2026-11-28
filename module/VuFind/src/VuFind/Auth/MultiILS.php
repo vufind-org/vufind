@@ -35,7 +35,6 @@ namespace VuFind\Auth;
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
-use VuFind\ILS\Connection;
 use VuFind\ILS\Driver\MultiBackend;
 
 use function in_array;
@@ -73,7 +72,6 @@ class MultiILS extends ILS
         $username = trim($request->getPost()->get('username', ''));
         $target = trim($request->getPost()->get('target', ''));
         $loginMethod = $this->getILSLoginMethod($target);
-        $rememberMe = (bool)$request->getPost()->get('remember_me', false);
 
         // We should have target either separately or already embedded into username
         if (!$target) {
@@ -107,7 +105,6 @@ class MultiILS extends ILS
         $password = trim($request->getPost()->get('password', ''));
         $target = trim($request->getPost()->get('target', ''));
         $loginMethod = $this->getILSLoginMethod($target);
-        $rememberMe = (bool)$request->getPost()->get('remember_me', false);
 
         // We should have target either separately or already embedded into username
         if ($target) {
@@ -121,7 +118,7 @@ class MultiILS extends ILS
             throw new AuthException('authentication_error_admin');
         }
 
-        return $this->handleLogin($username, $password, $loginMethod, $rememberMe);
+        return $this->handleLogin($username, $password, $loginMethod);
     }
 
     /**

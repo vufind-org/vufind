@@ -1,7 +1,7 @@
 <?=$this->matomo(['context' => 'accordion'])?>
 <?=$this->googleanalytics()?>
 <?php
-  $this->defaultTab = strtolower($this->defaultTab);
+  $defaultTab = strtolower($this->defaultTab);
   $idSuffixEsc = $this->escapeHtmlAttr(md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier()));
   $parentIdEsc = 'accordion_' . $idSuffixEsc;
 ?>
@@ -17,7 +17,7 @@
           </a>
         </h4>
       </div>
-      <div id="information_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if ($this->defaultTab === 'information'): ?> show<?php endif; ?>" data-bs-parent="#<?=$parentIdEsc?>">
+      <div id="information_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if ($defaultTab === 'information'): ?> show<?php endif; ?>" data-bs-parent="#<?=$parentIdEsc?>">
         <div class="list-tab-content record panel-body">
           <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffixEsc?>">
           <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource">
@@ -37,7 +37,7 @@
           </a>
         </h4>
       </div>
-      <div id="tools_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if ($this->defaultTab === 'tools'): ?> show<?php endif; ?>" data-bs-parent="#<?=$parentIdEsc?>">
+      <div id="tools_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if ($defaultTab === 'tools'): ?> show<?php endif; ?>" data-bs-parent="#<?=$parentIdEsc?>">
         <div class="list-tab-content panel-body">
           <?=$toolbar ?>
         </div>
@@ -55,7 +55,7 @@
           </a>
         </h4>
       </div>
-      <div id="related_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if ($this->defaultTab === 'related'): ?> show<?php endif; ?>" data-bs-parent="#<?=$parentIdEsc?>">
+      <div id="related_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if ($defaultTab === 'related'): ?> show<?php endif; ?>" data-bs-parent="#<?=$parentIdEsc?>">
         <div class="list-tab-content panel-body">
           <?php foreach ($relatedList as $current): ?>
             <?=$this->related()->render($current)?>
@@ -75,7 +75,7 @@
       if (!$obj->supportsAjax()) {
         $tab_classes[] = 'noajax';
       }
-      if ($this->defaultTab === strtolower($tab)) {
+      if ($defaultTab === strtolower($tab)) {
         $tab_classes[] = 'default';
       }
     ?>
@@ -85,7 +85,7 @@
           <a class="accordion-toggle" data-href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav"><?=$this->transEsc($desc) ?></a>
         </h4>
       </div>
-      <div id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>-content" class="list-tab-content panel-collapse collapse<?php if ($this->defaultTab === strtolower($tab)): ?> show<?php endif; ?>" data-bs-parent="#<?=$parentIdEsc?>"></div>
+      <div id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>-content" class="list-tab-content panel-collapse collapse<?php if ($defaultTab === strtolower($tab)): ?> show<?php endif; ?>" data-bs-parent="#<?=$parentIdEsc?>"></div>
     </div>
   <?php endforeach; ?>
 </div>

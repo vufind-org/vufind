@@ -326,9 +326,8 @@ class Primo extends DefaultRecord
      * @param string $format Export format
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function exportDisabled($format)
     {
         // Support export for EndNote and RefWorks

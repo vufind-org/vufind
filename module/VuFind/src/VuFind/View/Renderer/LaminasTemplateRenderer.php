@@ -161,6 +161,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
      * @param array[]                 $childTemplates Any child templates; an array of associative array with keys
      *                                                'template' and 'params'
      * @param bool                    $useLayout      Render full page with the layout?
+     * @param bool                    $rootContext    Include root context (main template variables)?
      *
      * @return string
      */
@@ -170,37 +171,52 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         array $params = [],
         array $childTemplates = [],
         bool $useLayout = false,
+        bool $rootContext = false,
     ): string {
-        $view = $this->viewManager->getView();
-        $viewModel = $this->createViewModel($request, $params, $template);
-        foreach ($childTemplates as $current) {
-            $viewModel->addChild($this->createViewModel($request, $current['params'] ?? [], $current['template']));
-        }
-        if (!$useLayout) {
+        $viewModelHelper = $this->viewRenderer->plugin('view_model');
+        // Save current model so that we can restore it when done:
+        $saveCurrentModel = $viewModelHelper?->getCurrent();
+        try {
+            if ($rootContext && ($rootViewModel = $this->globalsContainer['viewModel'] ?? null)) {
+                $params += $rootViewModel->getVariables();
+            }
+            $view = $this->viewManager->getView();
+            $viewModel = $this->createViewModel($request, $params, $template);
+            foreach ($childTemplates as $current) {
+                $viewModel->addChild($this->createViewModel($request, $current['params'] ?? [], $current['template']));
+            }
+            if (!$useLayout) {
+                // Force renderer to return the result:
+                $viewModel->setOption('has_parent', true);
+                return $view->render($viewModel);
+            }
+
+            // Prepare layout and render:
+            if (null === $request) {
+                throw new InvalidArgumentException('Request is required for rendering with layout');
+            }
+            $layout = $this->getLayout($request);
+
+            $templateParts = explode('/', $viewModel->getTemplate());
+            $this->globalsContainer['templateDir'] = $templateParts[0];
+            $this->globalsContainer['templateName'] = $templateParts[1] ?? null;
+            $this->globalsContainer['viewModel'] = $viewModel;
+            $this->setupRenderingInLightbox($request, $layout);
+
+            // Clear any previous children (e.g. when rendering an error):
+            if ($layout instanceof ViewModel) {
+                $layout->clearChildren();
+            }
+            $layout->addChild($viewModel);
             // Force renderer to return the result:
-            $viewModel->setOption('has_parent', true);
-            return $view->render($viewModel);
+            $layout->setOption('has_parent', true);
+            return $view->render($layout);
+        } finally {
+            // Restore the previous "current" model:
+            if ($saveCurrentModel) {
+                $viewModelHelper->setCurrent($saveCurrentModel);
+            }
         }
-
-        // Prepare layout and render:
-        if (null === $request) {
-            throw new InvalidArgumentException('Request is required for rendering with layout');
-        }
-        $layout = $this->getLayout($request);
-
-        $templateParts = explode('/', $viewModel->getTemplate());
-        $this->globalsContainer['templateDir'] = $templateParts[0];
-        $this->globalsContainer['templateName'] = $templateParts[1] ?? null;
-        $this->setupRenderingInLightbox($request, $layout);
-
-        // Clear any previous children (e.g. when rendering an error):
-        if ($layout instanceof ViewModel) {
-            $layout->clearChildren();
-        }
-        $layout->addChild($viewModel);
-        // Force renderer to return the result:
-        $layout->setOption('has_parent', true);
-        return $view->render($layout);
     }
 
     /**
@@ -308,14 +324,15 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
      * Setup layout with lightbox-related variables, and template when a lightbox is requested.
      *
      * @param ServerRequestInterface $request Request
-     * @param ViewModel              $layout  Layout
+     * @param ModelInterface         $layout  Layout
      *
      * @return void
      */
-    protected function setupRenderingInLightbox(ServerRequestInterface $request, ViewModel $layout): void
+    protected function setupRenderingInLightbox(ServerRequestInterface $request, ModelInterface $layout): void
     {
         if ($this->inLightbox($request)) {
             $layout->setTemplate('layout/lightbox');
+            $this->globalsContainer['inLightbox'] = true;
         }
         $lightboxParentUrl = new Http($this->serverUrlHelper->getCurrentUrl());
         $query = $lightboxParentUrl->getQueryAsArray();

@@ -1,10 +1,10 @@
 <?php
-  $this->parentNodeId ??= '';
+  $parentNodeId = $this->parentNodeId ?? '';
   $nodeId = 0;
 ?>
 <?php foreach ($this->facetList as $item): ?>
   <?php
-    $renderedEntryHtml = $this->render('Recommend/SideFacets/single-facet.phtml', [
+    $renderedEntryHtml = $this->context($this)->renderInContext('Recommend/SideFacets/single-facet.phtml', [
       'exclude' => $this->allowExclude,
       'facet' => $item,
       'group' => $this->group,
@@ -26,7 +26,7 @@
     <li class="facet-tree__parent">
       <?php
         ++$nodeId;
-        $childUlId = 'facet_' . $this->group . '_' . $this->parentNodeId . '_' . $nodeId;
+        $childUlId = 'facet_' . $this->group . '_' . $parentNodeId . '_' . $nodeId;
         $buttonAttrs = $this->htmlAttributes(
             [
                 'class' => 'facet-tree__toggle-expanded',
@@ -45,13 +45,13 @@
         <?=$renderedEntryHtml?>
       </span>
       <ul id="<?=$this->escapeHtmlAttr($childUlId)?>">
-        <?=$this->render('Recommend/SideFacets/hierarchical-facet-level.phtml', [
+        <?=$this->context($this)->renderInContext('Recommend/SideFacets/hierarchical-facet-level.phtml', [
           'allowExclude' => $this->allowExclude,
           'facetList' => $item['children'],
           'group' => $this->group,
           'url' => $this->url,
           'urlBase' => $this->urlBase,
-          'parentNodeId' => $this->parentNodeId . '_' . $nodeId,
+          'parentNodeId' => $parentNodeId . '_' . $nodeId,
         ]) ?>
       </ul>
     </li>

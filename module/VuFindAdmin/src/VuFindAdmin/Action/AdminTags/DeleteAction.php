@@ -108,7 +108,7 @@ class DeleteAction extends AbstractTagsAction implements TranslatorAwareInterfac
             $delete = $this->resourceTagsService->deleteLinksByResourceTagsIdArray($ids);
         }
 
-        if (0 == $delete) {
+        if (0 === $delete) {
             $flashMessagesHelper->addErrorMessage('tags_delete_fail');
             return $redirectHelper->redirectToUrl($response, $originUrl);
         }

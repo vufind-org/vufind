@@ -38,6 +38,7 @@ use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PaymentServiceInterface;
 use VuFind\Mailer\Mailer;
 use VuFind\OnlinePayment\OnlinePaymentManager;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Factory for online payment background monitor.
@@ -78,7 +79,7 @@ class MonitorCommandFactory implements FactoryInterface
         return new $requestedName(
             $dbServiceManager->get(PaymentServiceInterface::class),
             $container->get(OnlinePaymentManager::class),
-            $container->get('ViewRenderer'),
+            $container->get(TemplateRendererInterface::class),
             $container->get(Mailer::class),
             $mainConfig,
             $dbServiceManager->get(AuditEventServiceInterface::class),

@@ -31,7 +31,7 @@ namespace VuFind\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use VuFind\Crypt\HMAC;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\ILS\Connection;
@@ -61,7 +61,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
     /**
      * Session manager.
      *
-     * @var SessionManager
+     * @var ManagerInterface
      */
     protected $sessionManager;
 
@@ -82,13 +82,13 @@ abstract class AbstractRequestBase extends AbstractPlugin
     /**
      * Constructor.
      *
-     * @param HMAC           $hmac           HMAC generator
-     * @param SessionManager $sessionManager Session manager
-     * @param DateConverter  $dateConverter  Date converter
+     * @param HMAC             $hmac           HMAC generator
+     * @param ManagerInterface $sessionManager Session manager
+     * @param DateConverter    $dateConverter  Date converter
      */
     public function __construct(
         HMAC $hmac,
-        SessionManager $sessionManager,
+        ManagerInterface $sessionManager,
         DateConverter $dateConverter
     ) {
         $this->hmac = $hmac;

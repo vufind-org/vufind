@@ -74,7 +74,7 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
         $sf->setConfig($settings);
         $sf->init(
             $results->getParams(),
-            new \Laminas\Stdlib\Parameters([])
+            []
         );
         $sf->process($results ?? $this->getSolrResults());
         return $sf;

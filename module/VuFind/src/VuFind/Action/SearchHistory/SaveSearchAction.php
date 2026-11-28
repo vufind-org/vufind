@@ -32,17 +32,29 @@
 namespace VuFind\Action\SearchHistory;
 
 use DateTime;
+use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
+use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\AccountCapabilities;
+use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\AuditEventServiceInterface;
+use VuFind\Db\Service\PluginManager as DbServicePluginManager;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Search\History;
+use VuFind\Search\Memory;
+use VuFind\Search\Results\PluginManager as SearchResultsPluginManager;
+use VuFind\Search\SearchNormalizer;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Save/unsave search action.
@@ -56,6 +68,55 @@ use VuFind\Exception\Forbidden as ForbiddenException;
  */
 class SaveSearchAction extends AbstractSearchHistoryAction
 {
+    /**
+     * Constructor.
+     *
+     * @param array                      $config                     VuFind configuration
+     * @param AuthManager                $authManager                Authentication manager
+     * @param AuditEventServiceInterface $auditEventService          Audit event service
+     * @param ManagerInterface           $sessionManager             Session manager
+     * @param AccountCapabilities        $accountCapabilities        Account capabilities
+     * @param Memory                     $searchMemory               Search memory
+     * @param History                    $searchHistory              Search history
+     * @param SearchServiceInterface     $searchService              Search service
+     * @param SearchNormalizer           $searchNormalizer           Search normalizer
+     * @param SearchResultsPluginManager $searchResultsPluginManager Search results plugin manager
+     * @param SecretCalculator           $secretCalculator           Secret calculator
+     * @param string                     $absoluteBaseUrl            Absolute base URL
+     */
+    public function __construct(
+        #[Autowire(config: 'config')]
+        array $config,
+        AuthManager $authManager,
+        #[Autowire(container: DbServicePluginManager::class)]
+        AuditEventServiceInterface $auditEventService,
+        ManagerInterface $sessionManager,
+        AccountCapabilities $accountCapabilities,
+        Memory $searchMemory,
+        History $searchHistory,
+        #[Autowire(container: DbServicePluginManager::class)]
+        SearchServiceInterface $searchService,
+        SearchNormalizer $searchNormalizer,
+        SearchResultsPluginManager $searchResultsPluginManager,
+        SecretCalculator $secretCalculator,
+        #[Autowire(container: \VuFind\Application\UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        protected string $absoluteBaseUrl,
+    ) {
+        parent::__construct(
+            $config,
+            $authManager,
+            $auditEventService,
+            $sessionManager,
+            $accountCapabilities,
+            $searchMemory,
+            $searchHistory,
+            $searchService,
+            $searchNormalizer,
+            $searchResultsPluginManager,
+            $secretCalculator
+        );
+    }
+
     /**
      * Save or unsave a search.
      *
@@ -137,7 +198,7 @@ class SaveSearchAction extends AbstractSearchHistoryAction
         if (!isset($scheduleOptions[$schedule])) {
             throw new BadRequestException('Illegal schedule option: ' . $schedule);
         }
-        $baseurl =  rtrim($this->serverUrlHelper->getUrlForPath($this->getRouteHelper()->getUrlFromRoute('home')), '/');
+        $baseurl =  rtrim($this->absoluteBaseUrl, '/');
         $savedRow = $this->getSearchRowSecurely($sid, $user);
 
         // In case the user has just logged in, let's deduplicate...

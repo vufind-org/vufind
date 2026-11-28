@@ -190,7 +190,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     protected function process($data)
     {
         // make sure data exists
-        if (strlen($data) == 0) {
+        if (strlen($data) === 0) {
             throw new \Exception('LibGuides did not return any data');
         }
 

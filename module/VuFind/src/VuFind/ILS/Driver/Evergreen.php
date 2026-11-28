@@ -231,9 +231,8 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $holding = [];
@@ -316,9 +315,8 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         // TODO
@@ -419,7 +417,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $due_date = $this->formatDate($row['due_date']);
                 $_due_time = new \DateTime($row['due_date']);
-                if ($_due_time->format('H:i:s') == '23:59:59') {
+                if ($_due_time->format('H:i:s') === '23:59:59') {
                     $dueTime = ''; // don't display due time for non-hourly loans
                 } else {
                     $dueTime = $this->dateConverter->convertToDisplayTime(
@@ -781,9 +779,8 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function findReserves($course, $inst, $dept)
     {
         // TODO

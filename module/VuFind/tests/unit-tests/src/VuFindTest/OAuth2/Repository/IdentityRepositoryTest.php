@@ -368,7 +368,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     {
         return hash(
             'sha256',
-            'user' . $this->oauth2Config['Server']['hashSalt']
+            $username . $this->oauth2Config['Server']['hashSalt']
         );
     }
 }

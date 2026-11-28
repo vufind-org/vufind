@@ -241,7 +241,7 @@ class Mailer implements
         }
 
         // Validate recipient email address count:
-        if (count($recipients) == 0) {
+        if (count($recipients) === 0) {
             throw new MailException('Invalid Recipient Email Address', MailException::ERROR_INVALID_RECIPIENT);
         }
         if ($this->maxRecipients > 0) {
@@ -379,6 +379,8 @@ class Mailer implements
      *
      * @throws MailException
      * @return void
+     *
+     * @deprecated Craft the message separately and use send() instead.
      */
     public function sendRecord(
         string|Address|array $to,
@@ -420,6 +422,8 @@ class Mailer implements
      * @param \VuFind\RecordDriver\AbstractBase $record Record being emailed
      *
      * @return string
+     *
+     * @deprecated Superseded by \VuFind\Action\Record\EmailAction::getDefaultRecordSubject()
      */
     public function getDefaultRecordSubject($record)
     {

@@ -1,7 +1,7 @@
 <?php
   $results = $this->driver->tryMethod('getVersions', [false, 20]);
   $view = 'list';
-  $this->render(
+  $this->context($this)->renderInContext(
       'search/results-scripts.phtml',
       [
           'displayVersions' => true,
@@ -34,7 +34,7 @@
   <?php foreach ($results as $current): ?>
     <div id="result<?=++$recordNumber ?>" class="result clearfix<?=$current->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
       <span class="visually-hidden"><?=$this->transEsc('Search Result');?> <?=$recordNumber ?></span>
-      <?=$this->record($current)->getSearchResult($view, $results)?>
+      <?=$this->record($current)->getSearchResult($view, $this->context($this)->getVars())?>
     </div>
   <?php endforeach; ?>
   <div class="search-tools hidden-print">

@@ -29,7 +29,8 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\View\Helper\Url;
+use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Http\RouteHelper;
 use VuFind\View\Helper\Root\AlphaBrowse;
 
 /**
@@ -44,20 +45,20 @@ use VuFind\View\Helper\Root\AlphaBrowse;
 class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Get mock URL helper.
+     * Get mock RouteHelper.
      *
      * @param string $expectedQuery Expected query
      *
-     * @return Url
+     * @return MockObject&RouteHelper
      */
-    protected function getMockUrlHelper($expectedQuery): Url
+    protected function getMockRouteHelper($expectedQuery): MockObject&RouteHelper
     {
-        $mock = $this->createMock(Url::class);
-        $mock->expects($this->once())->method('__invoke')
+        $mock = $this->createMock(RouteHelper::class);
+        $mock->expects($this->once())->method('getUrlFromRoute')
             ->with(
                 'search-results',
                 [],
-                ['query' => $expectedQuery]
+                $expectedQuery
             )->willReturn('foo');
         return $mock;
     }
@@ -65,14 +66,14 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
     /**
      * Get configured AlphaBrowse helper for testing.
      *
-     * @param Url   $url     URL helper
-     * @param array $options Extra options
+     * @param RouteHelper $routeHelper Route helper
+     * @param array       $options     Extra options
      *
      * @return AlphaBrowse
      */
-    protected function getHelper(Url $url, array $options = []): AlphaBrowse
+    protected function getHelper(RouteHelper $routeHelper, array $options = []): AlphaBrowse
     {
-        return new AlphaBrowse($url, $options);
+        return new AlphaBrowse($routeHelper, $options);
     }
 
     /**
@@ -83,14 +84,14 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetUrlWithMultipleRecordsAndDefaultSettings(): void
     {
-        $url = $this->getMockUrlHelper(
+        $routeHelper = $this->getMockRouteHelper(
             [
                 'type' => 'TitleBrowse',
                 'lookfor' => '"xyzzy"',
                 'dfApplied' => 1,
             ]
         );
-        $helper = $this->getHelper($url);
+        $helper = $this->getHelper($routeHelper);
         $item = ['heading' => 'xyzzy', 'sort_key' => 'xyzzy', 'count' => 2];
         $this->assertEquals('foo', $helper->getUrl('title', $item));
     }
@@ -103,7 +104,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetUrlWithSingleRecordAndDefaultSettings(): void
     {
-        $url = $this->getMockUrlHelper(
+        $routeHelper = $this->getMockRouteHelper(
             [
                 'type' => 'TitleBrowse',
                 'lookfor' => '"xyzzy"',
@@ -111,7 +112,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                 'jumpto' => 1,
             ]
         );
-        $helper = $this->getHelper($url);
+        $helper = $this->getHelper($routeHelper);
         $item = ['heading' => 'xyzzy', 'sort_key' => 'xyzzy', 'count' => 1];
         $this->assertEquals('foo', $helper->getUrl('title', $item));
     }
@@ -123,14 +124,14 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetUrlEscapesQuotes(): void
     {
-        $url = $this->getMockUrlHelper(
+        $routeHelper = $this->getMockRouteHelper(
             [
                 'type' => 'TitleBrowse',
                 'lookfor' => '"\\"xyzzy\\""',
                 'dfApplied' => 1,
             ]
         );
-        $helper = $this->getHelper($url);
+        $helper = $this->getHelper($routeHelper);
         $item = ['heading' => '"xyzzy"', 'sort_key' => '"xyzzy"', 'count' => 100];
         $this->assertEquals('foo', $helper->getUrl('title', $item));
     }
@@ -143,13 +144,13 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetUrlAppliesFilterBypassSetting(): void
     {
-        $url = $this->getMockUrlHelper(
+        $routeHelper = $this->getMockRouteHelper(
             [
                 'type' => 'TitleBrowse',
                 'lookfor' => '"xyzzy"',
             ]
         );
-        $helper = $this->getHelper($url, ['bypass_default_filters' => false]);
+        $helper = $this->getHelper($routeHelper, ['bypass_default_filters' => false]);
         $item = ['heading' => 'xyzzy', 'sort_key' => 'xyzzy', 'count' => 100];
         $this->assertEquals('foo', $helper->getUrl('title', $item));
     }

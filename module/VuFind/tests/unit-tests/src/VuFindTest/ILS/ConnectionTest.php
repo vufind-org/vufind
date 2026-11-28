@@ -61,7 +61,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     {
         $config = ['driver' => 'Demo'];
         $driverManager = $this->createMock(\VuFind\ILS\Driver\PluginManager::class);
-        $driverManager->method('has')->willReturn('Demo');
+        $driverManager->method('has')->willReturn(true);
         $mockConfigManager = $this->getMockConfigManager();
         $this->connection = new Connection(
             $config,

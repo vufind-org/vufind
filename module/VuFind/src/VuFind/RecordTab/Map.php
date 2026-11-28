@@ -206,7 +206,7 @@ class Map extends AbstractBase
             $labelN = $coord[2];
             $labelS = $coord[3];
             /* Create coordinate label for map display */
-            if (($labelW == $labelE) && ($labelN == $labelS)) {
+            if (($labelW === $labelE) && ($labelN === $labelS)) {
                 $labelcoord = $labelS . ' ' . $labelE;
             } else {
                 /* Coordinate order is min to max on lat and long axes */

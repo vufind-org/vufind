@@ -805,7 +805,7 @@ class Server
             $params = $this->listRecordsGetParams();
         } catch (\Exception $e) {
             $parts = explode(':', $e->getMessage(), 2);
-            if (count($parts) != 2 || !in_array($parts[0], $this->legalErrorCodes)) {
+            if (count($parts) !== 2 || !in_array($parts[0], $this->legalErrorCodes)) {
                 throw $e;
             }
             return $this->showError($parts[0], $parts[1]);
@@ -1272,7 +1272,7 @@ class Server
     {
         // Remove timezone markers -- we don't want PHP to outsmart us by adjusting
         // the time zone!
-        if (strlen($date) == 10) {
+        if (strlen($date) === 10) {
             $date .= ' ' . $time;
         } else {
             $date = str_replace(['T', 'Z'], [' ', ''], $date);

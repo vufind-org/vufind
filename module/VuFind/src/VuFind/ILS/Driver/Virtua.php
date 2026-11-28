@@ -357,9 +357,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         // Strip off the prefix from vtls exports
@@ -483,7 +482,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             $holding[] = $temp;
         }
 
-        return (count($holding) != 0 && $patron['id'] != null)
+        return (count($holding) !== 0 && $patron['id'] != null)
             ? $this->checkHoldAllowed($patron['id'], $holding) : $holding;
     }
 
@@ -691,7 +690,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $end_time = $start_string = null;
 
         // Handle empty patterns
-        if (count($data) == 0) {
+        if (count($data) === 0) {
             return '';
         }
 
@@ -992,7 +991,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         foreach ($holdings_marc as $row) {
             if (
                 $row['SUBFIELD_DATA'] != null
-                && trim($row['SUBFIELD_DATA']) != ''
+                && trim($row['SUBFIELD_DATA']) !== ''
             ) {
                 $data_set[$row['FIELD_SEQUENCE']][] = [
                     'tag'  => trim($row['FIELD_TAG']),
@@ -1132,7 +1131,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         foreach ($hresult as $row) {
             if (
                 $row['SUBFIELD_DATA'] != null
-                && trim($row['SUBFIELD_DATA']) != ''
+                && trim($row['SUBFIELD_DATA']) !== ''
             ) {
                 $data_set[$row['ID'] . '_' . $row['FIELD_SEQUENCE']][] = [
                     'id'   => trim($row['ID']),
@@ -1414,9 +1413,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function findReserves($course, $inst = false, $dept = false)
     {
         $recordList = [];
@@ -1613,9 +1611,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         throw new \Exception('TODO: implement getCancelHoldDetails.');
@@ -1631,9 +1628,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function cancelHolds($cancelDetails)
     {
         // TODO: implement standard VuFind holds API; utilize cancelHold()
@@ -1727,9 +1723,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @param array $checkOutDetails An array of item data
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getRenewDetails($checkOutDetails)
     {
         throw new \Exception('TODO: implement getRenewDetails');

@@ -263,6 +263,7 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
      *
      * @return ?ResponseInterface
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function validateActionConfig(
         ServerRequestInterface $request,
         ResponseInterface $response
@@ -282,6 +283,7 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
      *
      * @return ?ResponseInterface
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function preprocessRequest(
         ServerRequestInterface $request,
         ResponseInterface $response

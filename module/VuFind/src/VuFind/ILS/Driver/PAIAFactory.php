@@ -70,7 +70,7 @@ class PAIAFactory extends DriverWithDateConverterFactory
         return parent::__invoke(
             $container,
             $requestedName,
-            [$container->get(\Laminas\Session\SessionManager::class)]
+            [$container->get(\Laminas\Session\ManagerInterface::class)]
         );
     }
 }

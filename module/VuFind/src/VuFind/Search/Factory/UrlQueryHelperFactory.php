@@ -29,6 +29,7 @@
 
 namespace VuFind\Search\Factory;
 
+use Closure;
 use VuFind\Search\Base\Params;
 use VuFind\Search\UrlQueryHelper;
 
@@ -61,11 +62,11 @@ class UrlQueryHelperFactory
     {
         $options = $params->getOptions();
         return [
-            'handler' => $options->getDefaultHandler(),
-            'limit' => $options->getDefaultLimit(),
-            'selectedShards' => $options->getDefaultSelectedShards(),
-            'sort' => $params->getDefaultSort(),
-            'view' => $options->getDefaultView(),
+            'handler' => fn () => $options->getDefaultHandler(),
+            'limit' => fn () => $options->getDefaultLimit(),
+            'selectedShards' => fn () => $options->getDefaultSelectedShards(),
+            'sort' => fn () => $params->getDefaultSort(),
+            'view' => fn () => $options->getDefaultView(),
         ];
     }
 
@@ -110,18 +111,18 @@ class UrlQueryHelperFactory
     {
         $urlParams = [];
         $sort = $params->getSort();
-        if (null !== $sort && $sort != $config['defaults']['sort']) {
+        if (null !== $sort && $sort != $this->extractCallableValue($config['defaults']['sort'])) {
             $urlParams['sort'] = $sort;
         }
-        $limit = $params->getLimit();
-        if (null !== $limit && $limit != $config['defaults']['limit']) {
+        $limit = $params->getActiveLimitSetting();
+        if (null !== $limit && $limit != $this->extractCallableValue($config['defaults']['limit'])) {
             $urlParams['limit'] = $limit;
         }
         $view = $params->getView();
-        if (null !== $view && $view != $config['defaults']['view']) {
+        if ($view && $view != $this->extractCallableValue($config['defaults']['view'])) {
             $urlParams['view'] = $view;
         }
-        if ($params->getPage() != 1) {
+        if ($params->getPage() !== 1) {
             $urlParams['page'] = $params->getPage();
         }
         if ($filters = $params->getFiltersAsQueryParams()) {
@@ -133,9 +134,9 @@ class UrlQueryHelperFactory
         $shards = $params->getSelectedShards();
         if (!empty($shards)) {
             sort($shards);
-            $defaultShards = $config['defaults']['selectedShards'];
+            $defaultShards = $this->extractCallableValue($config['defaults']['selectedShards']);
             sort($defaultShards);
-            if (implode(':::', $shards) != implode(':::', $defaultShards)) {
+            if (implode(':::', $shards) !== implode(':::', $defaultShards)) {
                 $urlParams['shard'] = $shards;
             }
         }
@@ -161,5 +162,17 @@ class UrlQueryHelperFactory
             $params->getQuery(),
             $finalConfig
         );
+    }
+
+    /**
+     * If value is closure, call it and otherwise just return it.
+     *
+     * @param mixed $value Value
+     *
+     * @return mixed
+     */
+    protected function extractCallableValue(mixed $value): mixed
+    {
+        return $value instanceof Closure ? $value() : $value;
     }
 }

@@ -29,6 +29,8 @@
 
 namespace VuFind\Recommend;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Recommendation class to expand recommendation interfaces.
  *
@@ -70,6 +72,7 @@ class ExpandFacets implements RecommendInterface
      */
     public function __construct(
         protected \VuFind\Config\ConfigManagerInterface $configManager,
+        #[Autowire(container: \VuFind\Search\Results\PluginManager::class, service: 'Solr')]
         protected \VuFind\Search\Solr\Results $emptyResults
     ) {
     }
@@ -106,12 +109,12 @@ class ExpandFacets implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // Turn on side facets in the search results:
         foreach ($this->facets as $name => $desc) {

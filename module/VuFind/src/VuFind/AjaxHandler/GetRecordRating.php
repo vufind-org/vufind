@@ -33,6 +33,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Http\HttpStatus;
 use VuFind\Ratings\RatingsService;
 use VuFind\Record\Loader as RecordLoader;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\Helper\Root\Record as RecordHelper;
 
 /**
@@ -55,6 +56,7 @@ class GetRecordRating extends AbstractBase
      */
     public function __construct(
         protected RecordLoader $recordLoader,
+        #[Autowire(container: 'ViewHelperManager')]
         protected RecordHelper $recordHelper,
         protected RatingsService $ratingsService
     ) {

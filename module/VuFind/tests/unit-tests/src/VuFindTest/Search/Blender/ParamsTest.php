@@ -739,7 +739,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $mappings['Facets']['Fields']['format']['Mappings']['EDS'] = [
             'Ignore' => true,
         ];
-        $params = $this->getParams(null, $mappings);
+        $params = $this->getParams($mappings);
         $params->addHiddenFilter('format:bar');
         $backendParams = $params->getBackendParameters();
         // Make sure EDS is NOT disabled:
@@ -760,7 +760,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'bar',
             ],
         ];
-        $params = $this->getParams(null, $mappings);
+        $params = $this->getParams($mappings);
         $params->addHiddenFilter('format:bar');
         $backendParams = $params->getBackendParameters();
         // Make sure EDS is NOT disabled but doesn't have filters either:
@@ -1091,12 +1091,11 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Params class.
      *
-     * @param array $config   Blender configuration, overrides defaults
      * @param array $mappings Blender mappings, overrides defaults
      *
      * @return Params
      */
-    protected function getParams($config = null, $mappings = null): Params
+    protected function getParams($mappings = null): Params
     {
         $mockConfigManager = $this->createMock(ConfigManagerInterface::class);
         return new Params(

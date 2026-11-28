@@ -30,9 +30,8 @@
 namespace VuFind\Db\Service;
 
 use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
-use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrinePaginatorAdapter;
 use Laminas\Paginator\Paginator;
-use VuFind\Db\Entity\Feedback;
+use VuFind\Db\DoctrinePaginatorAdapter;
 use VuFind\Db\Entity\FeedbackEntityInterface;
 
 use function count;

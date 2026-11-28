@@ -31,7 +31,7 @@
       </div>
     </div>
     <?php if ($isDateRange): ?>
-      <?php $options = $this->searchOptions($this->searchClassId); ?>
+      <?php $options = $this->results->getOptions(); ?>
       <?=$this->component('date-range-slider', [
         'values' => $cleanValues,
         'sliderId' => $safeBaseId . $this->escapeHtml($this->facet['type']) . 'Slider',

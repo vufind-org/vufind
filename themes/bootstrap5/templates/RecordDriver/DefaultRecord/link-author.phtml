@@ -5,5 +5,5 @@
     $query = ['author' => $this->lookfor];
     echo $this->url('author-home', [], compact('query'));
   } else {
-    echo $this->render('RecordDriver/DefaultRecord/link-generic.phtml', compact('driver', 'lookfor', 'searchRoute') + ['type' => 'Author']);
+    echo $this->context($this)->renderInContext('RecordDriver/DefaultRecord/link-generic.phtml', compact('driver', 'lookfor', 'searchRoute') + ['type' => 'Author']);
   }

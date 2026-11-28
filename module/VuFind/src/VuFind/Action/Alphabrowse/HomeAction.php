@@ -256,7 +256,7 @@ class HomeAction extends AbstractTemplateRenderingAction
         $templateParams['result'] = $result;
 
         // set up highlighting: page 0 contains match location
-        if ($highlighting && $page == 0 && isset($result['Browse'])) {
+        if ($highlighting && $page === 0 && isset($result['Browse'])) {
             $templateParams = $this->applyHighlighting($templateParams, $rowsBefore);
         }
 

@@ -82,7 +82,7 @@ abstract class AbstractLayer implements LayerInterface
             return imagecolorallocate($im, ...$this->colorMap[$key]);
         }
         // Case two: hex color
-        if (str_starts_with($color, '#') && strlen($color) == 7) {
+        if (str_starts_with($color, '#') && strlen($color) === 7) {
             $r = hexdec(substr($color, 1, 2));
             $g = hexdec(substr($color, 3, 2));
             $b = hexdec(substr($color, 5, 2));
@@ -105,7 +105,7 @@ abstract class AbstractLayer implements LayerInterface
     protected function getHSBColor($im, $h, $s, $v)
     {
         $s /= 256.0;
-        if ($s == 0.0) {
+        if ($s === 0.0) {
             return imagecolorallocate($im, $v, $v, $v);
         }
         $h /= (256.0 / 6.0);

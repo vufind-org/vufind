@@ -93,13 +93,13 @@ class Holds
                         if (empty($item[$fieldName])) {
                             // begin aliasing
                             if (
-                                $fieldName == 'notes'
+                                $fieldName === 'notes'
                                 && !empty($item['holdings_notes'])
                             ) {
                                 // using notes as alias for holdings_notes
                                 $item[$fieldName] = $item['holdings_notes'];
                             } elseif (
-                                $fieldName == 'holdings_notes'
+                                $fieldName === 'holdings_notes'
                                 && !empty($item['notes'])
                             ) {
                                 // using holdings_notes as alias for notes
@@ -337,7 +337,7 @@ class Holds
                                 break;
                             case 'availability':
                                 $addlink = !$copy['availability']->isAvailable()
-                                    && ($any_available == false);
+                                    && ($any_available === false);
                                 break;
                             default:
                                 $addlink = false;
@@ -572,7 +572,7 @@ class Holds
             }
 
             if (isset($copy[$key])) {
-                if ($groupKey != '') {
+                if ($groupKey !== '') {
                     $groupKey .= '|';
                 }
                 $groupKey .= $copy[$key];
@@ -580,7 +580,7 @@ class Holds
         }
 
         // default:
-        if ($groupKey == '') {
+        if ($groupKey === '') {
             $groupKey = $copy['location'];
         }
 

@@ -72,9 +72,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $configOrContainerInstance = null,
         array $v3config = []
     ) {
+        parent::__construct($configOrContainerInstance, $v3config);
         $this->addAbstractFactory(AbstractPluginFactory::class);
         $this->addInitializer(RouterInitializer::class);
-        parent::__construct($configOrContainerInstance, $v3config);
     }
 
     /**

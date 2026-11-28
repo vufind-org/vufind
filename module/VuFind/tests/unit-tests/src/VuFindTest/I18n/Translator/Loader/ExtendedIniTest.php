@@ -57,7 +57,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
             realpath($this->getFixtureDir() . 'language/overrides'),
         ];
         $loader = new ExtendedIni($pathStack);
-        $result = $loader->load('en', null);
+        $result = $loader->load('en', '');
         $this->assertSame(
             [
                 'blank_line' =>
@@ -80,7 +80,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
             realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack, 'en');
-        $result = $loader->load('fake', null);
+        $result = $loader->load('fake', '');
         $this->assertSame(
             [
                 'blank_line' =>
@@ -104,7 +104,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
             realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack, 'fake');
-        $result = $loader->load('fake', null);
+        $result = $loader->load('fake', '');
         $this->assertSame(
             [
                 'test3' => 'test three',
@@ -124,7 +124,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
             realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack);
-        $result = $loader->load('self-parent', null);
+        $result = $loader->load('self-parent', '');
         $this->assertSame(
             [
                 '@parent_ini' => 'self-parent.ini',
@@ -145,7 +145,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
             realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack);
-        $result = $loader->load('child2', null);
+        $result = $loader->load('child2', '');
         $this->assertSame(
             [
                 'test3' => 'test three',
@@ -168,7 +168,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('Ini file \'en.ini\' not found');
 
         $loader = new ExtendedIni();
-        $loader->load('en', null);
+        $loader->load('en', '');
     }
 
     /**
@@ -182,7 +182,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
             realpath($this->getFixtureDir() . 'language/aliases'),
         ];
         $loader = new ExtendedIni($pathStack, 'en');
-        $result = $loader->load('en', null);
+        $result = $loader->load('en', '');
         $this->assertSame(
             [
                 'bar' => 'Translation',
@@ -228,7 +228,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack, 'en');
         $this->expectExceptionMessage('Circular alias detected resolving Domain::baz');
-        $loader->load('en', null);
+        $loader->load('en', '');
     }
 
     /**
@@ -242,7 +242,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
             realpath($this->getFixtureDir() . 'language/aliases'),
         ];
         $loader = new ExtendedIni($pathStack, 'en');
-        $result = $loader->load('en-gb', null);
+        $result = $loader->load('en-gb', '');
         $this->assertSame(
             [
                 'bar' => 'Translation',
@@ -268,14 +268,14 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack, 'en');
         $loader->disableAliases();
-        $result = $loader->load('en', null);
+        $result = $loader->load('en', '');
         $this->assertSame(
             [
                 'bar' => 'Translation',
             ],
             (array)$result
         );
-        $result = $loader->load('en-gb', null);
+        $result = $loader->load('en-gb', '');
         $this->assertSame(
             [
                 'bar' => 'Translation',

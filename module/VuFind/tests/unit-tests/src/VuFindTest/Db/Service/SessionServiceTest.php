@@ -259,7 +259,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
         $queryBuilder->expects($this->once())->method('setParameter')
             ->with('sid', 1)
             ->willReturn($queryBuilder);
-        $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
+        $query = $this->getMockBuilder(\Doctrine\ORM\Query::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['execute', 'getSQL', '_doExecute'])
             ->getMock();
@@ -283,7 +283,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
         $entityManager = $this->createMock(EntityManager::class);
         $pluginManager = $this->getPluginManager();
         $persistenceManager = $this->getPersistenceManager();
-        $countQuery = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
+        $countQuery = $this->createMock(\Doctrine\ORM\Query::class);
         $countQuery->method('getSingleScalarResult')->willReturn(5);
         $countQuery->expects($this->once())->method('setParameter')
             ->with('used', $this->equalToWithDelta(time() - 10000, 1));
@@ -299,7 +299,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
         $queryBuilder->expects($this->once())->method('setParameter')
             ->with('used', $this->equalToWithDelta(time() - 10000, 1))
             ->willReturn($queryBuilder);
-        $deleteQuery = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
+        $deleteQuery = $this->createMock(\Doctrine\ORM\Query::class);
         $deleteQuery->expects($this->once())->method('execute')
             ->willReturn($this->anything());
         $queryBuilder->expects($this->once())->method('getQuery')

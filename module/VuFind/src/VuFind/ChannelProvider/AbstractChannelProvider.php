@@ -67,18 +67,32 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
     protected $recordRouter = null;
 
     /**
-     * Hook to configure search parameters before executing search.
+     * Hook to extract pagination parameters from the request. Used as a support method by configureSearchParams,
+     * and called directly before retrieving record-based channels.
      *
-     * @param Params      $params  Search parameters to adjust
      * @param HttpRequest $request Current HTTP request
      *
      * @return void
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    public function applyPaginationFromRequest(HttpRequest $request): void
+    {
+        // No action necessary by default; see override in BatchTrait.
+    }
+
+    /**
+     * Hook to configure search parameters before retrieving search-based channels.
+     *
+     * @param Params      $params  Search parameters to adjust
+     * @param HttpRequest $request Current HTTP request
+     *
+     * @return void
+     */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function configureSearchParams(Params $params, HttpRequest $request): void
     {
-        // No action necessary by default.
+        $this->applyPaginationFromRequest($request);
     }
 
     /**
@@ -124,9 +138,8 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
      * @param array $options Options
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function setOptions(array $options)
     {
         // No options required by default

@@ -7,7 +7,7 @@
       $data = ['Data' => $data];
     }
   }
-  $elements = $data['Elements'] ?? ['Data' => $data['Data']];
+  $elements = $data['Elements'] ?? [['Data' => $data['Data']]];
   $useSearchLink = $this->options['useSearchLink'] ?? false;
   $searchLinkType = $this->options['searchLinkType'] ?? 'generic';
   $limit = $this->options['limit'] ?? null;

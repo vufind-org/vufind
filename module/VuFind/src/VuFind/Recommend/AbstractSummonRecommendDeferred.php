@@ -54,7 +54,7 @@ abstract class AbstractSummonRecommendDeferred extends AbstractSearchObjectDefer
      * Initialize the lookFor query parameter. Called from init().
      *
      * @param \VuFind\Search\Base\Params $params   Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request  Parameter object representing user
+     * @param array                      $request  Parameter array representing user
      * request.
      * @param array                      $settings Parameter array (passed by reference)
      *
@@ -64,7 +64,7 @@ abstract class AbstractSummonRecommendDeferred extends AbstractSearchObjectDefer
     {
         // Collect the best possible search term(s):
         $lookforParam = empty($settings[0]) ? 'lookfor' : $settings[0];
-        $this->lookfor = $request->get($lookforParam, '');
+        $this->lookfor = $request[$lookforParam] ?? '';
         if (empty($this->lookfor) && is_object($params)) {
             $this->lookfor = $params->getQuery()->getAllTerms();
         }

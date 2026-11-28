@@ -35,6 +35,7 @@ namespace VuFind\Action\QRCode;
 use Psr\Http\Message\ResponseInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\QRCode\Loader;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Abstract base class for QRCode actions.
@@ -52,8 +53,9 @@ abstract class AbstractQRCodeAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param protected Loader $qrCodeLoader QRCode loader
+     * @param Loader $qrCodeLoader QRCode loader
      */
+    #[Autowire]
     public function __construct(
         protected Loader $qrCodeLoader,
     ) {

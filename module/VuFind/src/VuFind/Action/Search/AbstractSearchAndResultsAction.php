@@ -33,7 +33,7 @@
 namespace VuFind\Action\Search;
 
 use Exception;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
@@ -131,7 +131,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      * @param BlockLoader                $blockLoader                Content block loader
      * @param ConfigManager              $configManager              Configuration manager
      * @param RecordRouter               $recordRouter               Record router
-     * @param SessionManager             $sessionManager             Session manager
+     * @param ManagerInterface           $sessionManager             Session manager
      * @param SearchServiceInterface     $searchService              Search service
      * @param AuthManager                $authManager                Authentication manager
      * @param SearchNormalizer           $searchNormalizer           Search normalize
@@ -149,7 +149,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         protected BlockLoader $blockLoader,
         protected ConfigManager $configManager,
         protected RecordRouter $recordRouter,
-        protected SessionManager $sessionManager,
+        protected ManagerInterface $sessionManager,
         #[Autowire(container: DbServicePluginManager::class)]
         protected SearchServiceInterface $searchService,
         protected AuthManager $authManager,
@@ -350,7 +350,15 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
             return $this->redirectToSavedSearch((int)$savedId);
         }
 
-        $templateParams = $this->getSearchResultsTemplateParams($request, $this->getSearchClassId(), $setupCallback);
+        try {
+            $templateParams
+                = $this->getSearchResultsTemplateParams($request, $this->getSearchClassId(), $setupCallback);
+        } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
+            return $this->redirectToLegalSearchPage(
+                $request->getQueryParams() + $request->getParsedBody(),
+                $e->getLegalPage()
+            );
+        }
 
         // For page parameter being out of results list, we want to redirect to correct page
         $page = $templateParams['params']->getPage();
@@ -421,16 +429,12 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         $templateParams['request'] = $request->getQueryParams() + $request->getParsedBody();
 
         $lastView = $this->searchMemory->retrieveLastSetting($searchClassId, 'view');
-        try {
-            $templateParams['results'] = $results = $this->searchRunner->run(
-                $templateParams['request'],
-                $searchClassId,
-                $setupCallback ?: $this->getSearchSetupCallback($request),
-                $lastView
-            );
-        } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
-            return $this->redirectToLegalSearchPage($templateParams['request'], $e->getLegalPage());
-        }
+        $templateParams['results'] = $results = $this->searchRunner->run(
+            $templateParams['request'],
+            $searchClassId,
+            $setupCallback ?: $this->getSearchSetupCallback($request),
+            $lastView
+        );
         $templateParams['params'] = $results->getParams();
 
         // If we received an EmptySet back, that indicates that the real search
@@ -790,7 +794,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         if (
             $jumpto
             && ($this->configManager->getConfigArray('config')['Record']['jump_to_single_search_result'] ?? false)
-            && $results->getResultTotal() == 1
+            && $results->getResultTotal() === 1
             && $recordList = $results->getResults()
         ) {
             return $this->getRedirectForRecord(
@@ -880,7 +884,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         }
 
         // Fail if this is not the right type of search:
-        if ($savedSearch->getParams()->getSearchType() != 'advanced') {
+        if ($savedSearch->getParams()->getSearchType() !== 'advanced') {
             try {
                 $savedSearch->getParams()->convertToAdvancedSearch();
             } catch (\Exception $ex) {

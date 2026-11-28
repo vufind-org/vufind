@@ -112,7 +112,7 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
 
         // If this link is actually the 'bestIntegratorLink' array, extract the appropriate
         // text and icon config from it.
-        if ('bestIntegratorLink' == $serviceKey) {
+        if ('bestIntegratorLink' === $serviceKey) {
             $result['link'] = $serviceData['bestLink'] ?? $result['link'];
 
             $linkType = $serviceData['linkType'] ?? null;

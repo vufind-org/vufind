@@ -31,17 +31,19 @@ namespace VuFindTest\Auth;
 
 use DateTime;
 use Laminas\Http\Request;
-use Laminas\Session\SessionManager;
-use Laminas\View\Renderer\PhpRenderer;
+use Laminas\Session\ManagerInterface;
 use PHPUnit\Event\NoPreviousThrowableException;
 use PHPUnit\Framework\InvalidArgumentException;
 use PHPUnit\Framework\MockObject\Exception;
 use VuFind\Auth\EmailAuthenticator;
+use VuFind\Crypt\RandomHash;
 use VuFind\Db\Entity\AuthHashEntityInterface;
 use VuFind\Db\Service\AuthHashServiceInterface;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
 use VuFind\Mailer\Mailer;
 use VuFind\Net\UserIpReader;
-use VuFind\Validator\CsrfInterface;
+use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindTest\Feature\TranslatorTrait;
 
 /**
@@ -60,13 +62,15 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
     /**
      * Get an EmailAuthenticator to test.
      *
-     * @param ?SessionManager           $sessionManager  Session manager
-     * @param ?CsrfInterface            $csrf            CSRF validator
-     * @param ?Mailer                   $mailer          Mailer service
-     * @param ?PhpRenderer              $renderer        View renderer
-     * @param ?userIpReader             $userIpReader    User IP reader
-     * @param array                     $config          Configuration settings
-     * @param ?AuthHashServiceInterface $authHashService AuthHash database service
+     * @param ?ManagerInterface          $sessionManager  Session manager
+     * @param ?RandomHash                $randomHash      Random hash generator
+     * @param ?Mailer                    $mailer          Mailer service
+     * @param ?TemplateRendererInterface $renderer        Template renderer
+     * @param ?ServerUrlHelper           $serverUrlHelper Server URL helper
+     * @param ?RouteHelper               $routeHelper     Route helper
+     * @param ?userIpReader              $userIpReader    User IP reader
+     * @param array                      $config          Configuration settings
+     * @param ?AuthHashServiceInterface  $authHashService AuthHash database service
      *
      * @return EmailAuthenticator
      * @throws InvalidArgumentException
@@ -74,19 +78,23 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
      * @throws NoPreviousThrowableException
      */
     protected function getEmailAuthenticator(
-        ?SessionManager $sessionManager = null,
-        ?CsrfInterface $csrf = null,
+        ?ManagerInterface $sessionManager = null,
+        ?RandomHash $randomHash = null,
         ?Mailer $mailer = null,
-        ?PhpRenderer $renderer = null,
+        ?TemplateRendererInterface $renderer = null,
+        ?ServerUrlHelper $serverUrlHelper = null,
+        ?RouteHelper $routeHelper = null,
         ?UserIpReader $userIpReader = null,
         array $config = [],
         ?AuthHashServiceInterface $authHashService = null
     ): EmailAuthenticator {
         $authenticator = new EmailAuthenticator(
-            $sessionManager ?? $this->createStub(SessionManager::class),
-            $csrf ?? $this->createStub(CsrfInterface::class),
+            $sessionManager ?? $this->createStub(ManagerInterface::class),
+            $randomHash ?? $this->createStub(RandomHash::class),
             $mailer ?? $this->createStub(Mailer::class),
-            $renderer ?? $this->createStub(PhpRenderer::class),
+            $renderer ?? $this->createStub(TemplateRendererInterface::class),
+            $serverUrlHelper ?? $this->createStub(ServerUrlHelper::class),
+            $routeHelper ?? $this->createStub(RouteHelper::class),
             $userIpReader ?? $this->createStub(UserIpReader::class),
             $config,
             $authHashService ?? $this->createStub(AuthHashServiceInterface::class)
@@ -103,7 +111,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
     public function testRecoveryInterval(): void
     {
         $this->expectExceptionMessage('authentication_error_in_progress');
-        $sessionManager = $this->createMock(SessionManager::class);
+        $sessionManager = $this->createMock(ManagerInterface::class);
         $sessionManager->expects($this->once())->method('getId')->willReturn('foo-session');
         $authHashService = $this->createMock(AuthHashServiceInterface::class);
         $row = $this->createMock(AuthHashEntityInterface::class);
@@ -124,7 +132,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testSendAuthenticationLink(): void
     {
-        $sessionManager = $this->createMock(SessionManager::class);
+        $sessionManager = $this->createMock(ManagerInterface::class);
         $sessionManager->expects($this->once())->method('getId')->willReturn('foo-session');
         $authHashService = $this->createMock(AuthHashServiceInterface::class);
         $row = $this->createMock(AuthHashEntityInterface::class);
@@ -146,48 +154,48 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $authHashService->expects($this->once())->method('getByHashAndType')->with('foo-hash', 'email')
             ->willReturn($row);
         $authHashService->expects($this->once())->method('persistEntity')->with($row);
-        $csrf = $this->createMock(CsrfInterface::class);
-        $csrf->expects($this->once())->method('trimTokenList')->with(5);
-        $csrf->expects($this->once())->method('getHash')->with(true)->willReturn('foo-hash');
+        $randomHash = $this->createMock(RandomHash::class);
+        $randomHash->expects($this->once())->method('getHash')->willReturn('foo-hash');
         $mailer = $this->createMock(Mailer::class);
         $mailer->expects($this->once())->method('send')
             ->with('me@example.com', 'from@example.com', 'email_login_subject', 'foo-message');
-        $renderer = $this->createMock(PhpRenderer::class);
-        $mockServerUrl = function ($url) {
-            $this->assertEquals('foo-url', $url);
-            return 'foo-serverurl';
-        };
-        $mockUrl = function ($route, $params, $query) {
-            $this->assertEquals('account-home', $route);
-            $this->assertEquals([], $params);
-            $this->assertEquals(['query' => ['hash' => 'foo-hash']], $query);
-            return 'foo-url';
-        };
-        $renderer->method('plugin')->willReturnCallback(
-            function ($name) use ($mockServerUrl, $mockUrl) {
-                return match ($name) {
-                    'serverurl' => $mockServerUrl,
-                    'url' => $mockUrl,
-                    default => null,
-                };
-            }
-        );
+        $renderer = $this->createMock(TemplateRendererInterface::class);
+        $mockServerUrl = $this->createMock(ServerUrlHelper::class);
+        $mockServerUrl->method('getUrlForPath')
+            ->willReturnCallback(
+                function (string $url) {
+                    $this->assertSame('foo-url', $url);
+                    return 'foo-serverurl';
+                }
+            );
+        $mockRouteHelper = $this->createMock(RouteHelper::class);
+        $mockRouteHelper->method('getUrlFromRoute')
+            ->willReturnCallback(
+                function (string $route, array $params, array $query) {
+                    $this->assertSame('account-home', $route);
+                    $this->assertEquals([], $params);
+                    $this->assertEquals(['hash' => 'foo-hash'], $query);
+                    return 'foo-url';
+                }
+            );
         $checkViewParams = function ($params) use ($assertData) {
             $assertData($params);
             $this->assertEquals('foo-serverurl', $params['url']);
             $this->assertEquals('foo-site-title', $params['title']);
             return true;
         };
-        $renderer->expects($this->once())->method('render')
-            ->with('Email/login-link.phtml', $this->callback($checkViewParams))
+        $renderer->expects($this->once())->method('renderTemplateAsString')
+            ->with(null, 'Email/login-link.phtml', $this->callback($checkViewParams))
             ->willReturn('foo-message');
         $userIpReader = $this->createMock(userIpReader::class);
         $userIpReader->expects($this->once())->method('getUserIp')->willReturn('foo-ip');
         $authenticator = $this->getEmailAuthenticator(
             sessionManager: $sessionManager,
-            csrf: $csrf,
+            randomHash: $randomHash,
             mailer: $mailer,
             renderer: $renderer,
+            serverUrlHelper: $mockServerUrl,
+            routeHelper: $mockRouteHelper,
             userIpReader: $userIpReader,
             config: ['Site' => ['title' => 'foo-site-title', 'email' => 'from@example.com']],
             authHashService: $authHashService
@@ -221,7 +229,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $authHashService = $this->createMock(AuthHashServiceInterface::class);
         $authHashService->expects($this->once())->method('getByHashAndType')->with('foo-hash', 'email')
             ->willReturn($row);
-        $sessionManager = $this->createMock(SessionManager::class);
+        $sessionManager = $this->createMock(ManagerInterface::class);
         $sessionManager->expects($this->once())->method('getId')->willReturn('foo-session');
         $authenticator = $this->getEmailAuthenticator(
             sessionManager: $sessionManager,
@@ -244,7 +252,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $authHashService = $this->createMock(AuthHashServiceInterface::class);
         $authHashService->expects($this->once())->method('getByHashAndType')->with('foo-hash', 'email')
             ->willReturn($row);
-        $sessionManager = $this->createMock(SessionManager::class);
+        $sessionManager = $this->createMock(ManagerInterface::class);
         $sessionManager->expects($this->once())->method('getId')->willReturn('foo-session');
         $authenticator = $this->getEmailAuthenticator(
             sessionManager: $sessionManager,

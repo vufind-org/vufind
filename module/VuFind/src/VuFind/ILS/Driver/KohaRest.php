@@ -448,9 +448,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getItemStatusesForBiblio($id, $patron, $options);
@@ -465,9 +464,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param string $id The record id to retrieve the info for
      *
      * @return mixed     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         return [];
@@ -595,9 +593,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function patronLogin($username, $password)
     {
         if (empty($username)) {
@@ -1066,9 +1063,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         $bibId = $holdDetails['id'] ?? null;
@@ -1186,9 +1182,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return false|string      The default pickup location for the patron or false
      * if the user has to choose.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         return $this->defaultPickUpLocation;
@@ -1362,9 +1357,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array $patron       Patron array
      *
      * @return array Associative array of the results
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function updateHolds(
         array $holdsDetails,
         array $fields,
@@ -1499,9 +1493,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelStorageRetrievalRequestDetails($details, $patron)
     {
         return $details['item_id'];
@@ -1738,9 +1731,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @throws ILSException
      * @return array Associative array with keys success (bool, always) and reason (string, on error)
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function registerPayment(
         array $patron,
         int $amount,
@@ -1962,9 +1954,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConfig(string $function, array $params = []): array
     {
         if ('getMyTransactionHistory' === $function) {
@@ -2029,9 +2020,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsMethod($method, $params)
     {
         // Special case: change password is only available if properly configured.
@@ -2443,9 +2433,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array  $item Item
      *
      * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getStatusCodeItemCheckedOut($code, $data, $item)
     {
         $overdue = false;
@@ -2468,9 +2457,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array  $item Item
      *
      * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getStatusCodeItemNotForLoanOrLost($code, $data, $item)
     {
         // NotForLoan and Lost are special: status has a library-specific status number. Allow mapping of different
@@ -2491,9 +2479,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array  $item Item
      *
      * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getStatusCodeItemTransfer($code, $data, $item)
     {
         if (isset($data['to_library'])) {
@@ -3161,9 +3148,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array $kohaFine Koha fine entry
      *
      * @return int 1/100ths of a percent
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getFineTaxRate(array $fine, array $kohaFine): int
     {
         $code = trim($kohaFine['debit_type']) ?? '';

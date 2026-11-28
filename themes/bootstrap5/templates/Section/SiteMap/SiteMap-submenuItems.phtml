@@ -5,7 +5,7 @@
     <li>
       <?= $this->makeLink($this->transEsc($item['label']), $href) ?>
       <?php if (isset($item['submenuItems'])): ?>
-        <?= $this->render('Section/SiteMap/SiteMap-submenuItems.phtml', ['submenuItems' => $item['submenuItems']]) ?>
+        <?= $this->context($this)->renderInContext('Section/SiteMap/SiteMap-submenuItems.phtml', ['submenuItems' => $item['submenuItems']]) ?>
       <?php endif; ?>
     </li>
   <?php endif; ?>

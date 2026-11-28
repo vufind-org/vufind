@@ -34,6 +34,16 @@ namespace VuFind\Action\Install;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\RedirectHelper;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\Config\PathResolver;
+use VuFind\Db\Service\PluginManager as DbServicePluginManager;
+use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
+use VuFind\ILS\Connection;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFindHttp\HttpService;
+use VuFindSearch\Service as SearchService;
 
 use function dirname;
 
@@ -49,6 +59,50 @@ use function dirname;
  */
 class FixBasicConfigAction extends AbstractInstallAction
 {
+    /**
+     * Constructor.
+     *
+     * @param PathResolver             $pathResolver    Path resolver
+     * @param ConfigManagerInterface   $configManager   Config manager
+     * @param UserServiceInterface     $userService     User database service
+     * @param UserCardServiceInterface $userCardService User card database service
+     * @param array                    $config          VuFind configuration
+     * @param Connection               $ilsConnection   ILS connection
+     * @param SearchService            $searchService   Search service
+     * @param HttpService              $httpService     HTTP service
+     * @param TagServiceInterface      $tagService      Tags database service
+     * @param string                   $absoluteBaseUrl Absolute base URL
+     */
+    public function __construct(
+        PathResolver $pathResolver,
+        ConfigManagerInterface $configManager,
+        #[Autowire(container: DbServicePluginManager::class)]
+        UserServiceInterface $userService,
+        #[Autowire(container: DbServicePluginManager::class)]
+        UserCardServiceInterface $userCardService,
+        #[Autowire(config: 'config')]
+        array $config,
+        Connection $ilsConnection,
+        SearchService $searchService,
+        HttpService $httpService,
+        #[Autowire(container: DbServicePluginManager::class)]
+        TagServiceInterface $tagService,
+        #[Autowire(container: \VuFind\Application\UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        protected string $absoluteBaseUrl,
+    ) {
+        parent::__construct(
+            $pathResolver,
+            $configManager,
+            $userService,
+            $userCardService,
+            $config,
+            $ilsConnection,
+            $searchService,
+            $httpService,
+            $tagService
+        );
+    }
+
     /**
      * Fix basic configuration.
      *
@@ -69,8 +123,7 @@ class FixBasicConfigAction extends AbstractInstallAction
             // Choose secure defaults when creating initial config.ini:
             $fixedConfig = $this->getFixedSecurityConfiguration($this->config);
             // Set appropriate URLs:
-            $path = $this->routeHelper->getUrlFromRoute('home');
-            $fixedConfig['Site']['url'] = rtrim($this->serverUrlHelper->getUrlForPath($path), '/');
+            $fixedConfig['Site']['url'] = rtrim($this->absoluteBaseUrl, '/');
             if ($solrUrl = $this->getSolrUrlFromImportConfig()) {
                 $fixedConfig['Index']['url'] = $solrUrl;
             }

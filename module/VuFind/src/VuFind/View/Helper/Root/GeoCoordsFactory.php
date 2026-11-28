@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Http\RouteHelper;
 
 /**
  * GeoCoords helper factory.
@@ -68,8 +69,7 @@ class GeoCoordsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\GeoFeatures\MapSelectionConfig::class)
-            ->getMapSelectionOptions();
-        return new $requestedName($config['default_coordinates'], $container->get('ViewHelperManager')->get('url'));
+        $config = $container->get(\VuFind\GeoFeatures\MapSelectionConfig::class)->getMapSelectionOptions();
+        return new $requestedName($config['default_coordinates'], $container->get(RouteHelper::class));
     }
 }

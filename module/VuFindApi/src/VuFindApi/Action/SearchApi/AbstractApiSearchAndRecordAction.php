@@ -30,7 +30,6 @@
 
 namespace VuFindApi\Action\SearchApi;
 
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\BackendIdInterface;
@@ -40,6 +39,7 @@ use VuFind\Config\ConfigManager;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
 use VuFind\Exception\ConfigException;
 use VuFind\Search\Options\PluginManager as SearchOptionsPluginManager;
+use VuFind\Service\AuthorizationServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFindApi\Action\AbstractApiAction;
 use VuFindApi\Formatter\RecordFormatter;
@@ -145,15 +145,15 @@ abstract class AbstractApiSearchAndRecordAction extends AbstractApiAction implem
     /**
      * Constructor.
      *
-     * @param AuthorizationService       $authorizationService       Authorization service
-     * @param DeveloperSettingsService   $developerSettingsService   Developer settings service
-     * @param array                      $config                     VuFind configuration
-     * @param RecordFormatter            $recordFormatter            Record formatter
-     * @param ConfigManager              $configManager              Configuration manager
-     * @param SearchOptionsPluginManager $searchOptionsPluginManager Search options plugin manager
+     * @param AuthorizationServiceInterface $authorizationService       Authorization service
+     * @param DeveloperSettingsService      $developerSettingsService   Developer settings service
+     * @param array                         $config                     VuFind configuration
+     * @param RecordFormatter               $recordFormatter            Record formatter
+     * @param ConfigManager                 $configManager              Configuration manager
+     * @param SearchOptionsPluginManager    $searchOptionsPluginManager Search options plugin manager
      */
     public function __construct(
-        AuthorizationService $authorizationService,
+        AuthorizationServiceInterface $authorizationService,
         DeveloperSettingsService $developerSettingsService,
         #[Autowire(config: 'config')]
         array $config,

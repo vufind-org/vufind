@@ -32,6 +32,8 @@ namespace VuFind\Security;
 use Laminas\Http\Header\ContentSecurityPolicy;
 use Laminas\Http\Header\ContentSecurityPolicyReportOnly;
 use Laminas\Http\Header\GenericHeader;
+use PHPMD\Attribute\SuppressWarnings;
+use PHPMD\Rule\Design\NumberOfChildren;
 
 use function in_array;
 
@@ -45,9 +47,8 @@ use function in_array;
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
- *
- * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
+#[SuppressWarnings(NumberOfChildren::class)]
 class CspHeaderGenerator implements
     \Psr\Log\LoggerAwareInterface
 {

@@ -29,12 +29,12 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Resolver\ResolverInterface;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Related\PluginManager as RelatedManager;
 use VuFind\Search\Options\PluginManager as OptionsManager;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Related records view helper.
@@ -52,12 +52,12 @@ class Related
     /**
      * Constructor.
      *
-     * @param RelatedManager         $relatedPluginManager Plugin manager for related record modules
-     * @param ConfigManagerInterface $configManager        Configuration manager
-     * @param OptionsManager         $optionsManager       Search options plugin manager
-     * @param Context                $contextHelper        Context helper
-     * @param RendererInterface      $viewRenderer         View renderer
-     * @param ResolverInterface      $viewResolver         View resolver
+     * @param RelatedManager            $relatedPluginManager Plugin manager for related record modules
+     * @param ConfigManagerInterface    $configManager        Configuration manager
+     * @param OptionsManager            $optionsManager       Search options plugin manager
+     * @param Context                   $contextHelper        Context helper
+     * @param TemplateRendererInterface $templateRenderer     Template renderer
+     * @param ResolverInterface         $viewResolver         View resolver
      */
     public function __construct(
         protected RelatedManager $relatedPluginManager,
@@ -65,10 +65,10 @@ class Related
         protected OptionsManager $optionsManager,
         #[Autowire(container: 'ViewHelperManager')]
         Context $contextHelper,
-        RendererInterface $viewRenderer,
+        TemplateRendererInterface $templateRenderer,
         ResolverInterface $viewResolver
     ) {
-        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $contextHelper);
+        $this->setClassBasedTemplateRendererDependencies($templateRenderer, $viewResolver, $contextHelper);
     }
 
     /**

@@ -126,4 +126,51 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
         $q = $response->get('q');
         $this->assertEquals('{!mlt qf=title,topic}testrecord', $q[0]);
     }
+
+    /**
+     * Test builder with qt=morelikethis for legacy Solr instances.
+     *
+     * @return void
+     */
+    public function testUseQtParam()
+    {
+        $config = [
+            'MoreLikeThis' => [
+                'useQtParam' => true,
+                'count' => 10,
+            ],
+        ];
+        $sb = new SimilarBuilder($config);
+        $this->assertTrue($sb->usesQtParam());
+        $response = $sb->build('testrecord');
+        $rows = $response->get('rows');
+        $this->assertEquals(10, $rows[0]);
+        $q = $response->get('q');
+        $this->assertEquals('id:"testrecord"', $q[0]);
+        $qt = $response->get('qt');
+        $this->assertEquals('morelikethis', $qt[0]);
+    }
+
+    /**
+     * Test that useQtParam has no effect when the MoreLikeThis handler is used.
+     *
+     * @return void
+     */
+    public function testUseQtParamWithHandler()
+    {
+        $config = [
+            'MoreLikeThis' => [
+                'useMoreLikeThisHandler' => true,
+                'params' => 'qf=title,topic',
+                'useQtParam' => true,
+            ],
+        ];
+        $sb = new SimilarBuilder($config);
+        $this->assertTrue($sb->usesQtParam());
+        $response = $sb->build('testrecord');
+        $q = $response->get('q');
+        $this->assertEquals('{!mlt qf=title,topic}testrecord', $q[0]);
+        $qt = $response->get('qt');
+        $this->assertNull($qt);
+    }
 }

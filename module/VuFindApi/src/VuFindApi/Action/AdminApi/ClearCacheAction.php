@@ -30,11 +30,11 @@
 namespace VuFindApi\Action\AdminApi;
 
 use Laminas\Cache\Storage\FlushableInterface;
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
+use VuFind\Service\AuthorizationServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFindApi\Action\AbstractApiAction;
 
@@ -52,13 +52,13 @@ class ClearCacheAction extends AbstractApiAction
     /**
      * Constructor.
      *
-     * @param AuthorizationService     $authorizationService     Authorization service
-     * @param DeveloperSettingsService $developerSettingsService Developer settings service
-     * @param array                    $config                   VuFind configuration
-     * @param CacheManager             $cacheManager             Cache manager
+     * @param AuthorizationServiceInterface $authorizationService     Authorization service
+     * @param DeveloperSettingsService      $developerSettingsService Developer settings service
+     * @param array                         $config                   VuFind configuration
+     * @param CacheManager                  $cacheManager             Cache manager
      */
     public function __construct(
-        AuthorizationService $authorizationService,
+        AuthorizationServiceInterface $authorizationService,
         protected DeveloperSettingsService $developerSettingsService,
         #[Autowire(config: 'config')]
         array $config,

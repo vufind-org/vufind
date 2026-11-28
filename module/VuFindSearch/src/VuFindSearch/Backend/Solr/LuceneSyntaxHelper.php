@@ -308,14 +308,14 @@ class LuceneSyntaxHelper
                         return;
                     }
                     // Flush to result array on word break
-                    if ($ch == ' ' && $collected !== '') {
+                    if ($ch === ' ' && $collected !== '') {
                         $result[] = $collected;
                         $collected = '';
                         return;
                     }
                     // If we encounter ':', discard preceding string as it's a field
                     // name
-                    if (!$esc && $ch == ':') {
+                    if (!$esc && $ch === ':') {
                         // Take into account any opening parenthesis we discard here
                         $discardParens += $this->countNonQuoted('(', $collected);
                         $collected = '';
@@ -540,12 +540,12 @@ class LuceneSyntaxHelper
         // If the string consists only of control characters and/or BOOLEANs with no
         // other input, wipe it out entirely to prevent weird errors:
         $operators = ['AND', 'OR', 'NOT', '+', '-', '"', '&&', '||'];
-        if (trim(str_replace($operators, '', $input)) == '') {
+        if (trim(str_replace($operators, '', $input)) === '') {
             return '';
         }
 
         // Translate "all records" search into a blank string
-        if (trim($input) == '*:*') {
+        if (trim($input) === '*:*') {
             return '';
         }
 
@@ -613,8 +613,8 @@ class LuceneSyntaxHelper
 
         // Is this a case-sensitive range?
         if (
-            strtoupper($start) != strtolower($start)
-            || strtoupper($end) != strtolower($end)
+            strtoupper($start) !== strtolower($start)
+            || strtoupper($end) !== strtolower($end)
         ) {
             // Build a lowercase version of the range:
             $lower = $open . trim(strtolower($start)) . ' TO ' .
